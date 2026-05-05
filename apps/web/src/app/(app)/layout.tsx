@@ -8,6 +8,7 @@ import { Permission } from '@leanmgmt/shared-types';
 
 import { ConsentBlockingDialog } from '@/components/auth/consent-blocking-dialog';
 import { AppBreadcrumbs } from '@/components/layout/AppBreadcrumbs';
+import { AppSidebarNav } from '@/components/layout/AppSidebarNav';
 import { PageRouteCardMotion } from '@/components/layout/PageRouteCardMotion';
 import { SidebarProfileNavLink } from '@/components/layout/SidebarProfileNavLink';
 import { PasswordExpiryBanner } from '@/components/layout/PasswordExpiryBanner';
@@ -15,28 +16,6 @@ import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { PermissionGate } from '@/components/shared/PermissionGate';
 import { logoutRequest } from '@/lib/api-client';
 import { useAuthStore } from '@/stores/auth-store';
-
-function navLinkClass(active: boolean): string {
-  if (active) {
-    return [
-      'ls-sidebar-nav-link ls-sidebar-nav-link--active',
-      'flex items-center gap-[var(--space-4)] rounded-[var(--radius-md)] px-[var(--space-6)] py-[var(--space-5)] text-[var(--text-sm)] font-medium',
-      'transition-all duration-[var(--dur-medium)]',
-    ].join(' ');
-  }
-  return [
-    'ls-sidebar-nav-link',
-    'flex items-center gap-[var(--space-4)] rounded-[var(--radius-md)] px-[var(--space-6)] py-[var(--space-5)] text-[var(--text-sm)] font-medium text-[var(--color-sidebar-nav-idle)]',
-    'transition-all duration-[var(--dur-medium)] hover:bg-[var(--color-hover)]',
-  ].join(' ');
-}
-
-function isNavActive(pathname: string, href: string): boolean {
-  if (href === '/dashboard') {
-    return pathname === '/dashboard' || pathname === '/';
-  }
-  return pathname === href || pathname.startsWith(`${href}/`);
-}
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const user = useAuthStore((s) => s.currentUser);
@@ -62,103 +41,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const showAppChrome = Boolean(user && !needConsent);
 
-  const activeNavStyle = {
-    background: 'var(--gradient-primary)',
-    boxShadow: 'var(--shadow-cta)',
-    color: 'var(--color-fg-inverse)',
-  };
-
-  const sidebarNav = showAppChrome ? (
-    <nav
-      aria-label="Ana menü"
-      className="flex flex-col gap-[var(--space-2)] px-[var(--space-5)] pb-[var(--space-6)]"
-    >
-      <Link
-        href="/dashboard"
-        className={navLinkClass(isNavActive(pathname, '/dashboard'))}
-        style={isNavActive(pathname, '/dashboard') ? activeNavStyle : undefined}
-        onClick={closeMobileNav}
-      >
-        Ana Sayfa
-      </Link>
-      <Link
-        href="/processes"
-        className={navLinkClass(isNavActive(pathname, '/processes'))}
-        style={isNavActive(pathname, '/processes') ? activeNavStyle : undefined}
-        onClick={closeMobileNav}
-      >
-        Süreçler
-      </Link>
-      <Link
-        href="/tasks"
-        className={navLinkClass(isNavActive(pathname, '/tasks'))}
-        style={isNavActive(pathname, '/tasks') ? activeNavStyle : undefined}
-        onClick={closeMobileNav}
-      >
-        Görevlerim
-      </Link>
-      <PermissionGate permission={Permission.USER_LIST_VIEW}>
-        <Link
-          href="/users"
-          className={navLinkClass(isNavActive(pathname, '/users'))}
-          style={isNavActive(pathname, '/users') ? activeNavStyle : undefined}
-          onClick={closeMobileNav}
-        >
-          Kullanıcılar
-        </Link>
-      </PermissionGate>
-      <PermissionGate anyOf={[Permission.MASTER_DATA_VIEW, Permission.MASTER_DATA_MANAGE]}>
-        <Link
-          href="/master-data"
-          className={navLinkClass(isNavActive(pathname, '/master-data'))}
-          style={isNavActive(pathname, '/master-data') ? activeNavStyle : undefined}
-          onClick={closeMobileNav}
-        >
-          Master Data
-        </Link>
-      </PermissionGate>
-      <PermissionGate permission={Permission.ROLE_VIEW}>
-        <Link
-          href="/roles"
-          className={navLinkClass(isNavActive(pathname, '/roles'))}
-          style={isNavActive(pathname, '/roles') ? activeNavStyle : undefined}
-          onClick={closeMobileNav}
-        >
-          Roller
-        </Link>
-      </PermissionGate>
-      <PermissionGate permission={Permission.NOTIFICATION_READ}>
-        <Link
-          href="/settings/notifications"
-          className={navLinkClass(isNavActive(pathname, '/settings/notifications'))}
-          style={isNavActive(pathname, '/settings/notifications') ? activeNavStyle : undefined}
-          onClick={closeMobileNav}
-        >
-          Bildirim ayarları
-        </Link>
-      </PermissionGate>
-      <PermissionGate
-        anyOf={[
-          Permission.AUDIT_LOG_VIEW,
-          Permission.SYSTEM_SETTINGS_VIEW,
-          Permission.SYSTEM_SETTINGS_EDIT,
-          Permission.CONSENT_VERSION_VIEW,
-          Permission.CONSENT_VERSION_EDIT,
-          Permission.CONSENT_VERSION_PUBLISH,
-          Permission.EMAIL_TEMPLATE_VIEW,
-        ]}
-      >
-        <Link
-          href="/admin"
-          className={navLinkClass(isNavActive(pathname, '/admin'))}
-          style={isNavActive(pathname, '/admin') ? activeNavStyle : undefined}
-          onClick={closeMobileNav}
-        >
-          Yönetim
-        </Link>
-      </PermissionGate>
-    </nav>
-  ) : null;
+  const sidebarNav = showAppChrome ? <AppSidebarNav onNavigate={closeMobileNav} /> : null;
 
   return (
     <div

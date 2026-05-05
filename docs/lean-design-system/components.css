@@ -11,6 +11,60 @@
   color: var(--color-fg-inverse) !important;
 }
 
+/* Morph pill kullanılan nav: gradient gölge pill'de; link yalnızca metin rengi */
+.ls-sidebar-nav-with-morph-pill .ls-sidebar-nav-link--active {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Squash-and-stretch geçiş pill'i — tıklanamaz, token ile ana menü vurgusu */
+.ls-sidebar-nav-morph-pill {
+  pointer-events: none;
+  position: absolute;
+  left: var(--space-5);
+  right: var(--space-5);
+  top: 0;
+  border-radius: var(--radius-md);
+  background: var(--gradient-primary);
+  box-shadow: var(--shadow-cta);
+  will-change: transform;
+}
+
+/* Yatay segment (ör. süreç listesi kapsamı) — morph pill; aktif arka plan pill'de */
+.ls-morph-segment-track {
+  position: relative;
+}
+.ls-morph-segment-pill {
+  pointer-events: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary-100);
+  will-change: transform;
+}
+
+/* Görevler üst sekmeleri — ls-btn--sm ile aynı boyut / tipografi (yan yana ls-btn ile hizalı) */
+.ls-morph-segment-tab--btn-sm {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 8px var(--space-7);
+  font-size: var(--text-sm);
+  line-height: 1.25;
+  font-family: var(--font-body);
+  font-weight: var(--fw-semi);
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.ls-morph-segment-tab--btn-sm:focus-visible {
+  outline: var(--focus-ring-width) solid var(--color-primary-500);
+  outline-offset: var(--focus-ring-offset);
+}
+
 /* ---------- Button ----------
    Default = design-system.json surfacePatterns.buttons.primary (padding 12px 20px, radius 12px, font 14px)
    Boyut sınıfı yoksa md davranışı; ls-btn--sm / --md / --lg ile sıkılaştır veya büyüt */

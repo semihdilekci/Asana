@@ -7,6 +7,10 @@ import { useCallback, useMemo } from 'react';
 import type { TaskListQuery } from '@leanmgmt/shared-schemas';
 import { Permission } from '@leanmgmt/shared-types';
 
+import {
+  HorizontalMorphSegmented,
+  type MorphSegmentItem,
+} from '@/components/layout/HorizontalMorphSegmented';
 import { PermissionGate } from '@/components/shared/PermissionGate';
 import { completionActionLabelTr } from '@/lib/completion-action-tr';
 import { useTasksInfiniteQuery } from '@/lib/queries/tasks';
@@ -14,6 +18,12 @@ import { useTasksInfiniteQuery } from '@/lib/queries/tasks';
 import { SlaBadge } from './SlaBadge';
 
 type TabKey = 'pending' | 'started' | 'completed';
+
+const TASK_TAB_ITEMS: MorphSegmentItem[] = [
+  { value: 'pending', label: 'Onayda bekleyen' },
+  { value: 'started', label: 'Başlattığım süreçler' },
+  { value: 'completed', label: 'Tamamlanan görevler' },
+];
 
 function tabFromParam(v: string | null): TabKey {
   if (v === 'started' || v === 'completed') {
@@ -104,40 +114,14 @@ export function TaskList() {
 
   return (
     <div className="space-y-[var(--space-6)]">
-      <div className="flex flex-wrap items-end gap-[var(--space-4)] border-b border-[var(--color-neutral-200)] pb-[var(--space-3)]">
-        <button
-          type="button"
-          className={`rounded-[var(--radius-md)] px-[var(--space-3)] py-[var(--space-2)] text-sm font-medium ${
-            tab === 'pending'
-              ? 'bg-[var(--color-primary-100)] text-[var(--color-primary-800)]'
-              : 'text-[var(--color-neutral-600)] hover:bg-[var(--color-neutral-50)]'
-          }`}
-          onClick={() => setTab('pending')}
-        >
-          Onayda bekleyen
-        </button>
-        <button
-          type="button"
-          className={`rounded-[var(--radius-md)] px-[var(--space-3)] py-[var(--space-2)] text-sm font-medium ${
-            tab === 'started'
-              ? 'bg-[var(--color-primary-100)] text-[var(--color-primary-800)]'
-              : 'text-[var(--color-neutral-600)] hover:bg-[var(--color-neutral-50)]'
-          }`}
-          onClick={() => setTab('started')}
-        >
-          Başlattığım süreçler
-        </button>
-        <button
-          type="button"
-          className={`rounded-[var(--radius-md)] px-[var(--space-3)] py-[var(--space-2)] text-sm font-medium ${
-            tab === 'completed'
-              ? 'bg-[var(--color-primary-100)] text-[var(--color-primary-800)]'
-              : 'text-[var(--color-neutral-600)] hover:bg-[var(--color-neutral-50)]'
-          }`}
-          onClick={() => setTab('completed')}
-        >
-          Tamamlanan görevler
-        </button>
+      <div className="flex flex-wrap items-center gap-[var(--space-4)] border-b border-[var(--color-neutral-200)] pb-[var(--space-3)]">
+        <HorizontalMorphSegmented
+          items={TASK_TAB_ITEMS}
+          value={tab}
+          onChange={(next) => setTab(next as TabKey)}
+          ariaLabel="Görev listesi sekmesi"
+          density="compact"
+        />
         <div className="ml-auto">
           <PermissionGate permission={Permission.PROCESS_KTI_START}>
             <Link href="/processes/kti/start" className="ls-btn ls-btn--primary ls-btn--sm">

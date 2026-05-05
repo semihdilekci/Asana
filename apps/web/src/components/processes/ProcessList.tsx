@@ -2,10 +2,16 @@
 
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useMemo } from 'react';
 
 import { Permission } from '@leanmgmt/shared-types';
 
+import {
+  HorizontalMorphSegmented,
+  type MorphSegmentItem,
+} from '@/components/layout/HorizontalMorphSegmented';
 import { PermissionGate } from '@/components/shared/PermissionGate';
+import { useHasPermission } from '@/hooks/usePermissions';
 import { useProcessesListQuery } from '@/lib/queries/processes';
 
 function scopeFromSearch(searchParams: URLSearchParams): 'my-started' | 'admin' {
@@ -17,6 +23,12 @@ export function ProcessList() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const scope = scopeFromSearch(searchParams);
+  const hasProcessViewAll = useHasPermission(Permission.PROCESS_VIEW_ALL);
+  const scopeTabs: MorphSegmentItem[] = useMemo(() => {
+    const tabs: MorphSegmentItem[] = [{ value: 'my-started', label: 'Başlattığım Süreçler' }];
+    if (hasProcessViewAll) tabs.push({ value: 'admin', label: 'Tüm Süreçler' });
+    return tabs;
+  }, [hasProcessViewAll]);
   const { data, isLoading, isError, error, refetch } = useProcessesListQuery({
     scope,
     limit: 50,
@@ -64,30 +76,12 @@ export function ProcessList() {
   return (
     <div className="space-y-[var(--space-6)]">
       <div className="flex flex-wrap items-center gap-[var(--space-2)] border-b border-[var(--color-neutral-200)] pb-[var(--space-3)]">
-        <button
-          type="button"
-          className={`rounded-[var(--radius-sm)] px-[var(--space-6)] py-[var(--space-4)] text-sm font-medium leading-snug ${
-            scope === 'my-started'
-              ? 'bg-[var(--color-primary-100)] text-[var(--color-primary-800)]'
-              : 'text-[var(--color-neutral-600)] hover:bg-[var(--color-neutral-50)]'
-          }`}
-          onClick={() => setScope('my-started')}
-        >
-          Başlattığım Süreçler
-        </button>
-        <PermissionGate permission={Permission.PROCESS_VIEW_ALL}>
-          <button
-            type="button"
-            className={`rounded-[var(--radius-sm)] px-[var(--space-6)] py-[var(--space-4)] text-sm font-medium leading-snug ${
-              scope === 'admin'
-                ? 'bg-[var(--color-primary-100)] text-[var(--color-primary-800)]'
-                : 'text-[var(--color-neutral-600)] hover:bg-[var(--color-neutral-50)]'
-            }`}
-            onClick={() => setScope('admin')}
-          >
-            Tüm Süreçler
-          </button>
-        </PermissionGate>
+        <HorizontalMorphSegmented
+          items={scopeTabs}
+          value={scope}
+          onChange={(next) => setScope(next as 'my-started' | 'admin')}
+          ariaLabel="Süreç listesi kapsamı"
+        />
         <div className="ml-auto flex gap-[var(--space-2)]">
           <PermissionGate permission={Permission.PROCESS_KTI_START}>
             <Link href="/processes/kti/start" className="ls-btn ls-btn--primary ls-btn--md">
