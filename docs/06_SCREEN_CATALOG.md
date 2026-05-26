@@ -40,9 +40,8 @@ Platformda toplam **43 ekran** vardır — 29 kritik, 14 ikincil.
 | S-MD-LIST                                 | `/master-data/:type`                           | AppLayout         | MASTER_DATA_MANAGE                  | Kritik  |
 | S-MD-DETAIL                               | `/master-data/:type/:id`                       | AppLayout         | MASTER_DATA_MANAGE                  | İkincil |
 | S-MD-USERS                                | `/master-data/:type/:id/users`                 | AppLayout         | MASTER_DATA_MANAGE                  | İkincil |
-| **Grup 6 — Süreçler ve KTİ**              |                                                |                   |                                     |         |
-| S-PROC-LIST-MY                            | `/processes?scope=my-started`                  | AppLayout         | Auth                                | Kritik  |
-| S-PROC-LIST-ADMIN                         | `/processes?scope=admin`                       | AppLayout         | PROCESS_VIEW_ALL                    | Kritik  |
+| **Grup 6 — Süreç Yöneticisi ve KTİ**      |                                                |                   |                                     |         |
+| S-PROC-LIST-ADMIN                         | `/processadministration`                       | AppLayout         | PROCESS_VIEW_ALL                    | Kritik  |
 | S-PROC-DETAIL                             | `/processes/:displayId`                        | AppLayout         | Owner / Assignee / PROCESS_VIEW_ALL | Kritik  |
 | S-PROC-HISTORY                            | `/processes/:displayId/history`                | AppLayout         | PROCESS_VIEW_ALL                    | İkincil |
 | S-KTI-START                               | `/processes/kti/start`                         | AppLayout         | PROCESS_KTI_START                   | Kritik  |
@@ -53,6 +52,7 @@ Platformda toplam **43 ekran** vardır — 29 kritik, 14 ikincil.
 | S-TASK-DETAIL                             | `/tasks/:id`                                   | AppLayout         | Assignee / Owner / PROCESS_VIEW_ALL | Kritik  |
 | **Grup 8 — Bildirimler ve Profil**        |                                                |                   |                                     |         |
 | S-NOTIF-LIST                              | `/notifications`                               | AppLayout         | Auth                                | Kritik  |
+| S-SETTINGS-NOTIFICATIONS                  | `/settings/notifications`                      | AppLayout         | NOTIFICATION_EDIT                   | İkincil |
 | S-PROFILE                                 | `/profile`                                     | AppLayout         | Auth                                | Kritik  |
 | **Grup 9 — Admin**                        |                                                |                   |                                     |         |
 | S-ADMIN-AUDIT                             | `/admin/audit-logs`                            | AdminLayout       | AUDIT_LOG_VIEW                      | Kritik  |
@@ -92,7 +92,6 @@ flowchart TD
 
     MDLIST[S-MD-LIST]
 
-    PROCMY[S-PROC-LIST-MY]
     PROCADMIN[S-PROC-LIST-ADMIN]
     PROCDETAIL[S-PROC-DETAIL]
     KTISTART[S-KTI-START]
@@ -122,9 +121,8 @@ flowchart TD
 
     DASH --> USERLIST
     DASH --> ROLELIST
-    DASH --> PROCMY
+    DASH --> PROCADMIN
     DASH --> TASKLIST
-    DASH --> KTISTART
     DASH --> NOTIFLIST
     DASH --> PROFILE
 
@@ -140,7 +138,6 @@ flowchart TD
     ROLEDETAIL -->|Kural sekmesi| ROLERULES
     ROLEDETAIL -->|Kullanıcı sekmesi| ROLEUSERS
 
-    PROCMY -->|Satır tıkla| PROCDETAIL
     PROCADMIN -->|Satır tıkla| PROCDETAIL
     KTISTART -->|Gönder| PROCDETAIL
     PROCDETAIL -->|İptal butonu| PROCCANCEL
@@ -186,10 +183,10 @@ Solda sabit sidebar — AppLayout ve AdminLayout'ta kullanılır. Menü öğeler
 ```
 🏠 Dashboard                            (herkes)
 📋 Görevlerim                           (herkes)
-🔄 Süreçler
-   ├─ Süreçlerim                        (herkes)
-   ├─ Yeni KTİ Başlat                   (PROCESS_KTI_START)
-   └─ Tüm Süreçler                      (PROCESS_VIEW_ALL)
+▶ Süreçler [Akordeon]                  (herhangi biri: PROCESS_KTI_START)
+   └─ KTİ Başlat                       (PROCESS_KTI_START) → /processes/kti/start
+      (gelecekte yeni süreç tipleri buraya eklenir)
+🔄 Süreç Yöneticisi                     (PROCESS_VIEW_ALL)
 👥 Kullanıcılar                         (USER_LIST_VIEW)
 🔐 Roller                               (ROLE_VIEW)
 🗂️ Master Data
@@ -201,7 +198,9 @@ Solda sabit sidebar — AppLayout ve AdminLayout'ta kullanılır. Menü öğeler
    ├─ Ekipler
    ├─ Çalışma Alanları
    └─ Çalışma Alt Alanları
-⚙️ Yönetim                              (Superadmin only — farklı renk)
+⚙️ Ayarlar
+   └─ Bildirim Ayarları                 (NOTIFICATION_EDIT)
+🔧 Yönetim                              (Superadmin only — farklı renk)
    ├─ Denetim Kayıtları                 (AUDIT_LOG_VIEW)
    ├─ Sistem Ayarları                   (SYSTEM_SETTINGS_EDIT)
    ├─ Email Şablonları                  (EMAIL_TEMPLATE_VIEW)
@@ -678,8 +677,8 @@ Background blur + opaque overlay; arkadaki layout gizlenir. Modal dışına tık
    - **W2 — Başlattığım Aktif Süreçlerim** (tüm kullanıcılar):
      - Başlık + sayı ("3 aktif süreç")
      - İlk 3 süreç kart (displayId, activeTaskLabel, başlangıç tarihi)
-     - "Tümünü Gör" → `/processes?scope=my-started&status=IN_PROGRESS` linki
-     - Boşsa: "Aktif süreciniz yok" + "Yeni KTİ Başlat" CTA (permission varsa)
+     - `<PermissionGate PROCESS_VIEW_ALL>` "Tümünü Gör" → `/processadministration` linki (yalnız yetkili kullanıcıda görünür)
+     - Boşsa: "Aktif süreciniz yok" + sessiz empty state
    - **W3 — SLA Uyarıları** (pending görevi olanlar):
      - Başlık + "kritik" rozeti
      - SLA'sı %20'nin altında kalan veya aşılmış task listesi (max 5)
@@ -696,9 +695,9 @@ Background blur + opaque overlay; arkadaki layout gizlenir. Modal dışına tık
      - Durum: ✓ Sağlam / ⚠ Bozuk (kırmızı)
      - "Detay" → `/admin/audit-logs/chain-integrity`
 3. **Alt bar — Hızlı Aksiyonlar:**
-   - "Yeni KTİ Başlat" butonu (permission-gated)
-   - "Kullanıcı Ekle" butonu (permission-gated)
-   - "Denetim Kayıtları" butonu (permission-gated)
+   - `<PermissionGate PROCESS_KTI_START>` "Yeni KTİ Başlat" butonu → `/processes/kti/start`
+   - `<PermissionGate USER_CREATE>` "Kullanıcı Ekle" butonu → `/users/new`
+   - `<PermissionGate AUDIT_LOG_VIEW>` "Denetim Kayıtları" butonu → `/admin/audit-logs`
 
 ##### Veri Kaynağı
 
@@ -1671,103 +1670,37 @@ Bilinmeyen `type` → `/404` redirect.
 
 ---
 
-### Grup 6 — Süreçler ve KTİ
+### Grup 6 — Süreç Yöneticisi ve KTİ
 
-#### S-PROC-LIST-MY — Başlattığım Süreçler
+#### S-PROC-LIST-ADMIN — Süreç Yöneticisi
 
-**Route:** `/processes?scope=my-started`
-**Erişim:** Auth (her kullanıcı kendi başlattığı süreçleri görür)
-**Layout:** AppLayout
-**Seviye:** Kritik
-
-##### Görsel Yapı
-
-1. **Breadcrumb:** Süreçler
-2. **Sayfa başlığı satırı:**
-   - Sol: "Başlattığım Süreçler" + sayaç
-   - Sağ: `<PermissionGate PROCESS_KTI_START>` **"Yeni KTİ Başlat"** butonu
-3. **Tab bar:** **Başlattığım Süreçler** (aktif) / **Tüm Süreçler** (`PROCESS_VIEW_ALL` varsa görünür → S-PROC-LIST-ADMIN)
-4. **Filtre paneli:**
-   - displayId arama (KTI-000042 tam eşleşme)
-   - Süreç tipi select (MVP: BEFORE_AFTER_KAIZEN)
-   - Durum select: INITIATED / IN_PROGRESS / COMPLETED / REJECTED / CANCELLED / Tümü
-   - Tarih aralığı (başlangıç tarihi)
-5. **DataTable:**
-   - Kolonlar: displayId (link stili, monospace), Tip (KTİ rozeti), Durum (renk kodlu rozet), Aktif Adım (activeTaskLabel — IN_PROGRESS için), Başlangıç Tarihi, Tamamlanma Tarihi
-   - Satır tıklama → `/processes/:displayId`
-   - Satır aksiyon menüsü: "Detay", "Süreç Dokümanları" (→ detay sayfasındaki dokümanlar sekmesi)
-
-##### Veri Kaynağı
-
-- **API:** `GET /api/v1/processes?scope=my-started&...`
-- **Query key:** `queryKeys.processes.list({ scope: 'my-started', ...filters })`
-- **Stale time:** 15 sn
-- **Invalidation:**
-  - `useStartKtiMutation` success → bu query
-  - Task completion mutations → bu query (aktif step label değişir)
-
-##### State Yönetimi
-
-- **Server state:** List query
-- **URL state:** `scope`, filtreler, cursor
-- **Form state:** Yok
-
-##### Durum Ekranları
-
-- **Loading:** Table skeleton
-- **Empty (ilk):** EmptyState — Workflow ikonu + "Henüz süreç başlatmadınız" + "Yeni KTİ Başlat" CTA (permission varsa)
-- **Empty (filter):** "Filtreye uyan süreç yok" + temizle
-- **Error:** Inline retry
-
-##### Etkileşimler
-
-- **Satır tıklama** → `/processes/:displayId`
-- **displayId link** → aynı
-- **Filtre değişimi** → URL update → refetch
-- **"Yeni KTİ Başlat"** → `/processes/kti/start`
-- **"Tüm Süreçler" tab** → `/processes?scope=admin` (PROCESS_VIEW_ALL varsa)
-
-##### Edge Cases ve Kısıtlar
-
-- `PROCESS_VIEW_ALL` yoksa "Tüm Süreçler" tab'ı gizli
-- displayId arama tam eşleşme (prefix search destekli opsiyonel)
-- Durum rozeti renk kodu: INITIATED=mavi, IN_PROGRESS=sarı, COMPLETED=yeşil, REJECTED=kırmızı, CANCELLED=gri
-- `CANCELLED` süreçler normal scope'ta görünmez (backend filter) — yalnız admin scope'ta
-- Pagination: cursor-based "Daha Fazla Yükle"
-- Mobile: Kolon azalır (displayId, Durum, Tarih)
-
-##### Form Alanları
-
-Yok.
-
----
-
-#### S-PROC-LIST-ADMIN — Tüm Süreçler (Admin)
-
-**Route:** `/processes?scope=admin`
+**Route:** `/processadministration`
 **Erişim:** `PROCESS_VIEW_ALL`
 **Layout:** AppLayout
 **Seviye:** Kritik
 
+Yetkili kullanıcıların (Süreç Yöneticisi / Superadmin) sistemdeki **tüm süreçleri** izleyip yönettiği merkezi ekran. Kişisel "Başlattığım Süreçler" sekmesi **yoktur**; bu sayfa yalnızca kurum geneli görünüm sunar.
+
 ##### Görsel Yapı
 
-S-PROC-LIST-MY ile aynı temel yapı, şu genişlemelerle:
-
-1. **Breadcrumb:** Süreçler (aynı)
-2. **Sayfa başlığı:** "Tüm Süreçler" + sayaç (yalnız aktif = IN_PROGRESS + INITIATED)
-3. **Tab bar:** **Başlattığım Süreçler** / **Tüm Süreçler** (aktif)
-4. **Filtre paneli — genişletilmiş:**
-   - displayId + tip + durum + tarih aralığı (my-started ile aynı)
+1. **Breadcrumb:** Süreç Yöneticisi
+2. **Sayfa başlığı satırı:**
+   - Sol: "Süreç Yöneticisi" + aktif süreç sayacı (IN_PROGRESS + INITIATED)
+3. **Filtre paneli:**
+   - displayId arama (KTI-000042 tam eşleşme)
+   - Süreç tipi select (MVP: BEFORE_AFTER_KAIZEN)
+   - Durum select: INITIATED / IN_PROGRESS / COMPLETED / REJECTED / CANCELLED / Tümü
+   - Tarih aralığı (başlangıç tarihi)
    - **Başlatan kullanıcı** (UserSelect)
    - **Şirket** (MasterDataSelect)
    - **CANCELLED süreçleri göster** toggle
-5. **DataTable — ek kolonlar:**
-   - Başlatan Kullanıcı (tıklanabilir link → user detay)
-   - Şirket
+4. **DataTable:**
+   - Kolonlar: displayId (link stili, monospace), Tip (KTİ rozeti), Durum (renk kodlu rozet), Aktif Adım (activeTaskLabel — IN_PROGRESS için), Başlatan Kullanıcı (link → user detay), Şirket, Başlangıç Tarihi, Tamamlanma Tarihi
+   - Satır tıklama → `/processes/:displayId`
    - (İptal sebebi tooltip'i — yalnız CANCELLED satırlar için, sağ info ikonu)
-   - **Sağ kolon aksiyon menüsü genişletilmiş:**
+   - **Sağ kolon aksiyon menüsü:**
      - "Detay" → `/processes/:displayId`
-     - `<PermissionGate PROCESS_VIEW_ALL>` "Tarihçe" → `/processes/:displayId/history`
+     - "Tarihçe" → `/processes/:displayId/history`
      - `<PermissionGate PROCESS_CANCEL>` "İptal Et" (yalnız aktif statüler için) → S-PROC-CANCEL modal
      - `<PermissionGate PROCESS_ROLLBACK>` "Geri Al" (yalnız IN_PROGRESS için) → S-PROC-ROLLBACK modal
 
@@ -1788,7 +1721,10 @@ S-PROC-LIST-MY ile aynı temel yapı, şu genişlemelerle:
 
 ##### Durum Ekranları
 
-- **Loading / Empty / Error:** S-PROC-LIST-MY ile aynı pattern
+- **Loading:** Table skeleton
+- **Empty (filtre yok):** EmptyState — "Henüz süreç kaydı bulunmuyor"
+- **Empty (filtre aktif):** "Filtreye uyan süreç yok" + temizle
+- **Error:** Inline retry
 - **Cancel / Rollback success:** Toast + liste refetch
 
 ##### Etkileşimler
@@ -1804,6 +1740,8 @@ S-PROC-LIST-MY ile aynı temel yapı, şu genişlemelerle:
 - Terminal durumdaki süreçler (COMPLETED, REJECTED, CANCELLED) için "İptal Et" ve "Geri Al" butonları gizli (`<PermissionGate>` + statusa göre local disable)
 - "CANCELLED süreçleri göster" toggle default kapalı — liste temiz kalır
 - Bu ekrandan cross-company süreçler görünür; kullanıcının şirket izolasyonu backend tarafında zaten yok (admin scope)
+- Durum rozeti renk kodu: INITIATED=mavi, IN_PROGRESS=sarı, COMPLETED=yeşil, REJECTED=kırmızı, CANCELLED=gri
+- Pagination: cursor-based "Daha Fazla Yükle"
 - Mobile: Kolon sayısı ciddi azalır; horizontal scroll veya kart görünümü
 
 ##### Form Alanları
@@ -1823,7 +1761,7 @@ Platformun en karmaşık ekranlarından biri. Süreç durumu, tüm task'ların z
 
 ##### Görsel Yapı
 
-1. **Breadcrumb:** Süreçler › {displayId}
+1. **Breadcrumb:** Süreç Yöneticisi › {displayId}
 2. **Üst başlık bandı:**
    - Sol: displayId (monospace, büyük) + tip rozeti (KTİ) + durum rozeti (renkli)
    - Sağ: aksiyon butonları
@@ -1839,18 +1777,21 @@ Platformun en karmaşık ekranlarından biri. Süreç durumu, tüm task'ların z
 4. **Aktif Task kartı (yalnız IN_PROGRESS ve kullanıcı assignee ise):**
    - Başlık: "Size Atanmış Görev"
    - Task özeti: stepLabel, SLA badge, claim butonu (CLAIM mode ise)
-   - "Görevi Aç" CTA → `/tasks/:taskId` (S-TASK-DETAIL)
-   - Süreç detayında task form'u **inline değil** — ayrı sayfada açılır (kullanıcı süreç context'ini burada görür, aksiyonu ayrı sayfada)
+   - Süreç detayında task form'u **inline değil** — kullanıcı task zinciri kartındaki **"Göreve Git"** butonuyla ayrı görev sayfasına yönlendirilir; bu kart yalnızca hatırlatma amaçlı bağlam bilgisi sunar
 5. **Task zinciri (timeline görünümü):**
    - Her task bir kart (dikey liste):
-     - Step ikonu + step label
+     - Step ikonu + step label — `KTI_INITIATION` adımı kullanıcıya **"KTİ Başlatma Adımı"** olarak gösterilir (teknik enum adı arayüzde gizlenir)
      - Durum rozeti (COMPLETED / PENDING / IN_PROGRESS / SKIPPED_BY_ROLLBACK / SKIPPED_BY_PEER)
      - Tamamlayan kişi + tarih (varsa)
      - Completion action rozeti (KTİ: APPROVE yeşil, REJECT kırmızı, REQUEST_REVISION turuncu)
-     - Form data özet (expand/collapse — ilk yüklemede collapsed):
-       - Başlatma task'ı için: savingAmount, description, beforePhotos grid, afterPhotos grid
-       - Yönetici Onay için: comment (varsa), completion reason (REJECT/REVISION için)
-     - Görünürlük kısıtı: kullanıcı başlatıcı veya admin değilse, yalnız kendi atandığı task'ın full detayını görür; diğer task'ların yalnız "step label + durum + completedAt" özet bilgileri gösterilir
+     - **"Form Detayını Görüntüle" butonu** — yalnız `form_data` içeren adımlarda görünür (örn. KTİ Başlatma Adımı). Saf aksiyon adımlarında (örn. KTI_MANAGER_APPROVAL — input gerektirmez, yalnız onay/red aksiyonu) bu buton **gösterilmez**. Tıklanınca modal açılır:
+       - Modal başlığı: "{stepLabel} — Form Detayı"
+       - Modal içeriği: o adımdaki form alanları **salt okunur** olarak, ilgili adım sorumlusunun gördüğü orijinal form düzeniyle render edilir
+       - KTİ Başlatma Adımı için: Şirket, Açıklama (textarea), Kazanç Tutarı, Öncesi Fotoğraflar (thumbnail grid + indirilebilir), Sonrası Fotoğraflar (thumbnail grid + indirilebilir)
+       - Fotoğraflar: `GET /documents/:id/download-url` ile imzalı URL alınarak thumbnail gösterilir; tıklanınca yeni sekmede açılır
+       - Tüm alanlar disabled/readonly stilinde — düzenleme mümkün değil
+     - **"Göreve Git" butonu** (sağ bölüm) — **yalnızca** o adımın görevi mevcut kullanıcıya atanmış ve görev aktif (PENDING / IN_PROGRESS) durumdaysa görünür; başka kullanıcılara ve tamamlanmış/atlanmış görevlerde gösterilmez. Tıklanınca → `/tasks/:taskId`
+     - Görünürlük kısıtı: kullanıcı başlatıcı veya admin değilse, yalnız kendi atandığı task'ın full detayını görür; diğer task'ların yalnız "step label + durum + completedAt" özet bilgileri gösterilir; "Form Detayını Görüntüle" butonu da bu kurala tabidir
    - Task'lar arası bağlantı çizgisi (vertical line connector)
 6. **Dokümanlar bölümü** (alt):
    - Başlık: "Dokümanlar (N)"
@@ -1891,8 +1832,8 @@ Platformun en karmaşık ekranlarından biri. Süreç durumu, tüm task'ların z
 ##### Etkileşimler
 
 - **Başlatan linki** → user detay
-- **"Görevi Aç" CTA** → `/tasks/:taskId`
-- **Task kartı expand** → form data detayı göster
+- **"Göreve Git" butonu** (task zinciri kartında, sağ bölüm) → `/tasks/:taskId`; yalnız görev mevcut kullanıcıya atanmış ve aktif ise görünür
+- **"Form Detayını Görüntüle" butonu** → modal açılır; adım form verisini readonly render eder; dokümanlar indirilebilir thumbnail olarak gösterilir; yalnız `form_data` olan adımlarda görünür; KTİ_INITIATION adımı "KTİ Başlatma Adımı" olarak etiketlenir
 - **Doküman tıklama (CLEAN)** → `GET /documents/:id/download-url` → yeni tab'da açılır
 - **Doküman tıklama (PENDING)** → "Hâlâ taranıyor, lütfen bekleyin" toast
 - **Doküman tıklama (INFECTED)** → toast + kart zaten kırmızı işaretli
@@ -2070,7 +2011,7 @@ KTİ (Before & After Kaizen) sürecini başlatan zengin form. Doküman upload + 
 
 - **Loading:** Table skeleton
 - **Empty (pending):** EmptyState — CheckSquare ikonu + "Size atanmış bekleyen görev yok" + "Görevlerim sayfasına geri dön" yok (zaten buradayız) — sadece açıklama
-- **Empty (started):** "Başlattığınız aktif süreç yok" + "Yeni KTİ Başlat" CTA (permission varsa)
+- **Empty (started):** "Başlattığınız aktif süreç yok" — Yeni süreç başlatmak için sol paneldeki "Süreçler" menüsünü kullanın (buton yok)
 - **Empty (completed):** "Henüz tamamladığınız görev yok"
 - **Empty (filter):** "Filtreye uyan görev yok" + temizle
 - **Error:** Retry
@@ -2108,57 +2049,66 @@ Yok.
 **Layout:** AppLayout
 **Seviye:** Kritik
 
-Platformun en yoğun iş ekranı. Süreç bağlamı, önceki task verileri, aktif task formu, doküman yönetimi, action paneli.
+Platformun en yoğun iş ekranı. Görev tarihçesi (salt okunur bağlam), karar / aksiyon paneli. Süreç özeti kartı bu ekranda **yer almaz** — kullanıcı isterse sağ üstteki "Süreç Detayı" linkiyle tam bağlamı görebilir.
 
-##### Görsel Yapı
+##### Görsel Yapı — KTİ Yönetici Onay Görevi (KTI_MANAGER_APPROVAL)
 
-1. **Breadcrumb:** Görevlerim › {displayId} — {stepLabel}
+1. **Breadcrumb:** Görevlerim › {displayId} — Yönetici Onayı
 2. **Üst başlık bandı:**
-   - Sol: stepLabel (büyük) + task durum rozeti + SLA badge
+   - Sol: "Yönetici Onayı" (stepLabel, büyük) + task durum rozeti + SLA badge
    - Sağ: "Süreç Detayı" linki → `/processes/:displayId`
-3. **Süreç özeti kartı** (sticky üst):
-   - displayId (tıklanabilir)
-   - Tip (KTİ rozeti)
-   - Süreç durumu
-   - Başlatan: Avatar + Ad
-   - Başlangıç tarihi
-   - Aktif adım: kendi task'ı vurgulanmış timeline bar (küçük — detaylı timeline süreç detay sayfasında)
-4. **Önceki Task'ların Bilgileri (read-only, collapsible panel):**
-   - Her önceki task bir card:
-     - stepLabel + tamamlayan + tarih + completion action rozeti
-     - Form data özeti (expandable):
-       - KTİ Başlatma: savingAmount, description, before/after foto grid (scan CLEAN olanlar download linkli)
-       - KTİ Yönetici Onay (revize sonrası): önceki red gerekçesi
-     - Dokümanlar: kartlar
-   - Eğer bu kullanıcı yalnız atanmış ise (başlatıcı değil), önceki task'ların sadece özet bilgileri gösterilir (`stepLabel`, `completedAt`, action rozeti); form_data ve dokümanlar gizlenir (backend'in görünürlük kısıtı)
-5. **Aktif Task Action Paneli** (task'ın durumuna göre):
-   - **Claim bekleyen (CLAIM mode, status=PENDING):**
-     - "Bu görev üstlenebilir. Üstlendiğinizde diğer adaylar için görev kapanır."
-     - "Üstlen" butonu (primary)
-   - **Claim edilmiş veya SINGLE mode + atanmış:**
-     - Action selector (KTİ Yönetici Onay için): "Onayla" / "Reddet" / "Revize İste" — radio group veya button group
-     - Action seçimi sonrası:
-       - Onayla: sadece opsiyonel comment textarea
-       - Reddet: zorunlu reason textarea (min 10 char) + opsiyonel comment
-       - Revize İste: zorunlu reason textarea (açıklama başlatıcıya gidecek) + opsiyonel comment
-     - Dinamik form schema render (backend'ten gelen `formSchema`)
-     - Alt bar: "Kaydet ve Tamamla" butonu (action ve reason validation ile enabled/disabled)
-   - **Revize task'ı (KTİ_REVISION — başlatıcıya döndü):**
-     - Açıklama: "Yöneticiniz revize istedi. Red gerekçesi: {prev_task_reason}"
-     - Aynı KTİ başlatma form'u (savingAmount, description, before/after fotoğraflar — DocumentUploader) + opsiyonel revisionNote
-     - "Yeniden Gönder" butonu
-   - **COMPLETED veya SKIPPED (read-only):**
-     - Action paneli yok; sadece "Bu görev daha önce tamamlanmış" mesajı + completedBy + completedAt + completion action
-     - Süreç detay linki
-6. **Dokümanlar bölümü:**
-   - Görünen dokümanlar: aktif task'a bağlı + (başlatıcı/admin ise) süreç geneli
-   - Dokümanlar CLEAN ise tıklanınca download, diğer scan statülerinde uyarı
-   - Revize task'ında DocumentUploader (yeni fotolar yüklenir)
+3. **Görev Tarihçesi** (kart görünümü — salt okunur, süreç detay sayfasındaki task zinciri kartlarıyla aynı stil):
+   - Her tamamlanmış adım için bir kart (dikey liste, bağlantı çizgisi):
+     - Adım ikonu + adım etiketi ("KTİ Başlatma Adımı" vb.)
+     - Durum rozeti + tamamlayan kullanıcı + tarih
+     - **"Form Detayını Görüntüle"** butonu — `form_data` içeren adımlarda (KTİ Başlatma Adımı); tıklanınca modal açılır, tüm doldurulmuş alanlar + fotoğraflar salt okunur gösterilir (bkz. S-PROC-DETAIL modal spec)
+   - Bu tablodaki kartlar tıklanamaz (yalnız gösterim); "Göreve Git" butonu **bu ekranda olmaz**
+4. **Karar Paneli:**
+   - Başlık: "Kararınız"
+   - 3 ayrı buton (yan yana veya dikey grup):
+     - **"Onayla"** — yeşil/success varyant
+     - **"Reddet"** — kırmızı/destructive varyant
+     - **"Revize İste"** — turuncu/warning varyant
+   - Seçilen buton aktif/seçili görünümüne geçer; diğerleri pasif olur
+   - Seçilen butona göre altında dinamik alan grubu açılır (slide-down animasyonu):
+     - **Onayla seçildi:** opsiyonel yorum textarea (max 1000 char)
+     - **Reddet seçildi:** zorunlu gerekçe textarea (min 10, max 1000 char) + opsiyonel yorum textarea
+     - **Revize İste seçildi:** zorunlu gerekçe textarea (başlatıcıya iletilir; min 10, max 1000 char) + opsiyonel yorum textarea
+   - **Claim bekleyen (CLAIM mode, status=PENDING):** Karar paneli yerine "Bu görev üstlenebilir. Üstlendiğinizde diğer adaylar için görev kapanır." + **"Üstlen"** butonu (primary); claim sonrası sayfa refetch → karar paneli görünür
+   - **COMPLETED veya SKIPPED (read-only):** Karar paneli yok; "Bu görev daha önce tamamlanmış" mesajı + tamamlayan + tarih + completion action rozeti + "Süreç Detayı" linki
+5. **Alt bar (sticky):**
+   - **"Kaydet ve Tamamla"** butonu (primary) — karar seçili ve zorunlu alanlar geçerli olduğunda enabled; aksi hâlde disabled
+
+---
+
+##### Görsel Yapı — KTİ Revize Görevi (KTI_REVISION)
+
+1. **Breadcrumb:** Görevlerim › {displayId} — Revize
+2. **Üst başlık bandı:**
+   - Sol: "Revize" (stepLabel, büyük) + task durum rozeti + SLA badge
+   - Sağ: "Süreç Detayı" linki → `/processes/:displayId`
+3. **Yönetici Gerekçesi Bandı** (turuncu/uyarı arka plan, sayfanın en üstünde dikkat çekici):
+   - Başlık: "Yöneticiniz revize istedi"
+   - Gerekçe satırı: **{prev_task_reason}** (zorunlu — boş olamaz; bkz. form alanı)
+   - Varsa yorum satırı: {prev_task_comment} (opsiyonel, gösterilir sadece doluysa)
+4. **Görev Tarihçesi** (kart görünümü — salt okunur, süreç detay sayfasındaki task zinciri kartlarıyla aynı stil):
+   - Tüm önceki tamamlanmış adımlar (KTİ Başlatma Adımı dahil) listede görünür
+   - "Form Detayını Görüntüle" butonu — KTİ Başlatma Adımı kartında mevcut (önceki doldurulmuş form salt okunur modal'da görüntülenebilir)
+   - Bu tablodaki kartlar tıklanamaz (yalnız gösterim)
+5. **Revize Formu** (KTİ başlatma alanları, önceki değerler ile pre-filled):
+   - Şirket seçimi (pre-filled, değiştirilebilir)
+   - Öncesi Fotoğraflar (DocumentUploader — önceki dosyalar gösterilir, silinebilir/eklenebilir)
+   - Sonrası Fotoğraflar (DocumentUploader — aynı şablon)
+   - Kazanç Tutarı (önceki değer ile pre-filled)
+   - Açıklama (önceki değer ile pre-filled, düzenlenebilir)
+   - Revizyon Notu (opsiyonel textarea — yöneticiye iletilecek ek açıklama; max 1000 char)
+6. **Alt bar (sticky):**
+   - **"İptal"** → dirty warning → `/tasks?tab=pending`
+   - **"Yeniden Gönder"** butonu (primary) — tüm validation geçtiğinde ve dokümanlar CLEAN olduğunda enabled
 
 ##### Veri Kaynağı
 
-- **API (task detail):** `GET /api/v1/tasks/:id`
-- **API (documents):** dolaylı — task detail içinde documents array'i dönebilir veya ayrı `GET /documents/:id` per doküman
+- **API (task detail):** `GET /api/v1/tasks/:id` — yanıt içinde `previousTasks[]` (tarihçe için), `managerReason`, `managerComment` (revision için) döner
 - **API (claim):** `POST /api/v1/tasks/:id/claim`
 - **API (complete):** `POST /api/v1/tasks/:id/complete`
 - **Query key:** `queryKeys.tasks.detail(id)`
@@ -2173,7 +2123,6 @@ Platformun en yoğun iş ekranı. Süreç bağlamı, önceki task verileri, akti
 - **Local state:**
   - Action selector (`selectedAction: 'APPROVE' | 'REJECT' | 'REQUEST_REVISION' | null`)
   - Form (action-specific) — RHF
-  - Önceki task'ların expanded/collapsed durumu
 - **URL state:** `:id` path
 - **Form state:** RHF + Zod — action'a göre dinamik schema (`KtiManagerApprovalFormSchema`, `KtiRevisionFormSchema`)
 
@@ -2199,12 +2148,12 @@ Platformun en yoğun iş ekranı. Süreç bağlamı, önceki task verileri, akti
 
 ##### Etkileşimler
 
-- **"Üstlen" (claim)** → `POST /tasks/:id/claim` → sayfa refetch
-- **Action select** → reason/form field'ları dinamik gösterilir
-- **"Kaydet ve Tamamla"** → `POST /tasks/:id/complete` with `{ action, reason, formData }` payload
-- **"Yeniden Gönder" (revize)** → `POST /tasks/:id/complete` with `{ formData, action: null }`
-- **Önceki task expand/collapse** → local state
-- **Doküman tıklama** → download URL fetch → yeni tab
+- **"Üstlen" (claim)** → `POST /tasks/:id/claim` → sayfa refetch → karar paneli görünür
+- **Karar butonu seçimi** (Onayla / Reddet / Revize İste) → seçili buton aktif görünüm; altında dinamik alan grubu slide-down açılır
+- **Karar seçimi değişimi** → önceki alan grubu kapanır, yeni açılır; textarea değerleri sıfırlanır
+- **"Form Detayını Görüntüle"** (tarihçe kartında) → salt okunur modal açılır
+- **"Kaydet ve Tamamla"** → `POST /tasks/:id/complete` with `{ action, reason, comment, formData }` payload
+- **"Yeniden Gönder" (revize)** → `POST /tasks/:id/complete` with `{ formData, revisionNote, action: null }`
 - **"Süreç Detayı" linki** → `/processes/:displayId`
 
 ##### Edge Cases ve Kısıtlar
@@ -2212,25 +2161,26 @@ Platformun en yoğun iş ekranı. Süreç bağlamı, önceki task verileri, akti
 - **Claim race condition:** İki kullanıcı eşzamanlı claim → biri 200, diğeri 409 `TASK_CLAIM_LOST`; kaybeden "Başka kullanıcı üstlendi" banner görür
 - **Task assignees == multiple (ALL_REQUIRED mode):** MVP KTİ'de yok; generic pattern için: tüm assignee'ler kendi completion'ını yapar, task global olarak COMPLETED olur ancak son tamamlayan
 - **SLA aşılmış task:** Hâlâ tamamlanabilir; SLA rozeti kırmızı "X saat gecikti"; backend breach event'i tetiklemiştir (başka kanal)
-- **Süreç CANCELLED sonrası task detayı açma:** Read-only görünür, action paneli yok (task `SKIPPED_BY_ROLLBACK` veya `SKIPPED_BY_PEER`)
-- **Görünürlük kısıtı (başlatıcı olmayan, atanmış):** önceki task form_data'sı gizli → placeholder "Önceki adımın detayı sizinle paylaşılmamıştır"
-- **Unsaved changes warning:** Form dirty + route değişimi = uyarı
+- **Süreç CANCELLED sonrası task detayı açma:** Read-only görünür, karar/aksiyon paneli yok (task `SKIPPED_BY_ROLLBACK` veya `SKIPPED_BY_PEER`)
+- **Görev Tarihçesi görünürlük kısıtı (başlatıcı olmayan, yalnız atanmış):** KTİ Başlatma Adımı kartında "Form Detayını Görüntüle" butonu gizlenir → placeholder "Bu adımın form detayı sizinle paylaşılmamıştır"
+- **Unsaved changes warning:** Form dirty (karar seçili veya textarea doluysa) + route değişimi = uyarı
 - **Rollback ile geri dönen task:** Yeni instance (yeni task.id) — eski task `SKIPPED_BY_ROLLBACK`; kullanıcı yeni task için fresh form görür
-- **Action seçimi değişimi** → form reset (dirty warning), reason ve diğer field'lar temizlenir
-- **Mobile:** Önceki task kartları tek kolon; action paneli alt sticky bar olarak
+- **Karar seçimi değişimi:** textarea değerleri temizlenir; dirty warning tetiklenmez (henüz form commit olmamış)
+- **Revize gerekçesi boşsa (backend anomali):** Yönetici Gerekçesi Bandı yine de gösterilir; gerekçe alanı "Gerekçe belirtilmemiş" placeholder'ı ile
+- **Mobile:** Görev Tarihçesi kartları tek kolon; karar butonları dikey yığılır; alt sticky bar sabit kalır
 
 ##### Form Alanları
 
 **KTİ_INITIATION (revize değilse — start ekranında açılır, task detayında görünmez; fallback)**
 — bkz. S-KTI-START
 
-**KTİ_MANAGER_APPROVAL:**
+**KTİ_MANAGER_APPROVAL (karar paneli — buton seçimine göre dinamik):**
 
-| Alan    | Tip         | Zorunlu                                         | Validation                               | Default | Not           |
-| ------- | ----------- | ----------------------------------------------- | ---------------------------------------- | ------- | ------------- |
-| action  | radio group | Evet                                            | enum APPROVE / REJECT / REQUEST_REVISION | null    |               |
-| reason  | textarea    | Koşullu (REJECT, REQUEST_REVISION için zorunlu) | min 10 char, max 1000                    | ''      |               |
-| comment | textarea    | Hayır                                           | max 1000                                 | ''      | Opsiyonel not |
+| Alan    | Tip                    | Zorunlu                                         | Validation                               | Default | Not                                             |
+| ------- | ---------------------- | ----------------------------------------------- | ---------------------------------------- | ------- | ----------------------------------------------- |
+| action  | button group (3 buton) | Evet                                            | enum APPROVE / REJECT / REQUEST_REVISION | null    | Onayla / Reddet / Revize İste                   |
+| reason  | textarea               | Koşullu (REJECT, REQUEST_REVISION için zorunlu) | min 10 char, max 1000                    | ''      | Seçilen aksiyona göre dinamik olarak gösterilir |
+| comment | textarea               | Hayır                                           | max 1000                                 | ''      | Opsiyonel not; her aksiyon seçeneğinde mevcut   |
 
 **KTİ_REVISION (başlatıcıya döndüğünde):**
 
@@ -2240,7 +2190,7 @@ Platformun en yoğun iş ekranı. Süreç bağlamı, önceki task verileri, akti
 | afterPhotoDocumentIds  | Document array | Evet    | 1-10 adet CLEAN | önceki task'tan |                                                         |
 | savingAmount           | number         | Evet    | ≥ 0             | önceki değer    |                                                         |
 | description            | textarea       | Evet    | 10-5000         | önceki değer    |                                                         |
-| revisionNote           | textarea       | Hayır   | max 1000        | ''              | Revize notu                                             |
+| revisionNote           | textarea       | Hayır   | max 1000        | ''              | Opsiyonel revize notu; yöneticiye iletilir              |
 
 ---
 
@@ -2339,6 +2289,73 @@ Yok.
 
 ---
 
+#### S-SETTINGS-NOTIFICATIONS — Bildirim Ayarları
+
+**Route:** `/settings/notifications`
+**Erişim:** `NOTIFICATION_EDIT`
+**Layout:** AppLayout
+**Seviye:** İkincil
+
+Yetkili kullanıcının (genellikle Superadmin veya Sistem Yöneticisi rolü) **tüm kullanıcılar için geçerli** varsayılan bildirim tercihlerini düzenlediği ekran. Bu sayfada yapılan değişiklikler sistem genelinde uygulanır — bireysel kullanıcılara özel tercih yönetimi yoktur.
+
+> **Not:** Tüm kullanıcılar bildirim alır; `NOTIFICATION_EDIT` yetkisi olmayan kullanıcıların bu sayfaya erişimi yoktur. Bildirim alma hakkı ayrıca permission'a bağlı değildir.
+
+##### Görsel Yapı
+
+1. **Breadcrumb:** Ayarlar › Bildirim Ayarları
+2. **Sayfa başlığı:** "Bildirim Ayarları"
+3. **Bilgilendirme banner'ı (mavi):** "Bu sayfada yapılan değişiklikler tüm sistem kullanıcıları için geçerlidir."
+4. **Bildirim tercihleri tablosu:**
+   - Her satır bir `eventType` (ör. TASK_ASSIGNED, TASK_COMPLETED, PROCESS_CANCELLED, SLA_BREACHED)
+   - Kolonlar: Olay Adı, Uygulama İçi Bildirim (toggle), E-posta Bildirimi (toggle)
+   - Toggle değişimi → `dirtyState` flag — kaydet butonu aktif olur
+5. **Alt bar:**
+   - "Değişiklikleri Kaydet" (primary) — dirty değişiklik varsa aktif
+   - "Sıfırla" (ghost) — varsayılan değerlere döner
+
+##### Veri Kaynağı
+
+- **API (get):** `GET /api/v1/notification-preferences` → sistem varsayılanları
+- **API (put):** `PUT /api/v1/notification-preferences`
+- **Query key:** `queryKeys.notificationPreferences.global`
+- **Stale time:** 60 sn
+- **Invalidation:** Mutation success → bu query
+
+##### State Yönetimi
+
+- **Server state:** Get query
+- **Local state:** `dirtyValues` — değiştirilen toggle'ların geçici durumu
+- **Form state:** RHF + Zod — `NotificationPreferencesPutSchema`
+
+##### Durum Ekranları
+
+- **Loading:** Tablo skeleton
+- **Error:** Retry
+- **Save success:** Toast "Bildirim ayarları güncellendi" + dirty state reset
+- **Save error:** Toast "Kayıt sırasında hata oluştu, tekrar deneyin"
+
+##### Etkileşimler
+
+- **Toggle değiştirme** → local dirty state güncelleme; kaydet butonu aktif
+- **"Değişiklikleri Kaydet"** → `PUT /api/v1/notification-preferences` → toast + refetch
+- **"Sıfırla"** → confirm dialog → server'dan mevcut değerleri tekrar çek, dirty state temizle
+
+##### Edge Cases ve Kısıtlar
+
+- Yetkisiz kullanıcı bu URL'e gitmeye çalışırsa → `/403`
+- Digest email MVP'de kullanılmıyor (`digestEnabled` toggle gizli)
+- Mobile: Tablo yatay scroll ile erişilebilir
+
+##### Form Alanları
+
+| Alan         | Tip  | Zorunlu | Validation        | Default |
+| ------------ | ---- | ------- | ----------------- | ------- |
+| eventType    | enum | Evet    | Geçerli eventType | —       |
+| inAppEnabled | bool | Evet    | —                 | true    |
+| emailEnabled | bool | Evet    | —                 | true    |
+
+---
+
 #### S-PROFILE — Profilim
 
 **Route:** `/profile`
@@ -2386,7 +2403,7 @@ Kullanıcının sistemdeki kendine ait veri özetini görüntüler. Görüntüle
 - Aktif süreçlerim: {N}
 - Tamamlanan süreçlerim: {N}
 - Reddedilen süreçlerim: {N}
-- "Tümünü Gör" linki → `/processes?scope=my-started`
+- `<PermissionGate PROCESS_VIEW_ALL>` "Tümünü Gör" linki → `/processadministration` (yalnız yetkili kullanıcıda görünür)
 
 **Kart 3 — Görev geçmişim özeti:**
 

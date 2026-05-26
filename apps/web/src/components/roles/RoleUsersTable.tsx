@@ -36,7 +36,7 @@ export function RoleUsersTable({ roleId }: { roleId: string }) {
 
   const [assignInput, setAssignInput] = useState('');
   const [debouncedAssign, setDebouncedAssign] = useState('');
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [selectedUser, setSelectedUser] = useState<{ id: string; label: string } | null>(null);
   const [listSearchInput, setListSearchInput] = useState(tableSearch);
 
   useEffect(() => {
@@ -75,13 +75,6 @@ export function RoleUsersTable({ roleId }: { roleId: string }) {
 
   const items = useMemo(() => data?.items ?? [], [data]);
   const pickItems = useMemo(() => pickList?.items ?? [], [pickList]);
-
-  const selectedPickLabel = useMemo(() => {
-    if (!selectedUserId) return null;
-    const u = pickItems.find((x) => x.id === selectedUserId);
-    if (!u) return selectedUserId;
-    return `${u.sicil ?? '—'} — ${u.firstName} ${u.lastName}`;
-  }, [selectedUserId, pickItems]);
 
   if (!role) {
     return (
@@ -151,16 +144,16 @@ export function RoleUsersTable({ roleId }: { roleId: string }) {
                   value={assignInput}
                   onChange={(e) => {
                     setAssignInput(e.target.value);
-                    setSelectedUserId(null);
+                    setSelectedUser(null);
                   }}
                   placeholder={`En az ${ASSIGN_SEARCH_MIN} karakter`}
                   autoComplete="off"
                   aria-autocomplete="list"
                   aria-controls="role-user-assign-suggestions"
-                  aria-expanded={assignSearchEnabled && pickItems.length > 0}
+                  aria-expanded={assignSearchEnabled && pickItems.length > 0 && !selectedUser}
                 />
               </label>
-              {assignSearchEnabled && pickItems.length > 0 ? (
+              {assignSearchEnabled && pickItems.length > 0 && !selectedUser ? (
                 <ul
                   id="role-user-assign-suggestions"
                   role="listbox"
@@ -171,11 +164,13 @@ export function RoleUsersTable({ roleId }: { roleId: string }) {
                       <button
                         type="button"
                         role="option"
-                        aria-selected={selectedUserId === u.id}
-                        className={`flex w-full flex-col items-start px-3 py-2 text-left text-sm hover:bg-[var(--color-neutral-100)] ${
-                          selectedUserId === u.id ? 'bg-[var(--color-primary-50)]' : ''
-                        }`}
-                        onClick={() => setSelectedUserId(u.id)}
+                        aria-selected={false}
+                        className="flex w-full flex-col items-start px-3 py-2 text-left text-sm hover:bg-[var(--color-neutral-100)]"
+                        onClick={() => {
+                          const label = `${u.sicil ?? '—'} — ${u.firstName} ${u.lastName}`;
+                          setSelectedUser({ id: u.id, label });
+                          setAssignInput('');
+                        }}
                       >
                         <span className="font-mono text-xs text-[var(--color-neutral-700)]">
                           {u.sicil ?? '—'}
@@ -192,14 +187,13 @@ export function RoleUsersTable({ roleId }: { roleId: string }) {
             <button
               type="button"
               className="ls-btn ls-btn--primary ls-btn--sm"
-              disabled={assignMutation.isPending || !selectedUserId}
+              disabled={assignMutation.isPending || !selectedUser}
               onClick={async () => {
-                if (!selectedUserId) return;
+                if (!selectedUser) return;
                 try {
-                  await assignMutation.mutateAsync(selectedUserId);
+                  await assignMutation.mutateAsync(selectedUser.id);
                   toast.success('Kullanıcı role atandı');
-                  setAssignInput('');
-                  setSelectedUserId(null);
+                  setSelectedUser(null);
                   void refetch();
                 } catch (e: unknown) {
                   const err = e as { response?: { data?: { error?: { message?: string } } } };
@@ -210,8 +204,8 @@ export function RoleUsersTable({ roleId }: { roleId: string }) {
               Ata
             </button>
           </div>
-          {selectedPickLabel ? (
-            <p className="text-xs text-[var(--color-neutral-600)]">Seçili: {selectedPickLabel}</p>
+          {selectedUser ? (
+            <p className="text-xs text-[var(--color-neutral-600)]">Seçili: {selectedUser.label}</p>
           ) : null}
         </div>
       </PermissionGate>

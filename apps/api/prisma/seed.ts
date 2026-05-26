@@ -51,7 +51,7 @@ const ALL_PERMISSION_KEYS: string[] = [
   'USER_SESSION_VIEW',
   'USER_SESSION_REVOKE',
   'USER_ANONYMIZE',
-  'NOTIFICATION_READ',
+  'NOTIFICATION_EDIT',
   'EMAIL_TEMPLATE_VIEW',
   'EMAIL_TEMPLATE_EDIT',
   'CONSENT_VERSION_VIEW',
@@ -251,6 +251,10 @@ async function main(): Promise<void> {
       update: {},
     });
   }
+
+  await prisma.rolePermission.deleteMany({
+    where: { permissionKey: { notIn: ALL_PERMISSION_KEYS } },
+  });
 
   const roleManagerPerms = [
     'ROLE_CREATE',

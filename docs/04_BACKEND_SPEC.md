@@ -143,7 +143,7 @@ apps/api/
 │   │   │   └── s3.service.ts                      # HEAD/PUT/GET + CloudFront Signed URL
 │   │   ├── email/
 │   │   │   ├── email.module.ts
-│   │   │   └── email.service.ts                   # AWS SES + template render
+│   │   │   └── email.service.ts                   # SMTP (kurumsal relay) + template render (hedef iskelet)
 │   │   └── queue/
 │   │       ├── queue.module.ts
 │   │       └── queue.service.ts                   # BullMQ queue registration
@@ -391,7 +391,7 @@ async createUser(input: CreateUserInput) {
 }
 ```
 
-**Kural 4 — External call'lar typed exception'la sarılır.** S3, KMS, SES, ClamAV gibi dış servislere yapılan her çağrı try-catch ile sarılır; hata `ExternalServiceException(service: string, originalError: unknown)` olarak yeniden fırlatılır. Global filter bunu 503 `SYSTEM_DEPENDENCY_DOWN` kodlu response'a çevirir.
+**Kural 4 — External call'lar typed exception'la sarılır.** S3, KMS, SMTP relay, ClamAV gibi dış servislere yapılan her çağrı try-catch ile sarılır; hata `ExternalServiceException(service: string, originalError: unknown)` olarak yeniden fırlatılır. Global filter bunu 503 `SYSTEM_DEPENDENCY_DOWN` kodlu response'a çevirir.
 
 **Kural 5 — Idempotency mutating kritik endpoint'lerde.** Document upload, process start, task complete gibi endpoint'ler `Idempotency-Key` header'ı kabul eder. Servis Redis'te bu key'e karşılık response cache'ler (24 saat TTL); aynı key tekrar gelirse eski response döner. Duplicate submission (kullanıcı "Gönder"e iki kez basar) sorunu önlenir.
 
@@ -845,7 +845,7 @@ BullMQ job'ları **ayrı pod'larda** (`apps/worker/`) çalışır, API pod'ları
 - **Independent scale:** API pod'ları HTTP trafiğine, worker pod'ları queue backlog'una göre ayrı scale edilir.
 - **Fault isolation:** Worker crash'i API'yi etkilemez; sadece ilgili queue'nun işleme süresi artar.
 
-Worker pod'u `packages/shared-types`, `packages/shared-schemas`, infrastructure adaptörleri (prisma, redis, s3, kms, email) ve job processor'larını içerir. HTTP katmanı yoktur.
+Worker pod'u `packages/shared-types`, `packages/shared-schemas`, infrastructure adaptörleri (prisma, redis, s3, kms, SMTP e-posta) ve job processor'larını içerir. HTTP katmanı yoktur.
 
 ### 11.2 Queue ve Worker Listesi
 
@@ -1050,7 +1050,10 @@ const EnvSchema = z.object({
   CLOUDFRONT_KEY_PAIR_ID: z.string().min(1),
   CLOUDFRONT_PRIVATE_KEY: z.string().min(1),
   CLAMAV_LAMBDA_ARN: z.string().min(1),
-  SES_FROM_EMAIL: z.string().email(),
+  // Transactional posta — worker + admin send-test (kurumsal SMTP)
+  EMAIL_FROM_ADDRESS: z.string().email(),
+  SMTP_HOST: z.string().min(1),
+  SMTP_PORT: z.coerce.number().int().default(587),
 
   // Auth secrets
   JWT_PUBLIC_KEY: z.string().min(1),
@@ -1859,7 +1862,7 @@ Detaylı strateji `08_TESTING_STRATEGY` dokümanında. Backend perspektifinden k
 
 **Mock disiplini:**
 
-- External services (S3, KMS, SES, ClamAV) **daima mock** — integration'da bile
+- External services (S3, KMS, harici SMTP, ClamAV) **daima mock** — integration'da bile
 - DB **gerçek** (Testcontainers)
 - Redis **gerçek** (Testcontainers)
 - Time (`Date.now()`) **frozen** (`vi.useFakeTimers`) — SLA ve expiry testleri deterministik

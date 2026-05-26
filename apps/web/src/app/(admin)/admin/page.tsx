@@ -4,6 +4,7 @@ import Link from 'next/link';
 
 import { Permission } from '@leanmgmt/shared-types';
 
+import { LoadingSplash } from '@/components/shared/LoadingSplash';
 import { PermissionGate } from '@/components/shared/PermissionGate';
 import { useAdminOrganizationSummaryQuery } from '@/lib/queries/admin-summary';
 
@@ -11,15 +12,7 @@ function AdminSummaryMetrics() {
   const { data, isLoading, isError, error, refetch } = useAdminOrganizationSummaryQuery();
 
   if (isLoading) {
-    return (
-      <div
-        className="rounded-[var(--radius-md)] border border-[var(--color-neutral-200)] bg-[var(--color-neutral-0)] p-[var(--space-4)]"
-        role="status"
-        aria-live="polite"
-      >
-        <p className="text-sm text-[var(--color-neutral-600)]">Özet yükleniyor…</p>
-      </div>
-    );
+    return <LoadingSplash variant="compact" message="Özet yükleniyor…" />;
   }
 
   if (isError) {

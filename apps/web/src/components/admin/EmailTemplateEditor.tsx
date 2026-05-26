@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 
 import type { UpdateEmailTemplateInput } from '@leanmgmt/shared-schemas';
 
+import { LoadingSplash } from '@/components/shared/LoadingSplash';
 import { notificationEventLabel } from '@/lib/notification-ui';
 import {
   useEmailTemplateDetailQuery,
@@ -133,19 +134,20 @@ export function EmailTemplateEditor({ eventType }: { eventType: string }) {
         toEmail: testEmail.trim(),
         variables,
       });
-      if (r.sent) toast.success('Test e-postası gönderildi');
-      else toast.message(`E-posta gönderilmedi (ortam: ${r.mode})`);
+      if (r.sent && r.mode === 'queued') {
+        toast.success('Test e-postası kuyruğa alındı; worker birkaç saniye içinde gönderir');
+      } else if (r.sent) {
+        toast.success('Test e-postası gönderildi');
+      } else {
+        toast.message(`E-posta gönderilmedi (ortam: ${r.mode})`);
+      }
     } catch {
       toast.error('Test e-postası başarısız');
     }
   };
 
   if (isLoading) {
-    return (
-      <div className="ls-card p-[var(--space-8)] shadow-[var(--shadow-md)]" role="status">
-        <p className="text-[var(--color-neutral-600)]">Şablon yükleniyor…</p>
-      </div>
-    );
+    return <LoadingSplash variant="card" message="Şablon yükleniyor…" />;
   }
 
   if (isError || !data) {

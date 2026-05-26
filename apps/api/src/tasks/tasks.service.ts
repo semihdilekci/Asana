@@ -298,6 +298,20 @@ export class TasksService {
     out['previousTasks'] = previousEnriched;
     out['documents'] = documents;
 
+    if (task.stepKey === KTI_STEP.REVISION && previousEnriched.length > 0) {
+      const managerRows = previousEnriched.filter(
+        (pt) => (pt as { stepKey: string }).stepKey === KTI_STEP.MANAGER_APPROVAL,
+      );
+      const latestManager = managerRows[managerRows.length - 1] as
+        | { reason?: string | null; formData?: unknown }
+        | undefined;
+      if (latestManager) {
+        out['managerReason'] = latestManager.reason ?? null;
+        const fd = latestManager.formData as { comment?: string } | null | undefined;
+        out['managerComment'] = fd?.comment ?? null;
+      }
+    }
+
     if (taskFullAccess) {
       out['formData'] = task.formData ?? null;
     }
@@ -328,6 +342,9 @@ export class TasksService {
       stepLabel: getKtiTaskStepLabel(t.stepKey),
       completedBy: t.completedBy ? this.serializeUserBrief(t.completedBy) : null,
       completedAt: t.completedAt?.toISOString() ?? null,
+      completionAction: t.completionAction ?? null,
+      // FE revize kutusu + tarihçe: yönetici REJECT / REQUEST_REVISION gerekçesi
+      reason: t.completionReason ?? null,
       formData: t.formData ?? null,
     }));
   }

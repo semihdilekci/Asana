@@ -96,7 +96,7 @@ export function useEmailTemplateSendTestMutation(eventType: string) {
     mutationFn: async (body: EmailTemplateSendTestInput) => {
       const res = await apiClient.post<{
         success: boolean;
-        data: { sent: boolean; mode: string };
+        data: { sent: boolean; mode: string; jobId?: string };
       }>(`/api/v1/admin/email-templates/${encodeURIComponent(eventType)}/send-test`, body);
       return res.data.data;
     },

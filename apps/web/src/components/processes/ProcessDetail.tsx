@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import { isAxiosError } from 'axios';
 import { toast } from 'sonner';
 
+import { Permission } from '@leanmgmt/shared-types';
+
+import { useHasPermission } from '@/hooks/usePermissions';
 import { apiClient } from '@/lib/api-client';
 import { useProcessDetailQuery } from '@/lib/queries/processes';
 
@@ -13,6 +16,9 @@ import { ProcessTimeline } from './ProcessTimeline';
 
 export function ProcessDetail({ displayId }: { displayId: string }) {
   const router = useRouter();
+  const hasProcessViewAll = useHasPermission(Permission.PROCESS_VIEW_ALL);
+  const listHref = hasProcessViewAll ? '/processadministration' : '/processes';
+  const listLabel = hasProcessViewAll ? 'Süreç Yöneticisi' : 'Başlattığım Süreçler';
   const { data, isLoading, isError, error, refetch } = useProcessDetailQuery(displayId);
 
   const handleDownload = async (docId: string) => {
@@ -61,9 +67,9 @@ export function ProcessDetail({ displayId }: { displayId: string }) {
             <button
               type="button"
               className="ls-btn ls-btn--neutral ls-btn--sm mt-[var(--space-2)]"
-              onClick={() => router.push('/processes')}
+              onClick={() => router.push(listHref)}
             >
-              Süreç listesine dön
+              {listLabel} listesine dön
             </button>
           </div>
         );
@@ -73,10 +79,10 @@ export function ProcessDetail({ displayId }: { displayId: string }) {
           <div className="ls-alert ls-alert--danger" role="alert">
             <p>Süreç bulunamadı.</p>
             <Link
-              href="/processes"
+              href={listHref}
               className="ls-btn ls-btn--neutral ls-btn--sm mt-[var(--space-2)] inline-flex"
             >
-              Süreç listesine dön
+              {listLabel} listesine dön
             </Link>
           </div>
         );
@@ -103,8 +109,8 @@ export function ProcessDetail({ displayId }: { displayId: string }) {
       <div className="flex flex-wrap items-start justify-between gap-[var(--space-4)]">
         <div>
           <nav className="text-sm text-[var(--color-neutral-500)]" aria-label="Breadcrumb">
-            <Link href="/processes" className="hover:text-[var(--color-primary-600)]">
-              Süreçler
+            <Link href={listHref} className="hover:text-[var(--color-primary-600)]">
+              {listLabel}
             </Link>
             <span className="mx-[var(--space-2)]">›</span>
             <span className="font-mono text-[var(--color-neutral-800)]">{data.displayId}</span>

@@ -1,8 +1,11 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
 import { useAuthStore } from '@/stores/auth-store';
 
-function getGreeting(): string {
+/** SSR ile istemci aynı metni üretsin; saat dilimi farkı hidrasyon uyumsuzluğu yaratmasın */
+function getGreetingClient(): string {
   const hour = new Date().getHours();
   if (hour < 12) return 'Günaydın';
   if (hour < 18) return 'İyi günler';
@@ -66,7 +69,10 @@ const STAT_TILES = [
 
 export default function DashboardPage() {
   const user = useAuthStore((s) => s.currentUser);
-  const greeting = getGreeting();
+  const [greeting, setGreeting] = useState('Merhaba');
+  useEffect(() => {
+    setGreeting(getGreetingClient());
+  }, []);
 
   return (
     <div className="flex flex-col gap-[var(--space-8)]">

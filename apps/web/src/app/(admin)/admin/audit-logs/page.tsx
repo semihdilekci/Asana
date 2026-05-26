@@ -3,6 +3,7 @@ import { Suspense } from 'react';
 import { Permission } from '@leanmgmt/shared-types';
 
 import { AuditLogsPageClient } from '@/components/admin/AuditLogsPageClient';
+import { LoadingSplash } from '@/components/shared/LoadingSplash';
 import { PermissionGate } from '@/components/shared/PermissionGate';
 
 export default function AdminAuditLogsPage() {
@@ -13,7 +14,7 @@ export default function AdminAuditLogsPage() {
         <p className="text-sm text-[var(--color-neutral-600)]">Bu sayfaya erişim yetkiniz yok.</p>
       }
     >
-      <Suspense fallback={<p className="text-sm text-[var(--color-neutral-600)]">Yükleniyor…</p>}>
+      <Suspense fallback={<LoadingSplash variant="card" />}>
         <AuditLogsPageClient />
       </Suspense>
     </PermissionGate>

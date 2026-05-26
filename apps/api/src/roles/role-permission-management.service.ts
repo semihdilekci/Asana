@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import type { UpdateRolePermissionsInput } from '@leanmgmt/shared-schemas';
+import { filterKnownPermissionKeys, isKnownPermissionKey } from '@leanmgmt/shared-types';
 
 import { AuditLogService } from '../common/audit/audit-log.service.js';
 import type { AuthenticatedUser } from '../common/decorators/current-user.decorator.js';
@@ -39,7 +40,9 @@ export class RolePermissionManagementService {
     });
     if (!role) throw new RoleNotFoundException();
 
-    const newKeys = [...new Set(input.permissionKeys.map((k) => String(k)))];
+    const newKeys = filterKnownPermissionKeys([
+      ...new Set(input.permissionKeys.map((k) => String(k))),
+    ]);
 
     const before = await this.getPermissionKeysForRole(roleId);
     const proposed = await this.permissionResolver.projectPermissionsForUserWithRoleOverride(
@@ -48,7 +51,9 @@ export class RolePermissionManagementService {
       newKeys,
     );
     const current = await this.permissionResolver.getUserPermissions(actor.id);
+    // Eski/enum-dışı DB anahtarları (ör. NOTIFICATION_READ) kayıtta düşer; gerçek yetki kaybı değil
     for (const p of current) {
+      if (!isKnownPermissionKey(p)) continue;
       if (!proposed.has(p)) {
         throw new RolePermissionSelfEditForbiddenException();
       }

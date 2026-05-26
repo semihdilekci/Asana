@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { Permission } from '@leanmgmt/shared-types';
 
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
+import { LoadingSplash } from '@/components/shared/LoadingSplash';
 import { PermissionGate } from '@/components/shared/PermissionGate';
 import {
   datetimeLocalToIsoUtc,
@@ -86,7 +87,7 @@ export function ConsentVersionEditPageClient() {
   }
 
   if (detail.isPending) {
-    return <p className="text-sm text-[var(--color-neutral-600)]">Yükleniyor…</p>;
+    return <LoadingSplash variant="compact" />;
   }
 
   if (detail.error || !detail.data) {

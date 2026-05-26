@@ -3,6 +3,7 @@ import 'reflect-metadata';
 
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@leanmgmt/prisma-client';
+import { buildPgPoolConfig } from '@leanmgmt/shared-utils';
 
 import { startAuditChainVerify } from './audit-chain-verify.cron.js';
 import { startInAppNotificationRetention } from './data-retention-cleanup.cron.js';
@@ -17,7 +18,7 @@ async function bootstrap(): Promise<void> {
     throw new Error('DATABASE_URL zorunlu');
   }
   const prisma = new PrismaClient({
-    adapter: new PrismaPg({ connectionString: databaseUrl }),
+    adapter: new PrismaPg(buildPgPoolConfig(databaseUrl)),
   });
   const stopDocumentScan = await startDocumentScanWorker(prisma);
   const stopNotificationEmail = await startNotificationEmailWorker(prisma);

@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { SYSTEM_SETTING_KEYS, type SystemSettingKey } from '@leanmgmt/shared-schemas';
 import { Permission } from '@leanmgmt/shared-types';
 
+import { LoadingSplash } from '@/components/shared/LoadingSplash';
 import { useHasPermission } from '@/hooks/usePermissions';
 
 import {
@@ -166,7 +167,7 @@ export function SystemSettingsPageClient() {
       </div>
 
       {q.isPending ? (
-        <p className="text-sm text-[var(--color-neutral-600)]">Yükleniyor…</p>
+        <LoadingSplash variant="compact" />
       ) : q.error ? (
         <p className="text-sm text-[var(--color-error-700)]">Ayarlar yüklenemedi.</p>
       ) : (

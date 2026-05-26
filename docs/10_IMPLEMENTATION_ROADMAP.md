@@ -694,7 +694,7 @@ Session'lar:
 - Notifications tablosu
 - `NotificationGeneratorService` (EventEmitter domain event’leri) + `NotificationsService` (persist + tercih + e-posta kuyruğu) — tek üretim yolu
 - BullMQ worker setup (`apps/worker`) — e-posta tüketicisi (`notification-email.processor.ts` vb.)
-- Email sender (Mailpit dev, SES staging/prod)
+- Email sender (Mailpit dev / kurumsal SMTP staging-prod; `nodemailer`, `EMAIL_SENDING_MODE=smtp`)
 - Handlebars render + DOMPurify sanitize
 - Event triggers:
   - `TASK_ASSIGNED` (task oluşunca assignee'lere)
@@ -994,7 +994,7 @@ Session'lar:
 - Bug fixes from UAT
 - Production Terraform apply (Faz 1'deki module'leri prod hesaba)
 - Production seed (sistem rolleri + ilk Superadmin)
-- Email/SMTP production konfigürasyonu (SES)
+- Email/SMTP production konfigürasyonu (kurumsal relay veya Mailpit benzeri test SMTP)
 - Monitoring dashboard finalize
 - Runbook review
 - Soft launch: pilot user grubu (50-100 kullanıcı)
@@ -1020,7 +1020,7 @@ Session'lar:
 - [ ] Prod RDS snapshot taken before go-live
 - [ ] Prod secrets AWS Secrets Manager'da (JWT keys, DB creds, CloudFront key pair)
 - [ ] DNS + TLS certificate active
-- [ ] Email deliverability test (production SES)
+- [ ] Email deliverability test (production SMTP / SPF-DKIM)
 - [ ] Monitoring dashboard: CPU, memory, error rate, 5xx rate, login rate
 - [ ] Runbook'lar `docs/runbooks/` dizininde complete
 - [ ] UAT sign-off (QA team)
@@ -1030,7 +1030,7 @@ Session'lar:
 #### Vibe Coding Risk Uyarıları
 
 - **Agent prod deploy'u "just run it" yaklaşımı** — checklist (release öncesi, Bölüm 12 `09_DEV_WORKFLOW`) zorunlu.
-- **Agent staging → prod'a config farkını unutur** (farklı SES config, farklı CloudFront, farklı secret'lar). Environment-specific değişkenler explicit.
+- **Agent staging → prod'a config farkını unutur** (farklı SMTP endpoint/credentials, farklı CloudFront, farklı secret'lar). Environment-specific değişkenler explicit.
 - **Agent go-live'da seed data run edebilir** (dev seed script'i yanlışlıkla prod'da çalıştırılırsa test user'lar eklenir). Prod-specific seed script ayrı.
 
 #### Tahmini İterasyon

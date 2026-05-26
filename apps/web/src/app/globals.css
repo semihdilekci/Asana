@@ -11,7 +11,7 @@
   }
 }
 
-/* Rota değişiminde kart girişi — PageRouteCardMotion; prefers-reduced-motion: 25-frontend-a11y */
+/* Rota değişiminde kart girişi — PageRouteCardMotion sarmalayıcısı + gecikme varsayılanı 0ms; prefers-reduced-motion: 25-frontend-a11y */
 @keyframes lm-page-card-enter {
   from {
     opacity: 0;

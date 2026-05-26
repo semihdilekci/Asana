@@ -1,5 +1,8 @@
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@leanmgmt/prisma-client';
+import { buildPgPoolConfig } from '@leanmgmt/shared-utils';
+
+export { buildPgPoolConfig };
 
 /**
  * Prisma 7: bağlantı `datasource` URL’i yalnızca `prisma.config` / migrate tarafında;
@@ -7,6 +10,6 @@ import { PrismaClient } from '@leanmgmt/prisma-client';
  */
 export function createPrismaClient(datasourceUrl: string): PrismaClient {
   return new PrismaClient({
-    adapter: new PrismaPg({ connectionString: datasourceUrl }),
+    adapter: new PrismaPg(buildPgPoolConfig(datasourceUrl)),
   });
 }

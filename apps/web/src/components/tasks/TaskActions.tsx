@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { isAxiosError } from 'axios';
 import { Loader2 } from 'lucide-react';
-import { useForm, type FieldErrors, type UseFormRegister } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -12,7 +12,6 @@ import type { TaskDetail } from '@/lib/queries/tasks';
 import { useTaskClaimMutation, useTaskCompleteMutation } from '@/lib/queries/tasks';
 
 import { KtiRevisionTaskForm } from './KtiRevisionTaskForm';
-import { TaskForm } from './TaskForm';
 
 const KTI_MANAGER = 'KTI_MANAGER_APPROVAL';
 const KTI_REVISION = 'KTI_REVISION';
@@ -174,31 +173,98 @@ export function TaskActions({ task, onRefetch }: TaskActionsProps) {
   }
 
   if (showManagerPanel) {
+    const selectedAction = managerForm.watch('action');
+    const needsReason = task.reasonRequiredFor.includes(selectedAction);
+
     return (
       <form
         onSubmit={managerForm.handleSubmit(onManagerSubmit)}
         className="ls-card space-y-[var(--space-5)] p-[var(--space-5)]"
       >
         <fieldset className="space-y-[var(--space-3)]">
-          <legend className="text-sm font-medium text-[var(--color-neutral-900)]">Karar</legend>
-          <div className="flex flex-wrap gap-[var(--space-4)]">
+          <legend className="text-sm font-medium text-[var(--color-neutral-900)]">Kararınız</legend>
+          <div className="flex flex-wrap gap-[var(--space-3)]">
             {task.allowedActions.includes('APPROVE') ? (
-              <label className="flex cursor-pointer items-center gap-2 text-sm">
-                <input type="radio" value="APPROVE" {...managerForm.register('action')} />
-                Onayla
-              </label>
+              <button
+                type="button"
+                style={
+                  selectedAction === 'APPROVE'
+                    ? {
+                        background:
+                          'linear-gradient(135deg, #4ade80 0%, var(--color-success-700) 100%)',
+                        color: 'var(--color-fg-inverse)',
+                        boxShadow: '0 4px 16px rgba(16, 185, 129, 0.45)',
+                        transform: 'scale(1.02)',
+                        borderColor: 'transparent',
+                      }
+                    : {
+                        background: 'var(--color-success-soft)',
+                        color: 'var(--color-success-700)',
+                        borderColor: 'var(--color-success-200)',
+                      }
+                }
+                className="ls-btn ls-btn--sm"
+                onClick={() => {
+                  managerForm.setValue('action', 'APPROVE');
+                  managerForm.setValue('reason', '');
+                }}
+              >
+                ✓ Onayla
+              </button>
             ) : null}
             {task.allowedActions.includes('REJECT') ? (
-              <label className="flex cursor-pointer items-center gap-2 text-sm">
-                <input type="radio" value="REJECT" {...managerForm.register('action')} />
-                Reddet
-              </label>
+              <button
+                type="button"
+                style={
+                  selectedAction === 'REJECT'
+                    ? {
+                        background: 'linear-gradient(135deg, #fb7185 0%, #e11d48 100%)',
+                        color: 'var(--color-fg-inverse)',
+                        boxShadow: '0 4px 16px rgba(244, 63, 94, 0.45)',
+                        transform: 'scale(1.02)',
+                        borderColor: 'transparent',
+                      }
+                    : {
+                        background: 'var(--color-danger-soft)',
+                        color: 'var(--color-danger)',
+                        borderColor: 'var(--color-danger-border)',
+                      }
+                }
+                className="ls-btn ls-btn--sm"
+                onClick={() => {
+                  managerForm.setValue('action', 'REJECT');
+                  managerForm.setValue('reason', '');
+                }}
+              >
+                ✕ Reddet
+              </button>
             ) : null}
             {task.allowedActions.includes('REQUEST_REVISION') ? (
-              <label className="flex cursor-pointer items-center gap-2 text-sm">
-                <input type="radio" value="REQUEST_REVISION" {...managerForm.register('action')} />
-                Revize iste
-              </label>
+              <button
+                type="button"
+                style={
+                  selectedAction === 'REQUEST_REVISION'
+                    ? {
+                        background: 'linear-gradient(135deg, #fbbf24 0%, #d97706 100%)',
+                        color: 'var(--color-warning-900)',
+                        boxShadow: '0 4px 16px rgba(245, 158, 11, 0.45)',
+                        transform: 'scale(1.02)',
+                        borderColor: 'transparent',
+                      }
+                    : {
+                        background: 'var(--color-warning-soft)',
+                        color: 'var(--color-warning-900)',
+                        borderColor: 'var(--color-warning-200)',
+                      }
+                }
+                className="ls-btn ls-btn--sm"
+                onClick={() => {
+                  managerForm.setValue('action', 'REQUEST_REVISION');
+                  managerForm.setValue('reason', '');
+                }}
+              >
+                ↩ Revize İste
+              </button>
             ) : null}
           </div>
           {managerForm.formState.errors.action ? (
@@ -208,7 +274,7 @@ export function TaskActions({ task, onRefetch }: TaskActionsProps) {
           ) : null}
         </fieldset>
 
-        {task.reasonRequiredFor.includes(managerForm.watch('action')) ? (
+        {needsReason ? (
           <div>
             <label
               htmlFor="task-reason"
@@ -231,18 +297,28 @@ export function TaskActions({ task, onRefetch }: TaskActionsProps) {
           </div>
         ) : null}
 
-        <TaskForm
-          fields={task.formSchema.fields}
-          register={managerForm.register as unknown as UseFormRegister<Record<string, unknown>>}
-          errors={managerForm.formState.errors as FieldErrors<Record<string, unknown>>}
-          disabled={completeMutation.isPending}
-        />
+        <div>
+          <label
+            htmlFor="task-comment"
+            className="mb-[var(--space-1)] block text-sm font-medium text-[var(--color-neutral-900)]"
+          >
+            Yorum{' '}
+            <span className="text-xs font-normal text-[var(--color-neutral-500)]">(opsiyonel)</span>
+          </label>
+          <textarea
+            id="task-comment"
+            rows={3}
+            className="ls-input min-h-[4rem] w-full"
+            placeholder="Ek açıklama..."
+            {...managerForm.register('comment')}
+          />
+        </div>
 
         <div className="flex justify-end">
           <button
             type="submit"
             className="ls-btn ls-btn--primary"
-            disabled={completeMutation.isPending}
+            disabled={completeMutation.isPending || !selectedAction}
           >
             {completeMutation.isPending ? (
               <>

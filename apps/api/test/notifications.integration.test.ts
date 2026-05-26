@@ -11,6 +11,7 @@ import { PostgreSqlContainer, type StartedPostgreSqlContainer } from '@testconta
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, type NestFastifyApplication } from '@nestjs/platform-fastify';
 import { AssignmentMode } from '@leanmgmt/prisma-client';
+import type { NotificationOutboundEmailJobData } from '@leanmgmt/shared-types';
 
 import { NOTIFICATION_DOMAIN_EVENT } from '../src/notifications/notification-domain.events.js';
 import { PrismaService } from '../src/prisma/prisma.service.js';
@@ -214,7 +215,7 @@ describe('Notifications (integration)', () => {
 
     const connection = new Redis(testRedisUrl, { maxRetriesPerRequest: null });
     const queueName = process.env.NOTIFICATION_EMAIL_QUEUE_NAME ?? 'notification-email-outbound';
-    const q = new Queue<{ notificationId: string }>(queueName, { connection });
+    const q = new Queue<NotificationOutboundEmailJobData>(queueName, { connection });
     const beforeWaiting = (await q.getJobCounts()).waiting;
 
     await notificationsService.createEmailPendingIfEnabled({
@@ -275,7 +276,7 @@ describe('Notifications (integration)', () => {
 
     const connection = new Redis(testRedisUrl, { maxRetriesPerRequest: null });
     const queueName = process.env.NOTIFICATION_EMAIL_QUEUE_NAME ?? 'notification-email-outbound';
-    const q = new Queue<{ notificationId: string }>(queueName, { connection });
+    const q = new Queue<NotificationOutboundEmailJobData>(queueName, { connection });
     const beforeWaiting = (await q.getJobCounts()).waiting;
 
     await notificationsService.createEmailPendingIfEnabled({
@@ -305,6 +306,39 @@ describe('Notifications (integration)', () => {
     await connection.quit();
   });
 
+  it('GET /notifications — özel permission gerekmez (yalnızca kendi kayıtları)', async () => {
+    const prisma = app.get(PrismaService);
+    const mgr = await prisma.user.findFirst({ where: { firstName: 'Seed', lastName: 'Manager' } });
+    if (!mgr) throw new Error('seed');
+
+    const srv = app.getHttpAdapter().getInstance();
+    const login = await srv.inject({
+      method: 'POST',
+      url: '/api/v1/auth/login',
+      headers: { 'content-type': 'application/json' },
+      payload: JSON.stringify({
+        email: 'seed.manager@leanmgmt.local',
+        password: 'AdminPass123!@#',
+      }),
+    });
+    expect(login.statusCode).toBe(200);
+    const { accessToken } = JSON.parse(login.body) as { data: { accessToken: string } };
+
+    const list = await srv.inject({
+      method: 'GET',
+      url: '/api/v1/notifications?limit=5',
+      headers: { authorization: `Bearer ${accessToken}` },
+    });
+    expect(list.statusCode).toBe(200);
+
+    const prefs = await srv.inject({
+      method: 'GET',
+      url: '/api/v1/notification-preferences',
+      headers: { authorization: `Bearer ${accessToken}` },
+    });
+    expect(prefs.statusCode).toBe(403);
+  });
+
   it('GET /admin/email-templates/TASK_ASSIGNED — superadmin şablon döner', async () => {
     const auth = await loginSuperadmin();
     const srv = app.getHttpAdapter().getInstance();
@@ -324,9 +358,7 @@ describe('Notifications (integration)', () => {
     expect(body.data.requiredVariables).toContain('firstName');
   });
 
-  it('POST /admin/email-templates/TASK_ASSIGNED/send-test — noop modunda sent false', async () => {
-    const prevMode = process.env.EMAIL_SENDING_MODE;
-    process.env.EMAIL_SENDING_MODE = 'noop';
+  it('POST /admin/email-templates/TASK_ASSIGNED/send-test — worker kuyruğuna job ekler', async () => {
     const auth = await loginSuperadmin();
     const srv = app.getHttpAdapter().getInstance();
     const res = await srv.inject({
@@ -340,14 +372,14 @@ describe('Notifications (integration)', () => {
       },
       payload: JSON.stringify({ toEmail: 'test@example.com' }),
     });
-    process.env.EMAIL_SENDING_MODE = prevMode;
     expect(res.statusCode).toBe(200);
     const body = JSON.parse(res.body) as {
       success: boolean;
-      data: { sent: boolean; mode: string };
+      data: { sent: boolean; mode: string; jobId?: string };
     };
     expect(body.success).toBe(true);
-    expect(body.data.sent).toBe(false);
-    expect(body.data.mode).toBe('noop');
+    expect(body.data.sent).toBe(true);
+    expect(body.data.mode).toBe('queued');
+    expect(body.data.jobId).toBeDefined();
   });
 });

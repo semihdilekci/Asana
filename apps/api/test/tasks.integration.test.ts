@@ -213,6 +213,74 @@ async function createManagerApprovalTask(
   return t.id;
 }
 
+/** Revize görevi PENDING — önceki yönetici adımında REQUEST_REVISION + gerekçe */
+async function createRevisionTaskWithManagerReason(
+  prisma: PrismaService,
+  starterId: string,
+  managerId: string,
+  companyId: string,
+  revisionReason: string,
+): Promise<{ revisionTaskId: string }> {
+  const rows = await prisma.$queryRaw<[{ n: bigint }]>`
+    SELECT nextval('process_seq_before_after_kaizen') AS n
+  `;
+  const n = rows[0].n;
+  const displayId = `KTI-${String(n).padStart(6, '0')}`;
+  const basePast = new Date(Date.now() - 3600_000);
+  const proc = await prisma.process.create({
+    data: {
+      processNumber: n,
+      processType: 'BEFORE_AFTER_KAIZEN',
+      displayId,
+      startedByUserId: starterId,
+      companyId,
+      status: 'IN_PROGRESS',
+    },
+  });
+  await prisma.task.create({
+    data: {
+      processId: proc.id,
+      stepKey: 'KTI_INITIATION',
+      stepOrder: 1,
+      assignmentMode: AssignmentMode.SINGLE,
+      status: 'COMPLETED',
+      completedByUserId: starterId,
+      completedAt: new Date(basePast.getTime() + 60_000),
+      completionAction: 'SUBMIT',
+      slaDueAt: new Date(basePast.getTime() + 48 * 3600_000),
+    },
+  });
+  await prisma.task.create({
+    data: {
+      processId: proc.id,
+      stepKey: 'KTI_MANAGER_APPROVAL',
+      stepOrder: 2,
+      assignmentMode: AssignmentMode.SINGLE,
+      status: 'COMPLETED',
+      completedByUserId: managerId,
+      completedAt: new Date(basePast.getTime() + 120_000),
+      completionAction: 'REQUEST_REVISION',
+      completionReason: revisionReason,
+      formData: { comment: 'Yönetici notu entegrasyon' },
+      slaDueAt: new Date(basePast.getTime() + 72 * 3600_000),
+    },
+  });
+  const rev = await prisma.task.create({
+    data: {
+      processId: proc.id,
+      stepKey: 'KTI_REVISION',
+      stepOrder: 3,
+      assignmentMode: AssignmentMode.SINGLE,
+      status: 'PENDING',
+      slaDueAt: new Date(Date.now() + 48 * 3600_000),
+    },
+  });
+  await prisma.taskAssignment.create({
+    data: { taskId: rev.id, userId: starterId, status: 'PENDING', resolvedByRule: true },
+  });
+  return { revisionTaskId: rev.id };
+}
+
 describe('Tasks API (integration)', () => {
   it('POST :id/claim — yarış: biri 200, diğeri 409 TASK_CLAIM_LOST', async () => {
     const srv = app.getHttpAdapter().getInstance();
@@ -420,5 +488,49 @@ describe('Tasks API (integration)', () => {
     const j = JSON.parse(res.body) as { data: { processStatus: string; nextTaskId: null } };
     expect(j.data.processStatus).toBe('COMPLETED');
     expect(j.data.nextTaskId).toBeNull();
+  });
+
+  it('GET :id — KTI_REVISION için previousTasks.reason ve managerReason dolu', async () => {
+    const srv = app.getHttpAdapter().getInstance();
+    const prisma = app.get(PrismaService);
+    const superU = await prisma.user.findFirst({
+      where: { firstName: 'Super', lastName: 'Admin' },
+    });
+    const mgrU = await prisma.user.findFirst({ where: { firstName: 'Seed', lastName: 'Manager' } });
+    if (!superU || !mgrU) throw new Error('seed');
+    const reason = 'Revize gerekçesi en az on karakter olmalıdır.';
+    const { revisionTaskId } = await createRevisionTaskWithManagerReason(
+      prisma,
+      superU.id,
+      mgrU.id,
+      superU.companyId,
+      reason,
+    );
+    const auth = await loginSuperadmin();
+    const res = await srv.inject({
+      method: 'GET',
+      url: `/api/v1/tasks/${encodeURIComponent(revisionTaskId)}`,
+      headers: {
+        authorization: `Bearer ${auth.accessToken}`,
+        cookie: auth.cookie,
+      },
+    });
+    expect(res.statusCode).toBe(200);
+    const j = JSON.parse(res.body) as {
+      data: {
+        stepKey: string;
+        managerReason?: string | null;
+        previousTasks: Array<{
+          stepKey: string;
+          reason?: string | null;
+          completionAction?: string | null;
+        }>;
+      };
+    };
+    expect(j.data.stepKey).toBe('KTI_REVISION');
+    expect(j.data.managerReason).toBe(reason);
+    const mgrPt = j.data.previousTasks.find((p) => p.stepKey === 'KTI_MANAGER_APPROVAL');
+    expect(mgrPt?.completionAction).toBe('REQUEST_REVISION');
+    expect(mgrPt?.reason).toBe(reason);
   });
 });

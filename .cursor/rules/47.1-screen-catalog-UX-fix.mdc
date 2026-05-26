@@ -1,0 +1,167 @@
+# 4.71 — Ekran Kataloğu UX Düzeltmeleri (Süreç / Görev / Form)
+
+Bu dosya `docs/06_SCREEN_CATALOG.md`'ye yapılan UX tasarım kararlarını özetler ve bu kararların frontend implementasyonuna yansıtılması için referans kuralları içerir.
+
+Etkilenen ekranlar: **S-PROC-DETAIL**, **S-TASK-DETAIL** (KTI_MANAGER_APPROVAL ve KTI_REVISION varyantları).
+
+---
+
+## Değişiklik Özeti
+
+### 1. S-TASK-DETAIL — Süreç Özeti Kartı Kaldırıldı
+
+**Tüm görev tipleri için geçerli.**
+
+- `Süreç özeti kartı` (displayId, tip rozeti, süreç durumu, başlatan, başlangıç tarihi, küçük timeline bar) **tamamen kaldırılmıştır**.
+- Kullanıcı süreç bağlamına ihtiyaç duyarsa üst başlık bandındaki **"Süreç Detayı"** linki (`/processes/:displayId`) üzerinden ulaşır.
+- Implementasyonda bu kart için herhangi bir component veya API çağrısı **yapılmaz**.
+
+---
+
+### 2. S-TASK-DETAIL — KTI_MANAGER_APPROVAL Yeniden Tasarımı
+
+**Eski yapı** → **Yeni yapı:**
+
+| Eski | Yeni |
+|---|---|
+| Önceki Task'ların Bilgileri (collapsible panel) | Görev Tarihçesi (süreç detay kartlarıyla aynı stil, salt okunur) |
+| Karar: radio group (Onayla / Reddet / Revize İste) | Karar: 3 ayrı buton (success / destructive / warning) |
+| Ayrı Dokümanlar bölümü | Yok — dokümanlar zaten "Form Detayını Görüntüle" modal'ında mevcut |
+
+#### Görev Tarihçesi
+
+```
+<TaskHistoryTimeline tasks={previousTasks} readonly />
+```
+
+- Süreç detay sayfasındaki task zinciri kart bileşeniyle **aynı component** kullanılır (read-only mod).
+- Her kart: adım etiketi + durum rozeti + tamamlayan + tarih + "Form Detayını Görüntüle" butonu (varsa).
+- Kartlar tıklanamaz; "Göreve Git" butonu bu ekranda **olmaz**.
+
+#### Karar Paneli (Button Group)
+
+```tsx
+// action: 'APPROVE' | 'REJECT' | 'REQUEST_REVISION' | null
+<DecisionButtonGroup
+  value={selectedAction}
+  onChange={setSelectedAction}
+/>
+// Seçilince altında:
+{selectedAction === 'APPROVE' && <CommentField optional />}
+{selectedAction === 'REJECT' && <ReasonField required minLength={10} maxLength={1000} />}
+{selectedAction === 'REQUEST_REVISION' && <ReasonField required minLength={10} maxLength={1000} />}
+```
+
+- Buton renkleri: Onayla=success (yeşil), Reddet=destructive (kırmızı), Revize İste=warning (turuncu)
+- Karar seçimi değişince textarea'lar sıfırlanır; dirty warning tetiklenmez
+- Karar seçilmeden "Kaydet ve Tamamla" butonu disabled
+
+#### Dokümanlar Bölümü
+
+Kaldırılmıştır. Dokümanlar KTİ Başlatma Adımı kartındaki "Form Detayını Görüntüle" modal'ı içinde zaten erişilebilirdir. Ayrı bir doküman listesi component'i bu ekrana **eklenmez**.
+
+---
+
+### 3. S-TASK-DETAIL — KTI_REVISION Yeniden Tasarımı
+
+**Eski yapı** → **Yeni yapı:**
+
+| Eski | Yeni |
+|---|---|
+| Süreç özeti kartı | Yok (kaldırıldı) |
+| `"Yöneticiniz revize istedi. Red gerekçesi: ..."` inline metin | Yönetici Gerekçesi Bandı (turuncu arka planlı belirgin banner) |
+| Önceki adımlar collapsible panel | Görev Tarihçesi (kart görünümü, salt okunur) |
+
+#### Yönetici Gerekçesi Bandı (En Üstte)
+
+```tsx
+<ManagerRevisionBanner
+  reason={task.managerReason}        // zorunlu
+  comment={task.managerComment}      // opsiyonel — sadece doluysa render edilir
+/>
+```
+
+- Turuncu/uyarı (warning) arka plan rengi, sol kenar çizgisi
+- Başlık: "Yöneticiniz revize istedi"
+- Gerekçe satırı bold
+- `managerComment` boşsa yorum satırı **hiç render edilmez**
+- `managerReason` boşsa (anomali) "Gerekçe belirtilmemiş" placeholder gösterilir
+
+#### Görev Tarihçesi
+
+Yönetici Gerekçesi Bandı'nın altında, Revize Formu'nun üstünde yer alır. Aynı `<TaskHistoryTimeline readonly />` component'i.
+
+#### Revize Formu
+
+Önceki adım değerleriyle pre-filled KTI başlatma formu. KTI_START form alanlarının tamamı. Ek alan: `revisionNote` (opsiyonel, max 1000 char).
+
+---
+
+### 4. S-PROC-DETAIL — Task Zinciri Güncellemeleri
+
+#### 4a. KTI_INITIATION Adım Etiketi
+
+`KTI_INITIATION` enum değeri kullanıcıya **asla gösterilmez**. Arayüzde her zaman **"KTİ Başlatma Adımı"** olarak etiketlenir.
+
+```tsx
+const STEP_LABEL_MAP: Record<string, string> = {
+  KTI_INITIATION: 'KTİ Başlatma Adımı',
+  KTI_MANAGER_APPROVAL: 'Yönetici Onayı',
+  KTI_REVISION: 'Revize',
+  // diğer adımlar eklendiğinde buraya
+};
+```
+
+#### 4b. "Form Verisini Göster" → "Form Detayını Görüntüle"
+
+- Buton metni değişti; fonksiyon aynı kalır.
+- Modal başlığı: `"{stepLabel} — Form Detayı"` (eski: "— Form Görünümü")
+
+#### 4c. "Göreve Git" Butonu (Task Zinciri Kartında)
+
+```tsx
+// Her task kartının sağ bölümünde koşullu render:
+{task.isAssignedToCurrentUser && task.status !== 'COMPLETED' && task.status !== 'SKIPPED_BY_ROLLBACK' && task.status !== 'SKIPPED_BY_PEER' && (
+  <Button variant="outline" size="sm" asChild>
+    <Link href={`/tasks/${task.id}`}>Göreve Git</Link>
+  </Button>
+)}
+```
+
+- Yalnızca **mevcut kullanıcıya atanmış** ve **aktif** (PENDING / IN_PROGRESS) görevlerde gösterilir.
+- Backend'den `task.isAssignedToCurrentUser: boolean` veya `task.assignees[]` ile türetilebilir.
+- Tamamlanmış, atlanmış veya başka kullanıcıya atanmış görevlerde bu buton **olmaz**.
+
+---
+
+## Etkilenen Componentler (Frontend)
+
+| Component | Değişiklik |
+|---|---|
+| `ProcessDetail.tsx` | Task zinciri: adım etiketi map'i, buton adı "Form Detayını Görüntüle", "Göreve Git" koşullu render |
+| `TaskDetail.tsx` | Süreç özeti kartı kaldırıldı; görev tipine göre yeni layout dallanması |
+| `TaskHistoryTimeline.tsx` | **Yeni ortak component** — hem S-PROC-DETAIL'de hem S-TASK-DETAIL'de kullanılır; `readonly` prop'u ile |
+| `DecisionButtonGroup.tsx` | **Yeni component** — 3 buton (Onayla/Reddet/Revize İste) + dinamik alan grubu |
+| `ManagerRevisionBanner.tsx` | **Yeni component** — KTI_REVISION sayfası üstü uyarı bandı |
+
+---
+
+## Implementasyon Sırası
+
+1. `STEP_LABEL_MAP` sabiti `shared-utils` veya `ProcessDetail` component'inde tanımla
+2. `TaskHistoryTimeline` component'ini oluştur (S-PROC-DETAIL'deki mevcut task kart mantığından türet)
+3. `ProcessDetail.tsx` güncellemeleri (buton adı, adım etiketi, "Göreve Git")
+4. `TaskDetail.tsx` — süreç özeti kartını kaldır; görev tipine göre layout dallanması ekle
+5. `DecisionButtonGroup` component'i (KTI_MANAGER_APPROVAL için)
+6. `ManagerRevisionBanner` component'i (KTI_REVISION için)
+7. Her iki görev sayfasında `<TaskHistoryTimeline readonly />` entegrasyonu
+8. Dokümanlar bölümünü KTI_MANAGER_APPROVAL sayfasından kaldır
+
+---
+
+## Kapsam Dışı (Bu PR'da Yapılmaz)
+
+- S-KTI-START ekranı (değişiklik yok)
+- S-PROC-LIST-ADMIN ekranı (değişiklik yok)
+- S-TASK-LIST ekranı (değişiklik yok)
+- Backend API değişikliği — `task.isAssignedToCurrentUser` ve `task.managerReason` alanları zaten API response'unda mevcut varsayılır; eksikse backend PR'ı ayrı olur

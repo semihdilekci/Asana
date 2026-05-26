@@ -4,8 +4,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useId, useState } from 'react';
 
-import { Permission } from '@leanmgmt/shared-types';
-
 import { ConsentBlockingDialog } from '@/components/auth/consent-blocking-dialog';
 import { AppBreadcrumbs } from '@/components/layout/AppBreadcrumbs';
 import { AppSidebarNav } from '@/components/layout/AppSidebarNav';
@@ -13,7 +11,6 @@ import { PageRouteCardMotion } from '@/components/layout/PageRouteCardMotion';
 import { SidebarProfileNavLink } from '@/components/layout/SidebarProfileNavLink';
 import { PasswordExpiryBanner } from '@/components/layout/PasswordExpiryBanner';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
-import { PermissionGate } from '@/components/shared/PermissionGate';
 import { logoutRequest } from '@/lib/api-client';
 import { useAuthStore } from '@/stores/auth-store';
 
@@ -151,9 +148,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 Lean Management
               </Link>
               <div className="flex items-center gap-2">
-                <PermissionGate permission={Permission.NOTIFICATION_READ}>
-                  <NotificationBell />
-                </PermissionGate>
+                <NotificationBell />
                 <button
                   type="button"
                   className="ls-btn ls-btn--neutral ls-btn--sm"
@@ -190,9 +185,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               )}
               {showAppChrome && user ? (
                 <div className="flex shrink-0 items-center gap-[var(--space-5)]">
-                  <PermissionGate permission={Permission.NOTIFICATION_READ}>
-                    <NotificationBell />
-                  </PermissionGate>
+                  <NotificationBell />
                   <span className="hidden text-[var(--text-sm)] font-medium text-[var(--color-fg-soft)] sm:inline">
                     {user.firstName} {user.lastName}
                   </span>
@@ -229,13 +222,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               ) : null}
             </div>
           </header>
+          {/* Scroll tam sütun genişliğinde; max-width iç sarmalayıcıda — geniş ekranda scrollbar kenarda kalır */}
           <main
-            className={`mx-auto min-h-0 w-full flex-1 overflow-y-auto overflow-x-hidden px-[var(--space-8)] py-[var(--space-7)] ${needConsent ? 'pointer-events-none select-none opacity-30' : ''}`}
-            style={{ maxWidth: 'var(--content-maxw)' }}
+            className={`min-h-0 w-full flex-1 overflow-y-auto overflow-x-hidden ${needConsent ? 'pointer-events-none select-none opacity-30' : ''}`}
             id="main-content"
             aria-hidden={needConsent}
           >
-            <PageRouteCardMotion>{children}</PageRouteCardMotion>
+            <div
+              className="mx-auto w-full px-[var(--space-8)] py-[var(--space-7)]"
+              style={{ maxWidth: 'var(--content-maxw)' }}
+            >
+              <PageRouteCardMotion>{children}</PageRouteCardMotion>
+            </div>
           </main>
         </div>
       </div>

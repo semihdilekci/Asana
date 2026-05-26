@@ -4,6 +4,7 @@ import Link from 'next/link';
 
 import { Permission } from '@leanmgmt/shared-types';
 
+import { LoadingSplash } from '@/components/shared/LoadingSplash';
 import { PermissionGate } from '@/components/shared/PermissionGate';
 import { notificationEventLabel } from '@/lib/notification-ui';
 import { useEmailTemplatesListQuery } from '@/lib/queries/email-templates';
@@ -12,11 +13,7 @@ export function EmailTemplateList() {
   const { data, isLoading, isError, refetch } = useEmailTemplatesListQuery();
 
   if (isLoading) {
-    return (
-      <div className="ls-card p-[var(--space-8)] shadow-[var(--shadow-md)]" role="status">
-        <p className="text-[var(--color-neutral-600)]">Şablonlar yükleniyor…</p>
-      </div>
-    );
+    return <LoadingSplash variant="card" message="Şablonlar yükleniyor…" />;
   }
 
   if (isError || !data) {

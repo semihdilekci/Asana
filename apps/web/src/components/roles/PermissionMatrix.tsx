@@ -1,7 +1,7 @@
 'use client';
 
 import type { AxiosError } from 'axios';
-import { Permission } from '@leanmgmt/shared-types';
+import { filterKnownPermissionKeys, Permission } from '@leanmgmt/shared-types';
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
@@ -27,7 +27,10 @@ export function PermissionMatrix({ roleId }: { roleId: string }) {
   const { data: grantedRows, isLoading: permLoading } = useRolePermissionsQuery(roleId);
   const replaceMutation = useReplaceRolePermissionsMutation(roleId);
 
-  const initialKeys = useMemo(() => new Set(grantedRows?.map((r) => r.key) ?? []), [grantedRows]);
+  const initialKeys = useMemo(
+    () => new Set(filterKnownPermissionKeys(grantedRows?.map((r) => r.key) ?? [])),
+    [grantedRows],
+  );
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [dirty, setDirty] = useState(false);
   const [tab, setTab] = useState<(typeof CATEGORIES)[number]>('ACTION');
@@ -38,7 +41,7 @@ export function PermissionMatrix({ roleId }: { roleId: string }) {
   useUnsavedChangesWarning(dirty);
 
   useEffect(() => {
-    setSelected(new Set(grantedRows?.map((r) => r.key) ?? []));
+    setSelected(new Set(filterKnownPermissionKeys(grantedRows?.map((r) => r.key) ?? [])));
     setDirty(false);
   }, [grantedRows]);
 
@@ -132,7 +135,7 @@ export function PermissionMatrix({ roleId }: { roleId: string }) {
   const executeSave = async () => {
     setError(null);
     try {
-      await replaceMutation.mutateAsync([...selected]);
+      await replaceMutation.mutateAsync(filterKnownPermissionKeys(selected));
       setDirty(false);
       toast.success('Rol yetkileri güncellendi');
     } catch (e: unknown) {
@@ -331,7 +334,9 @@ export function PermissionMatrix({ roleId }: { roleId: string }) {
               type="button"
               className="ls-btn ls-btn--neutral ls-btn--sm"
               onClick={() => {
-                setSelected(new Set(grantedRows?.map((r) => r.key) ?? []));
+                setSelected(
+                  new Set(filterKnownPermissionKeys(grantedRows?.map((r) => r.key) ?? [])),
+                );
                 setDirty(false);
               }}
             >

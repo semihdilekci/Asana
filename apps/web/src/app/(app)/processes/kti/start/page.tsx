@@ -15,7 +15,7 @@ export default function KtiStartPage() {
     <div className="mx-auto max-w-2xl space-y-[var(--space-6)]">
       <nav className="text-sm text-[var(--color-neutral-500)]" aria-label="Breadcrumb">
         <Link href="/processes" className="hover:text-[var(--color-primary-600)]">
-          Süreçler
+          Başlattığım Süreçler
         </Link>
         <span className="mx-[var(--space-2)]">›</span>
         <span className="text-[var(--color-neutral-800)]">Yeni KTİ</span>
@@ -50,7 +50,7 @@ export default function KtiStartPage() {
           <div className="ls-alert ls-alert--danger" role="alert">
             <p>Bu sayfayı görüntülemek için KTİ başlatma yetkisi gerekir.</p>
             <Link href="/processes" className="mt-[var(--space-2)] inline-block text-sm underline">
-              Süreçlere dön
+              Başlattığım süreçlere dön
             </Link>
           </div>
         }

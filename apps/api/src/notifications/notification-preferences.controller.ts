@@ -12,6 +12,8 @@ import { createZodValidationPipe } from '../common/pipes/zod-validation.pipe.js'
 
 import { NotificationPreferencesService } from './notification-preferences.service.js';
 
+// Bildirim tercihleri sistem genelinde geçerlidir.
+// Yalnızca NOTIFICATION_EDIT yetkisine sahip kullanıcı (ör. Superadmin) okuyabilir ve düzenleyebilir.
 @Controller('notification-preferences')
 export class NotificationPreferencesController {
   constructor(
@@ -20,14 +22,14 @@ export class NotificationPreferencesController {
   ) {}
 
   @Get()
-  @RequirePermission(Permission.NOTIFICATION_READ)
+  @RequirePermission(Permission.NOTIFICATION_EDIT)
   async get(@CurrentUser() actor: AuthenticatedUser) {
     return this.preferencesService.getResolvedForUser(actor.id);
   }
 
   @Put()
   @HttpCode(200)
-  @RequirePermission(Permission.NOTIFICATION_READ)
+  @RequirePermission(Permission.NOTIFICATION_EDIT)
   async put(
     @Body(createZodValidationPipe(NotificationPreferencesPutSchema))
     body: NotificationPreferencesPutInput,

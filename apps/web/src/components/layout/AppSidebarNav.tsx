@@ -1,6 +1,7 @@
 'use client';
 
 import { motion, useReducedMotion } from 'framer-motion';
+import { ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -11,17 +12,48 @@ import { isNavActive } from '@/lib/app-sidebar-nav';
 import { MORPH_PILL_CONFIG } from '@/lib/morph-pill-config';
 import { useAuthStore } from '@/stores/auth-store';
 
-type NavEntry = {
+type NavChild = {
   href: string;
   label: string;
   permission?: Permission;
-  anyOf?: Permission[];
 };
+
+type NavEntry =
+  | {
+      type?: 'link';
+      href: string;
+      label: string;
+      permission?: Permission;
+      anyOf?: Permission[];
+    }
+  | {
+      type: 'accordion';
+      label: string;
+      anyOf?: Permission[];
+      permission?: Permission;
+      children: NavChild[];
+    };
 
 const ALL_NAV: NavEntry[] = [
   { href: '/dashboard', label: 'Ana Sayfa' },
-  { href: '/processes', label: 'Süreçler' },
   { href: '/tasks', label: 'Görevlerim' },
+  {
+    type: 'accordion',
+    label: 'Süreçler',
+    anyOf: [Permission.PROCESS_KTI_START],
+    children: [
+      {
+        href: '/processes/kti/start',
+        label: 'KTİ Başlat',
+        permission: Permission.PROCESS_KTI_START,
+      },
+    ],
+  },
+  {
+    href: '/processadministration',
+    label: 'Süreç Yöneticisi',
+    permission: Permission.PROCESS_VIEW_ALL,
+  },
   { href: '/users', label: 'Kullanıcılar', permission: Permission.USER_LIST_VIEW },
   {
     href: '/master-data',
@@ -31,8 +63,8 @@ const ALL_NAV: NavEntry[] = [
   { href: '/roles', label: 'Roller', permission: Permission.ROLE_VIEW },
   {
     href: '/settings/notifications',
-    label: 'Bildirim ayarları',
-    permission: Permission.NOTIFICATION_READ,
+    label: 'Bildirim Ayarları',
+    permission: Permission.NOTIFICATION_EDIT,
   },
   {
     href: '/admin',
@@ -64,6 +96,10 @@ function navLinkClass(active: boolean): string {
   ].join(' ');
 }
 
+function isAccordionActive(pathname: string, children: NavChild[]): boolean {
+  return children.some((c) => isNavActive(pathname, c.href));
+}
+
 type NavGeometry = { tops: number[]; heights: number[] };
 
 export type AppSidebarNavProps = {
@@ -86,18 +122,46 @@ export function AppSidebarNav({ onNavigate }: AppSidebarNavProps) {
     });
   }, [permissionKey]);
 
-  const visibleKey = visible.map((v) => v.href).join('|');
-  const activeIndex = visible.findIndex((item) => isNavActive(pathname, item.href));
+  const visibleKey = visible
+    .map((v) => (v.type === 'accordion' ? `accordion:${v.label}` : v.href))
+    .join('|');
+
+  const activeIndex = visible.findIndex((item) => {
+    if (item.type === 'accordion') return isAccordionActive(pathname, item.children);
+    return isNavActive(pathname, item.href);
+  });
 
   const navRef = useRef<HTMLElement>(null);
   const [geometry, setGeometry] = useState<NavGeometry | null>(null);
+
+  const [openAccordions, setOpenAccordions] = useState<Set<string>>(() => {
+    const initialOpen = new Set<string>();
+    ALL_NAV.forEach((item) => {
+      if (item.type === 'accordion' && isAccordionActive(pathname, item.children)) {
+        initialOpen.add(item.label);
+      }
+    });
+    return initialOpen;
+  });
+
+  const toggleAccordion = (label: string) => {
+    setOpenAccordions((prev) => {
+      const next = new Set(prev);
+      if (next.has(label)) {
+        next.delete(label);
+      } else {
+        next.add(label);
+      }
+      return next;
+    });
+  };
 
   useLayoutEffect(() => {
     const nav = navRef.current;
     if (!nav) return;
 
     const measure = () => {
-      const anchors = [...nav.querySelectorAll<HTMLAnchorElement>('[data-app-sidebar-link]')];
+      const anchors = [...nav.querySelectorAll<HTMLElement>('[data-app-sidebar-link]')];
       if (anchors.length !== visible.length) return;
       setGeometry({
         tops: anchors.map((a) => a.offsetTop),
@@ -109,7 +173,7 @@ export function AppSidebarNav({ onNavigate }: AppSidebarNavProps) {
     const ro = new ResizeObserver(measure);
     ro.observe(nav);
     return () => ro.disconnect();
-  }, [visible.length, visibleKey, pathname]);
+  }, [visible.length, visibleKey, pathname, openAccordions]);
 
   const prevIndexRef = useRef(-1);
   const [, forceUpdate] = useState(0);
@@ -198,6 +262,56 @@ export function AppSidebarNav({ onNavigate }: AppSidebarNavProps) {
       />
       {visible.map((item, idx) => {
         const active = idx === activeIndex;
+
+        if (item.type === 'accordion') {
+          const isOpen = openAccordions.has(item.label);
+          return (
+            <div key={`accordion-${item.label}`}>
+              <button
+                type="button"
+                data-app-sidebar-link
+                className={`relative z-10 w-full justify-between ${navLinkClass(active)}`}
+                aria-expanded={isOpen}
+                onClick={() => {
+                  prevIndexRef.current = activeIndex;
+                  toggleAccordion(item.label);
+                  forceUpdate((n) => n + 1);
+                }}
+              >
+                <span>{item.label}</span>
+                <ChevronDown
+                  className={[
+                    'h-4 w-4 shrink-0 transition-transform duration-[var(--dur-medium)]',
+                    isOpen ? 'rotate-180' : '',
+                  ].join(' ')}
+                  aria-hidden
+                />
+              </button>
+              {isOpen && (
+                <div className="mt-[var(--space-1)] flex flex-col gap-[var(--space-1)] pl-[var(--space-6)]">
+                  {item.children.map((child) => (
+                    <Link
+                      key={child.href}
+                      href={child.href}
+                      scroll={false}
+                      className={[
+                        'flex items-center rounded-[var(--radius-md)] px-[var(--space-4)] py-[var(--space-3)] text-[var(--text-sm)]',
+                        isNavActive(pathname, child.href)
+                          ? 'font-semibold text-[var(--color-primary-700)]'
+                          : 'text-[var(--color-sidebar-nav-idle)] hover:bg-[var(--color-hover)]',
+                        'transition-all duration-[var(--dur-medium)]',
+                      ].join(' ')}
+                      onClick={() => onNavigate?.()}
+                    >
+                      {child.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        }
+
         return (
           <Link
             key={item.href}

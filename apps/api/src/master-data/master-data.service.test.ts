@@ -88,7 +88,7 @@ describe('MasterDataService — findAll yetki ve kapsam', () => {
   it('MASTER_DATA_MANAGE yok ve PROCESS_KTI_START yok → MasterDataListAccessDeniedException', async () => {
     const { service, permissionResolver } = makeService();
     (permissionResolver.getUserPermissions as ReturnType<typeof vi.fn>).mockResolvedValue(
-      new Set([Permission.NOTIFICATION_READ]),
+      new Set([Permission.NOTIFICATION_EDIT]),
     );
 
     await expect(

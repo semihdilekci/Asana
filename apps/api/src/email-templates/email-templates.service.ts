@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { SendEmailCommand, SESv2Client } from '@aws-sdk/client-sesv2';
 import type { NotificationEventType } from '@leanmgmt/prisma-client';
 import type {
   EmailTemplatePreviewInput,
@@ -9,6 +8,7 @@ import type {
 import Handlebars from 'handlebars';
 import DOMPurify from 'isomorphic-dompurify';
 
+import { NotificationEmailQueueService } from '../notifications/notification-email-queue.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 
 import {
@@ -122,7 +122,11 @@ const DEFAULT_TEST_TEMPLATE_VARS: Record<string, string> = {
 
 @Injectable()
 export class EmailTemplatesService {
-  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
+  constructor(
+    @Inject(PrismaService) private readonly prisma: PrismaService,
+    @Inject(NotificationEmailQueueService)
+    private readonly notificationEmailQueue: NotificationEmailQueueService,
+  ) {}
 
   async listSummaries(): Promise<
     {
@@ -240,12 +244,12 @@ export class EmailTemplatesService {
 
   /**
    * Kayıtlı şablonu örnek değişkenlerle render edip test adresine gönderir.
-   * EMAIL_SENDING_MODE=noop veya SES_FROM_ADDRESS yoksa gönderim yapılmaz (CI/yerel).
+   * Gönderim `apps/worker` üzerinden aynı BullMQ kuyruğu ile yapılır (API yalnız kuyruğa yazar).
    */
   async sendTest(
     eventType: NotificationEventType,
     dto: EmailTemplateSendTestInput,
-  ): Promise<{ sent: boolean; mode: string }> {
+  ): Promise<{ sent: boolean; mode: string; jobId?: string }> {
     const tpl = await this.findByEventType(eventType);
     const variables: Record<string, string> = { ...DEFAULT_TEST_TEMPLATE_VARS, ...dto.variables };
     for (const key of tpl.requiredVariables) {
@@ -283,39 +287,12 @@ export class EmailTemplatesService {
       ],
       ALLOWED_ATTR: ['href', 'class', 'style'],
     });
-    const mode = (process.env.EMAIL_SENDING_MODE ?? 'noop').toLowerCase();
-    const from = process.env.SES_FROM_ADDRESS ?? '';
-    if (mode === 'noop' || !from) {
-      return { sent: false, mode: mode === 'noop' ? 'noop' : 'missing_from' };
-    }
-
-    const region = process.env.AWS_REGION ?? 'eu-central-1';
-    const hasKeys = Boolean(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY);
-    const client = new SESv2Client({
-      region,
-      credentials: hasKeys
-        ? {
-            accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
-            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
-          }
-        : undefined,
+    const jobId = await this.notificationEmailQueue.enqueueTemplateTestEmail({
+      toEmail: dto.toEmail,
+      subject: rendered.subjectRendered,
+      html: htmlSafe,
+      text: rendered.textBodyRendered,
     });
-
-    await client.send(
-      new SendEmailCommand({
-        FromEmailAddress: from,
-        Destination: { ToAddresses: [dto.toEmail] },
-        Content: {
-          Simple: {
-            Subject: { Data: rendered.subjectRendered, Charset: 'UTF-8' },
-            Body: {
-              Html: { Data: htmlSafe, Charset: 'UTF-8' },
-              Text: { Data: rendered.textBodyRendered, Charset: 'UTF-8' },
-            },
-          },
-        },
-      }),
-    );
-    return { sent: true, mode: 'ses' };
+    return { sent: true, mode: 'queued', jobId };
   }
 }

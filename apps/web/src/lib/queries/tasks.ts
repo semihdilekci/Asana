@@ -52,6 +52,17 @@ export interface TaskFormSchemaField {
   required?: boolean;
 }
 
+export interface TaskPreviousTask {
+  stepKey: string;
+  stepLabel: string;
+  completedBy: TaskListUserBrief | null;
+  completedAt: string | null;
+  completionAction?: string | null;
+  /** Yönetici onay adımında girilen gerekçe (REJECT / REQUEST_REVISION için). */
+  reason?: string | null;
+  formData: unknown;
+}
+
 export interface TaskDetail {
   id: string;
   stepKey: string;
@@ -64,16 +75,14 @@ export interface TaskDetail {
   allowedActions: string[];
   reasonRequiredFor: string[];
   process: TaskDetailProcess;
-  previousTasks: Array<{
-    stepKey: string;
-    stepLabel: string;
-    completedBy: TaskListUserBrief | null;
-    completedAt: string | null;
-    formData: unknown;
-  }>;
+  previousTasks: TaskPreviousTask[];
   documents: Array<{ id: string; originalFilename: string; scanStatus: string }>;
   formSchema: { fields: TaskFormSchemaField[] };
   formData?: unknown;
+  /** KTI_REVISION görevlerinde yöneticinin girdiği gerekçe. */
+  managerReason?: string | null;
+  /** KTI_REVISION görevlerinde yöneticinin girdiği opsiyonel yorum. */
+  managerComment?: string | null;
 }
 
 export interface TaskCompleteResponse {

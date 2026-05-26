@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 
 import { Permission } from '@leanmgmt/shared-types';
 
+import { LoadingSplash } from '@/components/shared/LoadingSplash';
 import { PermissionGate } from '@/components/shared/PermissionGate';
 import {
   useAuditChainIntegrityQuery,
@@ -46,7 +47,9 @@ export function AuditChainIntegrityPanel({
             Denetim zinciri bütünlüğü
           </h2>
           {isPending ? (
-            <p className="mt-1 text-sm text-[var(--color-neutral-600)]">Yükleniyor…</p>
+            <div className="mt-[var(--space-3)]">
+              <LoadingSplash variant="compact" />
+            </div>
           ) : error ? (
             <p className="mt-1 text-sm text-[var(--color-error-700)]">Özet yüklenemedi.</p>
           ) : data ? (

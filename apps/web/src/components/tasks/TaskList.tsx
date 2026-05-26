@@ -5,13 +5,11 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useMemo } from 'react';
 
 import type { TaskListQuery } from '@leanmgmt/shared-schemas';
-import { Permission } from '@leanmgmt/shared-types';
 
 import {
   HorizontalMorphSegmented,
   type MorphSegmentItem,
 } from '@/components/layout/HorizontalMorphSegmented';
-import { PermissionGate } from '@/components/shared/PermissionGate';
 import { completionActionLabelTr } from '@/lib/completion-action-tr';
 import { useTasksInfiniteQuery } from '@/lib/queries/tasks';
 
@@ -122,13 +120,6 @@ export function TaskList() {
           ariaLabel="Görev listesi sekmesi"
           density="compact"
         />
-        <div className="ml-auto">
-          <PermissionGate permission={Permission.PROCESS_KTI_START}>
-            <Link href="/processes/kti/start" className="ls-btn ls-btn--primary ls-btn--sm">
-              Yeni KTİ başlat
-            </Link>
-          </PermissionGate>
-        </div>
       </div>
 
       <div className="flex flex-wrap gap-[var(--space-3)]">
@@ -170,19 +161,7 @@ export function TaskList() {
       {items.length === 0 ? (
         <div className="ls-card p-[var(--space-8)] text-center text-sm text-[var(--color-neutral-700)]">
           {tab === 'pending' ? 'Size atanmış bekleyen görev yok.' : null}
-          {tab === 'started' ? (
-            <div className="space-y-[var(--space-3)]">
-              <p>Başlattığınız aktif süreç yok.</p>
-              <PermissionGate permission={Permission.PROCESS_KTI_START}>
-                <Link
-                  href="/processes/kti/start"
-                  className="ls-btn ls-btn--primary ls-btn--sm inline-flex"
-                >
-                  Yeni KTİ başlat
-                </Link>
-              </PermissionGate>
-            </div>
-          ) : null}
+          {tab === 'started' ? <p>Başlattığınız aktif süreç yok.</p> : null}
           {tab === 'completed' ? 'Henüz tamamladığınız görev yok.' : null}
         </div>
       ) : (

@@ -7,6 +7,7 @@ import { useEffect, useMemo } from 'react';
 import { Permission } from '@leanmgmt/shared-types';
 
 import { PageRouteCardMotion } from '@/components/layout/PageRouteCardMotion';
+import { LoadingSplash } from '@/components/shared/LoadingSplash';
 import { useAuthStore } from '@/stores/auth-store';
 
 const ADMIN_ENTRY_ANY_OF: Permission[] = [
@@ -37,11 +38,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, [allowed, currentUser, router]);
 
   if (!currentUser) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-[var(--color-neutral-50)]">
-        <p className="text-sm text-[var(--color-neutral-600)]">Yükleniyor…</p>
-      </div>
-    );
+    return <LoadingSplash variant="fullscreen" />;
   }
 
   if (!allowed) {

@@ -134,6 +134,89 @@ async function createInProgressKti(
   return displayId;
 }
 
+/** Revize döngüsü: aynı stepOrder ile iki yönetici onayı — API sırası createdAt olmalı */
+async function createKtiProcessWithRevisionLoopTasks(
+  prisma: PrismaService,
+  starterId: string,
+  managerId: string,
+  companyId: string,
+): Promise<string> {
+  const rows = await prisma.$queryRaw<[{ n: bigint }]>`
+    SELECT nextval('process_seq_before_after_kaizen') AS n
+  `;
+  const n = rows[0].n;
+  const displayId = `KTI-${String(n).padStart(6, '0')}`;
+  const base = new Date('2026-05-26T12:00:00.000Z').getTime();
+  const proc = await prisma.process.create({
+    data: {
+      processNumber: n,
+      processType: 'BEFORE_AFTER_KAIZEN',
+      displayId,
+      startedByUserId: starterId,
+      companyId,
+      status: 'IN_PROGRESS',
+    },
+  });
+  await prisma.task.create({
+    data: {
+      processId: proc.id,
+      stepKey: 'KTI_INITIATION',
+      stepOrder: 1,
+      assignmentMode: AssignmentMode.SINGLE,
+      status: 'COMPLETED',
+      completedByUserId: starterId,
+      completedAt: new Date(base + 60_000),
+      createdAt: new Date(base + 0),
+    },
+  });
+  await prisma.task.create({
+    data: {
+      processId: proc.id,
+      stepKey: 'KTI_MANAGER_APPROVAL',
+      stepOrder: 2,
+      assignmentMode: AssignmentMode.SINGLE,
+      status: 'COMPLETED',
+      completedByUserId: managerId,
+      completedAt: new Date(base + 120_000),
+      completionAction: 'REQUEST_REVISION',
+      completionReason: 'Revize gerekçesi on karakter uzunluğunda olmalıdır.',
+      createdAt: new Date(base + 30_000),
+    },
+  });
+  await prisma.task.create({
+    data: {
+      processId: proc.id,
+      stepKey: 'KTI_REVISION',
+      stepOrder: 3,
+      assignmentMode: AssignmentMode.SINGLE,
+      status: 'COMPLETED',
+      completedByUserId: starterId,
+      completedAt: new Date(base + 180_000),
+      createdAt: new Date(base + 45_000),
+    },
+  });
+  const secondManager = await prisma.task.create({
+    data: {
+      processId: proc.id,
+      stepKey: 'KTI_MANAGER_APPROVAL',
+      stepOrder: 2,
+      assignmentMode: AssignmentMode.SINGLE,
+      status: 'PENDING',
+      slaDueAt: new Date(base + 7 * 24 * 3600_000),
+      createdAt: new Date(base + 90_000),
+    },
+  });
+  await prisma.taskAssignment.create({
+    data: {
+      taskId: secondManager.id,
+      userId: managerId,
+      status: 'PENDING',
+      resolvedByRule: true,
+    },
+  });
+  return displayId;
+}
+
 /** Seed yöneticisi: rol yok, PROCESS_VIEW_ALL yok; rıza kaydı testte tamamlanır */
 async function loginSeedManagerWithConsent(prisma: PrismaService): Promise<AuthBundle> {
   const mgr = await prisma.user.findFirst({
@@ -406,5 +489,53 @@ describe('Processes API (integration)', () => {
     expect(body.data.activeTaskLabel).toBe('Yönetici Onayında');
     expect(body.data.tasks.length).toBeGreaterThanOrEqual(1);
     expect(body.data.tasks.some((t) => t.stepKey === 'KTI_MANAGER_APPROVAL')).toBe(true);
+  });
+
+  it('GET /processes/:displayId — tasks createdAt ile kronolojik ve ikinci yönetici onayı sonda', async () => {
+    const srv = app.getHttpAdapter().getInstance();
+    const auth = await getSuperadminAuth();
+    const prisma = app.get(PrismaService);
+    const superadmin = await prisma.user.findFirst({
+      where: { userRoles: { some: { role: { code: 'SUPERADMIN' } } } },
+    });
+    const manager = await prisma.user.findFirst({
+      where: { firstName: 'Seed', lastName: 'Manager' },
+    });
+    if (!superadmin || !manager) throw new Error('seed');
+    const displayId = await createKtiProcessWithRevisionLoopTasks(
+      prisma,
+      superadmin.id,
+      manager.id,
+      superadmin.companyId,
+    );
+    const res = await srv.inject({
+      method: 'GET',
+      url: `/api/v1/processes/${encodeURIComponent(displayId)}`,
+      headers: {
+        authorization: `Bearer ${auth.accessToken}`,
+        cookie: auth.cookie,
+      },
+    });
+    expect(res.statusCode).toBe(200);
+    const body = JSON.parse(res.body) as {
+      data: {
+        tasks: { stepKey: string; status: string; createdAt: string }[];
+      };
+    };
+    expect(body.data.tasks).toHaveLength(4);
+    for (const t of body.data.tasks) {
+      expect(t.createdAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+    }
+    const keys = body.data.tasks.map((t) => t.stepKey);
+    expect(keys).toEqual([
+      'KTI_INITIATION',
+      'KTI_MANAGER_APPROVAL',
+      'KTI_REVISION',
+      'KTI_MANAGER_APPROVAL',
+    ]);
+    const times = body.data.tasks.map((t) => new Date(t.createdAt).getTime());
+    const sorted = [...times].sort((a, b) => a - b);
+    expect(times).toEqual(sorted);
+    expect(body.data.tasks[3]?.status).toBe('PENDING');
   });
 });

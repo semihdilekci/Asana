@@ -1,9 +1,18 @@
-import { SendEmailCommand, SESv2Client } from '@aws-sdk/client-sesv2';
 import { type Job, Worker } from 'bullmq';
 import Handlebars from 'handlebars';
 import Redis from 'ioredis';
 import type { PrismaClient } from '@leanmgmt/prisma-client';
-import { bytesToNodeBuffer, decryptAes256GcmDeterministic } from '@leanmgmt/shared-utils';
+import {
+  isNotificationEmailTemplateTestJob,
+  OUTBOUND_EMAIL_JOB_KIND_TEMPLATE_TEST,
+  type NotificationOutboundEmailJobData,
+} from '@leanmgmt/shared-types';
+import {
+  bytesToNodeBuffer,
+  decryptAes256GcmDeterministic,
+  resolveTransactionalFromAddress,
+  sendMailViaSmtpFromEnv,
+} from '@leanmgmt/shared-utils';
 
 export type NotificationEmailJobData = {
   notificationId: string;
@@ -28,6 +37,43 @@ function metaString(meta: unknown, key: string): string {
   if (typeof v === 'string') return v;
   if (v == null) return '';
   return String(v);
+}
+
+type EmailTemplateTestJobPayload = Extract<
+  NotificationOutboundEmailJobData,
+  { kind: typeof OUTBOUND_EMAIL_JOB_KIND_TEMPLATE_TEST }
+>;
+
+/**
+ * Admin şablon testi — DB bildirimi yok; SMTP/ noop worker ortamında uygulanır.
+ */
+export async function runEmailTemplateTestSendJob(
+  job: Job<EmailTemplateTestJobPayload>,
+): Promise<void> {
+  const { toEmail, subject, html, text } = job.data;
+  const mode = (process.env.EMAIL_SENDING_MODE ?? 'noop').toLowerCase();
+  if (mode === 'noop') {
+    return;
+  }
+
+  if (mode !== 'smtp') {
+    throw new Error(`unsupported_email_mode:${mode}`);
+  }
+
+  if (!resolveTransactionalFromAddress()) {
+    throw new Error('email_from_missing');
+  }
+
+  if (!process.env.SMTP_HOST?.trim()) {
+    throw new Error('smtp_host_missing');
+  }
+
+  await sendMailViaSmtpFromEnv({
+    to: toEmail,
+    subject,
+    html,
+    text,
+  });
 }
 
 export async function runNotificationEmailJob(
@@ -108,9 +154,9 @@ export async function runNotificationEmailJob(
   const text = Handlebars.compile(template.textBodyTemplate, { noEscape: true })(vars);
 
   const mode = (process.env.EMAIL_SENDING_MODE ?? 'noop').toLowerCase();
-  const from = process.env.SES_FROM_ADDRESS ?? '';
+  const from = resolveTransactionalFromAddress();
 
-  if (mode === 'noop' || !from) {
+  if (mode === 'noop') {
     await prisma.notification.update({
       where: { id: notificationId },
       data: {
@@ -122,36 +168,49 @@ export async function runNotificationEmailJob(
     return;
   }
 
+  if (mode !== 'smtp') {
+    await prisma.notification.update({
+      where: { id: notificationId },
+      data: {
+        deliveryStatus: 'FAILED',
+        deliveryFailureReason: `unsupported_email_mode:${mode}`,
+      },
+    });
+    return;
+  }
+
+  if (!from) {
+    await prisma.notification.update({
+      where: { id: notificationId },
+      data: {
+        deliveryStatus: 'FAILED',
+        deliveryFailureReason: 'email_from_missing',
+      },
+    });
+    return;
+  }
+
+  const host = process.env.SMTP_HOST?.trim();
+  if (!host) {
+    await prisma.notification.update({
+      where: { id: notificationId },
+      data: {
+        deliveryStatus: 'FAILED',
+        deliveryFailureReason: 'smtp_host_missing',
+      },
+    });
+    return;
+  }
+
   const maxAttempts = typeof job.opts.attempts === 'number' ? job.opts.attempts : 3;
 
   try {
-    const region = process.env.AWS_REGION ?? 'eu-central-1';
-    const hasKeys = Boolean(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY);
-    const client = new SESv2Client({
-      region,
-      credentials: hasKeys
-        ? {
-            accessKeyId: process.env.AWS_ACCESS_KEY_ID as string,
-            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
-          }
-        : undefined,
+    await sendMailViaSmtpFromEnv({
+      to,
+      subject,
+      html,
+      text,
     });
-
-    await client.send(
-      new SendEmailCommand({
-        FromEmailAddress: from,
-        Destination: { ToAddresses: [to] },
-        Content: {
-          Simple: {
-            Subject: { Data: subject, Charset: 'UTF-8' },
-            Body: {
-              Html: { Data: html, Charset: 'UTF-8' },
-              Text: { Data: text, Charset: 'UTF-8' },
-            },
-          },
-        },
-      }),
-    );
 
     await prisma.notification.update({
       where: { id: notificationId },
@@ -177,6 +236,17 @@ export async function runNotificationEmailJob(
   }
 }
 
+export async function processOutboundEmailJob(
+  prisma: PrismaClient,
+  job: Job<NotificationOutboundEmailJobData>,
+): Promise<void> {
+  if (isNotificationEmailTemplateTestJob(job.data)) {
+    await runEmailTemplateTestSendJob(job as Job<EmailTemplateTestJobPayload>);
+    return;
+  }
+  await runNotificationEmailJob(prisma, job as Job<NotificationEmailJobData>);
+}
+
 export async function startNotificationEmailWorker(
   prisma: PrismaClient,
 ): Promise<() => Promise<void>> {
@@ -187,10 +257,10 @@ export async function startNotificationEmailWorker(
   }
   const queueName = process.env.NOTIFICATION_EMAIL_QUEUE_NAME ?? 'notification-email-outbound';
   const connection = new Redis(redisUrl, { maxRetriesPerRequest: null });
-  const worker = new Worker<NotificationEmailJobData>(
+  const worker = new Worker<NotificationOutboundEmailJobData>(
     queueName,
     async (job) => {
-      await runNotificationEmailJob(prisma, job);
+      await processOutboundEmailJob(prisma, job);
     },
     { connection },
   );

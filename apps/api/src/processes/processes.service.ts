@@ -78,6 +78,17 @@ export class ProcessesService {
     const allDocIds = [...dto.beforePhotoDocumentIds, ...dto.afterPhotoDocumentIds];
     await this.documentsService.assertKtiPhotoDocumentsCleanAndOwned(actor, allDocIds);
 
+    // Şirket adını formData'ya gömmek için önceden çek.
+    // companyId formdan seçilip kaydediliyor; ileride formData üzerinden
+    // sorgulama veya raporlama gerekebileceği için tüm form alanları birlikte tutulur.
+    const company = await this.prisma.company.findUnique({
+      where: { id: dto.companyId },
+      select: { id: true, code: true, name: true },
+    });
+    if (!company) {
+      throw new AppException('COMPANY_NOT_FOUND', 'Şirket bulunamadı.', 404);
+    }
+
     const workflow = this.processTypeRegistry.getWorkflow(ProcessType.BEFORE_AFTER_KAIZEN);
     const initiationStep = workflow.getStepByOrder(1);
     const approvalStep = workflow.getStepByOrder(2);
@@ -110,6 +121,8 @@ export class ProcessesService {
           completedByUserId: actor.id,
           completedAt: new Date(),
           formData: {
+            companyId: company.id,
+            companyName: `${company.name} (${company.code})`,
             beforePhotoDocumentIds: dto.beforePhotoDocumentIds,
             afterPhotoDocumentIds: dto.afterPhotoDocumentIds,
             savingAmount: dto.savingAmount,
@@ -457,7 +470,8 @@ export class ProcessesService {
         },
         company: { select: { id: true, code: true, name: true } },
         tasks: {
-          orderBy: { stepOrder: 'asc' },
+          // step_order tekrarlayan adımlarda (revize döngüsü) kronoloji için oluşturulma zamanı kullanılır
+          orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
           include: {
             completedBy: {
               select: {
@@ -522,7 +536,12 @@ export class ProcessesService {
       return taskIdsActorAssigned.has(taskId);
     };
 
-    const tasksOut = process.tasks.map((task) => {
+    const tasksChronological = [...process.tasks].sort((a, b) => {
+      const dt = a.createdAt.getTime() - b.createdAt.getTime();
+      return dt !== 0 ? dt : a.id.localeCompare(b.id);
+    });
+
+    const tasksOut = tasksChronological.map((task) => {
       const taskFullAccess = fullProcessAccess || taskIdsActorAssigned.has(task.id);
       const assigneeUser = task.assignments.find((a) => a.user)?.user ?? null;
 
@@ -531,6 +550,7 @@ export class ProcessesService {
         stepKey: task.stepKey,
         stepOrder: task.stepOrder,
         status: task.status,
+        createdAt: task.createdAt.toISOString(),
         completedAt: task.completedAt?.toISOString() ?? null,
         completionAction: task.completionAction,
       };

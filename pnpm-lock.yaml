@@ -64,9 +64,6 @@ importers:
       '@aws-sdk/client-s3':
         specifier: ^3.1036.0
         version: 3.1036.0
-      '@aws-sdk/client-sesv2':
-        specifier: ^3.1036.0
-        version: 3.1037.0
       '@aws-sdk/s3-request-presigner':
         specifier: ^3.1036.0
         version: 3.1036.0
@@ -167,6 +164,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.17
+      '@types/pg':
+        specifier: ^8.11.0
+        version: 8.20.0
       aws-sdk-client-mock:
         specifier: ^4.1.0
         version: 4.1.0
@@ -312,9 +312,6 @@ importers:
       '@aws-sdk/client-s3':
         specifier: ^3.1036.0
         version: 3.1036.0
-      '@aws-sdk/client-sesv2':
-        specifier: ^3.1036.0
-        version: 3.1037.0
       '@leanmgmt/shared-schemas':
         specifier: workspace:*
         version: link:../../packages/shared-schemas
@@ -460,6 +457,13 @@ importers:
         version: 3.2.4(@types/node@25.6.0)(jiti@2.6.1)(jsdom@29.0.2)(msw@2.13.5(@types/node@25.6.0)(typescript@5.9.3))(terser@5.46.2)(tsx@4.21.0)(yaml@2.8.3)
 
   packages/shared-utils:
+    dependencies:
+      nodemailer:
+        specifier: ^6.10.1
+        version: 6.10.1
+      pg:
+        specifier: ^8.13.1
+        version: 8.13.1
     devDependencies:
       '@leanmgmt/config':
         specifier: workspace:*
@@ -467,6 +471,12 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 22.19.17
+      '@types/nodemailer':
+        specifier: ^6.4.17
+        version: 6.4.23
+      '@types/pg':
+        specifier: ^8.11.10
+        version: 8.20.0
       eslint:
         specifier: 'catalog:'
         version: 9.39.4(jiti@2.6.1)
@@ -596,13 +606,6 @@ packages:
     resolution:
       {
         integrity: sha512-QGjLHw1xklwWX+MWt/7X66lMxjNQLOb0tjcwAU3PaBrYZ51kphDlfvc2sInNEsIU03+I158Y4WSMhl8l71SAsw==,
-      }
-    engines: { node: '>=20.0.0' }
-
-  '@aws-sdk/client-sesv2@3.1037.0':
-    resolution:
-      {
-        integrity: sha512-4BbKwsg9rBhd7+fQosI+7b3uzY8IDWndIPCSqioOctuaoKrKQQ/lWlVvYJKOcI7U+fk6vJ5hg0eIuET/tQd8pQ==,
       }
     engines: { node: '>=20.0.0' }
 
@@ -3836,6 +3839,12 @@ packages:
     resolution:
       {
         integrity: sha512-+qIYRKdNYJwY3vRCZMdJbPLJAtGjQBudzZzdzwQYkEPQd+PJGixUL5QfvCLDaULoLv+RhT3LDkwEfKaAkgSmNQ==,
+      }
+
+  '@types/nodemailer@6.4.23':
+    resolution:
+      {
+        integrity: sha512-aFV3/NsYFLSx9mbb5gtirBSXJnAlrusoKNuPbxsASWc7vrKLmIrTQRpdcxNcSFL3VW2A2XpeLEavwb2qMi6nlQ==,
       }
 
   '@types/pg-pool@2.0.6':
@@ -7487,6 +7496,13 @@ packages:
         integrity: sha512-3qT/88Y3FbH/Kx4szpQQ4HzUbVrHPKTLVpVocKiLfoYvw9XSGOX2FmD2d6DrXbVYyAQTF2HeF6My8jmzx7/CRw==,
       }
 
+  nodemailer@6.10.1:
+    resolution:
+      {
+        integrity: sha512-Z+iLaBGVaSjbIzQ4pX6XV41HrooLsQ10ZWPUehGmuantvzWoDVBnmsdUcOIDM1t+yPor5pDhVlDESgOMEGxhHA==,
+      }
+    engines: { node: '>=6.0.0' }
+
   nopt@5.0.0:
     resolution:
       {
@@ -10015,51 +10031,6 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sesv2@3.1037.0':
-    dependencies:
-      '@aws-crypto/sha256-browser': 5.2.0
-      '@aws-crypto/sha256-js': 5.2.0
-      '@aws-sdk/core': 3.974.5
-      '@aws-sdk/credential-provider-node': 3.972.36
-      '@aws-sdk/middleware-host-header': 3.972.10
-      '@aws-sdk/middleware-logger': 3.972.10
-      '@aws-sdk/middleware-recursion-detection': 3.972.11
-      '@aws-sdk/middleware-user-agent': 3.972.35
-      '@aws-sdk/region-config-resolver': 3.972.13
-      '@aws-sdk/signature-v4-multi-region': 3.996.22
-      '@aws-sdk/types': 3.973.8
-      '@aws-sdk/util-endpoints': 3.996.8
-      '@aws-sdk/util-user-agent-browser': 3.972.10
-      '@aws-sdk/util-user-agent-node': 3.973.21
-      '@smithy/config-resolver': 4.4.17
-      '@smithy/core': 3.23.17
-      '@smithy/fetch-http-handler': 5.3.17
-      '@smithy/hash-node': 4.2.14
-      '@smithy/invalid-dependency': 4.2.14
-      '@smithy/middleware-content-length': 4.2.14
-      '@smithy/middleware-endpoint': 4.4.32
-      '@smithy/middleware-retry': 4.5.5
-      '@smithy/middleware-serde': 4.2.20
-      '@smithy/middleware-stack': 4.2.14
-      '@smithy/node-config-provider': 4.3.14
-      '@smithy/node-http-handler': 4.6.1
-      '@smithy/protocol-http': 5.3.14
-      '@smithy/smithy-client': 4.12.13
-      '@smithy/types': 4.14.1
-      '@smithy/url-parser': 4.2.14
-      '@smithy/util-base64': 4.3.2
-      '@smithy/util-body-length-browser': 4.2.2
-      '@smithy/util-body-length-node': 4.2.3
-      '@smithy/util-defaults-mode-browser': 4.3.49
-      '@smithy/util-defaults-mode-node': 4.2.54
-      '@smithy/util-endpoints': 3.4.2
-      '@smithy/util-middleware': 4.2.14
-      '@smithy/util-retry': 4.3.4
-      '@smithy/util-utf8': 4.2.2
-      tslib: 2.8.1
-    transitivePeerDependencies:
-      - aws-crt
-
   '@aws-sdk/core@3.974.5':
     dependencies:
       '@aws-sdk/types': 3.973.8
@@ -12386,9 +12357,13 @@ snapshots:
     dependencies:
       undici-types: 7.19.2
 
+  '@types/nodemailer@6.4.23':
+    dependencies:
+      '@types/node': 25.6.0
+
   '@types/pg-pool@2.0.6':
     dependencies:
-      '@types/pg': 8.6.1
+      '@types/pg': 8.20.0
 
   '@types/pg@8.20.0':
     dependencies:
@@ -14773,6 +14748,8 @@ snapshots:
     optional: true
 
   node-releases@2.0.38: {}
+
+  nodemailer@6.10.1: {}
 
   nopt@5.0.0:
     dependencies:

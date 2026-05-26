@@ -21,3 +21,11 @@ export {
 } from './audit-chain-canonical.js';
 export { verifyAuditLogChain, type AuditChainVerifyInputRow } from './audit-chain-verify.js';
 export { sanitizeInternalRedirectPath } from './internal-redirect-path.js';
+export {
+  resolveTransactionalFromAddress,
+  sendMailViaSmtpFromEnv,
+  sendMailWithTransport,
+  type TransactionalMailPayload,
+  type TransactionalMailWithFrom,
+} from './smtp-mail.js';
+export { buildPgPoolConfig } from './pg-pool-config.js';

@@ -21,8 +21,16 @@ const PHRASE = 'ONAYLIYORUM';
 function activeStepLabel(tasks: ProcessTaskItem[]): string {
   const active = tasks.filter((t) => ['PENDING', 'CLAIMED', 'IN_PROGRESS'].includes(t.status));
   if (active.length === 0) return '—';
-  const maxOrder = Math.max(...active.map((t) => t.stepOrder));
-  const t = active.find((x) => x.stepOrder === maxOrder);
+  const latest = [...active].sort((a, b) => {
+    const ca = a.createdAt ?? '';
+    const cb = b.createdAt ?? '';
+    if (ca && cb) {
+      const c = ca.localeCompare(cb);
+      if (c !== 0) return c;
+    }
+    return a.id.localeCompare(b.id);
+  });
+  const t = latest[latest.length - 1];
   return t?.stepKey ?? '—';
 }
 

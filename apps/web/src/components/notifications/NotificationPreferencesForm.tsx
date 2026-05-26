@@ -10,6 +10,7 @@ import {
   type NotificationPreferencesPutInput,
 } from '@leanmgmt/shared-schemas';
 
+import { LoadingSplash } from '@/components/shared/LoadingSplash';
 import { notificationEventLabel } from '@/lib/notification-ui';
 import {
   useNotificationPreferencesQuery,
@@ -36,18 +37,14 @@ export function NotificationPreferencesForm() {
   const onSubmit = form.handleSubmit(async (values) => {
     try {
       await update.mutateAsync(values);
-      toast.success('Bildirim tercihleri kaydedildi');
+      toast.success('Bildirim ayarları kaydedildi');
     } catch {
       toast.error('Kaydedilemedi, tekrar deneyin');
     }
   });
 
   if (isLoading) {
-    return (
-      <div className="ls-card p-[var(--space-8)] shadow-[var(--shadow-md)]" role="status">
-        <p className="text-[var(--color-neutral-600)]">Tercihler yükleniyor…</p>
-      </div>
-    );
+    return <LoadingSplash variant="card" message="Tercihler yükleniyor…" />;
   }
 
   if (isError || !data?.length) {
@@ -71,11 +68,19 @@ export function NotificationPreferencesForm() {
     <form onSubmit={onSubmit} className="ls-card overflow-hidden shadow-[var(--shadow-md)]">
       <div className="border-b border-[var(--color-neutral-200)] p-[var(--space-4)]">
         <h1 className="font-[family-name:var(--font-display)] text-xl font-semibold text-[var(--color-neutral-900)]">
-          Bildirim tercihleri
+          Bildirim Ayarları
         </h1>
         <p className="mt-1 text-sm text-[var(--color-neutral-600)]">
-          Olay bazında in-app, e-posta ve günlük özet kanallarını açıp kapatabilirsiniz.
+          Bu sayfada yapılan değişiklikler tüm sistem kullanıcıları için geçerlidir.
         </p>
+      </div>
+
+      <div
+        className="border-b border-[var(--color-primary-200)] bg-[var(--color-primary-a14)] px-[var(--space-4)] py-[var(--space-3)] text-sm text-[var(--color-neutral-800)]"
+        role="status"
+      >
+        <strong className="font-medium">Bilgi:</strong> Kanal tercihleri (uygulama içi / e-posta)
+        olay tipi bazında güncellenir. Günlük özet MVP kapsamında kullanılmıyor.
       </div>
 
       <div className="overflow-x-auto">
@@ -91,9 +96,6 @@ export function NotificationPreferencesForm() {
               <th className="px-[var(--space-3)] py-[var(--space-3)] font-medium text-[var(--color-neutral-800)]">
                 E-posta
               </th>
-              <th className="px-[var(--space-3)] py-[var(--space-3)] font-medium text-[var(--color-neutral-800)]">
-                Günlük özet
-              </th>
             </tr>
           </thead>
           <tbody>
@@ -108,7 +110,7 @@ export function NotificationPreferencesForm() {
                       {row.eventType}
                     </span>
                   </td>
-                  {(['inAppEnabled', 'emailEnabled', 'digestEnabled'] as const).map((field) => (
+                  {(['inAppEnabled', 'emailEnabled'] as const).map((field) => (
                     <td key={field} className="px-[var(--space-3)] py-[var(--space-2)]">
                       <input
                         type="checkbox"

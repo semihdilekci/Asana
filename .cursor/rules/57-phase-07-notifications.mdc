@@ -18,17 +18,17 @@ Notification modülü — in-app + email. Event-driven generation (task.created,
 
 **Minimum bağlam:** `docs/02_DATABASE_SCHEMA.md` 12–13; `docs/03_API_CONTRACTS.md` 9.8.
 
-**Bu iterasyonda yok:** SES e-posta gönderimi, digest cron (İter 2).
+**Bu iterasyonda yok:** transactional e-posta worker teslimi, digest cron (İter 2).
 
 **Stop:** [x] Event→DB integration test; [x] preferences respected (email kapalıysa queue’ya düşmeme veya no-op). PR/onay.
 
-### İterasyon 2 — Email queue + templates + SES + digest/cleanup worker
+### İterasyon 2 — Email queue + templates + SMTP (worker) + digest/cleanup worker
 
 **Hedef:** `email-templates` backend, BullMQ email consumer, digest ve cleanup cron’ları; şablon seti (spec’teki liste).
 
 **Bu iterasyonda yok:** Admin template editör UI (İter 3).
 
-**Stop:** [ ] SES sandbox testi; [ ] queue retry davranışı. PR/onay. (prod doğrulama — CI noop)
+**Stop:** [ ] SMTP veya Mailpit ile manuel gönderim testi; [ ] queue retry davranışı. PR/onay. (prod doğrulama — CI `noop`)
 
 ### İterasyon 3 — UI (bell, center, preferences) + admin template editor
 
@@ -92,7 +92,7 @@ apps/web/src/components/notifications/
 - Event-driven: `@OnEvent('task.created')` listeners in NotificationGenerator
 - Notification persistence: DB + TanStack Query cache
 - In-app first, email optional (per preference)
-- Email: SES + BullMQ queue (async, retry on failure)
+- Email: kurumsal SMTP (`nodemailer`) + BullMQ queue (async, retry on failure)
 - Template: Handlebars syntax (`{{firstName}}, {{taskUrl}}`)
 - Preferences: user-level, per event type × per channel (in-app / email / digest)
 - Default preferences seeded: critical notifications on (task assigned, SLA overdue), optional off (digest)
@@ -102,7 +102,7 @@ apps/web/src/components/notifications/
 ## Done Definition
 
 - [x] Çoklu `NotificationEventType` üretimi (TASK_*, SLA_*, PROCESS_*, PASSWORD_*, CONSENT_*, ROLE_ASSIGNED, … — `notification-generator` + `TaskSlaService` + auth)
-- [ ] Email SES integration working (SES sandbox'ta manuel test — CI `noop`)
+- [ ] Email SMTP entegrasyonu çalışıyor (Mailpit veya relay ile manuel test — CI `noop`)
 - [x] Email templates: seed’de kritik event’ler (login-welcome, password-reset, task-assigned, SLA, digest, şifre süresi, rıza, rol, …)
 - [x] Preferences endpoint: GET + PUT
 - [x] Notification center: list, mark-read, unread-count (`/notifications`)
@@ -124,7 +124,7 @@ apps/web/src/components/notifications/
 ## Related ADRs
 
 - ADR-0022: Event-driven notification generation (vs inline in services)
-- ADR-0023: SES for transactional email
+- ADR-0023: SMTP for transactional email
 - ADR-0024: Handlebars template syntax
 - ADR-0025: Polling vs WebSocket for in-app (poll yeter — 30s interval)
 

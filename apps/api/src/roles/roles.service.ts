@@ -9,6 +9,8 @@ import type {
   UpdateRoleInput,
 } from '@leanmgmt/shared-schemas';
 
+import { filterKnownPermissionKeys, isKnownPermissionKey } from '@leanmgmt/shared-types';
+
 import { AppException } from '../common/exceptions/app.exception.js';
 import { AuditLogService } from '../common/audit/audit-log.service.js';
 import type { AuthenticatedUser } from '../common/decorators/current-user.decorator.js';
@@ -138,7 +140,7 @@ export class RolesService {
     if (!role) throw new RoleNotFoundException();
     return {
       ...(await this.serializeRoleSummary(role)),
-      permissions: role.rolePermissions.map((p) => p.permissionKey),
+      permissions: filterKnownPermissionKeys(role.rolePermissions.map((p) => p.permissionKey)),
       ruleCount: role._count.roleRules,
     };
   }
@@ -203,10 +205,12 @@ export class RolesService {
       where: { roleId },
       orderBy: { permissionKey: 'asc' },
     });
-    return rows.map((r) => ({
-      key: r.permissionKey,
-      grantedAt: r.grantedAt.toISOString(),
-    }));
+    return rows
+      .filter((r) => isKnownPermissionKey(r.permissionKey))
+      .map((r) => ({
+        key: r.permissionKey,
+        grantedAt: r.grantedAt.toISOString(),
+      }));
   }
 
   async assignUserToRole(

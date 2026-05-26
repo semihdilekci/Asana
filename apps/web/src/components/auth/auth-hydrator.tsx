@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import { LoadingSplash } from '@/components/shared/LoadingSplash';
 import { isAuthProtectedAppPath } from '@/lib/auth-protected-paths';
 import { readCookie } from '@/lib/auth-session-hint';
 import { refreshAccessToken } from '@/lib/api-client';
@@ -11,25 +12,28 @@ import { useAuthStore } from '@/stores/auth-store';
 export function AuthHydrator({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const accessToken = useAuthStore((s) => s.accessToken);
-  const [hydrated, setHydrated] = useState(false);
+  /** Korumalı rota + bellekte token yok: yalnız o zaman tam sayfa bekleme (refresh / yönlendirme) */
+  const [sessionReady, setSessionReady] = useState(() => {
+    if (!isAuthProtectedAppPath(pathname)) return true;
+    return Boolean(useAuthStore.getState().accessToken);
+  });
 
   useEffect(() => {
     let cancelled = false;
 
     async function run(): Promise<void> {
       if (!isAuthProtectedAppPath(pathname)) {
-        if (!cancelled) setHydrated(true);
+        if (!cancelled) setSessionReady(true);
         return;
       }
-      if (accessToken) {
-        if (!cancelled) setHydrated(true);
+      if (useAuthStore.getState().accessToken) {
+        if (!cancelled) setSessionReady(true);
         return;
       }
       const csrf = readCookie('csrf_token');
       if (!csrf) {
         if (!cancelled) {
-          setHydrated(true);
+          setSessionReady(true);
           router.replace('/login');
         }
         return;
@@ -39,7 +43,7 @@ export function AuthHydrator({ children }: { children: React.ReactNode }) {
       } catch {
         if (!cancelled) router.replace('/login');
       } finally {
-        if (!cancelled) setHydrated(true);
+        if (!cancelled) setSessionReady(true);
       }
     }
 
@@ -47,15 +51,10 @@ export function AuthHydrator({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [pathname, accessToken, router]);
+  }, [pathname, router]);
 
-  if (isAuthProtectedAppPath(pathname) && !hydrated) {
-    return (
-      <div className="flex min-h-screen items-center justify-center" role="status">
-        <span className="sr-only">Oturum yükleniyor</span>
-        <p className="text-[var(--color-neutral-600)]">Yükleniyor…</p>
-      </div>
-    );
+  if (isAuthProtectedAppPath(pathname) && !sessionReady) {
+    return <LoadingSplash variant="fullscreen" srLabel="Oturum yükleniyor" />;
   }
 
   return <>{children}</>;

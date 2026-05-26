@@ -4,6 +4,7 @@ import Link from 'next/link';
 
 import { Permission } from '@leanmgmt/shared-types';
 
+import { LoadingSplash } from '@/components/shared/LoadingSplash';
 import { PermissionGate } from '@/components/shared/PermissionGate';
 import { useConsentVersionsListQuery } from '@/lib/queries/admin-consent-versions';
 
@@ -38,7 +39,7 @@ export function ConsentVersionsPageClient() {
       </div>
 
       {q.isPending ? (
-        <p className="text-sm text-[var(--color-neutral-600)]">Yükleniyor…</p>
+        <LoadingSplash variant="compact" />
       ) : q.error ? (
         <p className="text-sm text-[var(--color-error-700)]">Liste yüklenemedi.</p>
       ) : (

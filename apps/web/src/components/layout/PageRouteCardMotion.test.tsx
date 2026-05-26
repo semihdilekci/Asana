@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 import { PageRouteCardMotion } from './PageRouteCardMotion';
 
@@ -8,17 +8,16 @@ vi.mock('next/navigation', () => ({
 }));
 
 describe('PageRouteCardMotion', () => {
-  it('içeriği render eder ve ls-card için gecikme değişkeni atar', () => {
-    const { container } = render(
+  it('içeriği sarmalayıcı ile render eder', () => {
+    render(
       <PageRouteCardMotion>
-        <div className="ls-card">A</div>
-        <div className="ls-card">B</div>
+        <div className="ls-card">Kart</div>
       </PageRouteCardMotion>,
     );
 
-    const cards = container.querySelectorAll<HTMLElement>('.ls-card');
-    expect(cards).toHaveLength(2);
-    expect(cards[0]?.style.getPropertyValue('--card-enter-delay').trim()).toBe('0ms');
-    expect(cards[1]?.style.getPropertyValue('--card-enter-delay').trim()).toBe('42ms');
+    expect(screen.getByText('Kart')).toBeTruthy();
+    const wrap = document.querySelector('.page-route-card-motion');
+    expect(wrap).not.toBeNull();
+    expect(wrap?.classList.contains('w-full')).toBe(true);
   });
 });

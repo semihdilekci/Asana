@@ -18,6 +18,6 @@ import { NotificationsService } from './notifications.service.js';
     NotificationsService,
     NotificationGeneratorService,
   ],
-  exports: [NotificationsService, NotificationPreferencesService],
+  exports: [NotificationsService, NotificationPreferencesService, NotificationEmailQueueService],
 })
 export class NotificationsModule {}

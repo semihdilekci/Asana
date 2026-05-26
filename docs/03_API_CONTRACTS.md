@@ -1985,6 +1985,7 @@ Backend transaction: Process INSERT → Task (Yönetici Onay) INSERT (atanan: cu
         "stepKey": "KTI_INITIATION",
         "stepOrder": 1,
         "status": "COMPLETED",
+        "createdAt": "2026-04-20T08:00:00.000Z",
         "completedBy": { "...": "..." },
         "completedAt": "...",
         "completionAction": null,
@@ -2000,6 +2001,7 @@ Backend transaction: Process INSERT → Task (Yönetici Onay) INSERT (atanan: cu
         "stepKey": "KTI_MANAGER_APPROVAL",
         "stepOrder": 2,
         "status": "PENDING",
+        "createdAt": "2026-04-20T09:15:00.000Z",
         "assignedTo": { "id": "...", "firstName": "Ayşe", "lastName": "Kaya" },
         "slaDueAt": "2026-04-26T10:00:00.000Z"
       }
@@ -2009,7 +2011,9 @@ Backend transaction: Process INSERT → Task (Yönetici Onay) INSERT (atanan: cu
 }
 ```
 
-Görünürlük kısıtı atanmış task'ları olan ama başlatıcı olmayan kullanıcılar için uygulanır: kendi atandığı task'ın full detayı + diğer tamamlanmış task'ların yalnızca özet bilgileri (`stepKey`, `status`, `completedAt` — form_data ve dokümanlar gizli).
+Görünürlük kısıtı atanmış task'ları olan ama başlatıcı olmayan kullanıcılar için uygulanır: kendi atandığı task'ın full detayı + diğer tamamlanmış task'ların yalnızca özet bilgileri (`stepKey`, `status`, `completedAt`, `createdAt` — form_data ve dokümanlar gizli).
+
+**`tasks` sırası:** Her zaman `created_at` artan (kronolojik); aynı adım numarası tekrarlandığında (ör. ikinci yönetici onayı) zincir yine oluşturulma zamanına göre listelenir.
 
 **Errors:**
 | Code | HTTP | Koşul |
@@ -2725,9 +2729,9 @@ Yalnız `channel=IN_APP AND read_at IS NULL` sayımı. Email için bu endpoint a
 
 #### `GET /api/v1/notification-preferences`
 
-**Purpose:** Oturumdaki kullanıcı için tüm `notification_event_type` değerleri üzerinden çözümlenmiş bildirim tercihleri (satır yoksa varsayılan: in-app ve email açık, digest kapalı).
+**Purpose:** Sistem genelinde geçerli varsayılan bildirim tercihleri (satır yoksa varsayılan: in-app ve email açık, digest kapalı). Bu endpoint tüm kullanıcılar için sistem tercihlerini döner.
 **Auth:** Access token.
-**Permission:** `NOTIFICATION_READ`.
+**Permission:** `NOTIFICATION_EDIT` (yalnız yetkili kullanıcı okuyabilir ve düzenleyebilir).
 
 **Response 200:**
 
@@ -2752,9 +2756,9 @@ Yalnız `channel=IN_APP AND read_at IS NULL` sayımı. Email için bu endpoint a
 
 #### `PUT /api/v1/notification-preferences`
 
-**Purpose:** Kullanıcı bildirim tercihlerini toplu güncelleme (upsert; `eventType` başına bir satır).
+**Purpose:** Sistem genelinde bildirim tercihlerini toplu güncelleme (upsert; `eventType` başına bir satır). Yapılan değişiklikler tüm kullanıcılar için uygulanır.
 **Auth:** Access token + `X-CSRF-Token`.
-**Permission:** `NOTIFICATION_READ`.
+**Permission:** `NOTIFICATION_EDIT`.
 
 **Request body:** `NotificationPreferencesPutSchema` — `{ "preferences": [ { "eventType", "inAppEnabled", "emailEnabled", "digestEnabled" }, ... ] }` (en az 1, en çok 40 satır; `.strict()`).
 
@@ -3128,13 +3132,13 @@ Request body'de henüz kaydedilmemiş taslak template de gönderilebilir (previe
 
 #### `POST /api/v1/admin/email-templates/:eventType/send-test`
 
-**Purpose:** Kayıtlı şablon + gerçek render ile belirtilen adrese test e-postası gönderir (SES / Mailpit ortamına göre).
+**Purpose:** Kayıtlı şablon + gerçek render ile test e-postası için **BullMQ job** üretir; SMTP gönderimi yalnızca `apps/worker` sürecinde uygulanır (`NOTIFICATION_EMAIL_QUEUE_NAME`, worker `.env` içindeki `EMAIL_SENDING_MODE` + `SMTP_*`). API yanıtı kuyruk kabulünü döner (`sent: true`, `mode: "queued"`, `jobId`).
 **Auth:** `EMAIL_TEMPLATE_EDIT` + `X-CSRF-Token`.
 **Rate limit:** 10 istek / saat / kullanıcı (sensitive endpoint).
 
 **Request body:** `EmailTemplateSendTestSchema` — örn. `{ "toEmail": "admin@example.com" }` (tam alan adları shared-schemas’ta).
 
-**Response 200:** Gönderim kabul özeti (ör. kuyruk / mesaj id — implementasyon detayı API yanıtına bakın).
+**Response 200:** `{ "sent": true, "mode": "queued", "jobId": "<bullmq-id>" }` — worker çalışmıyorsa veya SMTP yapılandırması eksikse job başarısız olur (BullMQ / worker logları).
 
 **Errors:** `VALIDATION_FAILED` (400), `PERMISSION_DENIED` (403), şablon yoksa ilgili hata kodu.
 

@@ -2,7 +2,15 @@
 
 import { useState } from 'react';
 
+import Link from 'next/link';
+
+import { STEP_LABEL_MAP } from '@/lib/step-labels';
 import type { ProcessTaskItem } from '@/lib/queries/processes';
+import { useAuthStore } from '@/stores/auth-store';
+
+import { KtiFormDataModal } from './KtiFormDataModal';
+
+export { STEP_LABEL_MAP };
 
 const STATUS_LABELS: Record<string, string> = {
   PENDING: 'Bekliyor',
@@ -18,85 +26,119 @@ function statusLabel(status: string): string {
   return STATUS_LABELS[status] ?? status;
 }
 
-export function ProcessTimeline({ tasks }: { tasks: ProcessTaskItem[] }) {
-  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+function hasNonEmptyFormPayload(data: unknown): boolean {
+  if (data === null || data === undefined) return false;
+  if (typeof data !== 'object' || Array.isArray(data)) return false;
+  return Object.keys(data as object).length > 0;
+}
 
-  const toggle = (id: string) => {
-    setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
+/** Yönetici onay adımında salt aksiyon (onay/red) vardır; form önizleme gösterilmez. */
+function shouldShowFormDataButton(task: ProcessTaskItem): boolean {
+  if (task.stepKey === 'KTI_MANAGER_APPROVAL') return false;
+  return hasNonEmptyFormPayload(task.formData);
+}
+
+const ACTIVE_STATUSES = new Set(['PENDING', 'CLAIMED', 'IN_PROGRESS']);
+
+function compareTasksChronologically(a: ProcessTaskItem, b: ProcessTaskItem): number {
+  const ca = a.createdAt ?? '';
+  const cb = b.createdAt ?? '';
+  if (ca && cb) {
+    const t = ca.localeCompare(cb);
+    if (t !== 0) return t;
+  }
+  return a.id.localeCompare(b.id);
+}
+
+export function ProcessTimeline({ tasks }: { tasks: ProcessTaskItem[] }) {
+  const [modalTask, setModalTask] = useState<ProcessTaskItem | null>(null);
+  const currentUserId = useAuthStore((s) => s.currentUser?.id);
+  const orderedTasks = [...tasks].sort(compareTasksChronologically);
 
   return (
-    <ol className="relative space-y-[var(--space-4)] border-l border-[var(--color-neutral-200)] pl-[var(--space-5)]">
-      {tasks.map((task) => {
-        const isOpen = expanded[task.id] ?? false;
-        const hasExpandable = task.formData !== undefined && task.formData !== null;
-        return (
-          <li key={task.id} className="relative">
-            <span
-              className="absolute -left-[calc(var(--space-5)+5px)] mt-1.5 h-2.5 w-2.5 rounded-full border border-[var(--color-neutral-200)] bg-[var(--color-neutral-0)]"
-              aria-hidden
-            />
-            <div className="ls-card space-y-[var(--space-3)] p-[var(--space-4)]">
-              <div className="flex flex-wrap items-start justify-between gap-[var(--space-2)]">
-                <div>
-                  <p className="text-sm font-medium text-[var(--color-neutral-900)]">
-                    {task.stepKey}
-                  </p>
-                  <p className="text-xs text-[var(--color-neutral-500)]">
-                    Adım {task.stepOrder} · {statusLabel(task.status)}
-                  </p>
+    <>
+      <ol className="relative space-y-[var(--space-4)] border-l border-[var(--color-neutral-200)] pl-[var(--space-5)]">
+        {orderedTasks.map((task) => {
+          const showFormButton = shouldShowFormDataButton(task);
+          const displayLabel = STEP_LABEL_MAP[task.stepKey] ?? task.stepKey;
+          const isAssignedToMe =
+            !!currentUserId &&
+            !!(task.assignedTo?.id === currentUserId || task.isAssignedToCurrentUser);
+          const showGoToTask = isAssignedToMe && ACTIVE_STATUSES.has(task.status);
+          const timelineStamp = task.completedAt ?? task.createdAt;
+          return (
+            <li key={task.id} className="relative">
+              <span
+                className="absolute -left-[calc(var(--space-5)+5px)] mt-1.5 h-2.5 w-2.5 rounded-full border border-[var(--color-neutral-200)] bg-[var(--color-neutral-0)]"
+                aria-hidden
+              />
+              <div className="ls-card space-y-[var(--space-3)] p-[var(--space-4)]">
+                <div className="flex flex-wrap items-start justify-between gap-[var(--space-2)]">
+                  <div>
+                    <p className="text-sm font-medium text-[var(--color-neutral-900)]">
+                      {displayLabel}
+                    </p>
+                    <p className="text-xs text-[var(--color-neutral-500)]">
+                      Adım {task.stepOrder} · {statusLabel(task.status)}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-[var(--space-2)]">
+                    {timelineStamp ? (
+                      <time
+                        className="text-xs text-[var(--color-neutral-500)]"
+                        dateTime={timelineStamp}
+                      >
+                        {new Date(timelineStamp).toLocaleString('tr-TR')}
+                      </time>
+                    ) : null}
+                    {showGoToTask ? (
+                      <Link
+                        href={`/tasks/${encodeURIComponent(task.id)}`}
+                        className="ls-btn ls-btn--neutral ls-btn--sm"
+                      >
+                        Göreve Git
+                      </Link>
+                    ) : null}
+                  </div>
                 </div>
-                {task.completedAt ? (
-                  <time
-                    className="text-xs text-[var(--color-neutral-500)]"
-                    dateTime={task.completedAt}
-                  >
-                    {new Date(task.completedAt).toLocaleString('tr-TR')}
-                  </time>
+                {task.assignedTo ? (
+                  <p className="text-sm text-[var(--color-neutral-700)]">
+                    Atanan: {task.assignedTo.firstName} {task.assignedTo.lastName}
+                    {task.assignedTo.sicil ? ` · Sicil ${task.assignedTo.sicil}` : ''}
+                  </p>
+                ) : null}
+                {task.completedBy ? (
+                  <p className="text-sm text-[var(--color-neutral-700)]">
+                    Tamamlayan: {task.completedBy.firstName} {task.completedBy.lastName}
+                  </p>
+                ) : null}
+                {task.completionAction ? (
+                  <p className="text-xs text-[var(--color-neutral-600)]">
+                    İşlem: {task.completionAction}
+                  </p>
+                ) : null}
+                {task.slaDueAt ? (
+                  <p className="text-xs text-[var(--color-neutral-600)]">
+                    SLA: {new Date(task.slaDueAt).toLocaleString('tr-TR')}
+                  </p>
+                ) : null}
+                {showFormButton ? (
+                  <div>
+                    <button
+                      type="button"
+                      className="ls-btn ls-btn--neutral ls-btn--sm"
+                      onClick={() => setModalTask(task)}
+                    >
+                      Form Detayını Görüntüle
+                    </button>
+                  </div>
                 ) : null}
               </div>
-              {task.assignedTo ? (
-                <p className="text-sm text-[var(--color-neutral-700)]">
-                  Atanan: {task.assignedTo.firstName} {task.assignedTo.lastName}
-                  {task.assignedTo.sicil ? ` · Sicil ${task.assignedTo.sicil}` : ''}
-                </p>
-              ) : null}
-              {task.completedBy ? (
-                <p className="text-sm text-[var(--color-neutral-700)]">
-                  Tamamlayan: {task.completedBy.firstName} {task.completedBy.lastName}
-                </p>
-              ) : null}
-              {task.completionAction ? (
-                <p className="text-xs text-[var(--color-neutral-600)]">
-                  İşlem: {task.completionAction}
-                </p>
-              ) : null}
-              {task.slaDueAt ? (
-                <p className="text-xs text-[var(--color-neutral-600)]">
-                  SLA: {new Date(task.slaDueAt).toLocaleString('tr-TR')}
-                </p>
-              ) : null}
-              {hasExpandable ? (
-                <div>
-                  <button
-                    type="button"
-                    className="ls-btn ls-btn--neutral ls-btn--sm"
-                    aria-expanded={isOpen}
-                    onClick={() => toggle(task.id)}
-                  >
-                    {isOpen ? 'Formu gizle' : 'Form verisini göster'}
-                  </button>
-                  {isOpen ? (
-                    <pre className="mt-[var(--space-2)] max-h-64 overflow-auto rounded-[var(--radius-md)] bg-[var(--color-neutral-50)] p-[var(--space-3)] text-xs text-[var(--color-neutral-800)]">
-                      {JSON.stringify(task.formData, null, 2)}
-                    </pre>
-                  ) : null}
-                </div>
-              ) : null}
-            </div>
-          </li>
-        );
-      })}
-    </ol>
+            </li>
+          );
+        })}
+      </ol>
+      {modalTask ? <KtiFormDataModal task={modalTask} onClose={() => setModalTask(null)} /> : null}
+    </>
   );
 }

@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { NotificationEventType } from '@leanmgmt/prisma-client';
 
 import { PrismaService } from '../prisma/prisma.service.js';
+import { NotificationEmailQueueService } from '../notifications/notification-email-queue.service.js';
 
 import { EmailTemplatesService } from './email-templates.service.js';
 
@@ -16,7 +17,10 @@ describe('EmailTemplatesService', () => {
     };
   };
 
+  let enqueueTemplateTestEmail: ReturnType<typeof vi.fn>;
+
   beforeEach(async () => {
+    enqueueTemplateTestEmail = vi.fn().mockResolvedValue('job-1');
     prisma = {
       emailTemplate: {
         findMany: vi.fn(),
@@ -25,7 +29,14 @@ describe('EmailTemplatesService', () => {
       },
     };
     const moduleRef = await Test.createTestingModule({
-      providers: [EmailTemplatesService, { provide: PrismaService, useValue: prisma }],
+      providers: [
+        EmailTemplatesService,
+        { provide: PrismaService, useValue: prisma },
+        {
+          provide: NotificationEmailQueueService,
+          useValue: { enqueueTemplateTestEmail },
+        },
+      ],
     }).compile();
     service = moduleRef.get(EmailTemplatesService);
   });
@@ -61,11 +72,7 @@ describe('EmailTemplatesService', () => {
     expect(r.subjectRendered).toBe('1');
   });
 
-  it('sendTest: noop modunda SES çağırmaz', async () => {
-    const prevMode = process.env.EMAIL_SENDING_MODE;
-    const prevFrom = process.env.SES_FROM_ADDRESS;
-    process.env.EMAIL_SENDING_MODE = 'noop';
-    process.env.SES_FROM_ADDRESS = 'noreply@example.com';
+  it('sendTest: worker kuyruğuna yazar (SMTP API sürecinde çalışmaz)', async () => {
     prisma.emailTemplate.findUnique.mockResolvedValue({
       id: 't1',
       eventType: 'TASK_ASSIGNED' as NotificationEventType,
@@ -79,9 +86,15 @@ describe('EmailTemplatesService', () => {
     const r = await service.sendTest('TASK_ASSIGNED' as NotificationEventType, {
       toEmail: 'test@example.com',
     });
-    expect(r.sent).toBe(false);
-    expect(r.mode).toBe('noop');
-    process.env.EMAIL_SENDING_MODE = prevMode;
-    process.env.SES_FROM_ADDRESS = prevFrom;
+    expect(r.sent).toBe(true);
+    expect(r.mode).toBe('queued');
+    expect(r.jobId).toBe('job-1');
+    expect(enqueueTemplateTestEmail).toHaveBeenCalledWith(
+      expect.objectContaining({
+        toEmail: 'test@example.com',
+        subject: 'Merhaba Test',
+        text: 'Test',
+      }),
+    );
   });
 });

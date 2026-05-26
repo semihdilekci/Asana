@@ -28,7 +28,7 @@ export enum Permission {
   USER_SESSION_VIEW = 'USER_SESSION_VIEW',
   USER_SESSION_REVOKE = 'USER_SESSION_REVOKE',
   USER_ANONYMIZE = 'USER_ANONYMIZE',
-  NOTIFICATION_READ = 'NOTIFICATION_READ',
+  NOTIFICATION_EDIT = 'NOTIFICATION_EDIT',
   EMAIL_TEMPLATE_VIEW = 'EMAIL_TEMPLATE_VIEW',
   EMAIL_TEMPLATE_EDIT = 'EMAIL_TEMPLATE_EDIT',
   CONSENT_VERSION_VIEW = 'CONSENT_VERSION_VIEW',
@@ -198,11 +198,11 @@ export const PERMISSION_METADATA: Record<Permission, PermissionMetadata> = {
     description: 'KVKK kapsamında kullanıcı anonimleştirme',
     isSensitive: true,
   },
-  [Permission.NOTIFICATION_READ]: {
-    key: Permission.NOTIFICATION_READ,
+  [Permission.NOTIFICATION_EDIT]: {
+    key: Permission.NOTIFICATION_EDIT,
     category: 'MENU',
-    description: 'Bildirim merkezi, okunmamış sayacı ve bildirim tercihleri',
-    isSensitive: false,
+    description: 'Sistem genelinde bildirim tercihlerini düzenleme (/settings/notifications)',
+    isSensitive: true,
   },
   [Permission.EMAIL_TEMPLATE_VIEW]: {
     key: Permission.EMAIL_TEMPLATE_VIEW,
@@ -247,3 +247,18 @@ export const PERMISSION_METADATA: Record<Permission, PermissionMetadata> = {
     isSensitive: false,
   },
 };
+
+const KNOWN_PERMISSION_KEY_SET = new Set<string>(Object.values(Permission));
+
+/** Geçerli Permission enum değeri mi (DB’de kalan eski anahtarları elemek için) */
+export function isKnownPermissionKey(key: string): key is Permission {
+  return KNOWN_PERMISSION_KEY_SET.has(key);
+}
+
+export function filterKnownPermissionKeys(keys: Iterable<string>): Permission[] {
+  const out: Permission[] = [];
+  for (const key of keys) {
+    if (isKnownPermissionKey(key)) out.push(key);
+  }
+  return out;
+}

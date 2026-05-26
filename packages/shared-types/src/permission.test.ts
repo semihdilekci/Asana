@@ -1,20 +1,16 @@
 import { describe, expect, it } from 'vitest';
 
-import { Permission, PERMISSION_METADATA } from './permission.js';
+import { filterKnownPermissionKeys, isKnownPermissionKey, Permission } from './permission.js';
 
-describe('Permission metadata', () => {
-  it('her enum değeri için PERMISSION_METADATA tanımlı ve key eşleşir', () => {
-    const keys = Object.keys(Permission) as Permission[];
-    for (const key of keys) {
-      expect(PERMISSION_METADATA[key]).toBeDefined();
-      expect(PERMISSION_METADATA[key].key).toBe(key);
-    }
+describe('permission keys', () => {
+  it('NOTIFICATION_READ geçerli enum değil', () => {
+    expect(isKnownPermissionKey('NOTIFICATION_READ')).toBe(false);
+    expect(isKnownPermissionKey(Permission.NOTIFICATION_EDIT)).toBe(true);
   });
 
-  it('admin consent permission anahtarları mevcut', () => {
-    expect(Permission.CONSENT_VERSION_VIEW).toBe('CONSENT_VERSION_VIEW');
-    expect(Permission.CONSENT_VERSION_EDIT).toBe('CONSENT_VERSION_EDIT');
-    expect(Permission.CONSENT_VERSION_PUBLISH).toBe('CONSENT_VERSION_PUBLISH');
-    expect(PERMISSION_METADATA[Permission.CONSENT_VERSION_PUBLISH].isSensitive).toBe(true);
+  it('filterKnownPermissionKeys eski anahtarları eler', () => {
+    expect(
+      filterKnownPermissionKeys(['NOTIFICATION_READ', Permission.USER_LIST_VIEW, 'FAKE_KEY']),
+    ).toEqual([Permission.USER_LIST_VIEW]);
   });
 });

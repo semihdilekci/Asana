@@ -5,7 +5,7 @@ import { Suspense } from 'react';
 import { ProcessList } from '@/components/processes/ProcessList';
 
 export const metadata: Metadata = {
-  title: 'Süreçler',
+  title: 'Başlattığım Süreçler',
 };
 
 export default function ProcessesPage() {
@@ -13,10 +13,11 @@ export default function ProcessesPage() {
     <div className="space-y-[var(--space-6)]">
       <div>
         <h1 className="font-[family-name:var(--font-display)] text-2xl font-semibold text-[var(--color-neutral-900)]">
-          Süreçler
+          Başlattığım Süreçler
         </h1>
         <p className="mt-[var(--space-1)] text-sm text-[var(--color-neutral-500)]">
-          Başlattığınız süreçleri görüntüleyin; yetkiniz varsa tüm organizasyon süreçlerine erişin.
+          Başlattığınız süreçlerin listesini görüntüleyin. Kurum geneli süreç yönetimi için Süreç
+          Yöneticisi menüsünü kullanın.
         </p>
       </div>
 

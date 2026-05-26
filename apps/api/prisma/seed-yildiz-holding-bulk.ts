@@ -565,9 +565,10 @@ async function main(): Promise<void> {
   const managerPoolSize = Math.min(50, Math.max(10, Math.floor(ordered.length / 20)));
   const managerIds = ordered.slice(0, managerPoolSize).map((u) => u.id);
 
-  const batch = 100;
-  for (let idx = managerPoolSize; idx < ordered.length; idx += batch) {
-    const slice = ordered.slice(idx, idx + batch);
+  /** Uzak DB’de 100+ update tek transaction’da 5s Prisma limitine takılabiliyor; küçük batch + uzun timeout */
+  const managerUpdateBatch = 25;
+  for (let idx = managerPoolSize; idx < ordered.length; idx += managerUpdateBatch) {
+    const slice = ordered.slice(idx, idx + managerUpdateBatch);
     await prisma.$transaction(
       slice.map((row, j) => {
         const uid = row.id;
@@ -578,6 +579,7 @@ async function main(): Promise<void> {
           data: { managerUserId: mgr },
         });
       }),
+      { timeout: 180_000, maxWait: 60_000 },
     );
   }
 

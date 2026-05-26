@@ -36,12 +36,16 @@ export interface ProcessTaskItem {
   stepKey: string;
   stepOrder: number;
   status: string;
+  /** Görev kaydı oluşturulma — zincirde kronolojik sıra için (ISO 8601). */
+  createdAt: string;
   completedAt: string | null;
   completionAction: string | null;
   completedBy?: ProcessStartedBy;
   assignedTo?: ProcessStartedBy;
   slaDueAt?: string;
   formData?: unknown;
+  /** Backend'den gelen; mevcut kullanıcıya atanmış aktif görev ise true. */
+  isAssignedToCurrentUser?: boolean;
 }
 
 export interface ProcessDocumentItem {

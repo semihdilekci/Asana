@@ -69,7 +69,7 @@ Load test (`k6` @ 1000 concurrent) sonrası bottleneck'leri fix et. DB query opt
 ### Worker optimizations
 
 - BullMQ concurrency tune
-- Email send batching (SES bulk API)
+- Email send batching (queue concurrency / rate-friendly gönderim)
 - DB connection pool tune per worker task
 
 ## Done Definition
