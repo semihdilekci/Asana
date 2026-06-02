@@ -1,7 +1,8 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 
+import { parseAuthMeUser } from '@/lib/auth-session-response';
 import { clearSessionHintCookie, readCookie, setSessionHintCookie } from '@/lib/auth-session-hint';
-import { useAuthStore, type AuthUser } from '@/stores/auth-store';
+import { useAuthStore, type AuthUser, type ImpersonationState } from '@/stores/auth-store';
 
 export type { AuthUser };
 
@@ -66,9 +67,13 @@ export async function refreshAccessToken(): Promise<void> {
   useAuthStore.getState().setTokens({ accessToken, accessTokenExpiresAt, csrfToken });
   setSessionHintCookie();
 
-  const meRes = await client.get<{ success: boolean; data: AuthUser }>('/api/v1/auth/me');
+  const meRes = await client.get<{
+    success: boolean;
+    data: AuthUser & { impersonation?: ImpersonationState };
+  }>('/api/v1/auth/me');
   if (meRes.data.success && meRes.data.data) {
-    useAuthStore.setState({ currentUser: meRes.data.data as AuthUser });
+    const { user, impersonation } = parseAuthMeUser(meRes.data.data);
+    useAuthStore.getState().setSessionUser({ user, impersonation });
   }
 }
 

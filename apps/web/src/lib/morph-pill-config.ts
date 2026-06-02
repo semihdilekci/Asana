@@ -1,6 +1,6 @@
 /**
  * Dikey sidebar + yatay segment morph pill ortak süre / squash parametreleri.
- * Ayar: AppSidebarNav ve HorizontalMorphSegmented aynı dosyayı import eder.
+ * Ayar: application/AppSidebarNav ve HorizontalMorphSegmented aynı dosyayı import eder.
  */
 export const MORPH_PILL_CONFIG = {
   squashY: 0.8,

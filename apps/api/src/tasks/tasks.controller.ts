@@ -1,4 +1,14 @@
-import { Controller, Get, HttpCode, Inject, Param, Post, Body, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Header,
+  HttpCode,
+  Inject,
+  Param,
+  Post,
+  Body,
+  Query,
+} from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 
 import {
@@ -27,6 +37,12 @@ export class TasksController {
     @CurrentUser() actor: AuthenticatedUser,
   ) {
     return this.tasksService.listForActor(query, actor);
+  }
+
+  @Get('active-count')
+  @Header('Cache-Control', 'no-store')
+  async activeCount(@CurrentUser() actor: AuthenticatedUser) {
+    return this.tasksService.countActiveForActor(actor);
   }
 
   @Get(':id')

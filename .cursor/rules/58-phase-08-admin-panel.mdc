@@ -108,7 +108,7 @@ apps/web/src/app/(admin)/admin/
 
 ## Explicit Don'ts
 
-- User impersonation (post-MVP — security concern)
+- User impersonation (post-MVP — security concern) → **Faz 13 ile go-live öncesi kapsama alındı**; bkz. `@63-phase-13-user-impersonation`, ADR 0010
 - System-wide announcement broadcast (post-MVP)
 - Audit log manual edit (tamper resistance — yasak)
 - Auto-repair broken chain (incident response, not automated)

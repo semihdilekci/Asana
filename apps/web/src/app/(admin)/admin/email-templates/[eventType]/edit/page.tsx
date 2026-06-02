@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 
 import { Permission } from '@leanmgmt/shared-types';
 
+import { Card } from '@/components/base';
 import { EmailTemplateEditor } from '@/components/admin/EmailTemplateEditor';
 import { PermissionGate } from '@/components/shared/PermissionGate';
 
@@ -17,7 +18,7 @@ export default function AdminEmailTemplateEditPage() {
     <PermissionGate
       permission={Permission.EMAIL_TEMPLATE_EDIT}
       fallback={
-        <div className="ls-card p-[var(--space-6)] shadow-[var(--shadow-md)]">
+        <Card className="p-[var(--space-6)] shadow-[var(--shadow-md)]">
           <p className="text-[var(--color-neutral-700)]">
             Bu şablonu düzenlemek için yetkiniz yok.
           </p>
@@ -27,7 +28,7 @@ export default function AdminEmailTemplateEditPage() {
           >
             Listeye dön
           </Link>
-        </div>
+        </Card>
       }
     >
       <EmailTemplateEditor eventType={eventType} />

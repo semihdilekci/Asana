@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from 'react';
 
+import { Button } from '@/components/base';
+
 export interface SimpleAlertDialogProps {
   open: boolean;
   title: string;
@@ -36,13 +38,9 @@ export function SimpleAlertDialog({ open, title, onOpenChange, children }: Simpl
       <h2 className="text-lg font-semibold text-[var(--color-neutral-900)]">{title}</h2>
       <div className="mt-3 text-sm text-[var(--color-neutral-700)]">{children}</div>
       <div className="mt-4 flex justify-end">
-        <button
-          type="button"
-          className="ls-btn ls-btn--primary ls-btn--sm"
-          onClick={() => onOpenChange(false)}
-        >
+        <Button size="sm" onPress={() => onOpenChange(false)}>
           Tamam
-        </button>
+        </Button>
       </div>
     </dialog>
   );

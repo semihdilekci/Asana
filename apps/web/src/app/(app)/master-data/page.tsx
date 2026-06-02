@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 import { MASTER_DATA_TYPES } from '@leanmgmt/shared-schemas';
 
+import { Card } from '@/components/base';
 import { MASTER_DATA_TYPE_LABELS } from '@/lib/queries/master-data';
 
 export const metadata: Metadata = {
@@ -26,12 +27,17 @@ export default function MasterDataIndexPage() {
           <Link
             key={type}
             href={`/master-data/${type}`}
-            className="ls-card block p-[var(--space-5)] transition-shadow hover:shadow-[var(--shadow-md)] focus-visible:ring-2 focus-visible:ring-[var(--color-primary-500)] focus-visible:outline-none"
+            className="block focus-visible:ring-2 focus-visible:ring-[var(--color-primary-500)] focus-visible:outline-none"
           >
-            <h2 className="font-semibold text-[var(--color-neutral-800)]">
-              {MASTER_DATA_TYPE_LABELS[type]}
-            </h2>
-            <p className="mt-[var(--space-1)] text-sm text-[var(--color-neutral-500)]">{type}</p>
+            <Card
+              interactive
+              className="p-[var(--space-5)] shadow-[var(--shadow-md)] hover:shadow-[var(--shadow-md)]"
+            >
+              <h2 className="font-semibold text-[var(--color-neutral-800)]">
+                {MASTER_DATA_TYPE_LABELS[type]}
+              </h2>
+              <p className="mt-[var(--space-1)] text-sm text-[var(--color-neutral-500)]">{type}</p>
+            </Card>
           </Link>
         ))}
       </div>

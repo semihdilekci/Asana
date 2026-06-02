@@ -3203,6 +3203,7 @@ export const TaskScalarFieldEnum = {
   completionAction: 'completionAction',
   completionReason: 'completionReason',
   formData: 'formData',
+  actionContext: 'actionContext',
   slaDueAt: 'slaDueAt',
   slaWarningSentAt: 'slaWarningSentAt',
   slaBreachSentAt: 'slaBreachSentAt',

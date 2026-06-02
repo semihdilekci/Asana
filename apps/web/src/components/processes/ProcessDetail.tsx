@@ -7,6 +7,8 @@ import { toast } from 'sonner';
 
 import { Permission } from '@leanmgmt/shared-types';
 
+import { Alert, Button, ButtonLink, Card } from '@/components/base';
+import { ActionPerformerLine } from '@/components/shared/ActionPerformerLine';
 import { useHasPermission } from '@/hooks/usePermissions';
 import { apiClient } from '@/lib/api-client';
 import { useProcessDetailQuery } from '@/lib/queries/processes';
@@ -62,43 +64,47 @@ export function ProcessDetail({ displayId }: { displayId: string }) {
       const code = error.response?.data?.error?.code as string | undefined;
       if (status === 403 && code === 'PROCESS_ACCESS_DENIED') {
         return (
-          <div className="ls-alert ls-alert--danger" role="alert">
+          <Alert variant="error">
             <p>Bu sürece erişim yetkiniz yok.</p>
-            <button
-              type="button"
-              className="ls-btn ls-btn--neutral ls-btn--sm mt-[var(--space-2)]"
-              onClick={() => router.push(listHref)}
+            <Button
+              color="secondary"
+              size="sm"
+              className="mt-[var(--space-2)]"
+              onPress={() => router.push(listHref)}
             >
               {listLabel} listesine dön
-            </button>
-          </div>
+            </Button>
+          </Alert>
         );
       }
       if (status === 404) {
         return (
-          <div className="ls-alert ls-alert--danger" role="alert">
+          <Alert variant="error">
             <p>Süreç bulunamadı.</p>
-            <Link
+            <ButtonLink
               href={listHref}
-              className="ls-btn ls-btn--neutral ls-btn--sm mt-[var(--space-2)] inline-flex"
+              color="secondary"
+              size="sm"
+              className="mt-[var(--space-2)] inline-flex"
             >
               {listLabel} listesine dön
-            </Link>
-          </div>
+            </ButtonLink>
+          </Alert>
         );
       }
     }
     return (
-      <div className="ls-alert ls-alert--danger" role="alert">
+      <Alert variant="error">
         <p>Detay yüklenemedi.</p>
-        <button
-          type="button"
-          className="ls-btn ls-btn--neutral ls-btn--sm mt-[var(--space-2)]"
-          onClick={() => refetch()}
+        <Button
+          color="secondary"
+          size="sm"
+          className="mt-[var(--space-2)]"
+          onPress={() => void refetch()}
         >
           Tekrar dene
-        </button>
-      </div>
+        </Button>
+      </Alert>
     );
   }
 
@@ -125,56 +131,59 @@ export function ProcessDetail({ displayId }: { displayId: string }) {
         <ProcessDetailActions detail={data} />
       </div>
 
-      <section
-        className="ls-card space-y-[var(--space-4)] p-[var(--space-5)]"
-        aria-labelledby="process-meta-heading"
-      >
-        <h2
-          id="process-meta-heading"
-          className="text-lg font-semibold text-[var(--color-neutral-900)]"
-        >
-          Özet
-        </h2>
-        <dl className="grid gap-[var(--space-3)] text-sm sm:grid-cols-2">
-          <div>
-            <dt className="text-[var(--color-neutral-500)]">Başlatan</dt>
-            <dd className="text-[var(--color-neutral-800)]">
-              {data.startedBy.firstName} {data.startedBy.lastName}
-              {data.startedBy.sicil ? ` · Sicil ${data.startedBy.sicil}` : ''}
-            </dd>
-          </div>
-          <div>
-            <dt className="text-[var(--color-neutral-500)]">Şirket</dt>
-            <dd className="text-[var(--color-neutral-800)]">{data.company.name}</dd>
-          </div>
-          <div>
-            <dt className="text-[var(--color-neutral-500)]">Başlangıç</dt>
-            <dd className="text-[var(--color-neutral-800)]">
-              {new Date(data.startedAt).toLocaleString('tr-TR')}
-            </dd>
-          </div>
-          {data.completedAt ? (
+      <section aria-labelledby="process-meta-heading">
+        <Card className="space-y-[var(--space-4)] p-[var(--space-5)]">
+          <h2
+            id="process-meta-heading"
+            className="text-lg font-semibold text-[var(--color-neutral-900)]"
+          >
+            Özet
+          </h2>
+          <dl className="grid gap-[var(--space-3)] text-sm sm:grid-cols-2">
             <div>
-              <dt className="text-[var(--color-neutral-500)]">Tamamlanma</dt>
+              <dt className="text-[var(--color-neutral-500)]">Başlatan</dt>
               <dd className="text-[var(--color-neutral-800)]">
-                {new Date(data.completedAt).toLocaleString('tr-TR')}
+                <ActionPerformerLine
+                  roleLabel=""
+                  performerDisplayLabel={data.performerDisplayLabel}
+                  performedViaImpersonation={data.performedViaImpersonation}
+                  user={data.startedBy}
+                />
               </dd>
             </div>
-          ) : null}
-          {data.cancelledAt ? (
             <div>
-              <dt className="text-[var(--color-neutral-500)]">İptal</dt>
+              <dt className="text-[var(--color-neutral-500)]">Şirket</dt>
+              <dd className="text-[var(--color-neutral-800)]">{data.company.name}</dd>
+            </div>
+            <div>
+              <dt className="text-[var(--color-neutral-500)]">Başlangıç</dt>
               <dd className="text-[var(--color-neutral-800)]">
-                {new Date(data.cancelledAt).toLocaleString('tr-TR')}
+                {new Date(data.startedAt).toLocaleString('tr-TR')}
               </dd>
             </div>
+            {data.completedAt ? (
+              <div>
+                <dt className="text-[var(--color-neutral-500)]">Tamamlanma</dt>
+                <dd className="text-[var(--color-neutral-800)]">
+                  {new Date(data.completedAt).toLocaleString('tr-TR')}
+                </dd>
+              </div>
+            ) : null}
+            {data.cancelledAt ? (
+              <div>
+                <dt className="text-[var(--color-neutral-500)]">İptal</dt>
+                <dd className="text-[var(--color-neutral-800)]">
+                  {new Date(data.cancelledAt).toLocaleString('tr-TR')}
+                </dd>
+              </div>
+            ) : null}
+          </dl>
+          {data.cancelReason ? (
+            <div className="rounded-[var(--radius-md)] bg-[var(--color-primary-a14)] p-[var(--space-3)] text-sm text-[var(--color-neutral-800)]">
+              <strong className="font-medium">İptal gerekçesi:</strong> {data.cancelReason}
+            </div>
           ) : null}
-        </dl>
-        {data.cancelReason ? (
-          <div className="rounded-[var(--radius-md)] bg-[var(--color-primary-a14)] p-[var(--space-3)] text-sm text-[var(--color-neutral-800)]">
-            <strong className="font-medium">İptal gerekçesi:</strong> {data.cancelReason}
-          </div>
-        ) : null}
+        </Card>
       </section>
 
       <section className="space-y-[var(--space-4)]" aria-labelledby="process-tasks-heading">
@@ -199,23 +208,23 @@ export function ProcessDetail({ displayId }: { displayId: string }) {
         ) : (
           <ul className="grid gap-[var(--space-3)] sm:grid-cols-2">
             {data.documents.map((doc) => (
-              <li
-                key={doc.id}
-                className="ls-card flex flex-col gap-[var(--space-2)] p-[var(--space-4)]"
-              >
-                <span className="truncate text-sm font-medium text-[var(--color-neutral-900)]">
-                  {doc.filename}
-                </span>
-                <span className="text-xs text-[var(--color-neutral-500)]">{doc.scanStatus}</span>
-                {doc.scanStatus === 'CLEAN' ? (
-                  <button
-                    type="button"
-                    className="ls-btn ls-btn--neutral ls-btn--sm self-start"
-                    onClick={() => void handleDownload(doc.id)}
-                  >
-                    İndir
-                  </button>
-                ) : null}
+              <li key={doc.id}>
+                <Card className="flex flex-col gap-[var(--space-2)] p-[var(--space-4)]">
+                  <span className="truncate text-sm font-medium text-[var(--color-neutral-900)]">
+                    {doc.filename}
+                  </span>
+                  <span className="text-xs text-[var(--color-neutral-500)]">{doc.scanStatus}</span>
+                  {doc.scanStatus === 'CLEAN' ? (
+                    <Button
+                      color="secondary"
+                      size="sm"
+                      className="self-start"
+                      onPress={() => void handleDownload(doc.id)}
+                    >
+                      İndir
+                    </Button>
+                  ) : null}
+                </Card>
               </li>
             ))}
           </ul>

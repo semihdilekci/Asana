@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 
+import { Button, inputClassName } from '@/components/base';
 import { RoleRuleValueInput } from '@/components/roles/RoleRuleValueInput';
 import type { LocalCond } from '@/components/roles/role-rule-local';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
@@ -179,7 +180,7 @@ function RuleEditor({
           {set.conditions.map((c, ci) => (
             <div key={ci} className="mb-2 flex flex-wrap items-end gap-2">
               <select
-                className="ls-input text-xs"
+                className={inputClassName('sm', 'text-xs')}
                 value={c.attributeKey}
                 onChange={(e) => {
                   setLocal((prev) =>
@@ -205,7 +206,7 @@ function RuleEditor({
                 ))}
               </select>
               <select
-                className="ls-input text-xs"
+                className={inputClassName('sm', 'text-xs')}
                 value={c.operator}
                 onChange={(e) => {
                   setLocal((prev) =>
@@ -251,10 +252,10 @@ function RuleEditor({
           ))}
         </div>
       ))}
-      <button
-        type="button"
-        className="ls-btn ls-btn--primary ls-btn--sm"
-        onClick={() =>
+      <Button
+        color="primary"
+        size="sm"
+        onPress={() =>
           void onSave(
             local.map((s) => ({
               conditions: s.conditions.map((c) => ({
@@ -267,7 +268,7 @@ function RuleEditor({
         }
       >
         Kaydet
-      </button>
+      </Button>
     </div>
   );
 }

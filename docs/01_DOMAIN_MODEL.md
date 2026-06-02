@@ -165,13 +165,13 @@ Sistemde gerçekleştirilebilecek bir aksiyon veya erişim hakkının kod enum d
 **Naming convention:**
 
 - Format: `SCOPE_RESOURCE_ACTION` (UPPER_SNAKE_CASE).
-- Örnekler: `USER_CREATE`, `USER_UPDATE_ATTRIBUTE`, `ROLE_ASSIGN`, `PROCESS_KTI_START`, `PROCESS_CANCEL`, `PROCESS_ROLLBACK`, `MASTER_DATA_MANAGE`, `AUDIT_LOG_VIEW`, `SYSTEM_SETTINGS_EDIT`, `DOCUMENT_UPLOAD`.
+- Örnekler: `USER_CREATE`, `USER_UPDATE_ATTRIBUTE`, `USER_IMPERSONATION`, `ROLE_ASSIGN`, `PROCESS_KTI_START`, `PROCESS_CANCEL`, `PROCESS_ROLLBACK`, `MASTER_DATA_MANAGE`, `AUDIT_LOG_VIEW`, `SYSTEM_SETTINGS_EDIT`, `DOCUMENT_UPLOAD`.
 - Somut tam liste API endpoint katalogundan türetilir; domain açısından burada naming kuralı ve kategori şablonu tanımlıdır.
 
 **Dört kategori (yetki katmanı):**
 
 - **Menu / page** — kullanıcı ekranı görebilir mi (örn. `AUDIT_LOG_VIEW`).
-- **Action** — kullanıcı bu işlemi yapabilir mi (örn. `PROCESS_KTI_START`, `PROCESS_CANCEL`).
+- **Action** — kullanıcı bu işlemi yapabilir mi (örn. `PROCESS_KTI_START`, `PROCESS_CANCEL`, `USER_IMPERSONATION` — hassas).
 - **Data** — kullanıcı bu kaydı görebilir mi (genelde attribute bazlı filtreleme; doğrudan permission olarak değil, service layer'da şirket/lokasyon filtresi olarak enforce edilir).
 - **Field** — kullanıcı bu alanı görebilir/düzenleyebilir mi (ileri iterasyon; MVP'de aktif kullanım yok).
 

@@ -61,6 +61,9 @@ export interface TaskPreviousTask {
   /** Yönetici onay adımında girilen gerekçe (REJECT / REQUEST_REVISION için). */
   reason?: string | null;
   formData: unknown;
+  performedViaImpersonation?: boolean;
+  performerDisplayLabel?: string;
+  actionActor?: TaskListUserBrief;
 }
 
 export interface TaskDetail {
@@ -91,6 +94,25 @@ export interface TaskCompleteResponse {
   completedAt: string;
   nextTaskId: string | null;
   processStatus: string;
+}
+
+const TASK_COUNT_STALE = 15_000;
+const TASK_COUNT_REFETCH = 30_000;
+
+export function useActiveTaskCountQuery(enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.tasks.activeCount(),
+    queryFn: async () => {
+      const res = await apiClient.get<{
+        success: boolean;
+        data: { activeCount: number };
+      }>('/api/v1/tasks/active-count');
+      return res.data.data.activeCount;
+    },
+    staleTime: TASK_COUNT_STALE,
+    refetchInterval: TASK_COUNT_REFETCH,
+    enabled,
+  });
 }
 
 export function useTasksInfiniteQuery(filters: Omit<TaskListQuery, 'cursor'>, enabled = true) {
@@ -146,6 +168,7 @@ export function useTaskClaimMutation(taskId: string) {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.tasks.detail(taskId) });
       void queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.tasks.activeCount() });
     },
   });
 }
@@ -163,6 +186,7 @@ export function useTaskCompleteMutation(taskId: string, displayId: string) {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.tasks.detail(taskId) });
       void queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.tasks.activeCount() });
       void queryClient.invalidateQueries({ queryKey: queryKeys.processes.detail(displayId) });
       void queryClient.invalidateQueries({ queryKey: queryKeys.processes.lists() });
     },

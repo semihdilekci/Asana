@@ -3,13 +3,14 @@ import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import type { User } from '@leanmgmt/prisma-client';
+import type { Prisma, User } from '@leanmgmt/prisma-client';
 import type { FastifyReply } from 'fastify';
 import bcrypt from 'bcrypt';
 
 import type {
   ChangePasswordInput,
   ConsentAcceptInput,
+  ImpersonateStartInput,
   LoginInput,
   PasswordResetConfirmInput,
   PasswordResetRequestInput,
@@ -17,6 +18,7 @@ import type {
 } from '@leanmgmt/shared-schemas';
 
 import { AuditLogService } from '../common/audit/audit-log.service.js';
+import type { AuthenticatedUser } from '../common/decorators/current-user.decorator.js';
 import { AppException } from '../common/exceptions/app.exception.js';
 import { EncryptionService } from '../common/encryption/encryption.service.js';
 import type { Env } from '../config/env.schema.js';
@@ -30,6 +32,10 @@ import { PermissionResolverService } from '../roles/permission-resolver.service.
 import {
   AuthAccountLockedException,
   AuthAccountPassiveException,
+  AuthImpersonationForbiddenException,
+  AuthImpersonationNotActiveException,
+  AuthImpersonationTargetInactiveException,
+  AuthImpersonationTargetNotFoundException,
   AuthInvalidCredentialsException,
   AuthIpNotWhitelistedException,
   AuthSessionRevokedException,
@@ -395,7 +401,11 @@ export class AuthService {
       maxAge: 14 * 24 * 3600,
     });
 
-    const userPayload = await this.getMe(userId);
+    const userPayload = await this.getMe({
+      id: userId,
+      sessionId: session.id,
+      jti,
+    });
 
     await this.maybeNotifyPasswordExpiryAfterLogin(userId);
 
@@ -405,6 +415,374 @@ export class AuthService {
       csrfToken: csrf,
       user: userPayload,
     };
+  }
+
+  private impersonationSessionKey(sessionId: string): string {
+    return `impersonation:session:${sessionId}`;
+  }
+
+  private async revokeAccessJti(jti: string): Promise<void> {
+    await this.redis.raw.set(`access_jti_revoked:${jti}`, '1', 'EX', 15 * 60);
+  }
+
+  private async getImpersonationForSession(
+    sessionId: string,
+  ): Promise<{ impersonatorId: string; targetUserId: string } | null> {
+    const raw = await this.redis.raw.get(this.impersonationSessionKey(sessionId));
+    if (!raw) return null;
+    return JSON.parse(raw) as { impersonatorId: string; targetUserId: string };
+  }
+
+  private async setImpersonationForSession(
+    sessionId: string,
+    impersonatorId: string,
+    targetUserId: string,
+  ): Promise<void> {
+    await this.redis.raw.set(
+      this.impersonationSessionKey(sessionId),
+      JSON.stringify({ impersonatorId, targetUserId }),
+      'EX',
+      14 * 24 * 3600,
+    );
+  }
+
+  private async clearImpersonationForSession(sessionId: string): Promise<void> {
+    await this.redis.raw.del(this.impersonationSessionKey(sessionId));
+  }
+
+  private async copyImpersonationSession(
+    fromSessionId: string,
+    toSessionId: string,
+  ): Promise<void> {
+    const state = await this.getImpersonationForSession(fromSessionId);
+    if (!state) return;
+    await this.setImpersonationForSession(toSessionId, state.impersonatorId, state.targetUserId);
+    await this.clearImpersonationForSession(fromSessionId);
+  }
+
+  private async assertImpersonationTarget(
+    impersonatorId: string,
+    targetUserId: string,
+  ): Promise<void> {
+    if (targetUserId === impersonatorId) {
+      throw new AuthImpersonationForbiddenException();
+    }
+
+    const target = await this.prisma.user.findUnique({
+      where: { id: targetUserId },
+      select: { id: true, isActive: true, firstName: true, lastName: true, sicilEncrypted: true },
+    });
+    if (!target) {
+      throw new AuthImpersonationTargetNotFoundException();
+    }
+    if (!target.isActive) {
+      throw new AuthImpersonationTargetInactiveException();
+    }
+    if (await this.isSuperadminUser(targetUserId)) {
+      throw new AuthImpersonationForbiddenException();
+    }
+  }
+
+  private async buildImpersonatorSummary(
+    impersonatorId: string,
+  ): Promise<{ id: string; sicil: string; firstName: string; lastName: string }> {
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: { id: impersonatorId },
+      select: { id: true, firstName: true, lastName: true, sicilEncrypted: true },
+    });
+    return {
+      id: user.id,
+      sicil: this.encryption.decryptSicil(user.sicilEncrypted),
+      firstName: user.firstName,
+      lastName: user.lastName,
+    };
+  }
+
+  private async issueImpersonationAccessResponse(params: {
+    sessionId: string;
+    impersonatorId: string;
+    targetUserId: string;
+    previousJti: string;
+  }): Promise<{
+    accessToken: string;
+    accessTokenExpiresAt: string;
+    csrfToken: string;
+    user: Record<string, unknown>;
+  }> {
+    await this.revokeAccessJti(params.previousJti);
+
+    const session = await this.prisma.session.findUnique({ where: { id: params.sessionId } });
+    if (!session || session.status !== 'ACTIVE') {
+      throw new AuthSessionRevokedException();
+    }
+
+    const jti = randomBytes(16).toString('hex');
+    const accessToken = await this.jwt.signAsync<AccessTokenPayload>(
+      {
+        sub: params.targetUserId,
+        imp: params.impersonatorId,
+        sid: params.sessionId,
+        jti,
+      },
+      {
+        secret: this.config.get('JWT_ACCESS_SECRET_CURRENT', { infer: true }),
+        algorithm: 'HS256',
+        expiresIn: '15m',
+      },
+    );
+    const decoded = this.jwt.decode(accessToken) as { exp?: number } | null;
+    const accessTokenExpiresAt = new Date((decoded?.exp ?? 0) * 1000).toISOString();
+
+    const storedCsrf = await this.redis.raw.get(`csrf:${params.sessionId}`);
+    const csrfToken = storedCsrf ?? randomBytes(32).toString('base64url');
+
+    const user = await this.getMe({
+      id: params.targetUserId,
+      sessionId: params.sessionId,
+      jti,
+      impersonatorId: params.impersonatorId,
+    });
+
+    return { accessToken, accessTokenExpiresAt, csrfToken, user };
+  }
+
+  private async issueNormalAccessResponse(params: {
+    sessionId: string;
+    userId: string;
+    previousJti: string;
+  }): Promise<{
+    accessToken: string;
+    accessTokenExpiresAt: string;
+    csrfToken: string;
+    user: Record<string, unknown>;
+  }> {
+    await this.revokeAccessJti(params.previousJti);
+
+    const session = await this.prisma.session.findUnique({ where: { id: params.sessionId } });
+    if (!session || session.status !== 'ACTIVE') {
+      throw new AuthSessionRevokedException();
+    }
+
+    const jti = randomBytes(16).toString('hex');
+    const accessToken = await this.jwt.signAsync<AccessTokenPayload>(
+      { sub: params.userId, sid: params.sessionId, jti },
+      {
+        secret: this.config.get('JWT_ACCESS_SECRET_CURRENT', { infer: true }),
+        algorithm: 'HS256',
+        expiresIn: '15m',
+      },
+    );
+    const decoded = this.jwt.decode(accessToken) as { exp?: number } | null;
+    const accessTokenExpiresAt = new Date((decoded?.exp ?? 0) * 1000).toISOString();
+
+    const storedCsrf = await this.redis.raw.get(`csrf:${params.sessionId}`);
+    const csrfToken = storedCsrf ?? randomBytes(32).toString('base64url');
+
+    const user = await this.getMe({
+      id: params.userId,
+      sessionId: params.sessionId,
+      jti,
+    });
+
+    return { accessToken, accessTokenExpiresAt, csrfToken, user };
+  }
+
+  private async buildTargetUserAuditMetadata(targetUserId: string): Promise<{
+    targetUserId: string;
+    targetSicil: string | null;
+    targetDisplayName: string;
+  }> {
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: { id: targetUserId },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        sicilEncrypted: true,
+        anonymizedAt: true,
+      },
+    });
+    return {
+      targetUserId: user.id,
+      targetSicil: user.anonymizedAt
+        ? null
+        : this.encryption.decryptSicil(user.sicilEncrypted as unknown as Buffer),
+      targetDisplayName: `${user.firstName} ${user.lastName}`.trim(),
+    };
+  }
+
+  private async appendImpersonationLifecycleAudit(params: {
+    action: 'IMPERSONATION_STARTED' | 'IMPERSONATION_STOPPED' | 'IMPERSONATION_SWITCHED';
+    impersonatorId: string;
+    sessionId: string;
+    ip: string;
+    userAgent?: string;
+    metadata?: Prisma.InputJsonValue;
+  }): Promise<void> {
+    await this.audit.append({
+      userId: params.impersonatorId,
+      action: params.action,
+      entity: 'session',
+      entityId: params.sessionId,
+      sessionId: params.sessionId,
+      ipHash: this.ipHash(params.ip),
+      userAgent: params.userAgent ?? null,
+      metadata: params.metadata,
+    });
+  }
+
+  async impersonateStart(
+    actor: AuthenticatedUser,
+    dto: ImpersonateStartInput,
+    ip: string,
+    userAgent?: string,
+  ): Promise<{
+    accessToken: string;
+    accessTokenExpiresAt: string;
+    csrfToken: string;
+    user: Record<string, unknown>;
+  }> {
+    const impersonatorId = actor.impersonatorId ?? actor.id;
+    if (actor.impersonatorId) {
+      const previousTargetUserId = actor.id;
+      const result = await this.switchImpersonationTarget(actor, dto.targetUserId, impersonatorId);
+      const [previousMeta, newMeta] = await Promise.all([
+        this.buildTargetUserAuditMetadata(previousTargetUserId),
+        this.buildTargetUserAuditMetadata(dto.targetUserId),
+      ]);
+      await this.appendImpersonationLifecycleAudit({
+        action: 'IMPERSONATION_SWITCHED',
+        impersonatorId,
+        sessionId: actor.sessionId,
+        ip,
+        userAgent,
+        metadata: {
+          previousTargetUserId: previousMeta.targetUserId,
+          previousTargetSicil: previousMeta.targetSicil,
+          previousTargetDisplayName: previousMeta.targetDisplayName,
+          newTargetUserId: newMeta.targetUserId,
+          newTargetSicil: newMeta.targetSicil,
+          newTargetDisplayName: newMeta.targetDisplayName,
+        } satisfies Prisma.JsonObject,
+      });
+      return result;
+    }
+
+    await this.assertImpersonationTarget(impersonatorId, dto.targetUserId);
+    await this.setImpersonationForSession(actor.sessionId, impersonatorId, dto.targetUserId);
+
+    const result = await this.issueImpersonationAccessResponse({
+      sessionId: actor.sessionId,
+      impersonatorId,
+      targetUserId: dto.targetUserId,
+      previousJti: actor.jti,
+    });
+    await this.appendImpersonationLifecycleAudit({
+      action: 'IMPERSONATION_STARTED',
+      impersonatorId,
+      sessionId: actor.sessionId,
+      ip,
+      userAgent,
+      metadata: (await this.buildTargetUserAuditMetadata(
+        dto.targetUserId,
+      )) satisfies Prisma.JsonObject,
+    });
+    return result;
+  }
+
+  async impersonateStop(
+    actor: AuthenticatedUser,
+    ip: string,
+    userAgent?: string,
+  ): Promise<{
+    accessToken: string;
+    accessTokenExpiresAt: string;
+    csrfToken: string;
+    user: Record<string, unknown>;
+  }> {
+    if (!actor.impersonatorId) {
+      throw new AuthImpersonationNotActiveException();
+    }
+
+    const impersonatorId = actor.impersonatorId;
+    const targetMeta = await this.buildTargetUserAuditMetadata(actor.id);
+    await this.clearImpersonationForSession(actor.sessionId);
+
+    const result = await this.issueNormalAccessResponse({
+      sessionId: actor.sessionId,
+      userId: impersonatorId,
+      previousJti: actor.jti,
+    });
+    await this.appendImpersonationLifecycleAudit({
+      action: 'IMPERSONATION_STOPPED',
+      impersonatorId,
+      sessionId: actor.sessionId,
+      ip,
+      userAgent,
+      metadata: targetMeta satisfies Prisma.JsonObject,
+    });
+    return result;
+  }
+
+  async impersonateSwitch(
+    actor: AuthenticatedUser,
+    dto: ImpersonateStartInput,
+    ip: string,
+    userAgent?: string,
+  ): Promise<{
+    accessToken: string;
+    accessTokenExpiresAt: string;
+    csrfToken: string;
+    user: Record<string, unknown>;
+  }> {
+    if (!actor.impersonatorId) {
+      throw new AuthImpersonationNotActiveException();
+    }
+
+    const previousTargetUserId = actor.id;
+    const impersonatorId = actor.impersonatorId;
+    const result = await this.switchImpersonationTarget(actor, dto.targetUserId, impersonatorId);
+    const [previousMeta, newMeta] = await Promise.all([
+      this.buildTargetUserAuditMetadata(previousTargetUserId),
+      this.buildTargetUserAuditMetadata(dto.targetUserId),
+    ]);
+    await this.appendImpersonationLifecycleAudit({
+      action: 'IMPERSONATION_SWITCHED',
+      impersonatorId,
+      sessionId: actor.sessionId,
+      ip,
+      userAgent,
+      metadata: {
+        previousTargetUserId: previousMeta.targetUserId,
+        previousTargetSicil: previousMeta.targetSicil,
+        previousTargetDisplayName: previousMeta.targetDisplayName,
+        newTargetUserId: newMeta.targetUserId,
+        newTargetSicil: newMeta.targetSicil,
+        newTargetDisplayName: newMeta.targetDisplayName,
+      } satisfies Prisma.JsonObject,
+    });
+    return result;
+  }
+
+  private async switchImpersonationTarget(
+    actor: AuthenticatedUser,
+    targetUserId: string,
+    impersonatorId: string,
+  ): Promise<{
+    accessToken: string;
+    accessTokenExpiresAt: string;
+    csrfToken: string;
+    user: Record<string, unknown>;
+  }> {
+    await this.assertImpersonationTarget(impersonatorId, targetUserId);
+    await this.setImpersonationForSession(actor.sessionId, impersonatorId, targetUserId);
+
+    return this.issueImpersonationAccessResponse({
+      sessionId: actor.sessionId,
+      impersonatorId,
+      targetUserId,
+      previousJti: actor.jti,
+    });
   }
 
   async login(
@@ -555,10 +933,19 @@ export class AuthService {
 
     await this.redis.raw.del(`csrf:${session.id}`);
     await this.redis.raw.set(`csrf:${newSessionRow.id}`, newCsrf, 'EX', 14 * 24 * 3600);
+    await this.copyImpersonationSession(session.id, newSessionRow.id);
+
+    const impersonation = await this.getImpersonationForSession(newSessionRow.id);
+    const effectiveUserId = impersonation?.targetUserId ?? user.id;
 
     const jti = randomBytes(16).toString('hex');
     const accessToken = await this.jwt.signAsync<AccessTokenPayload>(
-      { sub: user.id, sid: newSessionRow.id, jti },
+      {
+        sub: effectiveUserId,
+        sid: newSessionRow.id,
+        jti,
+        ...(impersonation ? { imp: impersonation.impersonatorId } : {}),
+      },
       {
         secret: this.config.get('JWT_ACCESS_SECRET_CURRENT', { infer: true }),
         algorithm: 'HS256',
@@ -594,6 +981,7 @@ export class AuthService {
     refreshCookie: string | undefined,
     reply: FastifyReply,
   ): Promise<void> {
+    const realUserId = actor.imp ?? actor.sub;
     const session = await this.prisma.session.findUnique({ where: { id: actor.sid } });
     const ipH = this.ipHash(ip);
 
@@ -611,7 +999,7 @@ export class AuthService {
     if (refreshCookie) {
       const h = sha256Hex(refreshCookie);
       await this.prisma.session.updateMany({
-        where: { refreshTokenHash: h, userId: actor.sub, status: 'ACTIVE' },
+        where: { refreshTokenHash: h, userId: realUserId, status: 'ACTIVE' },
         data: {
           status: 'REVOKED',
           revokedAt: new Date(),
@@ -621,15 +1009,16 @@ export class AuthService {
     }
 
     await this.redis.raw.del(`csrf:${actor.sid}`);
+    await this.clearImpersonationForSession(actor.sid);
 
     const accessTtl = 15 * 60;
     await this.redis.raw.set(`access_jti_revoked:${actor.jti}`, '1', 'EX', accessTtl);
 
     await this.audit.append({
-      userId: actor.sub,
+      userId: realUserId,
       action: 'USER_LOGOUT',
       entity: 'user',
-      entityId: actor.sub,
+      entityId: realUserId,
       ipHash: ipH,
       userAgent: userAgent.slice(0, 512),
       sessionId: actor.sid,
@@ -987,7 +1376,8 @@ export class AuthService {
     return { avatarKey: dto.avatarKey };
   }
 
-  async getMe(userId: string): Promise<Record<string, unknown>> {
+  async getMe(actor: AuthenticatedUser): Promise<Record<string, unknown>> {
+    const userId = actor.id;
     const user = await this.prisma.user.findUniqueOrThrow({
       where: { id: userId },
       include: {
@@ -1062,6 +1452,12 @@ export class AuthService {
       activeConsentVersionId,
       consentAccepted,
       passwordExpiresAt,
+      impersonation: actor.impersonatorId
+        ? {
+            active: true,
+            impersonator: await this.buildImpersonatorSummary(actor.impersonatorId),
+          }
+        : { active: false, impersonator: null },
     };
   }
 }

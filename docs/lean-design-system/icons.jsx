@@ -1,4 +1,5 @@
-/* Icon library — stroke-based 24×24 */
+/* DEPRECATED — Faz 12 tamamlandı. Yeni kod: @untitledui/icons veya apps/web/src/components/base/icons/
+ * Icon library — stroke-based 24×24 (referans only) */
 const I = {
   home: () => <svg className="ls-ic" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a2 2 0 0 1-2 2h-4v-7H9v7H5a2 2 0 0 1-2-2z"/></svg>,
   check: () => <svg className="ls-ic" viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg>,

@@ -2,6 +2,7 @@
 
 import type { FieldErrors, UseFormRegister } from 'react-hook-form';
 
+import { inputClassName } from '@/components/base';
 import type { TaskFormSchemaField } from '@/lib/queries/tasks';
 
 interface TaskFormProps {
@@ -33,7 +34,7 @@ export function TaskForm({ fields, register, errors, disabled }: TaskFormProps) 
                 id={`task-field-${f.name}`}
                 rows={4}
                 maxLength={f.maxLength}
-                className="ls-input min-h-[6rem] w-full"
+                className={inputClassName('md', 'min-h-[6rem] w-full')}
                 disabled={disabled}
                 {...register(f.name)}
               />
@@ -52,7 +53,7 @@ export function TaskForm({ fields, register, errors, disabled }: TaskFormProps) 
             <input
               id={`task-field-${f.name}`}
               type="text"
-              className="ls-input w-full max-w-md"
+              className={inputClassName('md', 'w-full max-w-md')}
               disabled={disabled}
               {...register(f.name)}
             />

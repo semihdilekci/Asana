@@ -15,6 +15,8 @@ export type AuditLogRow = {
   timestamp: string;
   userId: string | null;
   user: { sicil: string | null; firstName: string; lastName: string } | null;
+  actorDisplayLabel: string | null;
+  isImpersonationMutating: boolean;
   action: string;
   entity: string;
   entityId: string | null;

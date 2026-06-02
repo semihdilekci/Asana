@@ -83,6 +83,7 @@ export type TaskCountAggregateOutputType = {
   completionAction: number;
   completionReason: number;
   formData: number;
+  actionContext: number;
   slaDueAt: number;
   slaWarningSentAt: number;
   slaBreachSentAt: number;
@@ -153,6 +154,7 @@ export type TaskCountAggregateInputType = {
   completionAction?: true;
   completionReason?: true;
   formData?: true;
+  actionContext?: true;
   slaDueAt?: true;
   slaWarningSentAt?: true;
   slaBreachSentAt?: true;
@@ -262,6 +264,7 @@ export type TaskGroupByOutputType = {
   completionAction: string | null;
   completionReason: string | null;
   formData: runtime.JsonValue | null;
+  actionContext: runtime.JsonValue | null;
   slaDueAt: Date | null;
   slaWarningSentAt: Date | null;
   slaBreachSentAt: Date | null;
@@ -303,6 +306,7 @@ export type TaskWhereInput = {
   completionAction?: Prisma.StringNullableFilter<'Task'> | string | null;
   completionReason?: Prisma.StringNullableFilter<'Task'> | string | null;
   formData?: Prisma.JsonNullableFilter<'Task'>;
+  actionContext?: Prisma.JsonNullableFilter<'Task'>;
   slaDueAt?: Prisma.DateTimeNullableFilter<'Task'> | Date | string | null;
   slaWarningSentAt?: Prisma.DateTimeNullableFilter<'Task'> | Date | string | null;
   slaBreachSentAt?: Prisma.DateTimeNullableFilter<'Task'> | Date | string | null;
@@ -329,6 +333,7 @@ export type TaskOrderByWithRelationInput = {
   completionAction?: Prisma.SortOrderInput | Prisma.SortOrder;
   completionReason?: Prisma.SortOrderInput | Prisma.SortOrder;
   formData?: Prisma.SortOrderInput | Prisma.SortOrder;
+  actionContext?: Prisma.SortOrderInput | Prisma.SortOrder;
   slaDueAt?: Prisma.SortOrderInput | Prisma.SortOrder;
   slaWarningSentAt?: Prisma.SortOrderInput | Prisma.SortOrder;
   slaBreachSentAt?: Prisma.SortOrderInput | Prisma.SortOrder;
@@ -359,6 +364,7 @@ export type TaskWhereUniqueInput = Prisma.AtLeast<
     completionAction?: Prisma.StringNullableFilter<'Task'> | string | null;
     completionReason?: Prisma.StringNullableFilter<'Task'> | string | null;
     formData?: Prisma.JsonNullableFilter<'Task'>;
+    actionContext?: Prisma.JsonNullableFilter<'Task'>;
     slaDueAt?: Prisma.DateTimeNullableFilter<'Task'> | Date | string | null;
     slaWarningSentAt?: Prisma.DateTimeNullableFilter<'Task'> | Date | string | null;
     slaBreachSentAt?: Prisma.DateTimeNullableFilter<'Task'> | Date | string | null;
@@ -387,6 +393,7 @@ export type TaskOrderByWithAggregationInput = {
   completionAction?: Prisma.SortOrderInput | Prisma.SortOrder;
   completionReason?: Prisma.SortOrderInput | Prisma.SortOrder;
   formData?: Prisma.SortOrderInput | Prisma.SortOrder;
+  actionContext?: Prisma.SortOrderInput | Prisma.SortOrder;
   slaDueAt?: Prisma.SortOrderInput | Prisma.SortOrder;
   slaWarningSentAt?: Prisma.SortOrderInput | Prisma.SortOrder;
   slaBreachSentAt?: Prisma.SortOrderInput | Prisma.SortOrder;
@@ -416,6 +423,7 @@ export type TaskScalarWhereWithAggregatesInput = {
   completionAction?: Prisma.StringNullableWithAggregatesFilter<'Task'> | string | null;
   completionReason?: Prisma.StringNullableWithAggregatesFilter<'Task'> | string | null;
   formData?: Prisma.JsonNullableWithAggregatesFilter<'Task'>;
+  actionContext?: Prisma.JsonNullableWithAggregatesFilter<'Task'>;
   slaDueAt?: Prisma.DateTimeNullableWithAggregatesFilter<'Task'> | Date | string | null;
   slaWarningSentAt?: Prisma.DateTimeNullableWithAggregatesFilter<'Task'> | Date | string | null;
   slaBreachSentAt?: Prisma.DateTimeNullableWithAggregatesFilter<'Task'> | Date | string | null;
@@ -436,6 +444,7 @@ export type TaskCreateInput = {
   completionAction?: string | null;
   completionReason?: string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Date | string | null;
   slaWarningSentAt?: Date | string | null;
   slaBreachSentAt?: Date | string | null;
@@ -460,6 +469,7 @@ export type TaskUncheckedCreateInput = {
   completionAction?: string | null;
   completionReason?: string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Date | string | null;
   slaWarningSentAt?: Date | string | null;
   slaBreachSentAt?: Date | string | null;
@@ -482,6 +492,7 @@ export type TaskUpdateInput = {
   completionAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   completionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaWarningSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaBreachSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
@@ -506,6 +517,7 @@ export type TaskUncheckedUpdateInput = {
   completionAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   completionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaWarningSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaBreachSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
@@ -529,6 +541,7 @@ export type TaskCreateManyInput = {
   completionAction?: string | null;
   completionReason?: string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Date | string | null;
   slaWarningSentAt?: Date | string | null;
   slaBreachSentAt?: Date | string | null;
@@ -549,6 +562,7 @@ export type TaskUpdateManyMutationInput = {
   completionAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   completionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaWarningSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaBreachSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
@@ -568,6 +582,7 @@ export type TaskUncheckedUpdateManyInput = {
   completionAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   completionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaWarningSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaBreachSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
@@ -599,6 +614,7 @@ export type TaskCountOrderByAggregateInput = {
   completionAction?: Prisma.SortOrder;
   completionReason?: Prisma.SortOrder;
   formData?: Prisma.SortOrder;
+  actionContext?: Prisma.SortOrder;
   slaDueAt?: Prisma.SortOrder;
   slaWarningSentAt?: Prisma.SortOrder;
   slaBreachSentAt?: Prisma.SortOrder;
@@ -997,6 +1013,7 @@ export type TaskCreateWithoutCompletedByInput = {
   completionAction?: string | null;
   completionReason?: string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Date | string | null;
   slaWarningSentAt?: Date | string | null;
   slaBreachSentAt?: Date | string | null;
@@ -1020,6 +1037,7 @@ export type TaskUncheckedCreateWithoutCompletedByInput = {
   completionAction?: string | null;
   completionReason?: string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Date | string | null;
   slaWarningSentAt?: Date | string | null;
   slaBreachSentAt?: Date | string | null;
@@ -1054,6 +1072,7 @@ export type TaskCreateWithoutClaimedByInput = {
   completionAction?: string | null;
   completionReason?: string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Date | string | null;
   slaWarningSentAt?: Date | string | null;
   slaBreachSentAt?: Date | string | null;
@@ -1077,6 +1096,7 @@ export type TaskUncheckedCreateWithoutClaimedByInput = {
   completionAction?: string | null;
   completionReason?: string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Date | string | null;
   slaWarningSentAt?: Date | string | null;
   slaBreachSentAt?: Date | string | null;
@@ -1143,6 +1163,7 @@ export type TaskScalarWhereInput = {
   completionAction?: Prisma.StringNullableFilter<'Task'> | string | null;
   completionReason?: Prisma.StringNullableFilter<'Task'> | string | null;
   formData?: Prisma.JsonNullableFilter<'Task'>;
+  actionContext?: Prisma.JsonNullableFilter<'Task'>;
   slaDueAt?: Prisma.DateTimeNullableFilter<'Task'> | Date | string | null;
   slaWarningSentAt?: Prisma.DateTimeNullableFilter<'Task'> | Date | string | null;
   slaBreachSentAt?: Prisma.DateTimeNullableFilter<'Task'> | Date | string | null;
@@ -1191,6 +1212,7 @@ export type TaskCreateWithoutProcessInput = {
   completionAction?: string | null;
   completionReason?: string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Date | string | null;
   slaWarningSentAt?: Date | string | null;
   slaBreachSentAt?: Date | string | null;
@@ -1213,6 +1235,7 @@ export type TaskUncheckedCreateWithoutProcessInput = {
   completionAction?: string | null;
   completionReason?: string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Date | string | null;
   slaWarningSentAt?: Date | string | null;
   slaBreachSentAt?: Date | string | null;
@@ -1276,6 +1299,7 @@ export type TaskCreateWithoutAssignmentsInput = {
   completionAction?: string | null;
   completionReason?: string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Date | string | null;
   slaWarningSentAt?: Date | string | null;
   slaBreachSentAt?: Date | string | null;
@@ -1299,6 +1323,7 @@ export type TaskUncheckedCreateWithoutAssignmentsInput = {
   completionAction?: string | null;
   completionReason?: string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Date | string | null;
   slaWarningSentAt?: Date | string | null;
   slaBreachSentAt?: Date | string | null;
@@ -1348,6 +1373,7 @@ export type TaskUpdateWithoutAssignmentsInput = {
   completionAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   completionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaWarningSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaBreachSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
@@ -1371,6 +1397,7 @@ export type TaskUncheckedUpdateWithoutAssignmentsInput = {
   completionAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   completionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaWarningSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaBreachSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
@@ -1392,6 +1419,7 @@ export type TaskCreateWithoutDocumentsInput = {
   completionAction?: string | null;
   completionReason?: string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Date | string | null;
   slaWarningSentAt?: Date | string | null;
   slaBreachSentAt?: Date | string | null;
@@ -1415,6 +1443,7 @@ export type TaskUncheckedCreateWithoutDocumentsInput = {
   completionAction?: string | null;
   completionReason?: string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Date | string | null;
   slaWarningSentAt?: Date | string | null;
   slaBreachSentAt?: Date | string | null;
@@ -1464,6 +1493,7 @@ export type TaskUpdateWithoutDocumentsInput = {
   completionAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   completionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaWarningSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaBreachSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
@@ -1487,6 +1517,7 @@ export type TaskUncheckedUpdateWithoutDocumentsInput = {
   completionAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   completionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaWarningSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaBreachSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
@@ -1509,6 +1540,7 @@ export type TaskCreateManyCompletedByInput = {
   completionAction?: string | null;
   completionReason?: string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Date | string | null;
   slaWarningSentAt?: Date | string | null;
   slaBreachSentAt?: Date | string | null;
@@ -1529,6 +1561,7 @@ export type TaskCreateManyClaimedByInput = {
   completionAction?: string | null;
   completionReason?: string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Date | string | null;
   slaWarningSentAt?: Date | string | null;
   slaBreachSentAt?: Date | string | null;
@@ -1548,6 +1581,7 @@ export type TaskUpdateWithoutCompletedByInput = {
   completionAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   completionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaWarningSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaBreachSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
@@ -1571,6 +1605,7 @@ export type TaskUncheckedUpdateWithoutCompletedByInput = {
   completionAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   completionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaWarningSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaBreachSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
@@ -1593,6 +1628,7 @@ export type TaskUncheckedUpdateManyWithoutCompletedByInput = {
   completionAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   completionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaWarningSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaBreachSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
@@ -1612,6 +1648,7 @@ export type TaskUpdateWithoutClaimedByInput = {
   completionAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   completionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaWarningSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaBreachSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
@@ -1635,6 +1672,7 @@ export type TaskUncheckedUpdateWithoutClaimedByInput = {
   completionAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   completionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaWarningSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaBreachSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
@@ -1657,6 +1695,7 @@ export type TaskUncheckedUpdateManyWithoutClaimedByInput = {
   completionAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   completionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaWarningSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaBreachSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
@@ -1676,6 +1715,7 @@ export type TaskCreateManyProcessInput = {
   completionAction?: string | null;
   completionReason?: string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Date | string | null;
   slaWarningSentAt?: Date | string | null;
   slaBreachSentAt?: Date | string | null;
@@ -1696,6 +1736,7 @@ export type TaskUpdateWithoutProcessInput = {
   completionAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   completionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaWarningSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaBreachSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
@@ -1718,6 +1759,7 @@ export type TaskUncheckedUpdateWithoutProcessInput = {
   completionAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   completionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaWarningSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaBreachSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
@@ -1740,6 +1782,7 @@ export type TaskUncheckedUpdateManyWithoutProcessInput = {
   completionAction?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   completionReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   formData?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
+  actionContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue;
   slaDueAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaWarningSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
   slaBreachSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
@@ -1810,6 +1853,7 @@ export type TaskSelect<
     completionAction?: boolean;
     completionReason?: boolean;
     formData?: boolean;
+    actionContext?: boolean;
     slaDueAt?: boolean;
     slaWarningSentAt?: boolean;
     slaBreachSentAt?: boolean;
@@ -1842,6 +1886,7 @@ export type TaskSelectCreateManyAndReturn<
     completionAction?: boolean;
     completionReason?: boolean;
     formData?: boolean;
+    actionContext?: boolean;
     slaDueAt?: boolean;
     slaWarningSentAt?: boolean;
     slaBreachSentAt?: boolean;
@@ -1871,6 +1916,7 @@ export type TaskSelectUpdateManyAndReturn<
     completionAction?: boolean;
     completionReason?: boolean;
     formData?: boolean;
+    actionContext?: boolean;
     slaDueAt?: boolean;
     slaWarningSentAt?: boolean;
     slaBreachSentAt?: boolean;
@@ -1897,6 +1943,7 @@ export type TaskSelectScalar = {
   completionAction?: boolean;
   completionReason?: boolean;
   formData?: boolean;
+  actionContext?: boolean;
   slaDueAt?: boolean;
   slaWarningSentAt?: boolean;
   slaBreachSentAt?: boolean;
@@ -1920,6 +1967,7 @@ export type TaskOmit<
   | 'completionAction'
   | 'completionReason'
   | 'formData'
+  | 'actionContext'
   | 'slaDueAt'
   | 'slaWarningSentAt'
   | 'slaBreachSentAt'
@@ -1978,6 +2026,10 @@ export type $TaskPayload<
       completionAction: string | null;
       completionReason: string | null;
       formData: runtime.JsonValue | null;
+      /**
+       * * Impersonation altında claim/complete — gerçek aktör user id
+       */
+      actionContext: runtime.JsonValue | null;
       slaDueAt: Date | null;
       slaWarningSentAt: Date | null;
       slaBreachSentAt: Date | null;
@@ -2599,6 +2651,7 @@ export interface TaskFieldRefs {
   readonly completionAction: Prisma.FieldRef<'Task', 'String'>;
   readonly completionReason: Prisma.FieldRef<'Task', 'String'>;
   readonly formData: Prisma.FieldRef<'Task', 'Json'>;
+  readonly actionContext: Prisma.FieldRef<'Task', 'Json'>;
   readonly slaDueAt: Prisma.FieldRef<'Task', 'DateTime'>;
   readonly slaWarningSentAt: Prisma.FieldRef<'Task', 'DateTime'>;
   readonly slaBreachSentAt: Prisma.FieldRef<'Task', 'DateTime'>;

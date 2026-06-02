@@ -12,6 +12,8 @@ import { sanitizeInternalRedirectPath } from '@leanmgmt/shared-utils/internal-re
 
 import { isAxiosError } from 'axios';
 
+import { Alert, Button, ButtonLink, inputClassName } from '@/components/base';
+import { LoadingSplash } from '@/components/shared/LoadingSplash';
 import { type ApiErrorBody, loginRequest, refreshAccessToken } from '@/lib/api-client';
 import {
   buildOidcGoogleStartHref,
@@ -27,7 +29,6 @@ import { useAuthStore } from '@/stores/auth-store';
 
 type LoginFormValues = z.infer<typeof LoginSchema>;
 
-/** React Strict Mode çift effect + aynı query tekrarını tek uçuşta sınırlar */
 let lmLastOidcSuccessSearch: string | null = null;
 
 function isApiError(data: unknown): data is ApiErrorBody {
@@ -38,10 +39,11 @@ export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [formError, setFormError] = useState<string | null>(null);
-  /** OIDC query hataları genelde tekrar denenebilir — kırmızı alarm yerine uyarı tonu */
   const [errorBannerTone, setErrorBannerTone] = useState<'danger' | 'warning'>('danger');
   const [lockCountdown, setLockCountdown] = useState<string | null>(null);
-  const [oidcCompleting, setOidcCompleting] = useState(false);
+  const [oidcCompleting, setOidcCompleting] = useState(
+    () => searchParams.get('oidc') === 'success',
+  );
   const redirectParam = searchParams.get('redirect');
   const redirectTo = resolvePostLoginPath(redirectParam);
   const oidcErrorHandledKey = useRef<string | null>(null);
@@ -98,10 +100,9 @@ export function LoginForm() {
         navigateAfterAuthenticatedSession();
       } catch {
         lmLastOidcSuccessSearch = null;
+        setOidcCompleting(false);
         setFormError('Oturum tamamlanamadı. Lütfen kurumsal girişi yeniden deneyin.');
         setErrorBannerTone('danger');
-      } finally {
-        setOidcCompleting(false);
       }
     })();
   }, [searchParams, navigateAfterAuthenticatedSession]);
@@ -151,42 +152,52 @@ export function LoginForm() {
 
   const oidcStartHref = buildOidcGoogleStartHref(redirectParam);
 
+  if (oidcCompleting) {
+    return (
+      <LoadingSplash
+        message="Oturum tamamlanıyor…"
+        srLabel="Oturum tamamlanıyor, lütfen bekleyin"
+        variant="card"
+        className="mx-auto w-full"
+      />
+    );
+  }
+
   return (
-    <div className="ls-card p-[var(--space-6)] shadow-[var(--shadow-md)]">
-      <h1 className="mb-[var(--space-2)] font-[family-name:var(--font-display)] text-xl font-semibold text-[var(--color-neutral-900)]">
+    <div className="w-full">
+      <h1 className="mb-[var(--space-2)] text-center font-display text-2xl font-semibold text-text-primary">
         Giriş yap
       </h1>
-      <p className="mb-[var(--space-6)] text-sm text-[var(--color-neutral-600)]">
+      <p className="mb-[var(--space-6)] text-center text-sm text-text-tertiary">
         {showOidc
           ? 'Kurumsal hesabınızla (Google veya SSO) veya e-posta ile oturum açın.'
           : 'Platforma erişmek için hesabınızla giriş yapın.'}
       </p>
 
       {formError ? (
-        <div className={`ls-alert mb-[var(--space-4)] ls-alert--${errorBannerTone}`} role="alert">
+        <Alert
+          variant={errorBannerTone === 'warning' ? 'warning' : 'error'}
+          className="mb-[var(--space-4)]"
+        >
           {formError}
           {lockCountdown ? (
             <span className="mt-[var(--space-2)] block text-sm opacity-90">{lockCountdown}</span>
           ) : null}
-        </div>
+        </Alert>
       ) : null}
 
       {showOidc ? (
         <div className="mb-[var(--space-6)] flex flex-col gap-[var(--space-3)]">
-          <a
+          <ButtonLink
             href={oidcStartHref}
-            className="ls-btn ls-btn--secondary w-full text-center no-underline"
+            color="secondary"
+            className="w-full text-center no-underline"
             aria-label="Kurumsal hesap ile giriş (Google veya SSO)"
           >
             Kurumsal hesap ile giriş
-          </a>
-          {oidcCompleting ? (
-            <p className="text-center text-sm text-[var(--color-neutral-600)]" role="status">
-              Oturum tamamlanıyor…
-            </p>
-          ) : null}
+          </ButtonLink>
           {showPassword ? (
-            <p className="text-center text-sm text-[var(--color-neutral-500)]">veya e-posta ile</p>
+            <p className="text-center text-sm text-text-quaternary">veya e-posta ile</p>
           ) : null}
         </div>
       ) : null}
@@ -198,46 +209,40 @@ export function LoginForm() {
           noValidate
         >
           <div className="flex flex-col gap-[var(--space-1)]">
-            <label
-              htmlFor="login-email"
-              className="text-sm font-medium text-[var(--color-neutral-800)]"
-            >
+            <label htmlFor="login-email" className="text-sm font-medium text-text-secondary">
               E-posta
             </label>
             <input
               id="login-email"
               type="email"
               autoComplete="email"
-              className="ls-input"
+              className={inputClassName()}
               aria-required="true"
               aria-invalid={form.formState.errors.email ? 'true' : 'false'}
               {...form.register('email')}
             />
             {form.formState.errors.email?.message ? (
-              <p className="text-sm text-[var(--color-danger-600)]" role="status">
+              <p className="text-sm text-error-600" role="status">
                 {form.formState.errors.email.message}
               </p>
             ) : null}
           </div>
 
           <div className="flex flex-col gap-[var(--space-1)]">
-            <label
-              htmlFor="login-password"
-              className="text-sm font-medium text-[var(--color-neutral-800)]"
-            >
+            <label htmlFor="login-password" className="text-sm font-medium text-text-secondary">
               Şifre
             </label>
             <input
               id="login-password"
               type="password"
               autoComplete="current-password"
-              className="ls-input"
+              className={inputClassName()}
               aria-required="true"
               aria-invalid={form.formState.errors.password ? 'true' : 'false'}
               {...form.register('password')}
             />
             {form.formState.errors.password?.message ? (
-              <p className="text-sm text-[var(--color-danger-600)]" role="status">
+              <p className="text-sm text-error-600" role="status">
                 {form.formState.errors.password.message}
               </p>
             ) : null}
@@ -246,29 +251,30 @@ export function LoginForm() {
           <div className="flex items-center justify-between gap-[var(--space-3)]">
             <Link
               href="/forgot-password"
-              className="text-sm text-[var(--color-primary-600)] underline decoration-[var(--color-primary-600)] underline-offset-2"
+              className="text-sm text-brand-600 underline decoration-brand-600 underline-offset-2"
             >
               Şifremi unuttum
             </Link>
           </div>
 
-          <button
+          <Button
             type="submit"
-            className="ls-btn ls-btn--primary w-full"
-            disabled={form.formState.isSubmitting}
+            color="primary"
+            className="w-full"
+            isDisabled={form.formState.isSubmitting}
           >
             {form.formState.isSubmitting ? 'Giriş yapılıyor…' : 'Giriş yap'}
-          </button>
+          </Button>
         </form>
       ) : null}
 
       {!showOidc && !showPassword ? (
-        <p className="text-sm text-[var(--color-danger-600)]" role="alert">
+        <Alert variant="error">
           Giriş yöntemi yapılandırılmamış. Sistem yöneticinize başvurun.
-        </p>
+        </Alert>
       ) : null}
 
-      <p className="mt-[var(--space-6)] text-center text-xs text-[var(--color-neutral-500)]">
+      <p className="mt-[var(--space-6)] text-center text-xs text-text-quaternary">
         Hesabınız yoksa sistem yöneticinizle iletişime geçin.
       </p>
     </div>

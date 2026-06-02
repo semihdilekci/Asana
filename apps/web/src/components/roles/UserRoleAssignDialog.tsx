@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
+import { Button, inputClassName } from '@/components/base';
 import { useRoleListQuery } from '@/lib/queries/roles';
 
 type UserRoleAssignDialogProps = {
@@ -65,7 +66,7 @@ export function UserRoleAssignDialog({
         </label>
         <select
           id="user-role-pick"
-          className="ls-input mt-1 w-full"
+          className={inputClassName('md', 'mt-1 w-full')}
           value={roleId}
           onChange={(e) => setRoleId(e.target.value)}
           required
@@ -79,25 +80,22 @@ export function UserRoleAssignDialog({
         </select>
       </div>
       <div className="mt-4 flex justify-end gap-2">
-        <button
-          type="button"
-          className="ls-btn ls-btn--neutral ls-btn--sm"
-          onClick={() => onOpenChange(false)}
-        >
+        <Button type="button" color="secondary" size="sm" onPress={() => onOpenChange(false)}>
           Vazgeç
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
-          className="ls-btn ls-btn--primary ls-btn--sm"
-          disabled={!roleId || isSubmitting}
-          onClick={async () => {
+          color="primary"
+          size="sm"
+          isDisabled={!roleId || isSubmitting}
+          onPress={async () => {
             if (!roleId) return;
             await onConfirm(roleId);
             onOpenChange(false);
           }}
         >
           {isSubmitting ? 'Atanıyor…' : 'Ata'}
-        </button>
+        </Button>
       </div>
     </dialog>
   );

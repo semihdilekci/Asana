@@ -6,7 +6,7 @@
 
 ## 1. Ekran Haritası
 
-Platformda toplam **43 ekran** vardır — 29 kritik, 14 ikincil.
+Platformda toplam **44 ekran** vardır — 29 kritik, 15 ikincil.
 
 | Ekran ID                                  | Route                                          | Layout            | Erişim                              | Seviye  |
 | ----------------------------------------- | ---------------------------------------------- | ----------------- | ----------------------------------- | ------- |
@@ -16,6 +16,7 @@ Platformda toplam **43 ekran** vardır — 29 kritik, 14 ikincil.
 | S-AUTH-RESET                              | `/reset-password?token=...`                    | AuthLayout        | Public                              | Kritik  |
 | S-AUTH-CONSENT                            | (blocking modal — route yok)                   | AppLayout overlay | Auth (consent onaysız)              | Kritik  |
 | S-AUTH-CHANGE-PWD                         | `/profile/change-password`                     | AppLayout         | Auth                                | Kritik  |
+| S-IMPERSONATION-MODAL                     | (AppHeader overlay — route yok)                | AppLayout overlay | USER_IMPERSONATION                  | İkincil |
 | **Grup 2 — Dashboard ve Error Sayfaları** |                                                |                   |                                     |         |
 | S-DASH-HOME                               | `/dashboard`                                   | AppLayout         | Auth                                | Kritik  |
 | S-ERROR-403                               | `/403`                                         | PublicLayout      | Any                                 | İkincil |
@@ -653,6 +654,54 @@ Background blur + opaque overlay; arkadaki layout gizlenir. Modal dışına tık
 | currentPassword | password input | Evet    | min 1                               | ''      | autocomplete="current-password" |
 | newPassword     | password input | Evet    | Aynı policy (S-AUTH-RESET ile aynı) | ''      | autocomplete="new-password"     |
 | confirmPassword | password input | Evet    | === newPassword                     | ''      | Client-side match               |
+
+---
+
+#### S-IMPERSONATION-MODAL — Kullanıcı Impersonation (AppHeader)
+
+**Route:** Yok — `AppHeader` içinden modal overlay  
+**Erişim:** `USER_IMPERSONATION` (hassas ACTION)  
+**Layout:** AppLayout overlay (`Modal`)  
+**Seviye:** İkincil
+
+Troubleshooting, denetim ve test için yetkili kullanıcının hedef kullanıcı adına tam uygulama deneyimi. **AppHeader** sağ üstte effective user ad soyad gösterilir; permission varsa isim tıklanabilir → bu modal açılır.
+
+##### Görsel Yapı (AppHeader + modal)
+
+1. **Normal mod:** Ad soyad salt okunur (`USER_IMPERSONATION` yoksa).
+2. **Impersonation bandı** (aktifken, header üstünde ince bant):
+   - User-switch ikonu (sol) — tıklayınca `POST /auth/impersonate/stop` → kendi hesaba dön
+   - Metin: effective user ad soyad (tıklanabilir → modal tekrar açılır, başka kullanıcıya geçiş)
+   - İkon `aria-label`: "Kendi hesabıma dön"
+3. **Modal — "Kullanıcı adına oturum aç":**
+   - Arama input (sicil, ad, soyad — mevcut `S-USER-LIST` arama pattern'i)
+   - Sonuç listesi (DataTable veya compact list): sicil, ad soyad, şirket
+   - Satır seç → `POST /auth/impersonate/start` veya aktif impersonation varsa `switch`
+   - Kapat: ESC / İptal
+
+##### Veri Kaynağı
+
+- **API (arama):** `GET /api/v1/users` (mevcut list endpoint, `USER_LIST_VIEW` veya impersonation için backend'de ayrı minimal search — implementasyon Faz 13 İter 1)
+- **API (start/stop/switch):** `POST /api/v1/auth/impersonate/*`
+- **Invalidation:** Başarı sonrası tüm auth-bound query'ler (`me`, permissions, notifications, menü)
+
+##### Durum Ekranları
+
+- **Loading:** Modal içi skeleton / spinner
+- **Empty search:** "Arama kriterine uyan kullanıcı yok"
+- **Error (API):**
+  - Pasif hedef → toast "Pasif kullanıcı adına oturum açılamaz."
+  - SUPERADMIN / kendisi → toast "Bu kullanıcı adına oturum açma yetkiniz bulunmuyor."
+
+##### Edge Cases ve Kısıtlar
+
+- Pasif, SUPERADMIN ve kendisi seçilemez (API hard deny + UI mesaj)
+- Süre sınırı yok (MVP)
+- Tam hedef deneyimi: bildirim zili, menü, permission gate'ler effective user'a göre
+- Hedef kullanıcıya "hesabınız görüntülendi" bildirimi **yok** (MVP kapsam dışı)
+- OIDC login flow'undan bağımsız — yalnız mevcut oturum
+
+Detay: `docs/adr/0010-user-impersonation-jwt-audit-model.md`, `@63-phase-13-user-impersonation`.
 
 ---
 
@@ -2531,21 +2580,21 @@ Sistemdeki tüm append-only audit log'larının görüntülendiği ve filtrelend
 4. **Gelişmiş filtre paneli** (collapsible, default açık):
    - **Zaman aralığı** (required): "Son 24 saat" (default) / "Son 7 gün" / "Son 30 gün" / Özel (date range picker)
    - **Kullanıcı** (UserSelect — optional; başlatan kullanıcıyı filtrelemek için)
-   - **Aksiyon** multi-select: LOGIN_SUCCESS / LOGIN_FAILURE / LOGIN_LOCKED / LOGOUT / USER_CREATED / USER_UPDATED / USER_DEACTIVATED / ROLE_ASSIGNED / ROLE_PERMISSIONS_UPDATED / PROCESS_STARTED / PROCESS_COMPLETED / PROCESS_CANCELLED / PROCESS_ROLLED_BACK / TASK_CLAIMED / TASK_COMPLETED / DOCUMENT_UPLOADED / ... (full enum)
+   - **Aksiyon** multi-select: LOGIN_SUCCESS / LOGIN_FAILURE / LOGIN_LOCKED / LOGOUT / IMPERSONATION_STARTED / IMPERSONATION_STOPPED / IMPERSONATION_SWITCHED / USER_CREATED / USER_UPDATED / USER_DEACTIVATED / ROLE_ASSIGNED / ROLE_PERMISSIONS_UPDATED / PROCESS_STARTED / PROCESS_COMPLETED / PROCESS_CANCELLED / PROCESS_ROLLED_BACK / TASK_CLAIMED / TASK_COMPLETED / DOCUMENT_UPLOADED / ... (full enum)
    - **Entity tipi** select: USER / ROLE / PROCESS / TASK / DOCUMENT / SESSION / CONSENT_VERSION / SYSTEM_SETTING / EMAIL_TEMPLATE / MASTER_DATA
    - **Entity ID** text input (spesifik kayıt için)
    - **IP adresi** text input (partial match)
    - **Arama** (serialized JSON detay içinde text search — slow, büyük aralıklarda önerilmez)
    - "Filtreleri Temizle" + "Uygula" butonları
 5. **DataTable:**
-   - Kolonlar: Tarih (ISO + timezone), Kullanıcı (sicil + ad), Aksiyon (renk kodlu rozet), Entity (tip + kısaltılmış ID), IP (tam adres — Superadmin için maskelemez), Durum (SUCCESS/FAILURE rozeti)
+   - Kolonlar: Tarih (ISO + timezone), Kullanıcı (sicil + ad — impersonation kayıtlarında `{Impersonator} ({Hedef} yerine)` formatı), Aksiyon (renk kodlu rozet; impersonation altındaki mutating aksiyonlarda ek **Impersonation** badge), Entity (tip + kısaltılmış ID), IP (tam adres — Superadmin için maskelemez), Durum (SUCCESS/FAILURE rozeti)
    - Satır tıklama → detay modal
 6. **Detay modal** (2xl boyut):
    - Başlık: "Denetim Kaydı — {id}"
    - Alan listesi (label + value):
      - id (UUID)
      - timestamp (tam ISO)
-     - user (sicil + ad + link → user detay)
+     - user (sicil + ad + link → user detay; impersonation ise impersonator + “yerine” hedef metni)
      - sessionId (link → session detay — opsiyonel)
      - action
      - entityType + entityId

@@ -12,8 +12,15 @@ import type { KtiStartInput, TaskCompleteBodyInput, TaskListQuery } from '@leanm
 import { Permission } from '@leanmgmt/shared-types';
 
 import type { AuthenticatedUser } from '../common/decorators/current-user.decorator.js';
+import { AuditLogService } from '../common/audit/audit-log.service.js';
 import { AppException } from '../common/exceptions/app.exception.js';
 import { EncryptionService } from '../common/encryption/encryption.service.js';
+import {
+  buildImpersonationActionContext,
+  readTaskActionContext,
+  serializeActionPerformerFields,
+  type UserBriefParts,
+} from '../common/workflow/action-performer.js';
 import { DocumentsService } from '../documents/documents.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { PermissionResolverService } from '../roles/permission-resolver.service.js';
@@ -62,6 +69,7 @@ export class TasksService {
     @Inject(DocumentsService) private readonly documentsService: DocumentsService,
     @Inject(KtiWorkflow) private readonly ktiWorkflow: KtiWorkflow,
     @Inject(EventEmitter2) private readonly eventEmitter: EventEmitter2,
+    @Inject(AuditLogService) private readonly audit: AuditLogService,
   ) {}
 
   private serializeUserBrief(u: {
@@ -70,13 +78,44 @@ export class TasksService {
     lastName: string;
     sicilEncrypted: Buffer | Uint8Array;
     anonymizedAt: Date | null;
-  }): { id: string; firstName: string; lastName: string; sicil: string | null } {
+  }): UserBriefParts {
     return {
       id: u.id,
       firstName: u.firstName,
       lastName: u.lastName,
       sicil: u.anonymizedAt ? null : this.encryption.decryptSicil(u.sicilEncrypted),
     };
+  }
+
+  private async loadUserBriefsByIds(ids: string[]): Promise<Map<string, UserBriefParts>> {
+    const unique = [...new Set(ids.filter(Boolean))];
+    if (unique.length === 0) return new Map();
+    const users = await this.prisma.user.findMany({
+      where: { id: { in: unique } },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        sicilEncrypted: true,
+        anonymizedAt: true,
+      },
+    });
+    return new Map(users.map((u) => [u.id, this.serializeUserBrief(u)]));
+  }
+
+  private attachTaskPerformerFields(
+    target: Record<string, unknown>,
+    effective: UserBriefParts,
+    actionContext: unknown,
+    actorMap: Map<string, UserBriefParts>,
+  ): void {
+    target['completedBy'] = effective;
+    const ctx = readTaskActionContext(actionContext);
+    const actor = ctx ? (actorMap.get(ctx.actorUserId) ?? null) : null;
+    const fields = serializeActionPerformerFields(effective, actor);
+    target['performedViaImpersonation'] = fields.performedViaImpersonation;
+    target['performerDisplayLabel'] = fields.performerDisplayLabel;
+    if (fields.actionActor) target['actionActor'] = fields.actionActor;
   }
 
   private async assertTaskDetailReadable(
@@ -193,6 +232,18 @@ export class TasksService {
     });
 
     return { items, pagination: { nextCursor, hasMore, limit } };
+  }
+
+  /** Sidebar rozeti — `tab=pending` ile aynı filtre (atanmış, tamamlanmamış görevler) */
+  async countActiveForActor(actor: AuthenticatedUser): Promise<{ activeCount: number }> {
+    const activeCount = await this.prisma.task.count({
+      where: {
+        status: { in: ACTIVE },
+        assignments: { some: { userId: actor.id, status: 'PENDING' } },
+        process: { processType: ProcessType.BEFORE_AFTER_KAIZEN },
+      },
+    });
+    return { activeCount };
   }
 
   async getDetailById(taskId: string, actor: AuthenticatedUser): Promise<Record<string, unknown>> {
@@ -325,7 +376,13 @@ export class TasksService {
     const done = await this.prisma.task.findMany({
       where: { processId, id: { not: currentTaskId }, status: 'COMPLETED' },
       orderBy: { completedAt: 'asc' },
-      include: {
+      select: {
+        stepKey: true,
+        completedAt: true,
+        completionAction: true,
+        completionReason: true,
+        formData: true,
+        actionContext: true,
         completedBy: {
           select: {
             id: true,
@@ -337,23 +394,40 @@ export class TasksService {
         },
       },
     });
-    return done.map((t) => ({
-      stepKey: t.stepKey,
-      stepLabel: getKtiTaskStepLabel(t.stepKey),
-      completedBy: t.completedBy ? this.serializeUserBrief(t.completedBy) : null,
-      completedAt: t.completedAt?.toISOString() ?? null,
-      completionAction: t.completionAction ?? null,
-      // FE revize kutusu + tarihçe: yönetici REJECT / REQUEST_REVISION gerekçesi
-      reason: t.completionReason ?? null,
-      formData: t.formData ?? null,
-    }));
+    const actorIds = done
+      .map((t) => readTaskActionContext(t.actionContext)?.actorUserId)
+      .filter((id): id is string => Boolean(id));
+    const actorMap = await this.loadUserBriefsByIds(actorIds);
+
+    return done.map((t) => {
+      const row: Record<string, unknown> = {
+        stepKey: t.stepKey,
+        stepLabel: getKtiTaskStepLabel(t.stepKey),
+        completedAt: t.completedAt?.toISOString() ?? null,
+        completionAction: t.completionAction ?? null,
+        reason: t.completionReason ?? null,
+        formData: t.formData ?? null,
+      };
+      if (t.completedBy) {
+        this.attachTaskPerformerFields(
+          row,
+          this.serializeUserBrief(t.completedBy),
+          t.actionContext,
+          actorMap,
+        );
+      } else {
+        row['completedBy'] = null;
+      }
+      return row;
+    });
   }
 
   async claim(
     taskId: string,
     actor: AuthenticatedUser,
   ): Promise<{ taskId: string; claimedAt: string }> {
-    return this.prisma.$transaction(async (tx) => {
+    const impersonationCtx = buildImpersonationActionContext(actor);
+    const result = await this.prisma.$transaction(async (tx) => {
       await tx.$queryRaw(Prisma.sql`SELECT id FROM tasks WHERE id = ${taskId} FOR UPDATE`);
       const task = await tx.task.findFirst({
         where: { id: taskId },
@@ -390,7 +464,11 @@ export class TasksService {
       const now = new Date();
       await tx.task.update({
         where: { id: taskId },
-        data: { status: 'CLAIMED', claimedByUserId: actor.id },
+        data: {
+          status: 'CLAIMED',
+          claimedByUserId: actor.id,
+          ...(impersonationCtx ? { actionContext: impersonationCtx } : {}),
+        },
       });
       for (const o of others) {
         if (o.id) {
@@ -402,8 +480,22 @@ export class TasksService {
       }
       const skippedUserIds = others.map((o) => o.userId).filter((x): x is string => Boolean(x));
       this.eventEmitter.emit('task.claimed_by_peer', { taskId, skippedUserIds });
-      return { taskId, claimedAt: now.toISOString() };
+      return { taskId, claimedAt: now.toISOString(), skippedUserIds, processId: task.processId };
     });
+
+    await this.audit.appendForActor(actor, {
+      action: 'CLAIM_TASK',
+      entity: 'task',
+      entityId: taskId,
+      ipHash: 'api',
+      metadata: {
+        claimedByUserId: actor.id,
+        skippedUserIds: result.skippedUserIds,
+        processId: result.processId,
+      },
+    });
+
+    return { taskId: result.taskId, claimedAt: result.claimedAt };
   }
 
   async complete(
@@ -441,7 +533,7 @@ export class TasksService {
         throw new TaskAccessDeniedException();
       }
     }
-    return this.prisma.$transaction(async (tx) => {
+    const txResult = await this.prisma.$transaction(async (tx) => {
       await tx.$queryRaw(Prisma.sql`SELECT id FROM tasks WHERE id = ${taskId} FOR UPDATE`);
       const task = await tx.task.findFirst({
         where: { id: taskId },
@@ -492,6 +584,37 @@ export class TasksService {
       }
       throw new KtiNotSupportedException();
     });
+
+    await this.audit.appendForActor(actor, {
+      action: 'COMPLETE_TASK',
+      entity: 'task',
+      entityId: taskId,
+      ipHash: 'api',
+      metadata: {
+        stepKey: pre.stepKey,
+        action: body.action ?? null,
+        reason: body.reason ?? null,
+        processId: pre.process.id,
+        processNewStatus: txResult.processStatus,
+      },
+    });
+
+    if (txResult.processStatus !== pre.process.status) {
+      await this.audit.appendForActor(actor, {
+        action: 'UPDATE_PROCESS_STATUS',
+        entity: 'process',
+        entityId: pre.process.id,
+        ipHash: 'api',
+        metadata: {
+          displayId: pre.process.displayId,
+          previousStatus: pre.process.status,
+          newStatus: txResult.processStatus,
+          triggerTaskId: taskId,
+        },
+      });
+    }
+
+    return txResult;
   }
 
   private async completeKtiManager(
@@ -520,6 +643,7 @@ export class TasksService {
     }
     parseKtiManagerFormData(body.formData);
     const now = new Date();
+    const impersonationCtx = buildImpersonationActionContext(actor);
     await tx.task.update({
       where: { id: task.id },
       data: {
@@ -530,6 +654,7 @@ export class TasksService {
         completionReason: body.reason ?? null,
         formData:
           body.formData === undefined ? undefined : (body.formData as Prisma.InputJsonValue),
+        ...(impersonationCtx ? { actionContext: impersonationCtx } : {}),
       },
     });
     await tx.taskAssignment.updateMany({
@@ -630,6 +755,7 @@ export class TasksService {
     const step2 = this.ktiWorkflow.getStepByOrder(2);
     const now = new Date();
     const formDataJson = { ...form } as unknown as Prisma.InputJsonValue;
+    const impersonationCtx = buildImpersonationActionContext(actor);
     await tx.task.update({
       where: { id: task.id },
       data: {
@@ -637,6 +763,7 @@ export class TasksService {
         completedByUserId: actor.id,
         completedAt: now,
         formData: formDataJson,
+        ...(impersonationCtx ? { actionContext: impersonationCtx } : {}),
       },
     });
     await tx.taskAssignment.updateMany({

@@ -1,9 +1,10 @@
 'use client';
 
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
-import { Loader2, Trash2, Upload } from 'lucide-react';
+import { Loading01, Trash01, Upload01 } from '@untitledui/icons';
 import { toast } from 'sonner';
 
+import { Button, Card } from '@/components/base';
 import { apiClient } from '@/lib/api-client';
 
 const SCAN_POLL_MS = 2000;
@@ -76,6 +77,7 @@ export function DocumentUpload({
   onChange,
 }: DocumentUploadProps) {
   const fileInputId = useId();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [rows, setRows] = useState<Row[]>([]);
   const pollTimers = useRef<Map<string, ReturnType<typeof setInterval>>>(new Map());
 
@@ -358,6 +360,7 @@ export function DocumentUpload({
         <p className="text-xs text-[var(--color-neutral-600)]">{hint}</p>
       </div>
       <input
+        ref={fileInputRef}
         id={fileInputId}
         type="file"
         accept={[...KTI_IMAGE_TYPES, '.jpg', '.jpeg', '.png', '.webp'].join(',')}
@@ -367,43 +370,36 @@ export function DocumentUpload({
         disabled={disabled || !canAddMore}
         onChange={handlePick}
       />
-      {disabled || !canAddMore ? (
-        <span
-          className="ls-btn ls-btn--neutral ls-btn--sm inline-flex cursor-not-allowed items-center gap-2 opacity-50"
-          aria-disabled="true"
-        >
-          <Upload className="h-4 w-4" aria-hidden />
-          Dosya seç
-        </span>
-      ) : (
-        <label
-          htmlFor={fileInputId}
-          className="ls-btn ls-btn--neutral ls-btn--sm inline-flex cursor-pointer items-center gap-2"
-        >
-          <Upload className="h-4 w-4" aria-hidden />
-          Dosya seç
-        </label>
-      )}
+      <Button
+        type="button"
+        color="secondary"
+        size="sm"
+        isDisabled={disabled || !canAddMore}
+        onPress={() => fileInputRef.current?.click()}
+      >
+        <Upload01 className="size-4" data-icon aria-hidden />
+        Dosya seç
+      </Button>
       <ul className="grid gap-[var(--space-3)] sm:grid-cols-2" aria-live="polite">
         {rows.map((row) => (
-          <li
-            key={row.clientKey}
-            className="ls-card flex flex-col gap-[var(--space-2)] p-[var(--space-3)] text-sm"
-          >
-            <div className="flex items-start justify-between gap-2">
-              <span className="truncate font-medium text-[var(--color-neutral-900)]">
-                {row.filename}
-              </span>
-              <button
-                type="button"
-                className="ls-btn ls-btn--neutral ls-btn--sm shrink-0"
-                aria-label={`${row.filename} dosyasını kaldır`}
-                onClick={() => removeRow(row.clientKey, row.documentId)}
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
-            </div>
-            <RowStatus row={row} />
+          <li key={row.clientKey}>
+            <Card className="flex flex-col gap-[var(--space-2)] p-[var(--space-3)] text-sm">
+              <div className="flex items-start justify-between gap-2">
+                <span className="truncate font-medium text-[var(--color-neutral-900)]">
+                  {row.filename}
+                </span>
+                <Button
+                  color="secondary"
+                  size="sm"
+                  className="shrink-0"
+                  aria-label={`${row.filename} dosyasını kaldır`}
+                  onPress={() => removeRow(row.clientKey, row.documentId)}
+                >
+                  <Trash01 className="size-4" />
+                </Button>
+              </div>
+              <RowStatus row={row} />
+            </Card>
           </li>
         ))}
       </ul>
@@ -421,14 +417,14 @@ function RowStatus({ row }: { row: Row }) {
     case 'uploading':
       return (
         <div className="flex items-center gap-2 text-[var(--color-neutral-600)]">
-          <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden />
+          <Loading01 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden />
           <span>Yükleniyor… %{row.state.progress}</span>
         </div>
       );
     case 'scanning':
       return (
         <div className="flex items-center gap-2 text-[var(--color-neutral-600)]">
-          <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden />
+          <Loading01 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden />
           <span>Taranıyor…</span>
         </div>
       );

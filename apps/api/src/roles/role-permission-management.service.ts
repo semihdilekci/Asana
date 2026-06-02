@@ -77,8 +77,7 @@ export class RolePermissionManagementService {
       roleId,
     } satisfies RoleAffectsUserPermissionsCachePayload);
 
-    await this.audit.append({
-      userId: actor.id,
+    await this.audit.appendForActor(actor, {
       action: 'UPDATE_ROLE_PERMISSIONS',
       entity: 'role',
       entityId: roleId,

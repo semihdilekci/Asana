@@ -113,83 +113,87 @@ Tüm JSON response'lar üç formattan birindedir:
 
 ### Tam Error Code Listesi
 
-| Code                              | HTTP | Koşul                                                                            | User message                                                                       |
-| --------------------------------- | ---- | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| **AUTH**                          |      |                                                                                  |                                                                                    |
-| `AUTH_INVALID_CREDENTIALS`        | 401  | Login'de yanlış email/şifre veya kullanıcı yok (enumeration önlemi — aynı mesaj) | "Email veya şifre hatalı."                                                         |
-| `AUTH_TOKEN_EXPIRED`              | 401  | Access token süresi dolmuş                                                       | "Oturumunuz sona erdi, lütfen yeniden giriş yapın."                                |
-| `AUTH_TOKEN_INVALID`              | 401  | Geçersiz, bozuk veya imzası yanlış JWT                                           | "Oturumunuz geçersiz, lütfen yeniden giriş yapın."                                 |
-| `AUTH_SESSION_REVOKED`            | 401  | Session blacklist'te veya REVOKED                                                | "Oturumunuz kapatıldı, lütfen yeniden giriş yapın."                                |
-| `AUTH_ACCOUNT_LOCKED`             | 423  | Hesap başarısız giriş nedeniyle kilitli                                          | "Çok fazla başarısız deneme. Hesabınız X dakika kilitli."                          |
-| `AUTH_ACCOUNT_PASSIVE`            | 403  | Kullanıcı `is_active=false`                                                      | "Hesabınız pasif durumdadır, sistem yöneticinize başvurun."                        |
-| `AUTH_CONSENT_REQUIRED`           | 403  | Aktif rıza versiyonu onaylanmamış                                                | "Devam etmek için KVKK rıza metnini onaylamanız gerekmektedir."                    |
-| `AUTH_PASSWORD_EXPIRED`           | 403  | Şifre süresi dolmuş, değiştirmek zorunlu                                         | "Şifrenizin süresi doldu, yeni şifre belirleyin."                                  |
-| `AUTH_IP_NOT_WHITELISTED`         | 403  | Superadmin whitelist dışı IP'den login                                           | "Bu IP adresinden Superadmin girişi yetkisiz."                                     |
-| **CSRF**                          |      |                                                                                  |                                                                                    |
-| `CSRF_TOKEN_INVALID`              | 403  | X-CSRF-Token header eksik veya eşleşmiyor                                        | "Güvenlik doğrulaması başarısız, sayfayı yenileyip tekrar deneyin."                |
-| **VALIDATION**                    |      |                                                                                  |                                                                                    |
-| `VALIDATION_FAILED`               | 400  | Zod input validation başarısız                                                   | "Formu kontrol edin." (details: alan bazlı hata listesi)                           |
-| `VALIDATION_UNSUPPORTED_FORMAT`   | 400  | Content-Type veya body formatı geçersiz                                          | "İstek formatı geçersiz."                                                          |
-| **PERMISSION**                    |      |                                                                                  |                                                                                    |
-| `PERMISSION_DENIED`               | 403  | Yetki yok                                                                        | "Bu işlem için yetkiniz bulunmuyor."                                               |
-| **USER**                          |      |                                                                                  |                                                                                    |
-| `USER_NOT_FOUND`                  | 404  | Kullanıcı bulunamadı                                                             | "Kullanıcı bulunamadı."                                                            |
-| `USER_SICIL_DUPLICATE`            | 409  | Sicil çakışması                                                                  | "Bu sicil numarası zaten kayıtlı."                                                 |
-| `USER_EMAIL_DUPLICATE`            | 409  | Email çakışması                                                                  | "Bu email adresi zaten kayıtlı."                                                   |
-| `USER_SELF_EDIT_FORBIDDEN`        | 403  | Kullanıcı kendi attribute'unu düzenlemeye kalkıştı                               | "Kendi bilgilerinizi düzenleme yetkiniz bulunmuyor."                               |
-| `USER_MANAGER_CYCLE`              | 422  | Yönetici atamasında cycle                                                        | "Bu atama yönetici zincirinde döngü oluşturur."                                    |
-| `USER_ALREADY_PASSIVE`            | 409  | Zaten pasif kullanıcıyı pasifleştirme girişimi                                   | "Kullanıcı zaten pasif durumda."                                                   |
-| `USER_ALREADY_ACTIVE`             | 409  | Zaten aktif kullanıcıyı aktifleştirme girişimi                                   | "Kullanıcı zaten aktif durumda."                                                   |
-| `USER_ANONYMIZED`                 | 403  | Anonimleştirilmiş kullanıcı login denemesi                                       | "Bu hesaba erişim kapatılmıştır."                                                  |
-| **ROLE**                          |      |                                                                                  |                                                                                    |
-| `ROLE_NOT_FOUND`                  | 404  | Rol bulunamadı                                                                   | "Rol bulunamadı."                                                                  |
-| `ROLE_CODE_DUPLICATE`             | 409  | Rol kodu çakışması                                                               | "Bu rol kodu zaten kullanımda."                                                    |
-| `ROLE_SYSTEM_CANNOT_DELETE`       | 403  | Sistem rolünü silme girişimi                                                     | "Sistem rolleri silinemez."                                                        |
-| `ROLE_SYSTEM_CANNOT_EDIT_CODE`    | 403  | Sistem rolü `code` değiştirme girişimi                                           | "Sistem rolü kodu değiştirilemez."                                                 |
-| `ROLE_SELF_EDIT_FORBIDDEN`        | 403  | Rol ve Yetki Yöneticisi kendi rolünü değiştirmeye kalkıştı                       | "Kendi rolünüzü değiştirme yetkiniz bulunmuyor."                                   |
-| `ROLE_RULE_INVALID_STRUCTURE`     | 422  | Boş condition set veya geçersiz kural yapısı                                     | "Kural yapısı geçersiz — en az bir koşul zorunlu."                                 |
-| **MASTER_DATA**                   |      |                                                                                  |                                                                                    |
-| `MASTER_DATA_NOT_FOUND`           | 404  | Master data kaydı yok                                                            | "Kayıt bulunamadı."                                                                |
-| `MASTER_DATA_CODE_DUPLICATE`      | 409  | Kod çakışması                                                                    | "Bu kod zaten kullanımda."                                                         |
-| `MASTER_DATA_CODE_IMMUTABLE`      | 403  | `code` değiştirme girişimi                                                       | "Kod değiştirilemez."                                                              |
-| `MASTER_DATA_IN_USE`              | 422  | Aktif kullanıcısı olan master data'yı pasifleştirme                              | "Bu kayıt aktif kullanıcılar tarafından kullanılıyor, önce kullanıcıları taşıyın." |
-| `MASTER_DATA_PARENT_INACTIVE`     | 422  | Pasif parent altına child ekleme                                                 | "Üst kayıt pasif durumda, önce aktifleştirin."                                     |
-| **PROCESS**                       |      |                                                                                  |                                                                                    |
-| `PROCESS_NOT_FOUND`               | 404  | Süreç bulunamadı                                                                 | "Süreç bulunamadı."                                                                |
-| `PROCESS_ACCESS_DENIED`           | 403  | Süreç kullanıcının değil + yetki yok                                             | "Bu sürece erişim yetkiniz bulunmuyor."                                            |
-| `PROCESS_INVALID_STATE`           | 409  | Geçersiz state transition (örn. tamamlanmış süreci iptal)                        | "Bu işlem mevcut süreç durumunda yapılamaz."                                       |
-| `PROCESS_CANCEL_REASON_REQUIRED`  | 400  | İptal gerekçesi eksik                                                            | "İptal gerekçesi zorunludur."                                                      |
-| `PROCESS_ROLLBACK_INVALID_TARGET` | 422  | Geçersiz rollback hedef adımı                                                    | "Bu adıma geri dönüş mümkün değil."                                                |
-| `PROCESS_TYPE_UNKNOWN`            | 400  | Bilinmeyen süreç tipi                                                            | "Bu süreç tipi desteklenmiyor."                                                    |
-| `PROCESS_START_FORBIDDEN`         | 403  | Başlatma yetkisi yok                                                             | "Bu süreci başlatma yetkiniz bulunmuyor."                                          |
-| **TASK**                          |      |                                                                                  |                                                                                    |
-| `TASK_NOT_FOUND`                  | 404  | Görev bulunamadı                                                                 | "Görev bulunamadı."                                                                |
-| `TASK_ACCESS_DENIED`              | 403  | Görev kullanıcıya atanmamış                                                      | "Bu göreve erişim yetkiniz bulunmuyor."                                            |
-| `TASK_ALREADY_COMPLETED`          | 409  | Tamamlanmış görevde aksiyon                                                      | "Bu görev zaten tamamlanmış."                                                      |
-| `TASK_CLAIM_LOST`                 | 409  | Başka bir aday claim etti                                                        | "Bu görev başka bir kullanıcı tarafından üstlenildi."                              |
-| `TASK_COMPLETION_ACTION_INVALID`  | 422  | Süreç tanımının izin vermediği action                                            | "Bu aksiyon bu adım için geçersiz."                                                |
-| `TASK_REASON_REQUIRED`            | 400  | Red veya Revize için gerekçe eksik                                               | "Gerekçe alanı zorunludur."                                                        |
-| `TASK_NOT_CLAIMABLE`              | 422  | SINGLE veya ALL_REQUIRED mode'da claim girişimi                                  | "Bu görev üstlenme modunda değil."                                                 |
-| **DOCUMENT**                      |      |                                                                                  |                                                                                    |
-| `DOCUMENT_NOT_FOUND`              | 404  | Doküman bulunamadı                                                               | "Doküman bulunamadı."                                                              |
-| `DOCUMENT_SCAN_PENDING`           | 409  | Tarama devam ediyor, erişilemez                                                  | "Doküman hâlâ güvenlik taramasından geçiyor."                                      |
-| `DOCUMENT_INFECTED`               | 403  | Enfekte doküman erişim girişimi                                                  | "Doküman güvenlik taramasında zararlı tespit edildiği için erişilemiyor."          |
-| `DOCUMENT_SIZE_EXCEEDED`          | 413  | Dosya boyutu limiti aşıldı                                                       | "Dosya boyutu 10 MB'ı aşamaz."                                                     |
-| `DOCUMENT_CONTENT_TYPE_INVALID`   | 415  | İzin verilmeyen format                                                           | "Bu dosya formatı desteklenmiyor."                                                 |
-| `DOCUMENT_URL_EXPIRED`            | 410  | Signed URL süresi doldu                                                          | "Erişim bağlantısının süresi doldu, yeniden yükleyin."                             |
-| `DOCUMENT_UPLOAD_FORBIDDEN`       | 403  | Upload yetkisi yok (sürece bağlı değil)                                          | "Dosya yükleme yetkiniz bulunmuyor."                                               |
-| **CONSENT**                       |      |                                                                                  |                                                                                    |
-| `CONSENT_VERSION_NOT_FOUND`       | 404  | Rıza versiyonu yok                                                               | "Rıza versiyonu bulunamadı."                                                       |
-| `CONSENT_ALREADY_PUBLISHED`       | 409  | PUBLISHED versiyon düzenleme                                                     | "Yayınlanmış rıza metni düzenlenemez."                                             |
-| **RATE_LIMIT**                    |      |                                                                                  |                                                                                    |
-| `RATE_LIMIT_IP`                   | 429  | IP rate limit aşımı                                                              | "Çok fazla istek. Lütfen bir süre sonra tekrar deneyin."                           |
-| `RATE_LIMIT_USER`                 | 429  | Kullanıcı rate limit aşımı                                                       | "Çok fazla istek. Lütfen biraz bekleyin."                                          |
-| `RATE_LIMIT_LOGIN`                | 429  | Login progressive delay / lockout                                                | "Çok fazla başarısız deneme. X saniye sonra tekrar deneyin."                       |
-| **SYSTEM**                        |      |                                                                                  |                                                                                    |
-| `SYSTEM_MAINTENANCE`              | 503  | Planlı bakım                                                                     | "Sistem bakımda, lütfen daha sonra tekrar deneyin."                                |
-| `SYSTEM_INTERNAL_ERROR`           | 500  | Unhandled exception                                                              | "Beklenmeyen bir hata oluştu, ekibimize bildirildi."                               |
-| `SYSTEM_DEPENDENCY_DOWN`          | 503  | DB/Redis/KMS erişilemez                                                          | "Sistem geçici olarak erişilemiyor."                                               |
-| `SYSTEM_SETTING_INVALID`          | 400  | System setting value şema uyumsuz                                                | "Ayar değeri geçersiz."                                                            |
+| Code                                  | HTTP | Koşul                                                                            | User message                                                                       |
+| ------------------------------------- | ---- | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| **AUTH**                              |      |                                                                                  |                                                                                    |
+| `AUTH_INVALID_CREDENTIALS`            | 401  | Login'de yanlış email/şifre veya kullanıcı yok (enumeration önlemi — aynı mesaj) | "Email veya şifre hatalı."                                                         |
+| `AUTH_TOKEN_EXPIRED`                  | 401  | Access token süresi dolmuş                                                       | "Oturumunuz sona erdi, lütfen yeniden giriş yapın."                                |
+| `AUTH_TOKEN_INVALID`                  | 401  | Geçersiz, bozuk veya imzası yanlış JWT                                           | "Oturumunuz geçersiz, lütfen yeniden giriş yapın."                                 |
+| `AUTH_SESSION_REVOKED`                | 401  | Session blacklist'te veya REVOKED                                                | "Oturumunuz kapatıldı, lütfen yeniden giriş yapın."                                |
+| `AUTH_ACCOUNT_LOCKED`                 | 423  | Hesap başarısız giriş nedeniyle kilitli                                          | "Çok fazla başarısız deneme. Hesabınız X dakika kilitli."                          |
+| `AUTH_ACCOUNT_PASSIVE`                | 403  | Kullanıcı `is_active=false`                                                      | "Hesabınız pasif durumdadır, sistem yöneticinize başvurun."                        |
+| `AUTH_CONSENT_REQUIRED`               | 403  | Aktif rıza versiyonu onaylanmamış                                                | "Devam etmek için KVKK rıza metnini onaylamanız gerekmektedir."                    |
+| `AUTH_PASSWORD_EXPIRED`               | 403  | Şifre süresi dolmuş, değiştirmek zorunlu                                         | "Şifrenizin süresi doldu, yeni şifre belirleyin."                                  |
+| `AUTH_IP_NOT_WHITELISTED`             | 403  | Superadmin whitelist dışı IP'den login                                           | "Bu IP adresinden Superadmin girişi yetkisiz."                                     |
+| `AUTH_IMPERSONATION_FORBIDDEN`        | 403  | Impersonation yetkisi yok veya hedef yasak (superadmin / kendisi)                | "Bu kullanıcı adına oturum açma yetkiniz bulunmuyor."                              |
+| `AUTH_IMPERSONATION_NOT_ACTIVE`       | 409  | Stop/switch çağrısı aktif impersonation yokken                                   | "Aktif bir impersonation oturumu bulunmuyor."                                      |
+| `AUTH_IMPERSONATION_TARGET_INACTIVE`  | 409  | Hedef kullanıcı pasif                                                            | "Pasif kullanıcı adına oturum açılamaz."                                           |
+| `AUTH_IMPERSONATION_TARGET_NOT_FOUND` | 404  | Hedef kullanıcı yok                                                              | "Kullanıcı bulunamadı."                                                            |
+| **CSRF**                              |      |                                                                                  |                                                                                    |
+| `CSRF_TOKEN_INVALID`                  | 403  | X-CSRF-Token header eksik veya eşleşmiyor                                        | "Güvenlik doğrulaması başarısız, sayfayı yenileyip tekrar deneyin."                |
+| **VALIDATION**                        |      |                                                                                  |                                                                                    |
+| `VALIDATION_FAILED`                   | 400  | Zod input validation başarısız                                                   | "Formu kontrol edin." (details: alan bazlı hata listesi)                           |
+| `VALIDATION_UNSUPPORTED_FORMAT`       | 400  | Content-Type veya body formatı geçersiz                                          | "İstek formatı geçersiz."                                                          |
+| **PERMISSION**                        |      |                                                                                  |                                                                                    |
+| `PERMISSION_DENIED`                   | 403  | Yetki yok                                                                        | "Bu işlem için yetkiniz bulunmuyor."                                               |
+| **USER**                              |      |                                                                                  |                                                                                    |
+| `USER_NOT_FOUND`                      | 404  | Kullanıcı bulunamadı                                                             | "Kullanıcı bulunamadı."                                                            |
+| `USER_SICIL_DUPLICATE`                | 409  | Sicil çakışması                                                                  | "Bu sicil numarası zaten kayıtlı."                                                 |
+| `USER_EMAIL_DUPLICATE`                | 409  | Email çakışması                                                                  | "Bu email adresi zaten kayıtlı."                                                   |
+| `USER_SELF_EDIT_FORBIDDEN`            | 403  | Kullanıcı kendi attribute'unu düzenlemeye kalkıştı                               | "Kendi bilgilerinizi düzenleme yetkiniz bulunmuyor."                               |
+| `USER_MANAGER_CYCLE`                  | 422  | Yönetici atamasında cycle                                                        | "Bu atama yönetici zincirinde döngü oluşturur."                                    |
+| `USER_ALREADY_PASSIVE`                | 409  | Zaten pasif kullanıcıyı pasifleştirme girişimi                                   | "Kullanıcı zaten pasif durumda."                                                   |
+| `USER_ALREADY_ACTIVE`                 | 409  | Zaten aktif kullanıcıyı aktifleştirme girişimi                                   | "Kullanıcı zaten aktif durumda."                                                   |
+| `USER_ANONYMIZED`                     | 403  | Anonimleştirilmiş kullanıcı login denemesi                                       | "Bu hesaba erişim kapatılmıştır."                                                  |
+| **ROLE**                              |      |                                                                                  |                                                                                    |
+| `ROLE_NOT_FOUND`                      | 404  | Rol bulunamadı                                                                   | "Rol bulunamadı."                                                                  |
+| `ROLE_CODE_DUPLICATE`                 | 409  | Rol kodu çakışması                                                               | "Bu rol kodu zaten kullanımda."                                                    |
+| `ROLE_SYSTEM_CANNOT_DELETE`           | 403  | Sistem rolünü silme girişimi                                                     | "Sistem rolleri silinemez."                                                        |
+| `ROLE_SYSTEM_CANNOT_EDIT_CODE`        | 403  | Sistem rolü `code` değiştirme girişimi                                           | "Sistem rolü kodu değiştirilemez."                                                 |
+| `ROLE_SELF_EDIT_FORBIDDEN`            | 403  | Rol ve Yetki Yöneticisi kendi rolünü değiştirmeye kalkıştı                       | "Kendi rolünüzü değiştirme yetkiniz bulunmuyor."                                   |
+| `ROLE_RULE_INVALID_STRUCTURE`         | 422  | Boş condition set veya geçersiz kural yapısı                                     | "Kural yapısı geçersiz — en az bir koşul zorunlu."                                 |
+| **MASTER_DATA**                       |      |                                                                                  |                                                                                    |
+| `MASTER_DATA_NOT_FOUND`               | 404  | Master data kaydı yok                                                            | "Kayıt bulunamadı."                                                                |
+| `MASTER_DATA_CODE_DUPLICATE`          | 409  | Kod çakışması                                                                    | "Bu kod zaten kullanımda."                                                         |
+| `MASTER_DATA_CODE_IMMUTABLE`          | 403  | `code` değiştirme girişimi                                                       | "Kod değiştirilemez."                                                              |
+| `MASTER_DATA_IN_USE`                  | 422  | Aktif kullanıcısı olan master data'yı pasifleştirme                              | "Bu kayıt aktif kullanıcılar tarafından kullanılıyor, önce kullanıcıları taşıyın." |
+| `MASTER_DATA_PARENT_INACTIVE`         | 422  | Pasif parent altına child ekleme                                                 | "Üst kayıt pasif durumda, önce aktifleştirin."                                     |
+| **PROCESS**                           |      |                                                                                  |                                                                                    |
+| `PROCESS_NOT_FOUND`                   | 404  | Süreç bulunamadı                                                                 | "Süreç bulunamadı."                                                                |
+| `PROCESS_ACCESS_DENIED`               | 403  | Süreç kullanıcının değil + yetki yok                                             | "Bu sürece erişim yetkiniz bulunmuyor."                                            |
+| `PROCESS_INVALID_STATE`               | 409  | Geçersiz state transition (örn. tamamlanmış süreci iptal)                        | "Bu işlem mevcut süreç durumunda yapılamaz."                                       |
+| `PROCESS_CANCEL_REASON_REQUIRED`      | 400  | İptal gerekçesi eksik                                                            | "İptal gerekçesi zorunludur."                                                      |
+| `PROCESS_ROLLBACK_INVALID_TARGET`     | 422  | Geçersiz rollback hedef adımı                                                    | "Bu adıma geri dönüş mümkün değil."                                                |
+| `PROCESS_TYPE_UNKNOWN`                | 400  | Bilinmeyen süreç tipi                                                            | "Bu süreç tipi desteklenmiyor."                                                    |
+| `PROCESS_START_FORBIDDEN`             | 403  | Başlatma yetkisi yok                                                             | "Bu süreci başlatma yetkiniz bulunmuyor."                                          |
+| **TASK**                              |      |                                                                                  |                                                                                    |
+| `TASK_NOT_FOUND`                      | 404  | Görev bulunamadı                                                                 | "Görev bulunamadı."                                                                |
+| `TASK_ACCESS_DENIED`                  | 403  | Görev kullanıcıya atanmamış                                                      | "Bu göreve erişim yetkiniz bulunmuyor."                                            |
+| `TASK_ALREADY_COMPLETED`              | 409  | Tamamlanmış görevde aksiyon                                                      | "Bu görev zaten tamamlanmış."                                                      |
+| `TASK_CLAIM_LOST`                     | 409  | Başka bir aday claim etti                                                        | "Bu görev başka bir kullanıcı tarafından üstlenildi."                              |
+| `TASK_COMPLETION_ACTION_INVALID`      | 422  | Süreç tanımının izin vermediği action                                            | "Bu aksiyon bu adım için geçersiz."                                                |
+| `TASK_REASON_REQUIRED`                | 400  | Red veya Revize için gerekçe eksik                                               | "Gerekçe alanı zorunludur."                                                        |
+| `TASK_NOT_CLAIMABLE`                  | 422  | SINGLE veya ALL_REQUIRED mode'da claim girişimi                                  | "Bu görev üstlenme modunda değil."                                                 |
+| **DOCUMENT**                          |      |                                                                                  |                                                                                    |
+| `DOCUMENT_NOT_FOUND`                  | 404  | Doküman bulunamadı                                                               | "Doküman bulunamadı."                                                              |
+| `DOCUMENT_SCAN_PENDING`               | 409  | Tarama devam ediyor, erişilemez                                                  | "Doküman hâlâ güvenlik taramasından geçiyor."                                      |
+| `DOCUMENT_INFECTED`                   | 403  | Enfekte doküman erişim girişimi                                                  | "Doküman güvenlik taramasında zararlı tespit edildiği için erişilemiyor."          |
+| `DOCUMENT_SIZE_EXCEEDED`              | 413  | Dosya boyutu limiti aşıldı                                                       | "Dosya boyutu 10 MB'ı aşamaz."                                                     |
+| `DOCUMENT_CONTENT_TYPE_INVALID`       | 415  | İzin verilmeyen format                                                           | "Bu dosya formatı desteklenmiyor."                                                 |
+| `DOCUMENT_URL_EXPIRED`                | 410  | Signed URL süresi doldu                                                          | "Erişim bağlantısının süresi doldu, yeniden yükleyin."                             |
+| `DOCUMENT_UPLOAD_FORBIDDEN`           | 403  | Upload yetkisi yok (sürece bağlı değil)                                          | "Dosya yükleme yetkiniz bulunmuyor."                                               |
+| **CONSENT**                           |      |                                                                                  |                                                                                    |
+| `CONSENT_VERSION_NOT_FOUND`           | 404  | Rıza versiyonu yok                                                               | "Rıza versiyonu bulunamadı."                                                       |
+| `CONSENT_ALREADY_PUBLISHED`           | 409  | PUBLISHED versiyon düzenleme                                                     | "Yayınlanmış rıza metni düzenlenemez."                                             |
+| **RATE_LIMIT**                        |      |                                                                                  |                                                                                    |
+| `RATE_LIMIT_IP`                       | 429  | IP rate limit aşımı                                                              | "Çok fazla istek. Lütfen bir süre sonra tekrar deneyin."                           |
+| `RATE_LIMIT_USER`                     | 429  | Kullanıcı rate limit aşımı                                                       | "Çok fazla istek. Lütfen biraz bekleyin."                                          |
+| `RATE_LIMIT_LOGIN`                    | 429  | Login progressive delay / lockout                                                | "Çok fazla başarısız deneme. X saniye sonra tekrar deneyin."                       |
+| **SYSTEM**                            |      |                                                                                  |                                                                                    |
+| `SYSTEM_MAINTENANCE`                  | 503  | Planlı bakım                                                                     | "Sistem bakımda, lütfen daha sonra tekrar deneyin."                                |
+| `SYSTEM_INTERNAL_ERROR`               | 500  | Unhandled exception                                                              | "Beklenmeyen bir hata oluştu, ekibimize bildirildi."                               |
+| `SYSTEM_DEPENDENCY_DOWN`              | 503  | DB/Redis/KMS erişilemez                                                          | "Sistem geçici olarak erişilemiyor."                                               |
+| `SYSTEM_SETTING_INVALID`              | 400  | System setting value şema uyumsuz                                                | "Ayar değeri geçersiz."                                                            |
 
 ### HTTP Status Mapping Özeti
 
@@ -236,14 +240,15 @@ Tüm JSON response'lar üç formattan birindedir:
 
 Rate limit iki katmanda uygulanır: **WAF (CloudFront)** tarafında edge-level, **backend (API gateway tier)** tarafında application-level. Aşağıdaki tablo backend limitlerini gösterir; WAF limitleri `07_SECURITY_IMPLEMENTATION`'da.
 
-| Kapsam                        | Endpoint grubu                             | Limit       | Pencere                      |
-| ----------------------------- | ------------------------------------------ | ----------- | ---------------------------- |
-| **Anonim (auth'suz)**         | Global                                     | 100         | 1 dakika                     |
-| **Authenticated kullanıcı**   | Global                                     | 300         | 1 dakika                     |
-| **Login endpoint**            | `POST /api/v1/auth/login`                  | 5 başarısız | 15 dakika (email + IP bazlı) |
-| **Password reset request**    | `POST /api/v1/auth/password-reset-request` | 3           | 1 saat (email bazlı)         |
-| **Document download URL**     | `GET /api/v1/documents/:id/download-url`   | 50          | 5 dakika (kullanıcı bazlı)   |
-| **Data export endpoint'leri** | `GET /api/v1/admin/audit-logs/export`      | 10          | 1 saat (kullanıcı bazlı)     |
+| Kapsam                         | Endpoint grubu                                                                | Limit       | Pencere                      |
+| ------------------------------ | ----------------------------------------------------------------------------- | ----------- | ---------------------------- |
+| **Anonim (auth'suz)**          | Global                                                                        | 100         | 1 dakika                     |
+| **Authenticated kullanıcı**    | Global                                                                        | 300         | 1 dakika                     |
+| **Login endpoint**             | `POST /api/v1/auth/login`                                                     | 5 başarısız | 15 dakika (email + IP bazlı) |
+| **Password reset request**     | `POST /api/v1/auth/password-reset-request`                                    | 3           | 1 saat (email bazlı)         |
+| **Impersonation start/switch** | `POST /api/v1/auth/impersonate/start`, `POST /api/v1/auth/impersonate/switch` | 10          | 1 dakika (kullanıcı bazlı)   |
+| **Document download URL**      | `GET /api/v1/documents/:id/download-url`                                      | 50          | 5 dakika (kullanıcı bazlı)   |
+| **Data export endpoint'leri**  | `GET /api/v1/admin/audit-logs/export`                                         | 10          | 1 saat (kullanıcı bazlı)     |
 
 **429 response örneği:**
 
@@ -772,14 +777,85 @@ Enumeration önlemi — email var veya yok her ikisinde aynı 200 + aynı mesaj.
     "permissions": ["USER_CREATE", "USER_UPDATE_ATTRIBUTE", "PROCESS_KTI_START", "..."],
     "activeConsentVersionId": "clx...",
     "consentAccepted": true,
-    "passwordExpiresAt": "2026-10-23T00:00:00.000Z"
+    "passwordExpiresAt": "2026-10-23T00:00:00.000Z",
+    "impersonation": {
+      "active": false,
+      "impersonator": null
+    }
   }
 }
 ```
 
+Impersonation aktifken `impersonation.active: true` ve `impersonation.impersonator` dolu (`id`, `sicil`, `firstName`, `lastName`). Response gövdesindeki kullanıcı alanları (**effective / hedef** kullanıcıdır). Permission listesi effective user'a göre çözülür.
+
 **Errors:** Standart auth error'ları.
 
 **Audit:** Yok (read-only, yüksek frekans).
+
+---
+
+#### `POST /api/v1/auth/impersonate/start`
+
+**Purpose:** Yetkili kullanıcının hedef kullanıcı adına impersonation oturumu başlatması.
+**Auth:** Access token + `X-CSRF-Token` + `@RequirePermission(USER_IMPERSONATION)`.
+
+**Request body:**
+
+```json
+{
+  "targetUserId": "clx..."
+}
+```
+
+**Response 200:** Login response ile özdeş yapı — yeni `accessToken`, `accessTokenExpiresAt`, `csrfToken`, `user` (effective user profili), `impersonation` bloğu aktif.
+
+**Errors:**
+| Code | HTTP | Koşul |
+|---|---|---|
+| `PERMISSION_DENIED` | 403 | `USER_IMPERSONATION` yok |
+| `AUTH_IMPERSONATION_FORBIDDEN` | 403 | SUPERADMIN hedefi veya kendisi |
+| `AUTH_IMPERSONATION_TARGET_INACTIVE` | 409 | Hedef pasif |
+| `AUTH_IMPERSONATION_TARGET_NOT_FOUND` | 404 | Hedef yok |
+| `CSRF_TOKEN_INVALID` | 403 | CSRF |
+
+**Audit:** `IMPERSONATION_STARTED` entity=`session`, metadata={targetUserId, targetSicil, targetDisplayName}.
+
+**Rate limit:** 10/dk/kullanıcı.
+
+---
+
+#### `POST /api/v1/auth/impersonate/stop`
+
+**Purpose:** Aktif impersonation'ı sonlandırıp impersonator'ın kendi hesabına dönmek.
+**Auth:** Access token + `X-CSRF-Token` (impersonation aktif access token yeterli; ayrı permission gerekmez).
+
+**Request:** Body yok.
+
+**Response 200:** Login response — effective user artık impersonator; `impersonation.active: false`.
+
+**Errors:**
+| Code | HTTP | Koşul |
+|---|---|---|
+| `AUTH_IMPERSONATION_NOT_ACTIVE` | 409 | Aktif impersonation yok |
+
+**Audit:** `IMPERSONATION_STOPPED` entity=`session`.
+
+---
+
+#### `POST /api/v1/auth/impersonate/switch`
+
+**Purpose:** Aktif impersonation varken başka hedef kullanıcıya geçiş (atomik stop+start).
+**Auth:** Access token + `X-CSRF-Token` + `USER_IMPERSONATION`.
+
+**Request body:** `POST /auth/impersonate/start` ile aynı.
+
+**Response 200:** Yeni effective user ile login response.
+
+**Errors:** Start ile aynı + `AUTH_IMPERSONATION_NOT_ACTIVE` (opsiyonel — implementasyon start gibi davranabilir; tercih ADR 0010).
+
+**Audit:** `IMPERSONATION_SWITCHED` entity=`session`, metadata={previousTargetUserId, newTargetUserId, ...}.
+
+**Rate limit:** 10/dk/kullanıcı.
 
 ---
 

@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 import { Permission } from '@leanmgmt/shared-types';
 
+import { Alert } from '@/components/base';
 import { KtiStartForm } from '@/components/processes/KtiStartForm';
 import { PermissionGate } from '@/components/shared/PermissionGate';
 
@@ -47,12 +48,12 @@ export default function KtiStartPage() {
       <PermissionGate
         permission={Permission.PROCESS_KTI_START}
         fallback={
-          <div className="ls-alert ls-alert--danger" role="alert">
+          <Alert variant="error">
             <p>Bu sayfayı görüntülemek için KTİ başlatma yetkisi gerekir.</p>
             <Link href="/processes" className="mt-[var(--space-2)] inline-block text-sm underline">
               Başlattığım süreçlere dön
             </Link>
-          </div>
+          </Alert>
         }
       >
         <KtiStartForm />

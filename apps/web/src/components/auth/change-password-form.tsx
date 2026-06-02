@@ -2,12 +2,12 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ChangePasswordFormSchema, type ChangePasswordFormInput } from '@leanmgmt/shared-schemas';
-import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { isAxiosError } from 'axios';
 
+import { Alert, Button, ButtonLink, Card, inputClassName } from '@/components/base';
 import { type ApiErrorBody, apiClient } from '@/lib/api-client';
 
 function isApiError(data: unknown): data is ApiErrorBody {
@@ -78,14 +78,14 @@ export function ChangePasswordForm() {
   }
 
   return (
-    <div className="ls-card max-w-lg p-[var(--space-6)] shadow-[var(--shadow-md)]">
-      <h1 className="mb-[var(--space-2)] font-[family-name:var(--font-display)] text-xl font-semibold text-[var(--color-neutral-900)]">
+    <Card className="max-w-lg p-[var(--space-6)] shadow-md">
+      <h1 className="mb-[var(--space-2)] font-display text-xl font-semibold text-text-primary">
         Şifre değiştir
       </h1>
       {required ? (
-        <div className="ls-alert ls-alert--danger mb-[var(--space-4)]" role="alert">
+        <Alert variant="error" className="mb-[var(--space-4)]">
           Şifrenizin süresi dolmuştur. Devam etmek için yeni bir şifre belirleyin.
-        </div>
+        </Alert>
       ) : null}
 
       <form
@@ -93,97 +93,93 @@ export function ChangePasswordForm() {
         onSubmit={form.handleSubmit(onSubmit)}
         noValidate
       >
-        {formError ? (
-          <div className="ls-alert ls-alert--danger" role="alert">
-            {formError}
-          </div>
-        ) : null}
+        {formError ? <Alert variant="error">{formError}</Alert> : null}
 
         <div className="flex flex-col gap-[var(--space-1)]">
-          <label
-            htmlFor="cp-current"
-            className="text-sm font-medium text-[var(--color-neutral-800)]"
-          >
+          <label htmlFor="cp-current" className="text-sm font-medium text-text-secondary">
             Mevcut şifre
           </label>
           <input
             id="cp-current"
             type="password"
             autoComplete="current-password"
-            className="ls-input"
+            className={inputClassName()}
             aria-required="true"
             aria-invalid={form.formState.errors.currentPassword ? 'true' : 'false'}
             {...form.register('currentPassword')}
           />
           {form.formState.errors.currentPassword?.message ? (
-            <p className="text-sm text-[var(--color-danger-600)]" role="status">
+            <p className="text-sm text-error-600" role="status">
               {form.formState.errors.currentPassword.message}
             </p>
           ) : null}
         </div>
 
         <div className="flex flex-col gap-[var(--space-1)]">
-          <label htmlFor="cp-new" className="text-sm font-medium text-[var(--color-neutral-800)]">
+          <label htmlFor="cp-new" className="text-sm font-medium text-text-secondary">
             Yeni şifre
           </label>
           <input
             id="cp-new"
             type="password"
             autoComplete="new-password"
-            className="ls-input"
+            className={inputClassName()}
             aria-required="true"
             aria-invalid={form.formState.errors.newPassword ? 'true' : 'false'}
             {...form.register('newPassword')}
           />
           {form.formState.errors.newPassword?.message ? (
-            <p className="text-sm text-[var(--color-danger-600)]" role="status">
+            <p className="text-sm text-error-600" role="status">
               {form.formState.errors.newPassword.message}
             </p>
           ) : null}
         </div>
 
         <div className="flex flex-col gap-[var(--space-1)]">
-          <label
-            htmlFor="cp-confirm"
-            className="text-sm font-medium text-[var(--color-neutral-800)]"
-          >
+          <label htmlFor="cp-confirm" className="text-sm font-medium text-text-secondary">
             Yeni şifre (tekrar)
           </label>
           <input
             id="cp-confirm"
             type="password"
             autoComplete="new-password"
-            className="ls-input"
+            className={inputClassName()}
             aria-required="true"
             aria-invalid={form.formState.errors.confirmPassword ? 'true' : 'false'}
             {...form.register('confirmPassword')}
           />
           {form.formState.errors.confirmPassword?.message ? (
-            <p className="text-sm text-[var(--color-danger-600)]" role="status">
+            <p className="text-sm text-error-600" role="status">
               {form.formState.errors.confirmPassword.message}
             </p>
           ) : null}
         </div>
 
-        <p className="text-xs text-[var(--color-neutral-500)]">
+        <p className="text-xs text-text-quaternary">
           En az 12 karakter, büyük-küçük harf, rakam ve özel karakter gerekir.
         </p>
 
         <div className="flex flex-col-reverse gap-[var(--space-2)] sm:flex-row sm:justify-end">
           {!required ? (
-            <Link href="/dashboard" className="ls-btn ls-btn--neutral w-full text-center sm:w-auto">
+            <ButtonLink
+              href="/dashboard"
+              color="secondary"
+              size="md"
+              className="w-full text-center sm:w-auto"
+            >
               İptal
-            </Link>
+            </ButtonLink>
           ) : null}
-          <button
+          <Button
             type="submit"
-            className="ls-btn ls-btn--primary w-full sm:w-auto"
-            disabled={form.formState.isSubmitting}
+            color="primary"
+            className="w-full sm:w-auto"
+            isDisabled={form.formState.isSubmitting}
           >
             {form.formState.isSubmitting ? 'Kaydediliyor…' : 'Şifreyi değiştir'}
-          </button>
+          </Button>
         </div>
       </form>
-    </div>
+    </Card>
   );
 }

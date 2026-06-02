@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import {
@@ -12,6 +12,13 @@ import {
   type UpdateUserInput,
 } from '@leanmgmt/shared-schemas';
 
+import {
+  Button,
+  DatePicker,
+  dateValueToIsoDateString,
+  inputClassName,
+  isoDateStringToDateValue,
+} from '@/components/base';
 import { useAllMasterDataQuery } from '@/lib/queries/master-data';
 import {
   useCreateUserMutation,
@@ -45,7 +52,7 @@ function MasterDataSelect({
       <select
         id={id}
         aria-required={required}
-        className="ls-input mt-[var(--space-1)] w-full"
+        className={inputClassName('md', 'mt-[var(--space-1)] w-full')}
         {...registration}
       >
         <option value="">{label} seçin</option>
@@ -83,6 +90,7 @@ export function UserCreateForm() {
     register,
     handleSubmit,
     watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<CreateUserInput>({
     resolver: zodResolver(CreateUserSchema),
@@ -147,7 +155,7 @@ export function UserCreateForm() {
             aria-required="true"
             aria-invalid={!!errors.sicil}
             aria-describedby={errors.sicil ? 'sicil-error' : undefined}
-            className="ls-input mt-[var(--space-1)] w-full"
+            className={inputClassName('md', 'mt-[var(--space-1)] w-full')}
             {...register('sicil')}
           />
           {errors.sicil && (
@@ -173,7 +181,7 @@ export function UserCreateForm() {
             type="text"
             aria-required="true"
             aria-invalid={!!errors.firstName}
-            className="ls-input mt-[var(--space-1)] w-full"
+            className={inputClassName('md', 'mt-[var(--space-1)] w-full')}
             {...register('firstName')}
           />
           {errors.firstName && (
@@ -195,7 +203,7 @@ export function UserCreateForm() {
             type="text"
             aria-required="true"
             aria-invalid={!!errors.lastName}
-            className="ls-input mt-[var(--space-1)] w-full"
+            className={inputClassName('md', 'mt-[var(--space-1)] w-full')}
             {...register('lastName')}
           />
           {errors.lastName && (
@@ -217,7 +225,7 @@ export function UserCreateForm() {
             type="email"
             autoComplete="email"
             aria-required="true"
-            className="ls-input mt-[var(--space-1)] w-full"
+            className={inputClassName('md', 'mt-[var(--space-1)] w-full')}
             {...register('email')}
           />
           {errors.email && (
@@ -239,7 +247,7 @@ export function UserCreateForm() {
             type="tel"
             autoComplete="tel"
             placeholder="+905551234567"
-            className="ls-input mt-[var(--space-1)] w-full"
+            className={inputClassName('md', 'mt-[var(--space-1)] w-full')}
             {...register('phone')}
           />
           {errors.phone && (
@@ -259,7 +267,7 @@ export function UserCreateForm() {
           <select
             id="employeeType"
             aria-required="true"
-            className="ls-input mt-[var(--space-1)] w-full"
+            className={inputClassName('md', 'mt-[var(--space-1)] w-full')}
             {...register('employeeType')}
           >
             <option value="WHITE_COLLAR">Beyaz Yaka</option>
@@ -331,23 +339,29 @@ export function UserCreateForm() {
           registration={register('workSubAreaId')}
         />
         <div>
-          <label
-            htmlFor="hireDate"
-            className="block text-sm font-medium text-[var(--color-neutral-700)]"
-          >
-            İşe giriş tarihi
-          </label>
-          <input
-            id="hireDate"
-            type="date"
-            className="ls-input mt-[var(--space-1)] w-full"
-            {...register('hireDate')}
+          <Controller
+            name="hireDate"
+            control={control}
+            render={({ field }) => (
+              <div>
+                <DatePicker
+                  aria-label="İşe giriş tarihi"
+                  size="md"
+                  placeholder="Tarih seçin"
+                  value={isoDateStringToDateValue(field.value)}
+                  onChange={(v) => field.onChange(v ? dateValueToIsoDateString(v) : '')}
+                />
+                {errors.hireDate ? (
+                  <p
+                    role="alert"
+                    className="mt-[var(--space-1)] text-xs text-[var(--color-error-600)]"
+                  >
+                    {errors.hireDate.message}
+                  </p>
+                ) : null}
+              </div>
+            )}
           />
-          {errors.hireDate && (
-            <p role="alert" className="mt-[var(--space-1)] text-xs text-[var(--color-error-600)]">
-              {errors.hireDate.message}
-            </p>
-          )}
         </div>
         <div>
           <label
@@ -358,7 +372,7 @@ export function UserCreateForm() {
           </label>
           <select
             id="managerUserId"
-            className="ls-input mt-[var(--space-1)] w-full"
+            className={inputClassName('md', 'mt-[var(--space-1)] w-full')}
             {...register('managerUserId')}
           >
             <option value="">Seçin</option>
@@ -384,7 +398,7 @@ export function UserCreateForm() {
           <input
             id="managerEmail"
             type="email"
-            className="ls-input mt-[var(--space-1)] w-full"
+            className={inputClassName('md', 'mt-[var(--space-1)] w-full')}
             {...register('managerEmail')}
           />
           {errors.managerEmail && (
@@ -396,17 +410,12 @@ export function UserCreateForm() {
       </div>
 
       <div className="flex items-center justify-end gap-[var(--space-3)]">
-        <button type="button" className="ls-btn ls-btn--neutral" onClick={() => router.back()}>
+        <Button type="button" color="secondary" size="md" onPress={() => router.back()}>
           İptal
-        </button>
-        <button
-          type="submit"
-          className="ls-btn ls-btn--primary"
-          disabled={isSubmitting}
-          aria-busy={isSubmitting}
-        >
+        </Button>
+        <Button type="submit" color="primary" isDisabled={isSubmitting} aria-busy={isSubmitting}>
           {isSubmitting ? 'Kaydediliyor...' : 'Oluştur'}
-        </button>
+        </Button>
       </div>
     </form>
   );
@@ -437,6 +446,7 @@ export function UserEditForm({ userId, defaultValues }: UserEditFormProps) {
     register,
     handleSubmit,
     watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<UpdateUserInput>({
     resolver: zodResolver(UpdateUserSchema),
@@ -504,7 +514,7 @@ export function UserEditForm({ userId, defaultValues }: UserEditFormProps) {
           <input
             id="edit-firstName"
             type="text"
-            className="ls-input mt-[var(--space-1)] w-full"
+            className={inputClassName('md', 'mt-[var(--space-1)] w-full')}
             {...register('firstName')}
           />
           {errors.firstName && (
@@ -524,7 +534,7 @@ export function UserEditForm({ userId, defaultValues }: UserEditFormProps) {
           <input
             id="edit-lastName"
             type="text"
-            className="ls-input mt-[var(--space-1)] w-full"
+            className={inputClassName('md', 'mt-[var(--space-1)] w-full')}
             {...register('lastName')}
           />
           {errors.lastName && (
@@ -545,7 +555,7 @@ export function UserEditForm({ userId, defaultValues }: UserEditFormProps) {
             id="edit-email"
             type="email"
             autoComplete="email"
-            className="ls-input mt-[var(--space-1)] w-full"
+            className={inputClassName('md', 'mt-[var(--space-1)] w-full')}
             {...register('email')}
           />
           {errors.email && (
@@ -567,7 +577,7 @@ export function UserEditForm({ userId, defaultValues }: UserEditFormProps) {
             type="tel"
             autoComplete="tel"
             placeholder="Boş bırakarak kaldırın"
-            className="ls-input mt-[var(--space-1)] w-full"
+            className={inputClassName('md', 'mt-[var(--space-1)] w-full')}
             {...register('phone')}
           />
           {errors.phone && (
@@ -586,7 +596,7 @@ export function UserEditForm({ userId, defaultValues }: UserEditFormProps) {
           </label>
           <select
             id="edit-employeeType"
-            className="ls-input mt-[var(--space-1)] w-full"
+            className={inputClassName('md', 'mt-[var(--space-1)] w-full')}
             {...register('employeeType')}
           >
             <option value="">Seçin</option>
@@ -653,23 +663,29 @@ export function UserEditForm({ userId, defaultValues }: UserEditFormProps) {
           registration={register('workSubAreaId')}
         />
         <div>
-          <label
-            htmlFor="edit-hireDate"
-            className="block text-sm font-medium text-[var(--color-neutral-700)]"
-          >
-            İşe giriş tarihi
-          </label>
-          <input
-            id="edit-hireDate"
-            type="date"
-            className="ls-input mt-[var(--space-1)] w-full"
-            {...register('hireDate')}
+          <Controller
+            name="hireDate"
+            control={control}
+            render={({ field }) => (
+              <div>
+                <DatePicker
+                  aria-label="İşe giriş tarihi"
+                  size="md"
+                  placeholder="Tarih seçin"
+                  value={isoDateStringToDateValue(field.value)}
+                  onChange={(v) => field.onChange(v ? dateValueToIsoDateString(v) : '')}
+                />
+                {errors.hireDate ? (
+                  <p
+                    role="alert"
+                    className="mt-[var(--space-1)] text-xs text-[var(--color-error-600)]"
+                  >
+                    {errors.hireDate.message}
+                  </p>
+                ) : null}
+              </div>
+            )}
           />
-          {errors.hireDate && (
-            <p role="alert" className="mt-[var(--space-1)] text-xs text-[var(--color-error-600)]">
-              {errors.hireDate.message}
-            </p>
-          )}
         </div>
         <div>
           <label
@@ -680,7 +696,7 @@ export function UserEditForm({ userId, defaultValues }: UserEditFormProps) {
           </label>
           <select
             id="edit-managerUserId"
-            className="ls-input mt-[var(--space-1)] w-full"
+            className={inputClassName('md', 'mt-[var(--space-1)] w-full')}
             {...register('managerUserId')}
           >
             <option value="">Seçin</option>
@@ -706,7 +722,7 @@ export function UserEditForm({ userId, defaultValues }: UserEditFormProps) {
           <input
             id="edit-managerEmail"
             type="email"
-            className="ls-input mt-[var(--space-1)] w-full"
+            className={inputClassName('md', 'mt-[var(--space-1)] w-full')}
             {...register('managerEmail')}
           />
           {errors.managerEmail && (
@@ -718,17 +734,12 @@ export function UserEditForm({ userId, defaultValues }: UserEditFormProps) {
       </div>
 
       <div className="flex items-center justify-end gap-[var(--space-3)]">
-        <button type="button" className="ls-btn ls-btn--neutral" onClick={() => router.back()}>
+        <Button type="button" color="secondary" size="md" onPress={() => router.back()}>
           İptal
-        </button>
-        <button
-          type="submit"
-          className="ls-btn ls-btn--primary"
-          disabled={isSubmitting}
-          aria-busy={isSubmitting}
-        >
+        </Button>
+        <Button type="submit" color="primary" isDisabled={isSubmitting} aria-busy={isSubmitting}>
           {isSubmitting ? 'Kaydediliyor...' : 'Güncelle'}
-        </button>
+        </Button>
       </div>
     </form>
   );

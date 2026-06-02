@@ -78,6 +78,15 @@ export const ConsentAcceptSchema = z
 
 export type ConsentAcceptInput = z.infer<typeof ConsentAcceptSchema>;
 
+/** docs/03_API_CONTRACTS.md §9.1 — POST /auth/impersonate/start|switch */
+export const ImpersonateStartSchema = z
+  .object({
+    targetUserId: z.string().min(1),
+  })
+  .strict();
+
+export type ImpersonateStartInput = z.infer<typeof ImpersonateStartSchema>;
+
 /** URL param: GET /consent-versions/:id */
 export const ConsentVersionIdParamSchema = z
   .string()

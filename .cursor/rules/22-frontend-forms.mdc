@@ -328,7 +328,22 @@ Ek yapılması gerekenler:
 
 ### DatePicker
 
-shadcn Popover + Calendar + date-fns. Ayrı component (`<DateField>`) oluştur, formda kullan.
+`@/components/base/date-picker/date-picker` — React Aria + `@internationalized/date`. Formda `Controller` ile; URL/filtre için `isoDateStringToDateValue` / `dateValueToIsoDateString`.
+
+```tsx
+import { DatePicker, isoDateStringToDateValue, dateValueToIsoDateString } from '@/components/base';
+<Controller
+  name="hireDate"
+  control={control}
+  render={({ field }) => (
+    <DatePicker
+      aria-label="İşe giriş tarihi"
+      value={isoDateStringToDateValue(field.value)}
+      onChange={(v) => field.onChange(v ? dateValueToIsoDateString(v) : '')}
+    />
+  )}
+/>
+```
 
 ### File Upload
 

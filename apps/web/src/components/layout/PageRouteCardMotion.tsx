@@ -3,11 +3,11 @@
 import { usePathname } from 'next/navigation';
 
 /**
- * Rota değişince `main` içindeki `.ls-card` öğelerine giriş animasyonu uygular.
+ * Rota değişince `main` içindeki `[data-route-card]` öğelerine giriş animasyonu uygular.
  *
  * Önceden `querySelectorAll` + inline `--card-enter-delay` ile kademeli gecikme vardı; bu,
  * SSR ile istemci hidrasyonunda `style` uyumsuzluğu üretiyordu. Gecikme artık yalnızca
- * `globals.css` içindeki `.page-route-card-motion .ls-card` kuralıyla (0ms) verilir.
+ * `globals.css` içindeki `.page-route-card-motion [data-route-card]` kuralıyla (0ms) verilir.
  * Rota anahtarı (`key`) animasyonu yeniden tetiklemek için yeterli.
  */
 export function PageRouteCardMotion({ children }: { children: React.ReactNode }) {

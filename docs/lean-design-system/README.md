@@ -1,108 +1,95 @@
 # Lean Management — Design System
 
-Drop-in paket. Soğuk gri-mavi zemin, **canlı mavi** birincil renk, beyaz kartlar ve çok renkli istatistik rozetleri. Özet: repo kökündeki **`design-system.json`** (Cool Blue Dashboard); CSS:**`tokens.css`** + **`components.css`**.
+**ADR 0009** ile Untitled UI React felsefesine geçiş kararı alındı.  
+Bu klasör projenin tek görsel gerçekliğidir.
+
+> **Faz 12 tamamlandı (2026-05):** `ls-*` bileşen sınıfları kaldırıldı. Yeni UI `apps/web/src/components/base/` + `application/` üzerinden; ikonlar `@untitledui/icons` (`base/icons/` re-export).
+
+## Tasarım Felsefesi
+
+Untitled UI React referansı alınarak:
+
+- **Temiz, nötr zemin** — beyaz sayfa, minimal border
+- **Elektrik Cyan marka** — `#7df9ff` imza tonu; eylemler için `#0aa7b0` (brand-600)
+- **Sade tipografi** — Inter body, Plus Jakarta Sans display
+- **Token hiyerarşisi** — semantic → component; `#hex` sabit değer yasak
+- **Erişilebilir primitifler** — React Aria tabanlı bileşenler
 
 ## İçindekiler
 
 ```
 lean-design-system/
 ├── tokens.css          # Renk, tipografi, spacing, radius, shadow, motion (CSS değişkenleri)
-├── components.css      # Hazır bileşen sınıfları (ls-btn, ls-card, ls-stat-tile, ls-cta-card, …)
-├── icons.jsx           # 24×24 stroke tabanlı ikonlar (window.I.* olarak expose)
-├── index.css           # Tek noktadan import — fontlar + tokens + components
+├── components.css      # BOŞ — Faz 12 İter 5 (eski ls-* kaldırıldı)
+├── icons.jsx           # DEPRECATED — yalnızca referans; kullanmayın
+├── index.css           # tokens (components.css artık boş)
 └── README.md
 ```
 
-## Tasarım özeti (design-system.json ile uyumlu)
+## Brand Rengi Skalası
 
-- Sayfa zemini: **soğuk gri-mavi** (~`#F4F7FA` ailesi), `--gradient-page-bg`.
-- Birincil: **mavi** (`--gradient-primary`, `--color-primary-*`, linkler `#2563EB`).
-- Kartlar: **beyaz**, **yumuşak gölge**, çerçeve yok.
-- Vurgu: **fuşya/magenta** (`--gradient-accent`) — segment çubuğu ucu, versus rozeti.
-- İstatistik rozetleri: gök mavisi, teal, lavanta, pembe, amber-peach (`--color-stat-*`).
+| Token               | Hex       | Kullanım                                                 |
+| ------------------- | --------- | -------------------------------------------------------- |
+| `--color-brand-300` | `#7df9ff` | Vurgu, glow efekti, focus ring, aktif rozet              |
+| `--color-brand-500` | `#0dd4de` | İkincil eylem, badge bg                                  |
+| `--color-brand-600` | `#0aa7b0` | **Birincil eylem** — buton arkaplanı, sidebar aktif pill |
+| `--color-brand-700` | `#077d84` | Hover durumu                                             |
+| `--color-brand-50`  | `#f0fdfe` | Hafif marka vurgusu arkaplanı                            |
 
-## Kurulum
+## Bileşen Modeli (Faz 12 hedefi)
 
-### 1) Klasörü projenize kopyalayın
-
-`lean-design-system/` klasörünü projenizin istediğiniz yerine atın.
-
-### 2) Import edin
-
-**Vanilla HTML:**
-
-```html
-<link rel="stylesheet" href="src/assets/lean-design-system/index.css" />
+```
+apps/web/src/components/
+├── base/            # Untitled UI kaynak — Button, Input, Badge, Table…
+│   ├── buttons/
+│   ├── inputs/
+│   ├── badges/
+│   └── ...
+├── application/     # Untitled UI dashboard parçaları — Sidebar, Header, Nav
+├── shared/          # PermissionGate, DataTable sarmalayıcıları, PageShell
+└── users|tasks|…   # Domain — sadece base/ ve shared/ kullanır
 ```
 
-**React / Next.js / Vite:**
+## `ls-*` → Yeni Bileşen Eşleme (Geçiş Tablosu)
 
-```js
-import './assets/lean-design-system/index.css';
-```
+| Eski (`ls-*`)              | Yeni (`base/`)                 | Durum         |
+| -------------------------- | ------------------------------ | ------------- |
+| `ls-btn ls-btn--primary`   | `<Button color="primary">`     | Faz 12 İter 2 |
+| `ls-btn ls-btn--neutral`   | `<Button color="secondary">`   | Faz 12 İter 2 |
+| `ls-btn ls-btn--danger`    | `<Button color="destructive">` | Faz 12 İter 2 |
+| `ls-card`                  | `<Card>` / `<Section>`         | Faz 12 İter 2 |
+| `ls-input`                 | `<Input>` / `<TextField>`      | Faz 12 İter 2 |
+| `ls-alert ls-alert--error` | `<Alert variant="error">`      | Faz 12 İter 2 |
+| `ls-sidebar-nav-link`      | `<SidebarNavItem>`             | Faz 12 İter 3 |
 
-**Tailwind ile birlikte:**
+## Token Cheat-Sheet
 
-```css
-@import './assets/lean-design-system/index.css';
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-```
+| Amaç                   | Token                                            |
+| ---------------------- | ------------------------------------------------ |
+| Sayfa arkaplanı        | `var(--gradient-page-bg)`                        |
+| Kart yüzeyi            | `var(--color-surface-card)`                      |
+| Birincil eylem (brand) | `var(--color-brand-600)`                         |
+| İmza vurgu (electric)  | `var(--color-brand-300)`                         |
+| Hover                  | `var(--color-brand-700)`                         |
+| Focus ring             | `var(--color-brand-300)` — `var(--shadow-focus)` |
+| Ana metin              | `var(--color-text-primary)`                      |
+| İkincil metin          | `var(--color-text-secondary)`                    |
+| Üçüncül metin          | `var(--color-text-tertiary)`                     |
+| Border                 | `var(--color-border-primary)`                    |
+| Kart shadow            | `var(--shadow-card)`                             |
+| Font body              | `var(--font-body)`                               |
+| Font display           | `var(--font-display)`                            |
+| Spacing                | `var(--space-1)` … `var(--space-12)`             |
+| Radius                 | `var(--radius-xs)` … `var(--radius-card)`        |
 
-### 3) Kullanın
+## Kural: Token Dışına Çıkma Yasak
 
-```html
-<button class="ls-btn ls-btn--primary">KTİ Oluştur</button>
+- Yeni renk/spacing: önce `tokens.css`'deki değişkenlere bak; yoksa **token dosyasına** ekle.
+- **`#hex` literal değer** TSX/JSX içinde yasak.
+- `components.css` boşaltıldı; bileşenler `apps/web/src/components/base/` kullanır.
 
-<div class="ls-card">
-  <div class="ls-card__header">
-    <h3 class="ls-card__title">Başlık</h3>
-    <a class="ls-link" href="#">Tümünü gör</a>
-  </div>
-  <p class="text-body">İçerik…</p>
-</div>
+## Cursor / Agent
 
-<!-- CTA bloğu (tek gradient vurgu) -->
-<section class="ls-cta-card">
-  <p class="ls-cta-card__pretitle">Öne çıkan</p>
-  <h2 class="ls-cta-card__title">Başlık</h2>
-  <button type="button" class="ls-btn--ghost-on-gradient">İlerle</button>
-</section>
-```
-
-### 4) İkonları kullanın (opsiyonel, React)
-
-Vanilla HTML + Babel için `icons.jsx` README akışını kullanın. Modern React’te dosya sonundaki `window.I = I` satırını `export default I` ile değiştirin.
-
-## Token kullanımı (cheat-sheet)
-
-| Amaç                  | Değişken                                                                                                                             |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| Sayfa arka planı      | `var(--gradient-page-bg)`                                                                                                            |
-| Birincil gradient     | `var(--gradient-primary)`                                                                                                            |
-| Accent gradient       | `var(--gradient-accent)`                                                                                                             |
-| Metin                 | `var(--color-fg)` / `--color-fg-soft` / `--color-fg-subtle`                                                                          |
-| Kart yüzeyi           | `var(--color-surface-card)`                                                                                                          |
-| Gölge (kart)          | `var(--shadow-card)` / `--shadow-card-hover`                                                                                         |
-| Link rengi            | `var(--color-link)`                                                                                                                  |
-| Sol menü pasif metin  | `var(--color-sidebar-nav-idle)`                                                                                                      |
-| Sol menü seçili satır | Sınıf `ls-sidebar-nav-link--active` + `color: var(--color-fg-inverse)` (Tailwind Preflight `a{color:inherit}` için `components.css`) |
-| İstatistik rozeti     | `var(--color-stat-lavender)` … `--color-stat-sky`                                                                                    |
-| Progress segmentleri  | `var(--color-progress-positive)` vb.                                                                                                 |
-| Font                  | `var(--font-display)` / `--font-body`                                                                                                |
-| Spacing               | `var(--space-1)` … `--space-12`                                                                                                      |
-| Radius                | `var(--radius-md)` … `--radius-card`                                                                                                 |
-| Hareket               | `var(--dur-base)` + `var(--ease-standard)`                                                                                           |
-
-Tam liste: `tokens.css`.
-
-## Kural: Token dışına çıkma
-
-- Yeni renk/spacing için önce `tokens.css`’e ekleyin; **design-system.json** ile çelişmeyin.
-- Mümkünse `ls-*` bileşenlerini kullanın.
-- Kanonik ürün spesifikasyonu: kök `design-system.json`. Bu klasör onun **CSS implementasyonu**dur.
-
-## Cursor / agent (LeanManagement repo)
-
-`.cursor/rules/26-lean-design-system.mdc` — UI çalışmasında bu README + `tokens.css` + `components.css` birlikte referans alınır.
+`.cursor/rules/26-lean-design-system.mdc` — Untitled UI bileşen modeli + token kuralları  
+`.cursor/rules/62-phase-12-UI-migration.mdc` — Faz 12 iterasyon planı  
+ADR: `docs/adr/0009-untitledui-tailwind4-react-aria-ui-migration.md`

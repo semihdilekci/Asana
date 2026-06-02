@@ -85,8 +85,7 @@ export class SystemSettingsService {
       oldValue: oldSnapshot,
       newValue: { value: parsed as object },
     };
-    await this.audit.append({
-      userId: actor.id,
+    await this.audit.appendForActor(actor, {
       action: 'UPDATE_SYSTEM_SETTING',
       entity: 'system_setting',
       entityId: key,

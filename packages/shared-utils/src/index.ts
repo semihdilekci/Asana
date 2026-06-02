@@ -19,6 +19,12 @@ export {
   nextAuditChainHash,
   stableJsonStringifyForAudit,
 } from './audit-chain-canonical.js';
+export {
+  formatAuditActorDisplayLabel,
+  formatImpersonationActionLabel,
+  isImpersonationMutatingAudit,
+  type AuditActorNameParts,
+} from './audit-impersonation-display.js';
 export { verifyAuditLogChain, type AuditChainVerifyInputRow } from './audit-chain-verify.js';
 export { sanitizeInternalRedirectPath } from './internal-redirect-path.js';
 export {

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
+import { Alert, Button, Card } from '@/components/base';
 import {
   UserRoleAssignDialog,
   useRoleOptionsForUserAssign,
@@ -64,26 +65,27 @@ export function UserRolesContent({ userId }: UserRolesContentProps) {
       <div role="status" aria-live="polite" aria-busy className="space-y-[var(--space-3)]">
         <span className="sr-only">Roller yükleniyor...</span>
         <div className="h-10 w-64 animate-pulse rounded-[var(--radius-md)] bg-[var(--color-neutral-100)]" />
-        <div className="ls-card h-32 animate-pulse" />
+        <Card className="h-32 animate-pulse" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div role="alert" className="ls-alert ls-alert--error">
+      <Alert variant="error">
         <p>Rol bilgileri yüklenemedi.</p>
-        <button
-          type="button"
-          className="ls-btn ls-btn--neutral ls-btn--sm mt-[var(--space-2)]"
-          onClick={() => {
+        <Button
+          color="secondary"
+          size="sm"
+          className="mt-[var(--space-2)]"
+          onPress={() => {
             void refetchUser();
             void refetchRoles();
           }}
         >
           Tekrar dene
-        </button>
-      </div>
+        </Button>
+      </Alert>
     );
   }
 
@@ -106,14 +108,14 @@ export function UserRolesContent({ userId }: UserRolesContentProps) {
         </div>
         {user && !user.anonymizedAt ? (
           <PermissionGate permission={Permission.ROLE_ASSIGN}>
-            <button
-              type="button"
-              className="ls-btn ls-btn--primary ls-btn--sm"
-              disabled={pickLoading || rolePickOptions.length === 0}
-              onClick={() => setAssignOpen(true)}
+            <Button
+              color="primary"
+              size="sm"
+              isDisabled={pickLoading || rolePickOptions.length === 0}
+              onPress={() => setAssignOpen(true)}
             >
               Yeni rol ata
-            </button>
+            </Button>
           </PermissionGate>
         ) : null}
       </div>

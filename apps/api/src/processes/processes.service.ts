@@ -7,7 +7,16 @@ import { Permission } from '@leanmgmt/shared-types';
 
 import type { AuthenticatedUser } from '../common/decorators/current-user.decorator.js';
 import { AppException } from '../common/exceptions/app.exception.js';
+import { AuditLogService } from '../common/audit/audit-log.service.js';
 import { EncryptionService } from '../common/encryption/encryption.service.js';
+import {
+  buildImpersonationActionContext,
+  buildProcessStartMetadata,
+  readProcessStartImpersonation,
+  readTaskActionContext,
+  serializeActionPerformerFields,
+  type UserBriefParts,
+} from '../common/workflow/action-performer.js';
 import { DocumentsService } from '../documents/documents.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { PermissionResolverService } from '../roles/permission-resolver.service.js';
@@ -49,6 +58,7 @@ export class ProcessesService {
     @Inject(PermissionResolverService)
     private readonly permissionResolver: PermissionResolverService,
     @Inject(EncryptionService) private readonly encryption: EncryptionService,
+    @Inject(AuditLogService) private readonly audit: AuditLogService,
   ) {}
 
   async startKti(
@@ -99,6 +109,9 @@ export class ProcessesService {
     const n = rows[0].n;
     const displayId = `KTI-${String(n).padStart(6, '0')}`;
 
+    const impersonationCtx = buildImpersonationActionContext(actor);
+    const startMetadata = buildProcessStartMetadata(actor);
+
     const result = await this.prisma.$transaction(async (tx) => {
       const process = await tx.process.create({
         data: {
@@ -108,6 +121,7 @@ export class ProcessesService {
           startedByUserId: actor.id,
           companyId: dto.companyId,
           status: 'IN_PROGRESS',
+          metadata: startMetadata ?? undefined,
         },
       });
 
@@ -120,6 +134,7 @@ export class ProcessesService {
           status: 'COMPLETED',
           completedByUserId: actor.id,
           completedAt: new Date(),
+          actionContext: impersonationCtx ?? undefined,
           formData: {
             companyId: company.id,
             companyName: `${company.name} (${company.code})`,
@@ -168,6 +183,20 @@ export class ProcessesService {
       processDisplayId: displayId,
     });
 
+    await this.audit.appendForActor(actor, {
+      action: 'START_PROCESS',
+      entity: 'process',
+      entityId: result.process.id,
+      ipHash: 'api',
+      metadata: {
+        processType: ProcessType.BEFORE_AFTER_KAIZEN,
+        displayId: result.process.displayId,
+        companyId: dto.companyId,
+        savingAmount: dto.savingAmount,
+        documentCount: allDocIds.length,
+      },
+    });
+
     return {
       id: result.process.id,
       displayId: result.process.displayId,
@@ -181,7 +210,7 @@ export class ProcessesService {
   async cancelByDisplayId(
     displayId: string,
     body: { reason: string },
-    _actor: AuthenticatedUser,
+    actor: AuthenticatedUser,
   ): Promise<void> {
     const process = await this.prisma.process.findFirst({
       where: { displayId },
@@ -218,9 +247,17 @@ export class ProcessesService {
           status: 'CANCELLED',
           cancelReason: body.reason,
           cancelledAt: now,
-          cancelledByUserId: _actor.id,
+          cancelledByUserId: actor.id,
         },
       });
+    });
+
+    await this.audit.appendForActor(actor, {
+      action: 'CANCEL_PROCESS',
+      entity: 'process',
+      entityId: process.id,
+      ipHash: 'api',
+      metadata: { displayId: process.displayId, reason: body.reason },
     });
 
     this.eventEmitter.emit(NOTIFICATION_DOMAIN_EVENT.PROCESS_CANCELLED, {
@@ -233,7 +270,7 @@ export class ProcessesService {
   async rollbackByDisplayId(
     displayId: string,
     body: { targetStepOrder: number; reason: string },
-    _actor: AuthenticatedUser,
+    actor: AuthenticatedUser,
   ): Promise<{
     newActiveTaskId: string;
     newActiveTaskStepKey: string;
@@ -293,13 +330,16 @@ export class ProcessesService {
         },
       });
       const nowIso = new Date().toISOString();
-      const entry = {
+      const entry: Record<string, unknown> = {
         fromStep: currentStepOrder,
         toStep: targetStep.order,
         reason: body.reason,
-        byUserId: _actor.id,
+        byUserId: actor.id,
         at: nowIso,
       };
+      if (actor.impersonatorId) {
+        entry['actorUserId'] = actor.impersonatorId;
+      }
       const previousHistory = Array.isArray(process.rollbackHistory) ? process.rollbackHistory : [];
       const nextHistory = [...(previousHistory as object[]), entry];
       await tx.process.update({
@@ -319,6 +359,19 @@ export class ProcessesService {
       newTaskId: result.newActiveTaskId,
       assigneeUserId,
       startedByUserId: process.startedByUserId,
+    });
+
+    await this.audit.appendForActor(actor, {
+      action: 'ROLLBACK_PROCESS',
+      entity: 'process',
+      entityId: process.id,
+      ipHash: 'api',
+      metadata: {
+        displayId: process.displayId,
+        targetStepOrder: body.targetStepOrder,
+        reason: body.reason,
+        rolledBackFromStepOrder: result.rolledBackFromStepOrder,
+      },
     });
 
     return result;
@@ -369,13 +422,75 @@ export class ProcessesService {
     lastName: string;
     sicilEncrypted: Buffer | Uint8Array;
     anonymizedAt: Date | null;
-  }): { id: string; firstName: string; lastName: string; sicil: string | null } {
+  }): UserBriefParts {
     return {
       id: u.id,
       firstName: u.firstName,
       lastName: u.lastName,
       sicil: u.anonymizedAt ? null : this.encryption.decryptSicil(u.sicilEncrypted),
     };
+  }
+
+  private async loadUserBriefsByIds(ids: string[]): Promise<Map<string, UserBriefParts>> {
+    const unique = [...new Set(ids.filter(Boolean))];
+    if (unique.length === 0) return new Map();
+    const users = await this.prisma.user.findMany({
+      where: { id: { in: unique } },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        sicilEncrypted: true,
+        anonymizedAt: true,
+      },
+    });
+    return new Map(users.map((u) => [u.id, this.serializeUserBrief(u)]));
+  }
+
+  private collectActorUserIdsFromProcesses(
+    processes: { metadata: unknown; tasks?: { actionContext: unknown }[] }[],
+  ): string[] {
+    const ids: string[] = [];
+    for (const p of processes) {
+      const start = readProcessStartImpersonation(p.metadata);
+      if (start) ids.push(start.actorUserId);
+      for (const t of p.tasks ?? []) {
+        const ctx = readTaskActionContext(t.actionContext);
+        if (ctx) ids.push(ctx.actorUserId);
+      }
+    }
+    return ids;
+  }
+
+  private attachStartPerformerFields(
+    target: Record<string, unknown>,
+    effective: UserBriefParts,
+    metadata: unknown,
+    actorMap: Map<string, UserBriefParts>,
+  ): void {
+    target['startedBy'] = effective;
+    const start = readProcessStartImpersonation(metadata);
+    const actor = start ? (actorMap.get(start.actorUserId) ?? null) : null;
+    const fields = serializeActionPerformerFields(effective, actor);
+    target['performedViaImpersonation'] = fields.performedViaImpersonation;
+    target['performerDisplayLabel'] = fields.performerDisplayLabel;
+    if (fields.actionActor) target['actionActor'] = fields.actionActor;
+  }
+
+  private attachTaskPerformerFields(
+    target: Record<string, unknown>,
+    effective: UserBriefParts | null,
+    actionContext: unknown,
+    actorMap: Map<string, UserBriefParts>,
+  ): void {
+    if (!effective) return;
+    target['completedBy'] = effective;
+    const ctx = readTaskActionContext(actionContext);
+    const actor = ctx ? (actorMap.get(ctx.actorUserId) ?? null) : null;
+    const fields = serializeActionPerformerFields(effective, actor);
+    target['performedViaImpersonation'] = fields.performedViaImpersonation;
+    target['performerDisplayLabel'] = fields.performerDisplayLabel;
+    if (fields.actionActor) target['actionActor'] = fields.actionActor;
   }
 
   async findManyForActor(
@@ -422,7 +537,7 @@ export class ProcessesService {
         company: { select: { id: true, code: true, name: true } },
         tasks: {
           where: { status: { in: ACTIVE_STATUSES } },
-          select: { stepKey: true, stepOrder: true, status: true },
+          select: { stepKey: true, stepOrder: true, status: true, actionContext: true },
         },
       },
     });
@@ -431,22 +546,30 @@ export class ProcessesService {
     if (hasMore) rows.pop();
     const nextCursor = hasMore ? (rows[rows.length - 1]?.id ?? null) : null;
 
+    const actorMap = await this.loadUserBriefsByIds(this.collectActorUserIdsFromProcesses(rows));
+
     const items = rows.map((p) => {
       const wf = this.processTypeRegistry.getWorkflow(p.processType);
       const activeKey = pickActiveStepKeyFromTasks(p.tasks);
       const activeTaskLabel = wf.getListActiveStepLabel(activeKey, p.status);
-      return {
+      const item: Record<string, unknown> = {
         id: p.id,
         displayId: p.displayId,
         processType: p.processType,
         status: p.status,
-        startedBy: this.serializeUserBrief(p.startedBy),
         company: { id: p.company.id, code: p.company.code, name: p.company.name },
         activeTaskLabel,
         startedAt: p.startedAt.toISOString(),
         completedAt: p.completedAt?.toISOString() ?? null,
         cancelledAt: p.cancelledAt?.toISOString() ?? null,
       };
+      this.attachStartPerformerFields(
+        item,
+        this.serializeUserBrief(p.startedBy),
+        p.metadata,
+        actorMap,
+      );
+      return item;
     });
 
     return { items, pagination: { nextCursor, hasMore } };
@@ -541,6 +664,10 @@ export class ProcessesService {
       return dt !== 0 ? dt : a.id.localeCompare(b.id);
     });
 
+    const actorMap = await this.loadUserBriefsByIds(
+      this.collectActorUserIdsFromProcesses([{ metadata: process.metadata, tasks: process.tasks }]),
+    );
+
     const tasksOut = tasksChronological.map((task) => {
       const taskFullAccess = fullProcessAccess || taskIdsActorAssigned.has(task.id);
       const assigneeUser = task.assignments.find((a) => a.user)?.user ?? null;
@@ -560,7 +687,12 @@ export class ProcessesService {
       }
 
       if (task.completedBy) {
-        base['completedBy'] = this.serializeUserBrief(task.completedBy);
+        this.attachTaskPerformerFields(
+          base,
+          this.serializeUserBrief(task.completedBy),
+          task.actionContext,
+          actorMap,
+        );
       }
       if (task.status !== 'COMPLETED' && assigneeUser) {
         base['assignedTo'] = this.serializeUserBrief(assigneeUser);
@@ -581,13 +713,12 @@ export class ProcessesService {
         thumbnailUrl: null as string | null,
       }));
 
-    return {
+    const detail: Record<string, unknown> = {
       id: process.id,
       displayId: process.displayId,
       processType: process.processType,
       status: process.status,
       activeTaskLabel,
-      startedBy: this.serializeUserBrief(process.startedBy),
       company: { id: process.company.id, code: process.company.code, name: process.company.name },
       startedAt: process.startedAt.toISOString(),
       completedAt: process.completedAt?.toISOString() ?? null,
@@ -596,5 +727,12 @@ export class ProcessesService {
       tasks: tasksOut,
       documents: documentsOut,
     };
+    this.attachStartPerformerFields(
+      detail,
+      this.serializeUserBrief(process.startedBy),
+      process.metadata,
+      actorMap,
+    );
+    return detail;
   }
 }

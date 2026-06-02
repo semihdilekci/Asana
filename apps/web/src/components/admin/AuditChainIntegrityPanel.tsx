@@ -1,10 +1,10 @@
 'use client';
 
-import Link from 'next/link';
 import { toast } from 'sonner';
 
 import { Permission } from '@leanmgmt/shared-types';
 
+import { Button, ButtonLink } from '@/components/base';
 import { LoadingSplash } from '@/components/shared/LoadingSplash';
 import { PermissionGate } from '@/components/shared/PermissionGate';
 import {
@@ -81,23 +81,21 @@ export function AuditChainIntegrityPanel({
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <PermissionGate permission={Permission.AUDIT_LOG_VIEW}>
-            <button
+            <Button
               type="button"
-              className="ls-btn ls-btn--primary ls-btn--sm"
-              disabled={verify.isPending}
-              onClick={() => void onVerify()}
+              color="primary"
+              size="sm"
+              isDisabled={verify.isPending}
+              onPress={() => void onVerify()}
             >
               {verify.isPending ? 'Doğrulanıyor…' : 'Şimdi doğrula'}
-            </button>
+            </Button>
           </PermissionGate>
           {showDetailLink ? (
             <PermissionGate permission={Permission.AUDIT_LOG_VIEW}>
-              <Link
-                href="/admin/audit-logs/chain-integrity"
-                className="ls-btn ls-btn--neutral ls-btn--sm inline-flex no-underline"
-              >
+              <ButtonLink href="/admin/audit-logs/chain-integrity" color="secondary" size="sm">
                 Zincir sayfası
-              </Link>
+              </ButtonLink>
             </PermissionGate>
           ) : null}
         </div>

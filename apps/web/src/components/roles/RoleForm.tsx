@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { Button, inputClassName } from '@/components/base';
 import { useCreateRoleMutation } from '@/lib/queries/roles';
 
 interface FormValues {
@@ -46,7 +47,7 @@ export function RoleForm() {
         </label>
         <input
           id="role-code"
-          className="ls-input w-full font-mono"
+          className={inputClassName('md', 'w-full font-mono')}
           {...register('code', { required: true })}
         />
         <p className="mt-1 text-xs text-[var(--color-neutral-500)]">
@@ -62,7 +63,7 @@ export function RoleForm() {
         </label>
         <input
           id="role-name"
-          className="ls-input w-full"
+          className={inputClassName('md', 'w-full')}
           {...register('name', { required: true })}
         />
       </div>
@@ -75,7 +76,7 @@ export function RoleForm() {
         </label>
         <textarea
           id="role-desc"
-          className="ls-input min-h-[5rem] w-full"
+          className={inputClassName('md', 'min-h-[5rem] w-full')}
           {...register('description')}
         />
       </div>
@@ -85,20 +86,12 @@ export function RoleForm() {
         </p>
       ) : null}
       <div className="flex gap-2">
-        <button
-          type="submit"
-          className="ls-btn ls-btn--primary"
-          disabled={createMutation.isPending}
-        >
+        <Button type="submit" color="primary" isDisabled={createMutation.isPending}>
           {createMutation.isPending ? 'Kaydediliyor…' : 'Oluştur'}
-        </button>
-        <button
-          type="button"
-          className="ls-btn ls-btn--neutral"
-          onClick={() => router.push('/roles')}
-        >
+        </Button>
+        <Button type="button" color="secondary" size="md" onPress={() => router.push('/roles')}>
           Vazgeç
-        </button>
+        </Button>
       </div>
     </form>
   );

@@ -1,36 +1,38 @@
 import {
   AlertTriangle,
-  Bell,
-  CheckCircle2,
+  Bell01,
+  CheckCircle,
   CheckSquare,
-  FileText,
-  KeyRound,
-  type LucideIcon,
-  UserX,
+  File06,
+  Key01,
+  UserX01,
   XCircle,
-} from 'lucide-react';
+} from '@untitledui/icons';
+import type { FC, SVGProps } from 'react';
+
+export type NotificationIcon = FC<SVGProps<SVGSVGElement>>;
 
 /** Ekran kataloğu S-NOTIF-LIST ile uyumlu ikon eşlemesi */
-export function notificationEventIcon(eventType: string): LucideIcon {
+export function notificationEventIcon(eventType: string): NotificationIcon {
   switch (eventType) {
     case 'TASK_ASSIGNED':
       return CheckSquare;
     case 'TASK_CLAIMED_BY_PEER':
-      return UserX;
+      return UserX01;
     case 'PROCESS_COMPLETED':
-      return CheckCircle2;
+      return CheckCircle;
     case 'PROCESS_REJECTED':
       return XCircle;
     case 'SLA_WARNING':
-      return Bell;
+      return Bell01;
     case 'SLA_BREACH':
       return AlertTriangle;
     case 'PASSWORD_EXPIRY_WARNING':
-      return KeyRound;
+      return Key01;
     case 'CONSENT_VERSION_PUBLISHED':
-      return FileText;
+      return File06;
     default:
-      return Bell;
+      return Bell01;
   }
 }
 

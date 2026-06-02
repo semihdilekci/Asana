@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { SYSTEM_SETTING_KEYS, type SystemSettingKey } from '@leanmgmt/shared-schemas';
 import { Permission } from '@leanmgmt/shared-types';
 
+import { Button, inputClassName } from '@/components/base';
 import { LoadingSplash } from '@/components/shared/LoadingSplash';
 import { useHasPermission } from '@/hooks/usePermissions';
 
@@ -106,7 +107,7 @@ function SystemSettingRowEditor({ row }: { row: SystemSettingRow }) {
           <span className="text-sm text-[var(--color-neutral-800)]">{draft}</span>
         ) : key === 'SUPERADMIN_IP_WHITELIST' ? (
           <textarea
-            className="ls-input min-h-[6rem] w-full max-w-xl font-mono text-xs"
+            className={inputClassName('md', 'min-h-[6rem] w-full max-w-xl font-mono text-xs')}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             spellCheck={false}
@@ -114,7 +115,7 @@ function SystemSettingRowEditor({ row }: { row: SystemSettingRow }) {
         ) : (
           <input
             type="number"
-            className="ls-input w-40"
+            className={inputClassName('md', 'w-40')}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
           />
@@ -127,14 +128,15 @@ function SystemSettingRowEditor({ row }: { row: SystemSettingRow }) {
         {readOnly ? (
           <span className="text-xs text-[var(--color-neutral-500)]">Salt okunur</span>
         ) : (
-          <button
+          <Button
             type="button"
-            className="ls-btn ls-btn--primary ls-btn--sm"
-            disabled={update.isPending}
-            onClick={() => void onSave()}
+            color="primary"
+            size="sm"
+            isDisabled={update.isPending}
+            onPress={() => void onSave()}
           >
             {update.isPending ? 'Kaydediliyor…' : 'Kaydet'}
-          </button>
+          </Button>
         )}
       </td>
     </tr>

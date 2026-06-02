@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import { Card } from '@/components/base';
 import { UserForm } from '@/components/users/UserForm';
 
 export const metadata: Metadata = {
@@ -27,9 +28,9 @@ export default function NewUserPage() {
         </h1>
       </div>
 
-      <div className="ls-card p-[var(--space-6)]">
+      <Card className="p-[var(--space-6)]">
         <UserForm mode="create" />
-      </div>
+      </Card>
     </div>
   );
 }

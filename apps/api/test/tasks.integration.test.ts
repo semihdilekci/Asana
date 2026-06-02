@@ -533,4 +533,28 @@ describe('Tasks API (integration)', () => {
     expect(mgrPt?.completionAction).toBe('REQUEST_REVISION');
     expect(mgrPt?.reason).toBe(reason);
   });
+
+  it('GET active-count — kullanıcının bekleyen atamalarını sayar', async () => {
+    const srv = app.getHttpAdapter().getInstance();
+    const prisma = app.get(PrismaService);
+    const superU = await prisma.user.findFirst({
+      where: { firstName: 'Super', lastName: 'Admin' },
+    });
+    const mgrU = await prisma.user.findFirst({ where: { firstName: 'Seed', lastName: 'Manager' } });
+    if (!superU || !mgrU) throw new Error('seed');
+    await createClaimRaceTask(prisma, superU.id, mgrU.id, superU.companyId);
+    const auth = await loginManagerWithConsentDirect(prisma);
+
+    const countRes = await srv.inject({
+      method: 'GET',
+      url: '/api/v1/tasks/active-count',
+      headers: {
+        authorization: `Bearer ${auth.accessToken}`,
+        cookie: auth.cookie,
+      },
+    });
+    expect(countRes.statusCode).toBe(200);
+    const countBody = JSON.parse(countRes.body) as { data: { activeCount: number } };
+    expect(countBody.data.activeCount).toBeGreaterThanOrEqual(1);
+  });
 });

@@ -4,6 +4,7 @@ import Link from 'next/link';
 
 import { Permission } from '@leanmgmt/shared-types';
 
+import { ButtonLink } from '@/components/base';
 import { LoadingSplash } from '@/components/shared/LoadingSplash';
 import { PermissionGate } from '@/components/shared/PermissionGate';
 import { useConsentVersionsListQuery } from '@/lib/queries/admin-consent-versions';
@@ -21,19 +22,13 @@ export function ConsentVersionsPageClient() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Link
-            href="/admin"
-            className="ls-btn ls-btn--neutral ls-btn--sm inline-flex no-underline"
-          >
+          <ButtonLink href="/admin" color="secondary" size="sm">
             Yönetim özeti
-          </Link>
+          </ButtonLink>
           <PermissionGate permission={Permission.CONSENT_VERSION_EDIT}>
-            <Link
-              href="/admin/consent-versions/new"
-              className="ls-btn ls-btn--primary ls-btn--sm inline-flex no-underline"
-            >
+            <ButtonLink href="/admin/consent-versions/new" color="primary" size="sm">
               Yeni taslak
-            </Link>
+            </ButtonLink>
           </PermissionGate>
         </div>
       </div>

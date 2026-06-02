@@ -1,41 +1,71 @@
 ---
-description: Lean UI design system — apps/web veya docs/lean-design-system üzerinde çalışırken tokenlar ve ls-* sınıfları için zorunlu kaynak; magic color/spacing yasak.
+description: Lean UI design system — apps/web veya docs/lean-design-system üzerinde çalışırken Untitled UI bileşen modeli + token kuralları; magic color/hex literal yasak. ADR 0009.
 globs:
   - "apps/web/**/*.{tsx,ts,css}"
   - "docs/lean-design-system/**"
 ---
 
-# Lean Design System — Zorunlu Referans
+# Lean Design System — Zorunlu Referans (Untitled UI + Elektrik Cyan)
 
-`docs/lean-design-system/` proje içi **görsel doğruluk kaynağıdır** (drop-in paket: token CSS, hazır bileşen sınıfları, ikonlar). Yeni sayfa, bileşen, layout veya stil değişikliğinde agent **önce** bu klasörü kullanır; tasarımı sıfırdan uydurmaz.
+`docs/lean-design-system/` proje içi **görsel doğruluk kaynağıdır**. Yeni sayfa, bileşen, layout veya stil değişikliğinde agent **önce** bu klasörü kullanır; tasarımı sıfırdan uydurmaz.
+
+> **Faz 12 geçiş:** `ls-*` sınıfları mevcut koda dokunurken okumak için geçerlidir; yeni kod **YAZAMAZ**. Yeni bileşenler `apps/web/src/components/base/` altında Untitled UI modeline göre oluşturulur.
 
 ## Okuma sırası (implementasyondan önce)
 
-1. `docs/lean-design-system/README.md` — kurulum, `ls-*` kullanımı, token cheat-sheet, “Token dışına çıkma” kuralları
-2. `docs/lean-design-system/tokens.css` — renk, tipografi, spacing, radius, shadow, motion değişkenleri
-3. `docs/lean-design-system/components.css` — `ls-btn`, `ls-card`, `ls-input`, `ls-alert`, vb. hazır sınıflar
-4. Gerekirse `example.html` — markup örüntüleri
+1. `docs/lean-design-system/README.md` — geçiş tablosu, token cheat-sheet, bileşen modeli
+2. `docs/lean-design-system/tokens.css` — renk (brand-*), tipografi, spacing, shadow, motion değişkenleri
+3. `docs/adr/0009-untitledui-tailwind4-react-aria-ui-migration.md` — mimari karar
+4. Gerekirse `docs/lean-design-system/components.css` — eski `ls-*` referans (deprecated)
+
+## Bileşen Modeli (hedef yapı)
+
+```
+apps/web/src/components/
+├── base/            # Untitled UI kaynak kodu — Button, Input, Badge, Table…
+├── application/     # Dashboard shell parçaları — Sidebar, Header, Nav
+├── shared/          # PermissionGate, DataTable sarmalayıcıları
+└── users|tasks|…   # Domain — sadece base/ ve shared/ kullanır
+```
+
+Bileşenler React Aria primitive'leri üzerinde inşa edilir; Tailwind v4 utility sınıfları ve `cx()` ile stilize edilir.
+
+## Brand Rengi Kuralı
+
+| Senaryo | Kullanılacak token |
+|---------|--------------------|
+| Birincil eylem (buton, sidebar pill) | `var(--color-brand-600)` = `#0aa7b0` |
+| İmza vurgu / glow / focus ring | `var(--color-brand-300)` = `#7df9ff` |
+| Hover | `var(--color-brand-700)` = `#077d84` |
+| Hafif marka arkaplanı | `var(--color-brand-50)` = `#f0fdfe` |
+
+`#7df9ff` doğrudan TSX/JSX içinde literal olarak **yazılamaz** — token kullanılır.
 
 ## Zorunlu uygulama kuralları
 
-- **Yeni renk / spacing / radius / shadow** için önce `tokens.css` içinde mevcut değişkenlere bak; yoksa **token dosyasına** ekle — sayfa içinde rastgele `#hex` veya `px` şelaleleri yasak (README ile uyumlu).
-- **Bileşen görünümü** için mümkün olduğunca `components.css` içindeki **`ls-*`** sınıflarını kullan; Tailwind/shadcn ile birlikte kullanımda README’deki sıra ve çakışma notlarına uy.
-- **Next.js / `apps/web`**: Tasarım CSS’inin root’a bağlanması `README.md` “Kurulum” bölümüne göre yapılır (ör. `globals.css` veya root `layout` üzerinden `index.css` import). Henüz bağlı değilse bu iterasyonda **merkezi import** ekle veya proje stratejisine uygun kopya/symlink yolunu dokümante et; tek seferlik omurga değişikliği kabul.
-- **`icons.jsx`**: Next/React modülü olarak kullanılacaksa README’deki `window.I` → `export default` notuna uy.
+- **Yeni renk / spacing / radius / shadow** → önce `tokens.css`'deki semantic değişkene bak; yoksa token dosyasına ekle. `#hex` literal yasak.
+- **Yeni bileşen** → `apps/web/src/components/base/` altında Untitled UI kopyala-yapıştır modeline göre oluştur; `cx()` ile stilize et.
+- **Mevcut `ls-*`** → Dokunmadan bırak; değiştirmek zorundaysan Faz 12 geçiş tablosundaki yeni karşılığını kullan.
+- **İkonlar** → `@untitledui/icons` tercih edilir; geçiş süresince `lucide-react` de kullanılabilir.
+- **Tailwind v4** → `@theme` bloğunda tanımlı token sınıflarını kullan (`text-brand-600`, `bg-bg-primary` vb.); `tailwind.config.ts` artık `theme` anahtarı kullanmaz.
+- **Focus ring** → `var(--color-brand-300)` / `var(--shadow-focus)` — eski mavi focus yasak.
+- **İkincil eylem butonları** (İptal, Vazgeç, Filtreleri temizle, Çıkış, Dosya seç) → `import { Button } from '@/components/base/buttons/button'` + `color="secondary"`; liste/araç çubuğu `size="sm"`, form altı `size="md"`.
 
 ## Diğer kurallarla ilişki
 
-- **shadcn/ui** (`24-frontend-components`): Primitifler `components/ui/` altında kalır; renk ve spacing **design token’larla** hizalanır (`var(--color-*)`, `var(--space-*)`).
-- **Erişilebilirlik** (`25-frontend-a11y`): `ls-*` kullanırken odak halkası, kontrast ve klavye ile uyumluluğu bozma; gerekirse shadcn primitive + token birleşimi tercih et.
+- **`24-frontend-components`**: `components/ui/` shadcn artık hedef değil; Untitled UI + React Aria geçer. Geçiş tamamlanana kadar shadcn primitifleri `components/ui/` altında kalabilir.
+- **`25-frontend-a11y`**: React Aria WAI-ARIA otomatik sağlar; keyboard trap, focus visible, aria-label hâlâ zorunlu.
 
-## Yasak / kaçınılacaklar
+## Yasak
 
-- README’de tanımlı token/set dışında “marka rengi gibi görünen” rastgele palet
-- `components.css`’te karşılığı varken aynı görünüm için uzun utility zincirleri yazmak (bakım ve tutarlılık)
-- Design system dosyalarını **apps/web dışı** tüketici olarak görmezden gelip yalnızca Tailwind default’larına güvenmek
+- `#7df9ff` veya başka brand hex'ini TSX/CSS içinde literal yazma
+- Faz 12 geçişi sırasında yeni `ls-*` kullanımı
+- `components.css`'e yeni `ls-*` kural ekleme
+- Tailwind v4'te `tailwind.config.ts`'e `theme.extend.colors` ekleme (→ `tokens.css`'de `@theme` bloğu)
+- `shadcn add` ile yeni bileşen kurma (geçiş döneminde donduruldu)
 
 ## Kaynak yolu
 
-Tüm dosyalar: `docs/lean-design-system/` (`README.md`, `index.css`, `tokens.css`, `components.css`, `icons.jsx`, `example.html`).
+`docs/lean-design-system/` · `docs/adr/0009-*.md` · `.cursor/rules/62-phase-12-UI-migration.mdc`
 
-Detaylı domain ve ekran spesifikasyonu: `docs/05_FRONTEND_SPEC.md`, `docs/06_SCREEN_CATALOG.md` — design system **görsel dil**; bu dokümanlar **davranış ve içerik** için birlikte kullanılır.
+Ekran spesifikasyonu: `docs/06_SCREEN_CATALOG.md` — görsel dil bu kural; davranış ve içerik için Screen Catalog birlikte okunur.

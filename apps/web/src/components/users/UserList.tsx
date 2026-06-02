@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 
 import { Permission } from '@leanmgmt/shared-types';
 
+import { Alert, Button } from '@/components/base';
 import { PermissionGate } from '@/components/shared/PermissionGate';
 import {
   hasUserListActiveFilters,
@@ -69,16 +70,17 @@ export function UserList() {
     return (
       <div className="space-y-[var(--space-4)]">
         <UserListFiltersPanel />
-        <div role="alert" className="ls-alert ls-alert--error">
+        <Alert variant="error">
           <p>Kullanıcılar yüklenemedi.</p>
-          <button
-            type="button"
-            className="ls-btn ls-btn--neutral ls-btn--sm mt-[var(--space-2)]"
-            onClick={() => void refetch()}
+          <Button
+            color="secondary"
+            size="sm"
+            className="mt-[var(--space-2)]"
+            onPress={() => void refetch()}
           >
             Tekrar dene
-          </button>
-        </div>
+          </Button>
+        </Alert>
       </div>
     );
   }
@@ -95,13 +97,14 @@ export function UserList() {
               : 'Farklı filtreler deneyin veya yeni kullanıcı oluşturun.'}
           </p>
           {activeFilters && (
-            <button
-              type="button"
-              className="ls-btn ls-btn--neutral ls-btn--sm mt-[var(--space-4)]"
-              onClick={() => router.push('/users')}
+            <Button
+              color="secondary"
+              size="sm"
+              className="mt-[var(--space-4)]"
+              onPress={() => router.push('/users')}
             >
               Filtreleri temizle
-            </button>
+            </Button>
           )}
         </div>
       </div>
@@ -191,29 +194,29 @@ export function UserList() {
                 </td>
                 <td className="px-[var(--space-4)] py-[var(--space-3)] text-right">
                   <div className="flex items-center justify-end gap-[var(--space-2)]">
-                    <button
-                      type="button"
-                      className="ls-btn ls-btn--neutral ls-btn--xs"
-                      onClick={() => router.push(`/users/${user.id}`)}
+                    <Button
+                      color="secondary"
+                      size="xs"
+                      onPress={() => router.push(`/users/${user.id}`)}
                     >
                       Detay
-                    </button>
+                    </Button>
                     <PermissionGate permission={Permission.USER_UPDATE_ATTRIBUTE}>
-                      <button
-                        type="button"
-                        className="ls-btn ls-btn--neutral ls-btn--xs"
-                        onClick={() => router.push(`/users/${user.id}/edit`)}
+                      <Button
+                        color="secondary"
+                        size="xs"
+                        onPress={() => router.push(`/users/${user.id}/edit`)}
                       >
                         Düzenle
-                      </button>
+                      </Button>
                     </PermissionGate>
                     {user.isActive && (
                       <PermissionGate permission={Permission.USER_DEACTIVATE}>
-                        <button
-                          type="button"
-                          className="ls-btn ls-btn--danger ls-btn--xs"
-                          disabled={deactivateMutation.isPending}
-                          onClick={() => {
+                        <Button
+                          color="destructive"
+                          size="xs"
+                          isDisabled={deactivateMutation.isPending}
+                          onPress={() => {
                             if (
                               !confirm('Bu kullanıcıyı pasif yapmak istediğinizden emin misiniz?')
                             )
@@ -228,7 +231,7 @@ export function UserList() {
                           }}
                         >
                           Pasif yap
-                        </button>
+                        </Button>
                       </PermissionGate>
                     )}
                   </div>
@@ -246,22 +249,18 @@ export function UserList() {
         </p>
         <div className="flex gap-[var(--space-2)]">
           {cursor && (
-            <button
-              type="button"
-              className="ls-btn ls-btn--neutral ls-btn--sm"
-              onClick={() => setCursor(undefined)}
-            >
+            <Button color="secondary" size="sm" onPress={() => setCursor(undefined)}>
               Başa dön
-            </button>
+            </Button>
           )}
           {data.pagination.hasMore && (
-            <button
-              type="button"
-              className="ls-btn ls-btn--primary ls-btn--sm"
-              onClick={() => setCursor(data.pagination.nextCursor ?? undefined)}
+            <Button
+              color="primary"
+              size="sm"
+              onPress={() => setCursor(data.pagination.nextCursor ?? undefined)}
             >
               Sonraki
-            </button>
+            </Button>
           )}
         </div>
       </div>

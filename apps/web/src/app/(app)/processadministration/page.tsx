@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 
 import { Permission } from '@leanmgmt/shared-types';
 
+import { Alert } from '@/components/base';
 import { ProcessAdminList } from '@/components/processes/ProcessAdminList';
 import { PermissionGate } from '@/components/shared/PermissionGate';
 
@@ -26,7 +27,7 @@ export default function ProcessAdministrationPage() {
       <PermissionGate
         permission={Permission.PROCESS_VIEW_ALL}
         fallback={
-          <div className="ls-alert ls-alert--danger" role="alert">
+          <Alert variant="error">
             <p>Bu sayfayı görüntülemek için tüm süreçleri görüntüleme yetkisi gerekir.</p>
             <Link
               href="/dashboard"
@@ -34,7 +35,7 @@ export default function ProcessAdministrationPage() {
             >
               Ana sayfaya dön
             </Link>
-          </div>
+          </Alert>
         }
       >
         <Suspense

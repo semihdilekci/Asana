@@ -744,6 +744,8 @@ model Task {
   completionAction  String?        @map("completion_action") @db.VarChar(64)
   completionReason  String?        @map("completion_reason") @db.Text
   formData           Json?         @map("form_data")
+  /** Impersonation altında claim/complete — gerçek aktör user id */
+  actionContext      Json?         @map("action_context")
   slaDueAt           DateTime?      @map("sla_due_at") @db.Timestamptz(6)
   slaWarningSentAt  DateTime?     @map("sla_warning_sent_at") @db.Timestamptz(6)
   slaBreachSentAt   DateTime?     @map("sla_breach_sent_at") @db.Timestamptz(6)

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { Suspense } from 'react';
 
+import { ButtonLink } from '@/components/base';
 import { UserList } from '@/components/users/UserList';
 
 export const metadata: Metadata = {
@@ -20,9 +20,9 @@ export default function UsersPage() {
             Sistemdeki tüm kullanıcıları görüntüleyin ve yönetin.
           </p>
         </div>
-        <Link href="/users/new" className="ls-btn ls-btn--primary">
+        <ButtonLink href="/users/new" color="primary">
           + Yeni Kullanıcı
-        </Link>
+        </ButtonLink>
       </div>
 
       <Suspense

@@ -87,6 +87,7 @@ export const queryKeys = {
     all: () => ['tasks'] as const,
     lists: () => [...queryKeys.tasks.all(), 'list'] as const,
     list: (filters?: TaskListQuery) => [...queryKeys.tasks.lists(), filters ?? {}] as const,
+    activeCount: () => [...queryKeys.tasks.all(), 'active-count'] as const,
     details: () => [...queryKeys.tasks.all(), 'detail'] as const,
     detail: (id: string) => [...queryKeys.tasks.details(), id] as const,
   },

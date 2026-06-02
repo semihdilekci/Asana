@@ -1,11 +1,11 @@
 'use client';
 
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 import { Permission } from '@leanmgmt/shared-types';
 
+import { Alert, Button, ButtonLink, Card } from '@/components/base';
 import { PermissionGate } from '@/components/shared/PermissionGate';
 import {
   useAnonymizeUserMutation,
@@ -51,42 +51,36 @@ export function UserDetailCard({ user }: UserDetailCardProps) {
           {!isAnonymized && (
             <>
               <PermissionGate permission={Permission.USER_UPDATE_ATTRIBUTE}>
-                <button
-                  type="button"
-                  className="ls-btn ls-btn--neutral ls-btn--sm"
-                  onClick={() => router.push(`/users/${user.id}/edit`)}
+                <Button
+                  color="secondary"
+                  size="sm"
+                  onPress={() => router.push(`/users/${user.id}/edit`)}
                 >
                   Düzenle
-                </button>
+                </Button>
               </PermissionGate>
 
               <PermissionGate permission={Permission.USER_SESSION_VIEW}>
-                <Link
-                  href={`/users/${user.id}/sessions`}
-                  className="ls-btn ls-btn--neutral ls-btn--sm"
-                >
+                <ButtonLink href={`/users/${user.id}/sessions`} color="secondary" size="sm">
                   Oturumlar
-                </Link>
+                </ButtonLink>
               </PermissionGate>
 
               <PermissionGate permission={Permission.USER_LIST_VIEW}>
-                <Link
-                  href={`/users/${user.id}/roles`}
-                  className="ls-btn ls-btn--neutral ls-btn--sm"
-                >
+                <ButtonLink href={`/users/${user.id}/roles`} color="secondary" size="sm">
                   Roller
-                </Link>
+                </ButtonLink>
               </PermissionGate>
             </>
           )}
 
           {user.isActive && !isAnonymized && (
             <PermissionGate permission={Permission.USER_DEACTIVATE}>
-              <button
-                type="button"
-                className="ls-btn ls-btn--danger ls-btn--sm"
-                disabled={deactivateMutation.isPending}
-                onClick={() => {
+              <Button
+                color="destructive"
+                size="sm"
+                isDisabled={deactivateMutation.isPending}
+                onPress={() => {
                   if (!confirm('Bu kullanıcıyı pasif yapmak istediğinizden emin misiniz?')) return;
                   deactivateMutation.mutate(
                     { id: user.id, reason: 'Admin tarafından deaktive edildi' },
@@ -98,17 +92,17 @@ export function UserDetailCard({ user }: UserDetailCardProps) {
                 }}
               >
                 Pasif yap
-              </button>
+              </Button>
             </PermissionGate>
           )}
 
           {!user.isActive && !isAnonymized && (
             <PermissionGate permission={Permission.USER_REACTIVATE}>
-              <button
-                type="button"
-                className="ls-btn ls-btn--primary ls-btn--sm"
-                disabled={reactivateMutation.isPending}
-                onClick={() => {
+              <Button
+                color="primary"
+                size="sm"
+                isDisabled={reactivateMutation.isPending}
+                onPress={() => {
                   if (!confirm('Bu kullanıcıyı aktif yapmak istediğinizden emin misiniz?')) return;
                   reactivateMutation.mutate(
                     { id: user.id, reason: 'Admin tarafından aktive edildi' },
@@ -120,17 +114,17 @@ export function UserDetailCard({ user }: UserDetailCardProps) {
                 }}
               >
                 Aktif yap
-              </button>
+              </Button>
             </PermissionGate>
           )}
 
           {!isAnonymized && (
             <PermissionGate permission={Permission.USER_ANONYMIZE}>
-              <button
-                type="button"
-                className="ls-btn ls-btn--danger ls-btn--sm"
-                disabled={anonymizeMutation.isPending}
-                onClick={() => {
+              <Button
+                color="destructive"
+                size="sm"
+                isDisabled={anonymizeMutation.isPending}
+                onPress={() => {
                   if (
                     !confirm(
                       'Bu kullanıcının verileri KVKK kapsamında kalıcı olarak anonimleştirilecek. Bu işlem geri alınamaz. Devam etmek istediğinizden emin misiniz?',
@@ -147,14 +141,14 @@ export function UserDetailCard({ user }: UserDetailCardProps) {
                 }}
               >
                 Anonimleştir
-              </button>
+              </Button>
             </PermissionGate>
           )}
         </div>
       </div>
 
       {isAnonymized && (
-        <div role="alert" className="ls-alert ls-alert--warning">
+        <Alert variant="warning">
           Bu kullanıcı KVKK kapsamında anonimleştirilmiştir.{' '}
           {user.anonymizedAt && (
             <span>Tarih: {new Date(user.anonymizedAt).toLocaleDateString('tr-TR')}</span>
@@ -162,7 +156,7 @@ export function UserDetailCard({ user }: UserDetailCardProps) {
           {user.anonymizationReason ? (
             <p className="mt-[var(--space-2)] text-sm">Gerekçe: {user.anonymizationReason}</p>
           ) : null}
-        </div>
+        </Alert>
       )}
 
       {/* Status badge */}
@@ -200,12 +194,12 @@ export function UserDetailCard({ user }: UserDetailCardProps) {
             >
               Kimlik ve iletişim
             </h2>
-            <div className="ls-card grid gap-[var(--space-4)] p-[var(--space-6)] sm:grid-cols-2">
+            <Card className="grid gap-[var(--space-4)] p-[var(--space-6)] sm:grid-cols-2">
               <DetailField label="Kayıt kimliği" value={user.id} mono />
               <DetailField label="Sicil" value={user.sicil ?? undefined} mono />
               <DetailField label="E-posta" value={user.email} />
               <DetailField label="Telefon" value={user.phone ?? undefined} />
-            </div>
+            </Card>
           </section>
 
           <section aria-labelledby="user-detail-org-heading" className="space-y-[var(--space-3)]">
@@ -215,7 +209,7 @@ export function UserDetailCard({ user }: UserDetailCardProps) {
             >
               Organizasyon
             </h2>
-            <div className="ls-card grid gap-[var(--space-4)] p-[var(--space-6)] sm:grid-cols-2">
+            <Card className="grid gap-[var(--space-4)] p-[var(--space-6)] sm:grid-cols-2">
               <DetailField label="Şirket" value={user.company?.name} />
               <DetailField label="Lokasyon" value={user.location?.name} />
               <DetailField label="Departman" value={user.department?.name} />
@@ -230,7 +224,7 @@ export function UserDetailCard({ user }: UserDetailCardProps) {
                   user.hireDate ? new Date(user.hireDate).toLocaleDateString('tr-TR') : undefined
                 }
               />
-            </div>
+            </Card>
           </section>
 
           <section
@@ -243,7 +237,7 @@ export function UserDetailCard({ user }: UserDetailCardProps) {
             >
               Yönetici
             </h2>
-            <div className="ls-card grid gap-[var(--space-4)] p-[var(--space-6)] sm:grid-cols-2">
+            <Card className="grid gap-[var(--space-4)] p-[var(--space-6)] sm:grid-cols-2">
               <DetailField
                 label="Yönetici (kullanıcı)"
                 value={
@@ -256,7 +250,7 @@ export function UserDetailCard({ user }: UserDetailCardProps) {
                 label="Yönetici e-postası (SAP / harici)"
                 value={user.managerEmail ?? undefined}
               />
-            </div>
+            </Card>
           </section>
 
           <section
@@ -269,7 +263,7 @@ export function UserDetailCard({ user }: UserDetailCardProps) {
             >
               Hesap ve güvenlik
             </h2>
-            <div className="ls-card grid gap-[var(--space-4)] p-[var(--space-6)] sm:grid-cols-2">
+            <Card className="grid gap-[var(--space-4)] p-[var(--space-6)] sm:grid-cols-2">
               <DetailField label="Şifre" value={user.passwordIsSet ? 'Tanımlı' : 'Tanımlı değil'} />
               <DetailField
                 label="Son şifre değişimi"
@@ -292,7 +286,7 @@ export function UserDetailCard({ user }: UserDetailCardProps) {
                   user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString('tr-TR') : undefined
                 }
               />
-            </div>
+            </Card>
           </section>
 
           <section
@@ -305,7 +299,7 @@ export function UserDetailCard({ user }: UserDetailCardProps) {
             >
               Sistem
             </h2>
-            <div className="ls-card grid gap-[var(--space-4)] p-[var(--space-6)] sm:grid-cols-2">
+            <Card className="grid gap-[var(--space-4)] p-[var(--space-6)] sm:grid-cols-2">
               <DetailField
                 label="Oluşturulma"
                 value={new Date(user.createdAt).toLocaleString('tr-TR')}
@@ -329,7 +323,7 @@ export function UserDetailCard({ user }: UserDetailCardProps) {
                 value={user.createdByUserId ?? undefined}
                 mono
               />
-            </div>
+            </Card>
           </section>
         </>
       )}

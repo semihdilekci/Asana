@@ -82,7 +82,7 @@ Kalkanlar:
 1. **TypeScript strict + Zod** — yanlış tipler compile'da yakalanır
 2. **Test coverage gate** — agent test yazmayı atlasa bile CI block eder
 3. **11 doküman** — doğru pattern referansı (agent hatırlamadığında okur)
-4. **`.mdc` cursor rules** — pattern reinforcement
+4. `**.mdc` cursor rules\*\* — pattern reinforcement
 5. **ESLint custom rules** — proje-özel constraint'ler (permission decorator zorunlu, dangerouslySetInnerHTML yasak vs.)
 6. **Human gate** — son savunma
 
@@ -106,6 +106,7 @@ flowchart TD
     F9[Faz 9: Dashboard + Profile + Error Pages]
     F10[Faz 10: Performance + Load Test]
     F11[Faz 11: Security Hardening + Pen-Test]
+    F13[Faz 13: User Impersonation]
     F12[Faz 12: UAT + Go-Live]
 
     F0 --> F1
@@ -126,7 +127,8 @@ flowchart TD
     F8 --> F9
     F9 --> F10
     F10 --> F11
-    F11 --> F12
+    F11 --> F13
+    F13 --> F12
 
     classDef foundation fill:#dbeafe,stroke:#2563eb
     classDef core fill:#dcfce7,stroke:#16a34a
@@ -137,11 +139,13 @@ flowchart TD
     class F0,F1,F2 foundation
     class F3,F4,F5,F6 core
     class F7,F8,F9 feature
-    class F10,F11 polish
+    class F10,F11,F13 polish
     class F12 release
 ```
 
-**Kritik path:** F0 → F2 → F3 → F4 → F5 → F6 → F8 → F9 → F10 → F11 → F12.
+**Kritik path:** F0 → F2 → F3 → F4 → F5 → F6 → F8 → F9 → F10 → F11 → F13 → F12.
+
+**Not:** Faz 12 (Untitled UI migrasyonu) kod kuralı `@62-phase-12-UI-migration` ile tamamlandı; roadmap’teki **Faz 12** = UAT + Go-Live. **Faz 13** = user impersonation (go-live öncesi, pentest kapsamında).
 
 **Paralelleştirilebilir:** F7 (notification) F6'dan sonra ama F8'den bağımsız başlayabilir. F9 (dashboard) F3+F6+F7+F8 birlikte olduğunda başlar.
 
@@ -192,12 +196,12 @@ Her faz için sabit yapı:
 
 > **Scaffold (2026-04):** Repo iskeleti tamamlandı. `docker compose up` ve örnek conventional commit ile commitlint doğrulaması merge öncesi developer tarafından yapılmalıdır.
 
-- [x] Klasör yapısı `09_DEV_WORKFLOW` ile birebir eşleşiyor
-- [x] Her internal package `@leanmgmt/*` scope'unda
-- [x] `turbo.json` pipeline tanımlı (build, lint, typecheck, test, dev)
-- [x] Husky hooks aktif — commitlint + lint-staged (`pnpm prepare` / `.husky/*`)
-- [x] `.env.example` kök + her app altında placeholder
-- [x] Docker compose servisleri tanımlı (PostgreSQL 16, Redis 7, Mailpit) — sağlık kontrolü `docker compose ps`
+- Klasör yapısı `09_DEV_WORKFLOW` ile birebir eşleşiyor
+- Her internal package `@leanmgmt/*` scope'unda
+- `turbo.json` pipeline tanımlı (build, lint, typecheck, test, dev)
+- Husky hooks aktif — commitlint + lint-staged (`pnpm prepare` / `.husky/*`)
+- `.env.example` kök + her app altında placeholder
+- Docker compose servisleri tanımlı (PostgreSQL 16, Redis 7, Mailpit) — sağlık kontrolü `docker compose ps`
 
 #### Vibe Coding Risk Uyarıları
 
@@ -252,14 +256,14 @@ Her faz için sabit yapı:
 
 > **IaC (2026-04):** `infrastructure/terraform` modül + `environments/{dev,staging,prod}` + GitHub workflow’lar eklendi. Gerçek `terraform apply`, SSO ve secret değerleri developer onayıyla.
 
-- [ ] 3 hesap SSO'dan erişilebilir (Organizations / IAM Identity Center kurulumu)
-- [x] Terraform remote state deseni (S3 partial backend + DynamoDB lock) ve ortam kökleri hazır
-- [ ] IAM: GitHub Terraform rolü ilk bootstrap’ta geniş; prod/staging için policy sıkılaştırma review
-- [x] RDS encryption-at-rest (KMS CMK) Terraform’da
-- [x] S3 documents bucket — public access block + SSE-KMS
-- [x] CloudFront varsayılan sertifika ile viewer HTTPS; origin ALB’ye HTTPS-only
-- [x] Security group katmanları (Aurora/Redis yalnız ECS görev SG’sinden; internet yalnız ALB 80/443)
-- [x] Staging/prod için aynı modül seti, ayrı environment dizinleri (reuse)
+- 3 hesap SSO'dan erişilebilir (Organizations / IAM Identity Center kurulumu)
+- Terraform remote state deseni (S3 partial backend + DynamoDB lock) ve ortam kökleri hazır
+- IAM: GitHub Terraform rolü ilk bootstrap’ta geniş; prod/staging için policy sıkılaştırma review
+- RDS encryption-at-rest (KMS CMK) Terraform’da
+- S3 documents bucket — public access block + SSE-KMS
+- CloudFront varsayılan sertifika ile viewer HTTPS; origin ALB’ye HTTPS-only
+- Security group katmanları (Aurora/Redis yalnız ECS görev SG’sinden; internet yalnız ALB 80/443)
+- Staging/prod için aynı modül seti, ayrı environment dizinleri (reuse)
 
 #### Vibe Coding Risk Uyarıları
 
@@ -330,7 +334,7 @@ Session sequence önerisi:
 - **Session 2.2 — Auth service:** `03_API_CONTRACTS` (auth endpoint'leri), `07_SECURITY_IMPLEMENTATION` (bcrypt, JWT, refresh rotation, OIDC dev/prod IdP)
 - **Session 2.3 — Auth controller + guards:** `04_BACKEND_SPEC` (middleware zinciri), `03_API_CONTRACTS` (error taxonomy)
 - **Session 2.4 — Frontend scaffold + axios:** `05_FRONTEND_SPEC` (route groups, state boundaries, axios interceptor)
-- **Session 2.5 — Auth ekranları:** `06_SCREEN_CATALOG` (S-AUTH-\* tam şablonları)
+- **Session 2.5 — Auth ekranları:** `06_SCREEN_CATALOG` (S-AUTH- tam şablonları)
 - **Session 2.6 — Testing:** `08_TESTING_STRATEGY` (auth test senaryoları, integration testcontainers)
 
 #### Deliverable
@@ -346,16 +350,16 @@ Session sequence önerisi:
 
 #### Human Gate
 
-- [ ] Prisma schema `02_DATABASE_SCHEMA` ile birebir (table + column + index)
-- [ ] audit_logs chain hash trigger + append-only trigger çalışıyor (TRUNCATE denemesi fail)
-- [ ] Auth error kodları `03_API_CONTRACTS` ile eşleşiyor (AUTH_INVALID_CREDENTIALS, AUTH_ACCOUNT_LOCKED, vs.)
-- [ ] JWT HS256 + rotation + family tracking test edildi (theft detection senaryosu)
-- [ ] Frontend axios interceptor 401 AUTH_TOKEN_EXPIRED → silent refresh pattern
-- [ ] S-AUTH-LOGIN error state'leri (lockout countdown, invalid creds, password expired)
-- [ ] Consent modal blocking: ESC disabled, outside click disabled, X butonu yok
-- [ ] Rate limit senaryosu: 11. login request → 429
-- [ ] Test coverage: auth module %90+
-- [ ] Sentry + CloudWatch log integration test edildi
+- Prisma schema `02_DATABASE_SCHEMA` ile birebir (table + column + index)
+- audit_logs chain hash trigger + append-only trigger çalışıyor (TRUNCATE denemesi fail)
+- Auth error kodları `03_API_CONTRACTS` ile eşleşiyor (AUTH_INVALID_CREDENTIALS, AUTH_ACCOUNT_LOCKED, vs.)
+- JWT HS256 + rotation + family tracking test edildi (theft detection senaryosu)
+- Frontend axios interceptor 401 AUTH_TOKEN_EXPIRED → silent refresh pattern
+- S-AUTH-LOGIN error state'leri (lockout countdown, invalid creds, password expired)
+- Consent modal blocking: ESC disabled, outside click disabled, X butonu yok
+- Rate limit senaryosu: 11. login request → 429
+- Test coverage: auth module %90+
+- Sentry + CloudWatch log integration test edildi
 
 #### Vibe Coding Risk Uyarıları
 
@@ -421,7 +425,7 @@ Session'lar:
 - **Session 3.3 — Users service + controller:** `03_API_CONTRACTS` (9.2 Users endpoint'leri), `04_BACKEND_SPEC` (encryption middleware, manager cycle)
 - **Session 3.4 — Master data generic CRUD:** `03_API_CONTRACTS` (9.3 Master Data), `06_SCREEN_CATALOG` (S-MD-LIST generic pattern)
 - **Session 3.5 — Roles CRUD (permission'lar hariç):** `03_API_CONTRACTS` (9.4 Roles), `02_DATABASE_SCHEMA` (roles tabloları)
-- **Session 3.6 — Frontend user ekranları:** `06_SCREEN_CATALOG` (S-USER-\*), `05_FRONTEND_SPEC` (form pattern + UserForm reference)
+- **Session 3.6 — Frontend user ekranları:** `06_SCREEN_CATALOG` (S-USER-), `05_FRONTEND_SPEC` (form pattern + UserForm reference)
 - **Session 3.7 — Frontend master data + roles ekranları:** `06_SCREEN_CATALOG` (S-MD-LIST, S-ROLE-LIST, S-ROLE-DETAIL)
 - **Session 3.8 — Testing + polish:** `08_TESTING_STRATEGY` (integration testler)
 
@@ -438,15 +442,15 @@ Session'lar:
 
 #### Human Gate
 
-- [ ] Permission enum tüm MVP permission'ları içeriyor (42 adet)
-- [ ] PERMISSION_METADATA category bazında gruplama doğru
-- [ ] Users endpoint'leri `03_API_CONTRACTS` ile birebir (request/response format, error codes)
-- [ ] Encryption: DB'de `SELECT email FROM users` → ciphertext, uygulama katmanında plaintext
-- [ ] `<MasterDataSelect>` work-sub-area için parent filter çalışıyor
-- [ ] UserForm: 16 field tam, dirty warning, server-side error mapping
-- [ ] DataTable cursor-based pagination doğru (offset değil)
-- [ ] E2E: user CRUD happy path
-- [ ] Audit log her mutation için oluşuyor
+- Permission enum tüm MVP permission'ları içeriyor (42 adet)
+- PERMISSION_METADATA category bazında gruplama doğru
+- Users endpoint'leri `03_API_CONTRACTS` ile birebir (request/response format, error codes)
+- Encryption: DB'de `SELECT email FROM users` → ciphertext, uygulama katmanında plaintext
+- `<MasterDataSelect>` work-sub-area için parent filter çalışıyor
+- UserForm: 16 field tam, dirty warning, server-side error mapping
+- DataTable cursor-based pagination doğru (offset değil)
+- E2E: user CRUD happy path
+- Audit log her mutation için oluşuyor
 
 #### Vibe Coding Risk Uyarıları
 
@@ -512,14 +516,14 @@ Session'lar:
 
 #### Human Gate
 
-- [ ] Permission cache TTL 5 dk, invalidation tüm triggers'te aktif
-- [ ] Attribute rule evaluator OR groups + AND conditions doğru (unit test 10+ senaryo)
-- [ ] Rule test endpoint preview doğru (actual match sayısı)
-- [ ] Rol-yetki tablosu: isSensitive permission'lar rozeti + destructive confirmation
-- [ ] S-ROLE-RULES: attribute key change → value input tipi değişir
-- [ ] `<PermissionGate>` hem sidebar hem action button'larda
-- [ ] Backend @RequirePermission tüm mutation endpoint'lerinde (spot check — 5 endpoint random seç)
-- [ ] Frontend PermissionGate **güvenlik katmanı değil** — UX gizleme. Backend enforcement zorunlu.
+- Permission cache TTL 5 dk, invalidation tüm triggers'te aktif
+- Attribute rule evaluator OR groups + AND conditions doğru (unit test 10+ senaryo)
+- Rule test endpoint preview doğru (actual match sayısı)
+- Rol-yetki tablosu: isSensitive permission'lar rozeti + destructive confirmation
+- S-ROLE-RULES: attribute key change → value input tipi değişir
+- `<PermissionGate>` hem sidebar hem action button'larda
+- Backend @RequirePermission tüm mutation endpoint'lerinde (spot check — 5 endpoint random seç)
+- Frontend PermissionGate **güvenlik katmanı değil** — UX gizleme. Backend enforcement zorunlu.
 
 #### Vibe Coding Risk Uyarıları
 
@@ -545,7 +549,7 @@ Session'lar:
 
 - `processes` tablosu (display_id per-type sequence — örn. `process_seq_before_after_kaizen`)
 - `tasks` + `task_assignments` (Prisma isimleri repo ile aynı)
-- **`ProcessTypeRegistry` pattern** — uygulama: `apps/api/src/processes/process-type-registry.service.ts` (`KtiWorkflow` onModuleInit'te register)
+- `**ProcessTypeRegistry` pattern\*\* — uygulama: `apps/api/src/processes/process-type-registry.service.ts` (`KtiWorkflow` onModuleInit'te register)
 - KTİ workflow tanımı: `BEFORE_AFTER_KAIZEN` (`kti.workflow.ts`)
   - `startKti` transaction: başlatma adımı veritabanında `COMPLETED` (form verisi) + yönetici onay adımı `PENDING` (API yanıtındaki `firstTaskId` buna aittir)
   - Adım 2: `KTI_MANAGER_APPROVAL` (SLA workflow meta içinde; onay/ret/revize **Faz 6 — task complete**)
@@ -559,7 +563,7 @@ Session'lar:
 **Frontend:**
 
 - S-KTI-START — `apps/web/src/app/(app)/processes/kti/start/page.tsx`, `KtiStartForm` (çok adımlı, `ONAYLIYORUM` onayı)
-- **`DocumentUpload`** — initiate → presigned PUT → `POST /documents` → tarama poll (~2 sn aralık, 60 sn timeout; unmount’ta interval temizlenir)
+- `**DocumentUpload`\*\* — initiate → presigned PUT → `POST /documents` → tarama poll (~2 sn aralık, 60 sn timeout; unmount’ta interval temizlenir)
 - S-PROC-LIST-MY — `processes/page.tsx`; detay: `processes/[displayId]/page.tsx` + `ProcessDetail` / `ProcessTimeline`
 
 **Integration / E2E (mevcut):**
@@ -588,14 +592,14 @@ Session'lar:
 
 #### Human Gate
 
-- [x] `display_id` format `KTI-000001` (6 haneli padding, süreç tipi başına sequence)
-- [x] `process` / `task` durumları Prisma + domain ile tutarlı; görev tamamlama geçişleri Faz 6
-- [x] İptal, rollback, CLEAN olmayan start gibi kurallar typed hata; invalid task transitions Faz 6
-- [x] ProcessTypeRegistry: `ProcessTypeRegistryService` + `KtiWorkflow` (ADR için kaynak kod)
-- [x] Yönetici yok → 422 + `USER_NOT_FOUND` (KTİ için)
-- [x] `DocumentUpload` tarama poll: ~2 sn aralık, 60 sn üst sınır (5 sn istersen sabit tek yerden)
-- [x] Presigned URL 5 dk (300 s) TTL; MVP S3, CloudFront üretim
-- [x] Integration: öncesi/sonrası 1–10 foto, CLEAN zorunluluğu
+- `display_id` format `KTI-000001` (6 haneli padding, süreç tipi başına sequence)
+- `process` / `task` durumları Prisma + domain ile tutarlı; görev tamamlama geçişleri Faz 6
+- İptal, rollback, CLEAN olmayan start gibi kurallar typed hata; invalid task transitions Faz 6
+- ProcessTypeRegistry: `ProcessTypeRegistryService` + `KtiWorkflow` (ADR için kaynak kod)
+- Yönetici yok → 422 + `USER_NOT_FOUND` (KTİ için)
+- `DocumentUpload` tarama poll: ~2 sn aralık, 60 sn üst sınır (5 sn istersen sabit tek yerden)
+- Presigned URL 5 dk (300 s) TTL; MVP S3, CloudFront üretim
+- Integration: öncesi/sonrası 1–10 foto, CLEAN zorunluluğu
 
 #### Vibe Coding Risk Uyarıları
 
@@ -662,13 +666,13 @@ Session'lar:
 
 #### Human Gate
 
-- [ ] Claim race condition: iki user eşzamanlı claim → biri success, diğeri 409 TASK_CLAIM_LOST (integration test)
-- [ ] Completion action + reason validation: REJECT/REQUEST_REVISION'da reason zorunlu, APPROVE'da opsiyonel
-- [ ] Task visibility: assignee önceki task'ın form_data'sını görmez (null), başlatıcı görür
-- [ ] S-TASK-DETAIL: action select değişimi → form field'lar dinamik güncellenir
-- [ ] S-PROC-DETAIL: task zinciri görsel (timeline) — rollback ile SKIPPED task'lar işaretli
-- [ ] Rollback: yeni task instance (eski task SKIPPED_BY_ROLLBACK)
-- [ ] E2E full cycle green
+- Claim race condition: iki user eşzamanlı claim → biri success, diğeri 409 TASK_CLAIM_LOST (integration test)
+- Completion action + reason validation: REJECT/REQUEST_REVISION'da reason zorunlu, APPROVE'da opsiyonel
+- Task visibility: assignee önceki task'ın form_data'sını görmez (null), başlatıcı görür
+- S-TASK-DETAIL: action select değişimi → form field'lar dinamik güncellenir
+- S-PROC-DETAIL: task zinciri görsel (timeline) — rollback ile SKIPPED task'lar işaretli
+- Rollback: yeni task instance (eski task SKIPPED_BY_ROLLBACK)
+- E2E full cycle green
 
 #### Vibe Coding Risk Uyarıları
 
@@ -735,13 +739,13 @@ Session'lar:
 
 #### Human Gate
 
-- [x] Email template her event için var (seed data — `prisma/seed.ts` `defaultEmailTemplates`)
-- [ ] Handlebars render sonrası DOMPurify sanitize aktif (XSS test)
-- [ ] BullMQ dead letter queue konfigürasyonu (failed jobs isolate)
-- [x] SLA cron: kalan süre ≤%20 iken WARNING, `sla_due_at` geçmişte BREACH (`TaskSlaService.runScheduledSlaPipeline`, 5 dk)
-- [ ] Notification linkUrl tıklama → doğru ekrana gider (E2E / manuel)
-- [ ] Optimistic mark-read: tıklama anında sayaç azalır, failure'da rollback
-- [x] Password expiry banner: 14 gün sarı, 3 gün kırmızı (`PasswordExpiryBanner` + `calendarDaysUntilPasswordExpiry`)
+- Email template her event için var (seed data — `prisma/seed.ts` `defaultEmailTemplates`)
+- Handlebars render sonrası DOMPurify sanitize aktif (XSS test)
+- BullMQ dead letter queue konfigürasyonu (failed jobs isolate)
+- SLA cron: kalan süre ≤%20 iken WARNING, `sla_due_at` geçmişte BREACH (`TaskSlaService.runScheduledSlaPipeline`, 5 dk)
+- Notification linkUrl tıklama → doğru ekrana gider (E2E / manuel)
+- Optimistic mark-read: tıklama anında sayaç azalır, failure'da rollback
+- Password expiry banner: 14 gün sarı, 3 gün kırmızı (`PasswordExpiryBanner` + `calendarDaysUntilPasswordExpiry`)
 
 #### Vibe Coding Risk Uyarıları
 
@@ -784,10 +788,10 @@ Session'lar:
 
 #### Durum (Faz 8 — iterasyon 3)
 
-- [x] Worker audit chain verify cron + in-app data retention (ayrı schedule)
-- [x] `GET /admin/summary` + web özet kartları
-- [x] `@RequireAnyPermission` + admin layout ile uyumlu izinler
-- [x] İlgili entegrasyon testleri + `03` sözleşme güncellemesi
+- Worker audit chain verify cron + in-app data retention (ayrı schedule)
+- `GET /admin/summary` + web özet kartları
+- `@RequireAnyPermission` + admin layout ile uyumlu izinler
+- İlgili entegrasyon testleri + `03` sözleşme güncellemesi
 
 #### Agent Kick-off Materyali
 
@@ -809,14 +813,14 @@ Session'lar:
 
 #### Human Gate
 
-- [ ] Audit log CSV export async job pattern (>10K kayıt için)
-- [ ] Diff viewer: old_value vs new_value side-by-side JSON
-- [ ] System settings bulk update atomic (tek transaction)
-- [ ] Email template preview backend'te render (Handlebars + DOMPurify)
-- [ ] Test email rate limit (10/saat/user)
-- [ ] Consent version publish: effective_from min now+1h
-- [ ] Publish sonrası mevcut PUBLISHED version otomatik ARCHIVED
-- [ ] AdminLayout: normal kullanıcı URL ile girerse 403
+- Audit log CSV export async job pattern (>10K kayıt için)
+- Diff viewer: old_value vs new_value side-by-side JSON
+- System settings bulk update atomic (tek transaction)
+- Email template preview backend'te render (Handlebars + DOMPurify)
+- Test email rate limit (10/saat/user)
+- Consent version publish: effective_from min now+1h
+- Publish sonrası mevcut PUBLISHED version otomatik ARCHIVED
+- AdminLayout: normal kullanıcı URL ile girerse 403
 
 #### Vibe Coding Risk Uyarıları
 
@@ -870,14 +874,14 @@ Session'lar:
 
 #### Human Gate
 
-- [ ] Dashboard widget'lar parallel lazy load (her biri bağımsız)
-- [ ] Widget'lar permission-gated (PROCESS_VIEW_ALL yoksa "Org Özeti" görünmez)
-- [ ] Widget error isolation: tek widget fail → diğerleri render
-- [ ] S-PROFILE: kendi bilgilerini edit edemez (info banner "Yönetici ile iletişime geçin")
-- [ ] "Verilerimi İndir" butonu **yok** — yalnız email channel linki
-- [ ] Aktif session'lar: current session rozeti görünür, "Bu Oturumu Kapat" gizli
-- [ ] "Tüm Diğer Oturumları Kapat" → mevcut korunur, diğerleri REVOKED
-- [ ] Error page'lerde technical detail yok (user-friendly)
+- Dashboard widget'lar parallel lazy load (her biri bağımsız)
+- Widget'lar permission-gated (PROCESS_VIEW_ALL yoksa "Org Özeti" görünmez)
+- Widget error isolation: tek widget fail → diğerleri render
+- S-PROFILE: kendi bilgilerini edit edemez (info banner "Yönetici ile iletişime geçin")
+- "Verilerimi İndir" butonu **yok** — yalnız email channel linki
+- Aktif session'lar: current session rozeti görünür, "Bu Oturumu Kapat" gizli
+- "Tüm Diğer Oturumları Kapat" → mevcut korunur, diğerleri REVOKED
+- Error page'lerde technical detail yok (user-friendly)
 
 #### Vibe Coding Risk Uyarıları
 
@@ -918,11 +922,11 @@ Session'lar:
 
 #### Human Gate
 
-- [ ] Lighthouse CI PR'da çalışıyor, eşikler block ediyor
-- [ ] Bundle analyzer: lazy-loaded route'lar doğru split edilmiş
-- [ ] DB slow query log → indexed queries
-- [ ] Redis cache hit rate > 80% (permissions, consent version, email templates)
-- [ ] k6 senaryoları staging'de green
+- Lighthouse CI PR'da çalışıyor, eşikler block ediyor
+- Bundle analyzer: lazy-loaded route'lar doğru split edilmiş
+- DB slow query log → indexed queries
+- Redis cache hit rate > 80% (permissions, consent version, email templates)
+- k6 senaryoları staging'de green
 
 #### Vibe Coding Risk Uyarıları
 
@@ -966,12 +970,12 @@ Session'lar:
 
 #### Human Gate
 
-- [ ] Pen-test raporu review edildi
-- [ ] All critical/high findings remediated
-- [ ] CSP'de inline script sadece nonce'lu
-- [ ] Secret rotation drill success
-- [ ] Backup restore drill: staging'de snapshot restore → test query başarılı
-- [ ] Runbook'lar end-to-end okunmuş (Superadmin bilgi sahibi)
+- Pen-test raporu review edildi
+- All critical/high findings remediated
+- CSP'de inline script sadece nonce'lu
+- Secret rotation drill success
+- Backup restore drill: staging'de snapshot restore → test query başarılı
+- Runbook'lar end-to-end okunmuş (Superadmin bilgi sahibi)
 
 #### Vibe Coding Risk Uyarıları
 
@@ -982,6 +986,57 @@ Session'lar:
 #### Tahmini İterasyon
 
 8-15 session (pen-test raporuna bağlı).
+
+**Pentest kapsamı notu:** Faz 13 (user impersonation) tamamlandıktan sonra pentest senaryolarına impersonation start/stop/switch, audit actor ayrımı ve hedef kısıtları dahil edilir.
+
+---
+
+### Faz 13 — User Impersonation
+
+#### Kapsam
+
+- `USER_IMPERSONATION` permission (hassas ACTION) — seed + metadata
+- Auth API: `POST /auth/impersonate/start|stop|switch`
+- JWT: `sub` = effective user, `imp` = impersonator (aktifken)
+- Hedef kısıtları: pasif, SUPERADMIN, kendisi → hard deny
+- Audit: gerçek aktör + `metadata.isImpersonation` + UI format `{A} ({B} yerine)` + Impersonation badge
+- AppHeader UX: user-switch bandı, isim → arama modal, tam hedef deneyimi (bildirimler dahil)
+- Playwright E2E impersonation journey
+
+#### Agent Kick-off Materyali
+
+- `@63-phase-13-user-impersonation`
+- `docs/adr/0010-user-impersonation-jwt-audit-model.md`
+- `docs/03_API_CONTRACTS.md` Bölüm 9.1 (impersonate)
+- `docs/07_SECURITY_IMPLEMENTATION.md` — JWT + rate limit
+- `docs/06_SCREEN_CATALOG.md` — S-IMPERSONATION-MODAL, S-ADMIN-AUDIT
+
+#### Deliverable
+
+- Backend integration testler (start/stop/switch, kısıtlar, audit metadata)
+- Admin audit listesinde Impersonation görünümü
+- Header bandı + modal UI
+- `apps/web/e2e/impersonation.e2e.spec.ts` green
+
+#### Human Gate
+
+- Pasif / superadmin / kendisi impersonate edilemiyor (API + UI)
+- Impersonation altında mutating aksiyon audit’te impersonator olarak görünüyor
+- Permission olmayan kullanıcı modal/isim tıklayamıyor
+- E2E tam akış green
+- Rate limit start/switch doğrulandı
+
+#### Vibe Coding Risk Uyarıları
+
+- **Agent audit `userId`'yi hedef kullanıcı yapabilir** — ADR 0010: impersonator zorunlu.
+- **Agent permission'ı impersonator üzerinden çözebilir** — effective user (`sub`) üzerinden çözülmeli.
+- **Agent OIDC flow'a impersonation karıştırabilir** — yalnız mevcut app session.
+
+#### Tahmini İterasyon
+
+4 session (permission+API → audit → UI → E2E). `@63-phase-13-user-impersonation` iterasyonları.
+
+**Ön koşul:** Faz 12 UI migrasyonu (AppShell / AppHeader) tamamlanmış.
 
 ---
 
@@ -1016,16 +1071,16 @@ Session'lar:
 
 #### Human Gate
 
-- [ ] Prod Terraform apply success (dev/staging module parity)
-- [ ] Prod RDS snapshot taken before go-live
-- [ ] Prod secrets AWS Secrets Manager'da (JWT keys, DB creds, CloudFront key pair)
-- [ ] DNS + TLS certificate active
-- [ ] Email deliverability test (production SMTP / SPF-DKIM)
-- [ ] Monitoring dashboard: CPU, memory, error rate, 5xx rate, login rate
-- [ ] Runbook'lar `docs/runbooks/` dizininde complete
-- [ ] UAT sign-off (QA team)
-- [ ] Superadmin training completed (platform kullanımı + incident response)
-- [ ] Communication plan: kullanıcılara email duyurusu
+- Prod Terraform apply success (dev/staging module parity)
+- Prod RDS snapshot taken before go-live
+- Prod secrets AWS Secrets Manager'da (JWT keys, DB creds, CloudFront key pair)
+- DNS + TLS certificate active
+- Email deliverability test (production SMTP / SPF-DKIM)
+- Monitoring dashboard: CPU, memory, error rate, 5xx rate, login rate
+- Runbook'lar `docs/runbooks/` dizininde complete
+- UAT sign-off (QA team)
+- Superadmin training completed (platform kullanımı + incident response)
+- Communication plan: kullanıcılara email duyurusu
 
 #### Vibe Coding Risk Uyarıları
 
@@ -1106,7 +1161,9 @@ Bu side-effect'ler MVP'de tolere edilir; post-MVP "hardening" fazında cleanup.
 
 ## 6. Post-MVP Vision
 
-### Faz 13+ — Gelecek Yol Haritası
+### Faz 14+ — Gelecek Yol Haritası (Post-MVP)
+
+> **Not:** MVP go-live öncesi **Faz 13 (User Impersonation)** tamamlanır. Aşağıdaki dalgalar production sonrası genişlemedir.
 
 | Dalgalar                                           | Süre   | Odak                                                                                                                      |
 | -------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------- |
@@ -1159,7 +1216,7 @@ Bu değişimler ADR ile dokümante edilir. Her biri major migration — expand-c
 
 Vibe coding delivery ölçüsü:
 
-- **Faz completion rate:** 12 faz / 12 hedef (tam tamamlanma, kısmi yok)
+- **Faz completion rate:** F0–F12 roadmap + F13 impersonation hedefleri tamamlanma oranı (UI migrasyon `@62-phase-12-UI-migration` ayrı kural dosyası)
 - **Consistency score:** Rastgele seçilen 10 endpoint'te `@RequirePermission` + audit + validation oranı → %95+
 - **Bug velocity:** Post-release ilk 30 günde tespit edilen kritik bug sayısı → < 5
 - **Agent iteration efficiency:** Ortalama "feature → merge" iterasyon sayısı → 3-5 per feature

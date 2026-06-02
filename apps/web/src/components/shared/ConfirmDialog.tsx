@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from 'react';
 
+import { Button } from '@/components/base';
+
 export interface ConfirmDialogProps {
   open: boolean;
   title: string;
@@ -65,22 +67,14 @@ export function ConfirmDialog({
         ) : null}
         {children}
         <div className="flex justify-end gap-2 pt-2">
-          <button
-            type="button"
-            className="ls-btn ls-btn--neutral ls-btn--sm"
-            onClick={() => onOpenChange(false)}
-          >
+          <Button color="secondary" size="sm" onPress={() => onOpenChange(false)}>
             {cancelLabel}
-          </button>
-          <button
-            type="button"
-            disabled={confirmDisabled}
-            className={
-              destructive
-                ? 'ls-btn ls-btn--sm border border-[var(--color-error-600)] bg-[var(--color-error-50)] text-[var(--color-error-800)] hover:bg-[var(--color-error-100)]'
-                : 'ls-btn ls-btn--primary ls-btn--sm'
-            }
-            onClick={() => {
+          </Button>
+          <Button
+            size="sm"
+            color={destructive ? 'destructive' : 'primary'}
+            isDisabled={confirmDisabled}
+            onPress={() => {
               void (async () => {
                 try {
                   await onConfirm();
@@ -92,7 +86,7 @@ export function ConfirmDialog({
             }}
           >
             {confirmLabel}
-          </button>
+          </Button>
         </div>
       </div>
     </dialog>

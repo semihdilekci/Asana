@@ -1,0 +1,314 @@
+---
+description: "[Faz 13] User impersonation — 4 iterasyon/chat (permission+auth API → audit → header UI → E2E+security). Mesajda \"Faz 13 — İterasyon M\" belirt."
+---
+
+# Faz 13: User Impersonation
+
+## Goal
+
+Yetkili kullanıcılar (`USER_IMPERSONATION` — hassas ACTION permission) header’daki isimden kullanıcı arayıp hedef kullanıcı gibi oturum açabilsin. Amaç: troubleshooting, denetim ve test ([IMP-001]). Impersonation modunda **tam hedef deneyimi** — permission resolver, bildirimler, süreç/görev aksiyonları hedef kullanıcının yetki setiyle çalışır.
+
+Tüm mutating aksiyonlar audit log’da **gerçek aktör** (impersonator) olarak kaydedilir ([AUD-005]); UI formatı `docs/06_SCREEN_CATALOG.md` S-ADMIN-AUDIT ile tanımlıdır. Go-live öncesi tamamlanır; Faz 11 pentest kapsamına girer (`docs/10_IMPLEMENTATION_ROADMAP.md` Faz 13).
+
+**Hedef kısıtları (hard deny):** pasif (`is_active=false`), SUPERADMIN rolündeki kullanıcı, kendisi — `docs/adr/0010-user-impersonation-jwt-audit-model.md` Karar 4.
+
+## Bu fazın çalışma modeli (iterasyonlar)
+
+Bu faz **tek sohbette tamamlanmaz**. Her iterasyon ayrı chat + ayrı PR.
+
+Chat başında: `@63-phase-13-user-impersonation` + mesajda **“Faz 13 — İterasyon N”**.
+
+**Ön koşul:** Faz 12 UI migrasyonu (`@62-phase-12-UI-migration`) — `AppShell` / `AppHeader` tamamlanmış olmalı.
+
+**Implementasyon kuralı:** Bu faz dokümanı *orchestration* içindir. Davranış, API sözleşmesi, güvenlik kuralları ve UI spesifikasyonu **`docs/` altındaki referans belgelerde** tanımlıdır; kod bu belgelere uygun yazılır, belgeleri genişletmeden sapma yapılmaz (sapma → ADR güncellemesi gerekir).
+
+---
+
+## Dokümantasyon referans haritası
+
+| Belge | Bölüm / ID | Ne tanımlar | İterasyon |
+| ----- | ---------- | ----------- | --------- |
+| `docs/adr/0010-user-impersonation-jwt-audit-model.md` | Tümü | Mimari karar: JWT `sub`/`imp`, audit actor, kısıtlar, reddedilen alternatifler | 1–4 |
+| `docs/mimari-kararlar.md` | [IMP-001], [AUD-005] | İş kararı özeti; audit actor zorunluluğu | 1–2 |
+| `docs/03_API_CONTRACTS.md` | §3 Error Taxonomy (`AUTH_IMPERSONATION_*`) | Error code + HTTP + Türkçe message | 1 |
+| `docs/03_API_CONTRACTS.md` | §4 Rate Limiting (impersonate satırı) | 10/dk/kullanıcı start+switch | 1 |
+| `docs/03_API_CONTRACTS.md` | §9.1 `GET /auth/me` (impersonation bloğu) | Response şekli | 1 |
+| `docs/03_API_CONTRACTS.md` | §9.1 `POST /auth/impersonate/start\|stop\|switch` | Endpoint sözleşmesi, audit action adları | 1–2 |
+| `docs/07_SECURITY_IMPLEMENTATION.md` | §3.1 JWT Claims (`sub`, `imp`) | Access token payload | 1 |
+| `docs/07_SECURITY_IMPLEMENTATION.md` | §3.3.1 User Impersonation | Oturum, kısıtlar, endpoint özeti | 1 |
+| `docs/07_SECURITY_IMPLEMENTATION.md` | §4.4 Hassas Permission tablosu (`USER_IMPERSONATION`) | `isSensitive`, rol matrisi notu | 1 |
+| `docs/07_SECURITY_IMPLEMENTATION.md` | §11 Rate limit tablosu (impersonate satırları) | Throttle implementasyonu | 1 |
+| `docs/04_BACKEND_SPEC.md` | §8.1 Permission enum + `USER_IMPERSONATION` metadata | Seed + `PERMISSION_METADATA` şablonu | 1 |
+| `docs/01_DOMAIN_MODEL.md` | §2.4 Permission (Action örneği) | Domain terminoloji | 1 |
+| `docs/mimari-kararlar.md` | §11.3 [AUD-003] audit alanları + `metadata` | Impersonation metadata alanları | 2 |
+| `docs/06_SCREEN_CATALOG.md` | S-ADMIN-AUDIT (DataTable kolonları, Impersonation badge) | Admin audit list UI | 2 |
+| `docs/06_SCREEN_CATALOG.md` | S-IMPERSONATION-MODAL | AppHeader bandı, modal, API wiring, edge cases | 3 |
+| `docs/00_PROJECT_OVERVIEW.md` | MVP in-scope + kapsam dışı (impersonation maddeleri) | Scope sınırı | 3–4 |
+| `docs/08_TESTING_STRATEGY.md` | §4.2 journey #7 (User impersonation) | E2E senaryo checklist | 4 |
+| `docs/10_IMPLEMENTATION_ROADMAP.md` | Faz 13 (Human Gate, Deliverable) | Done / PR onay kriterleri | 4 |
+
+---
+
+### İterasyon 1 — Permission + Auth API
+
+**Hedef:** `docs/03_API_CONTRACTS.md` §9.1 impersonate endpoint’leri + `GET /auth/me` impersonation bloğu implement; JWT `sub`/`imp` ADR 0010’a uygun; integration test yeşil.
+
+**Spec referansları (önce oku):**
+
+1. `docs/adr/0010-user-impersonation-jwt-audit-model.md` — Karar 1–4, 8 (yetki, JWT, kısıtlar, rate limit)
+2. `docs/03_API_CONTRACTS.md` — §3 (`AUTH_IMPERSONATION_*`), §4 (rate limit), §9.1 (`/me` + start/stop/switch)
+3. `docs/07_SECURITY_IMPLEMENTATION.md` — §3.1, §3.3.1, §4.4, §11 (impersonate throttle)
+4. `docs/04_BACKEND_SPEC.md` — §8.1 (`USER_IMPERSONATION` enum + metadata)
+5. `docs/mimari-kararlar.md` — [IMP-001]
+
+**Yapılacaklar → spec eşlemesi:**
+
+| # | Kod | Spec kaynağı |
+| - | --- | ------------ |
+| 1 | `Permission.USER_IMPERSONATION` + `PERMISSION_METADATA` (`ACTION`, `isSensitive: true`) | `docs/04_BACKEND_SPEC.md` §8.1; `docs/07_SECURITY_IMPLEMENTATION.md` §4.4 |
+| 2 | `apps/api/prisma/seed.ts` — permission key; dev/test rol ataması (bilinçli) | `docs/04_BACKEND_SPEC.md` §8.1; ADR 0010 (SUPERADMIN otomatik değil) |
+| 3 | `AccessTokenPayload`: `sub`=effective, opsiyonel `imp`=impersonator | ADR 0010 Karar 2; `docs/07_SECURITY_IMPLEMENTATION.md` §3.1 |
+| 4 | `JwtAuthGuard` + `AuthenticatedUser`: effective id + `impersonatorId?`; resolver **effective user** | ADR 0010 Karar 1; `docs/07_SECURITY_IMPLEMENTATION.md` §3.3.1 |
+| 5 | `POST /auth/impersonate/start` — body `{ targetUserId }`, `@RequirePermission`, CSRF, rate limit | `docs/03_API_CONTRACTS.md` §9.1 start |
+| 6 | `POST /auth/impersonate/stop` — impersonator’a dön, 409 if not active | `docs/03_API_CONTRACTS.md` §9.1 stop |
+| 7 | `POST /auth/impersonate/switch` — atomik hedef değişimi | `docs/03_API_CONTRACTS.md` §9.1 switch |
+| 8 | Hedef validasyon: pasif / SUPERADMIN / kendisi → typed exception | ADR 0010 Karar 4; `docs/03_API_CONTRACTS.md` §3 error tablosu |
+| 9 | Session: refresh korunur; yeni access token; OIDC flow’a dokunma | ADR 0010 Karar 3 |
+| 10 | `GET /auth/me` — `impersonation: { active, impersonator }` bloğu | `docs/03_API_CONTRACTS.md` §9.1 `/me` |
+| 11 | `packages/shared-schemas` — `ImpersonateStartSchema` (strict) | `docs/03_API_CONTRACTS.md` §9.1 request body |
+| 12 | Integration test: 403/404/409 matrisi + start→me→stop | `docs/03_API_CONTRACTS.md` error + response örnekleri |
+
+**Bu iterasyonda yok:** Audit metadata yazımı (İter 2 — `docs/mimari-kararlar.md` [AUD-005]); frontend (İter 3); E2E (İter 4).
+
+**Stop:** [ ] Spec’teki error code/message/HTTP eşleşmesi; [ ] rate limit 10/dk; [ ] integration test yeşil; [ ] OIDC dosyalarına diff yok. PR/onay → İterasyon 2.
+
+---
+
+### İterasyon 2 — Audit pipeline + Admin görünüm
+
+**Hedef:** [AUD-005] + ADR 0010 Karar 5–6 uygulanır; `S-ADMIN-AUDIT` impersonation görünümü spec’e uygun.
+
+**Spec referansları (önce oku):**
+
+1. `docs/adr/0010-user-impersonation-jwt-audit-model.md` — Karar 5–6 (audit actor, lifecycle action’lar)
+2. `docs/mimari-kararlar.md` — [AUD-005], §11.3 [AUD-003] (`metadata` alanı)
+3. `docs/03_API_CONTRACTS.md` — §9.1 start/stop/switch **Audit** satırları (`IMPERSONATION_*`)
+4. `docs/06_SCREEN_CATALOG.md` — **S-ADMIN-AUDIT** (DataTable Kullanıcı kolonu, Aksiyon Impersonation badge, detay modal user satırı; aksiyon filtresine lifecycle action’lar)
+5. `.cursor/rules/16-backend-audit.mdc` — action naming, append-only
+
+**Yapılacaklar → spec eşlemesi:**
+
+| # | Kod | Spec kaynağı |
+| - | --- | ------------ |
+| 1 | Audit yazımı: `userId`=impersonator; `metadata.isImpersonation`, `impersonatedUserId/Sicil/DisplayName` | [AUD-005]; ADR 0010 Karar 5 |
+| 2 | Lifecycle: `IMPERSONATION_STARTED`, `STOPPED`, `SWITCHED` | `docs/03_API_CONTRACTS.md` §9.1 audit satırları |
+| 3 | `audit-logs.service` — `actorDisplayLabel`: `{A} ({B} yerine)` | `docs/06_SCREEN_CATALOG.md` S-ADMIN-AUDIT DataTable |
+| 4 | `AuditLogsPageClient` — Impersonation badge + actor format | `docs/06_SCREEN_CATALOG.md` S-ADMIN-AUDIT |
+| 5 | Chain hash canonical — impersonation metadata dahil (gerekirse) | `packages/shared-utils/src/audit-chain-canonical.ts`; append-only korunur |
+| 6 | Integration: impersonation altında mutating aksiyon → audit satırı doğrulama | [AUD-005]; ADR 0010 |
+
+**Bu iterasyonda yok:** AppHeader/modal (İter 3); Playwright (İter 4).
+
+**Stop:** [ ] Admin UI S-ADMIN-AUDIT spec ile görsel/ metin uyumu; [ ] lifecycle + mutating audit integration test yeşil; [ ] chain verify testleri yeşil. PR/onay → İterasyon 3.
+
+---
+
+### İterasyon 3 — Header UX + Auth store
+
+**Hedef:** `S-IMPERSONATION-MODAL` ekran kataloğu birebir; tam hedef deneyimi ([IMP-001] bildirimler dahil).
+
+**Spec referansları (önce oku):**
+
+1. `docs/06_SCREEN_CATALOG.md` — **S-IMPERSONATION-MODAL** (tüm alt bölümler: Görsel Yapı, Veri Kaynağı, Durum Ekranları, Edge Cases)
+2. `docs/03_API_CONTRACTS.md` — §9.1 impersonate endpoint’leri (İter 1’de implement edilmiş; UI wiring)
+3. `docs/adr/0010-user-impersonation-jwt-audit-model.md` — Karar 7 (UX: switch ikonu, isim→modal, süre sınırı yok)
+4. `docs/00_PROJECT_OVERVIEW.md` — MVP in-scope (tam hedef deneyimi); kapsam dışı (hedef bildirimi, süre sınırı)
+5. `apps/web/src/components/application/AppHeader.tsx` — mevcut shell entegrasyon noktası
+
+**Yapılacaklar → spec eşlemesi:**
+
+| # | Kod | Spec kaynağı |
+| - | --- | ------------ |
+| 1 | `auth-store` — `impersonation` state; `/me` senkron | `docs/03_API_CONTRACTS.md` §9.1 `/me` impersonation bloğu |
+| 2 | Impersonation bandı + user-switch ikonu → `POST .../stop` | `docs/06_SCREEN_CATALOG.md` S-IMPERSONATION-MODAL §Görsel Yapı (2) |
+| 3 | Effective user adı tıklanabilir → modal (`USER_IMPERSONATION` gate) | S-IMPERSONATION-MODAL §Görsel Yapı (1)(3); `PermissionGate` |
+| 4 | `ImpersonationUserSearchModal` — arama, start/switch, Türkçe hatalar | S-IMPERSONATION-MODAL §Veri Kaynağı + §Durum Ekranları |
+| 5 | Query invalidation — notifications, permissions, lists | [IMP-001] tam hedef deneyimi |
+| 6 | Unit test: band görünürlük, permission gate, stop handler | `docs/06_SCREEN_CATALOG.md` edge cases |
+| 7 | a11y: modal focus trap; ikon `aria-label` "Kendi hesabıma dön" | S-IMPERSONATION-MODAL §Görsel Yapı |
+
+**Bu iterasyonda yok:** Playwright E2E (İter 4); otomatik süre sınırı (`docs/00_PROJECT_OVERVIEW.md` kapsam dışı).
+
+**Stop:** [ ] S-IMPERSONATION-MODAL manuel smoke (start → band → switch hedef → stop); [ ] permission yokken isim tıklanamaz; [ ] unit test yeşil. PR/onay → İterasyon 4.
+
+---
+
+### İterasyon 4 — E2E + Güvenlik checklist
+
+**Hedef:** `docs/08_TESTING_STRATEGY.md` §4.2 journey #7 + `docs/10_IMPLEMENTATION_ROADMAP.md` Faz 13 Human Gate tamamlanır.
+
+**Spec referansları (önce oku):**
+
+1. `docs/08_TESTING_STRATEGY.md` — §4.2 journey #7, §4.3–4.5 (Playwright pattern)
+2. `docs/10_IMPLEMENTATION_ROADMAP.md` — Faz 13 Deliverable + Human Gate
+3. `docs/07_SECURITY_IMPLEMENTATION.md` — §3.4 CSRF (mutating impersonate)
+4. `docs/03-security-baseline.mdc` — permission, CSRF, rate limit checklist
+5. `apps/web/e2e/auth.e2e.spec.ts` — mevcut auth E2E kalıbı
+
+**Yapılacaklar → spec eşlemesi:**
+
+| # | Test / doğrulama | Spec kaynağı |
+| - | ---------------- | ------------ |
+| 1 | `impersonation.e2e.spec.ts` — login A → impersonate B → B deneyimi → audit badge → stop | `docs/08_TESTING_STRATEGY.md` §4.2 #7 |
+| 2 | CSRF header impersonate POST’larda | `docs/07_SECURITY_IMPLEMENTATION.md` §3.4 |
+| 3 | Permission olmayan kullanıcı — UI + API 403 | Roadmap Human Gate; `docs/03_API_CONTRACTS.md` §3 |
+| 4 | Pasif/superadmin/kendisi — API red | Roadmap Human Gate; ADR 0010 Karar 4 |
+| 5 | Lint, typecheck, mevcut E2E regresyon | `docs/08_TESTING_STRATEGY.md` §4 |
+
+**Bu iterasyonda yok:** Faz 11 pentest remediation; hedef kullanıcı bildirimi.
+
+**Stop:** Faz 13 Done Definition (aşağı); [ ] E2E green; [ ] Roadmap Human Gate maddeleri; [ ] `docs/10_IMPLEMENTATION_ROADMAP.md` Faz 13 işareti (kullanıcı isterse). PR/onay.
+
+---
+
+## Required Context
+
+Her iterasyonda yalnız ilgili satırlar zorunlu; faz boyunca tek sefer okunması önerilen çekirdek set:
+
+**Çekirdek (faz başı):**
+
+- `docs/adr/0010-user-impersonation-jwt-audit-model.md`
+- `docs/00_PROJECT_OVERVIEW.md` — impersonation in-scope / kapsam dışı maddeleri
+- `docs/10_IMPLEMENTATION_ROADMAP.md` — Faz 13
+
+**İterasyon bazlı — yukarıdaki “Spec referansları” listeleri authoritative.**
+
+**Auto-attached kurallar:** `03-security-baseline.mdc`, `16-backend-audit.mdc`, `52-phase-02-auth-foundation.mdc`, `40-add-new-endpoint.mdc` (yeni auth route’lar için)
+
+## Scope
+
+### Backend — Files to create / modify
+
+Implementasyon hedefi `docs/03_API_CONTRACTS.md` §9.1 + ADR 0010 ile hizalı olmalıdır.
+
+```
+packages/shared-types/src/permission.ts          # docs/04_BACKEND_SPEC.md §8.1
+packages/shared-schemas/src/auth/                # docs/03_API_CONTRACTS.md §9.1 body
+apps/api/prisma/seed.ts
+apps/api/src/auth/                               # start|stop|switch, /me
+apps/api/src/auth/guards/jwt-auth.guard.ts       # docs/07_SECURITY_IMPLEMENTATION.md §3.1
+apps/api/src/common/decorators/current-user.decorator.ts
+apps/api/src/common/audit/audit-log.service.ts  # docs/mimari-kararlar.md [AUD-005]
+apps/api/src/audit-logs/audit-logs.service.ts  # docs/06_SCREEN_CATALOG.md S-ADMIN-AUDIT
+apps/api/test/auth.impersonation.integration.test.ts
+packages/shared-utils/src/audit-chain-canonical.ts  # gerekirse
+```
+
+### Frontend — Files to create / modify
+
+UI davranışı `docs/06_SCREEN_CATALOG.md` S-IMPERSONATION-MODAL + S-ADMIN-AUDIT ile doğrulanır.
+
+```
+apps/web/src/stores/auth-store.ts
+apps/web/src/components/application/AppHeader.tsx
+apps/web/src/components/application/ImpersonationBanner.tsx
+apps/web/src/components/application/ImpersonationUserSearchModal.tsx
+apps/web/src/lib/queries/auth.ts
+apps/web/src/components/admin/AuditLogsPageClient.tsx
+apps/web/e2e/impersonation.e2e.spec.ts          # docs/08_TESTING_STRATEGY.md §4.2 #7
+```
+
+### Files NOT touched
+
+- `apps/api/src/auth/oidc-google-auth.service.ts` — ADR 0010 Karar 3; `docs/adr/0008-dev-google-oidc-prod-redhat-sso.md`
+- Worker / email template’ler
+- Process engine state machine — yalnız audit actor ayrışır ([AUD-005])
+
+## Constraints
+
+### Use (belge referanslı)
+
+- JWT + refresh + CSRF: `docs/07_SECURITY_IMPLEMENTATION.md` §3
+- Permission: `docs/04_BACKEND_SPEC.md` §8.1, `docs/07_SECURITY_IMPLEMENTATION.md` §4.4
+- API sözleşmesi: `docs/03_API_CONTRACTS.md` §9.1
+- Audit actor: `docs/mimari-kararlar.md` [AUD-005], ADR 0010 Karar 5
+- UI: `docs/06_SCREEN_CATALOG.md` S-IMPERSONATION-MODAL, S-ADMIN-AUDIT
+
+### Avoid
+
+- `docs/00_PROJECT_OVERVIEW.md` kapsam dışı maddeler (süre sınırı, hedef bildirimi, impersonation dashboard)
+- ADR 0010 “Reddedilen alternatifler” listesi
+
+## Done Definition
+
+Her madde ilgili spec ile doğrulanır:
+
+### Backend
+
+- [ ] `USER_IMPERSONATION` — `docs/04_BACKEND_SPEC.md` §8.1 + seed
+- [ ] `POST /auth/impersonate/start|stop|switch` — `docs/03_API_CONTRACTS.md` §9.1 (request/response/error/audit/rate limit)
+- [ ] JWT `sub`/`imp` — ADR 0010 Karar 2; `docs/07_SECURITY_IMPLEMENTATION.md` §3.1
+- [ ] Hedef kısıtları — ADR 0010 Karar 4; `docs/03_API_CONTRACTS.md` §3
+- [ ] `GET /auth/me` impersonation bloğu — `docs/03_API_CONTRACTS.md` §9.1
+- [ ] Audit actor + metadata — [AUD-005]; lifecycle action’lar — `docs/03_API_CONTRACTS.md` §9.1
+- [ ] Integration testler yeşil
+
+### Frontend
+
+- [ ] S-IMPERSONATION-MODAL — `docs/06_SCREEN_CATALOG.md` (band, modal, edge cases)
+- [ ] S-ADMIN-AUDIT impersonation görünümü — aynı katalog girişi
+- [ ] Tam hedef deneyimi — [IMP-001]; `docs/00_PROJECT_OVERVIEW.md` in-scope
+- [ ] Playwright journey #7 — `docs/08_TESTING_STRATEGY.md` §4.2
+
+### Human Gate (roadmap)
+
+- [ ] `docs/10_IMPLEMENTATION_ROADMAP.md` Faz 13 Human Gate checklist (5 madde)
+
+### Manual smoke test
+
+```bash
+# API — docs/03_API_CONTRACTS.md §9.1
+curl -X POST .../api/v1/auth/impersonate/start \
+  -H "Authorization: Bearer $TOKEN" -H "X-CSRF-Token: $CSRF" \
+  -d '{"targetUserId":"..."}'
+
+# E2E — docs/08_TESTING_STRATEGY.md §4.2 #7
+pnpm --filter web exec playwright test e2e/impersonation.e2e.spec.ts
+```
+
+## Explicit Don'ts
+
+`docs/00_PROJECT_OVERVIEW.md` kapsam dışı + ADR 0010 reddedilen alternatifler:
+
+- Pasif, SUPERADMIN veya kendini impersonate (API + UI)
+- Otomatik idle / süre sınırı
+- Hedef kullanıcıya “hesabınız görüntülendi” bildirimi/e-postası
+- Impersonation oturumları için ayrı admin dashboard
+- Audit log düzenleme (append-only — `docs/mimari-kararlar.md` [AUD-003])
+- OIDC login flow’una impersonation (ADR 0010 Karar 3)
+- MFA zorunluluğu (Wave 1)
+
+## Kısıtlar & Riskler
+
+| Risk | Önlem | Spec |
+| ---- | ----- | ---- |
+| Yetkisiz impersonation | `USER_IMPERSONATION` + UI gate | `docs/07_SECURITY_IMPLEMENTATION.md` §4.4 |
+| SUPERADMIN hedefi | Rol kontrolü hard deny | ADR 0010 Karar 4 |
+| Audit’te gerçek aktör kaybolur | `userId`=impersonator | [AUD-005] |
+| CSRF bypass | CsrfGuard mutating | `docs/07_SECURITY_IMPLEMENTATION.md` §3.4 |
+| Abuse (sık start) | Rate limit | `docs/03_API_CONTRACTS.md` §4 |
+| Pentest finding | Faz 11 kapsamı | `docs/10_IMPLEMENTATION_ROADMAP.md` Faz 11 + 13 notu |
+
+## Sonraki fazlarla ilişki
+
+- **Faz 11:** Pentest — `docs/10_IMPLEMENTATION_ROADMAP.md` Faz 11 pentest notu (impersonation senaryoları Faz 13 sonrası)
+- **Faz 8:** `@58-phase-08-admin-panel` Explicit Don'ts — impersonation Faz 13 ile go-live öncesi kapsama alındı
+
+## Related ADRs
+
+- `docs/adr/0010-user-impersonation-jwt-audit-model.md` — **birincil mimari referans**
+- `docs/adr/0008-dev-google-oidc-prod-redhat-sso.md` — OIDC’ye impersonation karıştırılmaz
+
+---
+
+Phase done → `docs/10_IMPLEMENTATION_ROADMAP.md` Faz 13 işareti + Human Gate tick.

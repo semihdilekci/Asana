@@ -1,17 +1,39 @@
-@import '../../../../docs/lean-design-system/index.css';
+/* @import kuralları en üstte — lean-design-system/index.css font importu buraya taşındı */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@import '../styles/theme.css';
+
+@plugin 'tailwindcss-animate';
+@plugin 'tailwindcss-react-aria-components';
+
+@source '../**/*.{js,ts,jsx,tsx,mdx}';
+
+/* :root tokenları (spacing, gradient, legacy var() referansları) */
+@import '../../../../docs/lean-design-system/tokens.css';
+
+@custom-variant dark (&:where(.dark-mode, .dark-mode *));
+@custom-variant label (& [data-label]);
+@custom-variant focus-input-within (&:has(input:focus));
+
+@utility scrollbar-hide {
+  &::-webkit-scrollbar {
+    display: none;
+    -webkit-appearance: none;
+  }
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 
 @layer base {
   :focus-visible {
-    outline: 2px solid var(--color-primary-600, #2563eb);
+    outline: 2px solid var(--color-brand-300);
     outline-offset: 2px;
   }
 }
 
-/* Rota değişiminde kart girişi — PageRouteCardMotion sarmalayıcısı + gecikme varsayılanı 0ms; prefers-reduced-motion: 25-frontend-a11y */
+/* Rota değişiminde kart girişi — PageRouteCardMotion sarmalayıcısı */
 @keyframes lm-page-card-enter {
   from {
     opacity: 0;
@@ -23,13 +45,13 @@
   }
 }
 
-.page-route-card-motion .ls-card {
+.page-route-card-motion [data-route-card] {
   --card-enter-delay: 0ms;
   animation: lm-page-card-enter var(--dur-medium) cubic-bezier(0.22, 1, 0.36, 1) var(--card-enter-delay) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .page-route-card-motion .ls-card {
+  .page-route-card-motion [data-route-card] {
     animation: none;
   }
 }

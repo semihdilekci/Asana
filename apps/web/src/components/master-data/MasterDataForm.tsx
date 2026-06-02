@@ -13,6 +13,7 @@ import {
 } from '@leanmgmt/shared-schemas';
 import type { MasterDataType } from '@leanmgmt/shared-schemas';
 
+import { Button, inputClassName } from '@/components/base';
 import {
   MASTER_DATA_TYPE_LABELS,
   useAllMasterDataQuery,
@@ -65,7 +66,7 @@ export function MasterDataCreateForm({ type }: MasterDataCreateFormProps) {
           aria-required="true"
           aria-invalid={!!errors.code}
           aria-describedby={errors.code ? 'code-error' : 'code-hint'}
-          className="ls-input mt-[var(--space-1)] w-full"
+          className={inputClassName('md', 'mt-[var(--space-1)] w-full')}
           {...register('code')}
         />
         <p id="code-hint" className="mt-[var(--space-1)] text-xs text-[var(--color-neutral-500)]">
@@ -91,7 +92,7 @@ export function MasterDataCreateForm({ type }: MasterDataCreateFormProps) {
           type="text"
           aria-required="true"
           aria-invalid={!!errors.name}
-          className="ls-input mt-[var(--space-1)] w-full"
+          className={inputClassName('md', 'mt-[var(--space-1)] w-full')}
           {...register('name')}
         />
         {errors.name && (
@@ -112,7 +113,7 @@ export function MasterDataCreateForm({ type }: MasterDataCreateFormProps) {
           <select
             id="parentWorkAreaCode"
             aria-required="true"
-            className="ls-input mt-[var(--space-1)] w-full"
+            className={inputClassName('md', 'mt-[var(--space-1)] w-full')}
             {...register('parentWorkAreaCode')}
           >
             <option value="">Üst alan seçin</option>
@@ -126,17 +127,12 @@ export function MasterDataCreateForm({ type }: MasterDataCreateFormProps) {
       )}
 
       <div className="flex items-center justify-end gap-[var(--space-3)]">
-        <button type="button" className="ls-btn ls-btn--neutral" onClick={() => router.back()}>
+        <Button type="button" color="secondary" size="md" onPress={() => router.back()}>
           İptal
-        </button>
-        <button
-          type="submit"
-          className="ls-btn ls-btn--primary"
-          disabled={isSubmitting}
-          aria-busy={isSubmitting}
-        >
+        </Button>
+        <Button type="submit" color="primary" isDisabled={isSubmitting} aria-busy={isSubmitting}>
           {isSubmitting ? 'Kaydediliyor...' : 'Oluştur'}
-        </button>
+        </Button>
       </div>
     </form>
   );
@@ -197,7 +193,7 @@ export function MasterDataEditForm({ type, itemId, defaultValues }: MasterDataEd
           type="text"
           aria-required="true"
           aria-invalid={!!errors.name}
-          className="ls-input mt-[var(--space-1)] w-full"
+          className={inputClassName('md', 'mt-[var(--space-1)] w-full')}
           {...register('name')}
         />
         {errors.name && (
@@ -208,17 +204,12 @@ export function MasterDataEditForm({ type, itemId, defaultValues }: MasterDataEd
       </div>
 
       <div className="flex items-center justify-end gap-[var(--space-3)]">
-        <button type="button" className="ls-btn ls-btn--neutral" onClick={() => router.back()}>
+        <Button type="button" color="secondary" size="md" onPress={() => router.back()}>
           İptal
-        </button>
-        <button
-          type="submit"
-          className="ls-btn ls-btn--primary"
-          disabled={isSubmitting}
-          aria-busy={isSubmitting}
-        >
+        </Button>
+        <Button type="submit" color="primary" isDisabled={isSubmitting} aria-busy={isSubmitting}>
           {isSubmitting ? 'Kaydediliyor...' : 'Güncelle'}
-        </button>
+        </Button>
       </div>
     </form>
   );

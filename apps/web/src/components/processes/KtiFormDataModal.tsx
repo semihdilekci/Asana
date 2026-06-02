@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 
 import Image from 'next/image';
 
+import { Button } from '@/components/base';
 import { STEP_LABEL_MAP } from '@/lib/step-labels';
 import { useDocumentDownloadUrlQuery } from '@/lib/queries/documents';
 import type { ProcessTaskItem } from '@/lib/queries/processes';
@@ -224,9 +225,9 @@ export function KtiFormDataModal({ task, onClose }: KtiFormDataModalProps) {
       )}
 
       <div className="mt-[var(--space-5)] flex justify-end">
-        <button type="button" className="ls-btn ls-btn--primary ls-btn--sm" onClick={onClose}>
+        <Button color="primary" size="sm" onPress={onClose}>
           Kapat
-        </button>
+        </Button>
       </div>
     </dialog>
   );

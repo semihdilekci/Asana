@@ -15,7 +15,7 @@ export type HorizontalMorphSegmentedProps = {
   onChange: (value: string) => void;
   ariaLabel: string;
   className?: string;
-  /** compact = ls-btn--sm ile aynı min-height / padding (görev listesi üst sekmeleri) */
+  /** compact = Button sm ile aynı min-height / padding (görev listesi üst sekmeleri) */
   density?: HorizontalMorphSegmentedDensity;
 };
 
@@ -24,7 +24,8 @@ type Geom = { lefts: number[]; widths: number[]; heights: number[] };
 const DENSITY_TAB_CLASS: Record<HorizontalMorphSegmentedDensity, string> = {
   default:
     'rounded-[var(--radius-sm)] px-[var(--space-6)] py-[var(--space-4)] text-sm font-medium leading-snug',
-  compact: 'ls-morph-segment-tab--btn-sm',
+  compact:
+    'box-border inline-flex min-h-9 items-center justify-center whitespace-nowrap rounded-[var(--radius-sm)] px-[var(--space-7)] py-2 text-sm font-semibold leading-snug',
 };
 
 function tabButtonClass(active: boolean, density: HorizontalMorphSegmentedDensity): string {
@@ -148,11 +149,11 @@ export function HorizontalMorphSegmented({
       ref={navRef}
       role="tablist"
       aria-label={ariaLabel}
-      className={`ls-morph-segment-track relative inline-flex flex-nowrap items-stretch gap-[var(--space-2)] ${className ?? ''}`}
+      className={`relative inline-flex flex-nowrap items-stretch gap-[var(--space-2)] ${className ?? ''}`}
     >
       <motion.div
         aria-hidden
-        className="ls-morph-segment-pill z-0"
+        className="pointer-events-none absolute top-0 left-0 z-0 rounded-[var(--radius-sm)] bg-[var(--color-primary-100)] will-change-transform"
         style={{ width: pillWidth, height: pillHeight }}
         initial={false}
         animate={pillAnimate}

@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
+import { Card } from '@/components/base';
+
 import { PageRouteCardMotion } from './PageRouteCardMotion';
 
 vi.mock('next/navigation', () => ({
@@ -11,7 +13,7 @@ describe('PageRouteCardMotion', () => {
   it('içeriği sarmalayıcı ile render eder', () => {
     render(
       <PageRouteCardMotion>
-        <div className="ls-card">Kart</div>
+        <Card>Kart</Card>
       </PageRouteCardMotion>,
     );
 

@@ -6,6 +6,7 @@ import { useCallback, useMemo, useTransition } from 'react';
 
 import { Permission } from '@leanmgmt/shared-types';
 
+import { ButtonLink, inputClassName } from '@/components/base';
 import { PermissionGate } from '@/components/shared/PermissionGate';
 import { useRoleListQuery } from '@/lib/queries/roles';
 
@@ -58,9 +59,9 @@ export function RoleList() {
           </p>
         </div>
         <PermissionGate permission={Permission.ROLE_CREATE}>
-          <Link href="/roles/new" className="ls-btn ls-btn--primary">
+          <ButtonLink href="/roles/new" color="primary">
             Yeni Rol
-          </Link>
+          </ButtonLink>
         </PermissionGate>
       </div>
 
@@ -71,14 +72,14 @@ export function RoleList() {
             type="search"
             defaultValue={filters.search}
             onBlur={(e) => setParam('search', e.target.value.trim())}
-            className="ls-input min-w-[12rem]"
+            className={inputClassName('md', 'min-w-[12rem]')}
             placeholder="Kod veya ad"
           />
         </label>
         <label className="flex flex-col gap-[var(--space-1)] text-xs text-[var(--color-neutral-600)]">
           Aktiflik
           <select
-            className="ls-input"
+            className={inputClassName()}
             value={filters.isActive}
             onChange={(e) => setParam('isActive', e.target.value)}
           >
@@ -90,7 +91,7 @@ export function RoleList() {
         <label className="flex flex-col gap-[var(--space-1)] text-xs text-[var(--color-neutral-600)]">
           Tip
           <select
-            className="ls-input"
+            className={inputClassName()}
             value={filters.isSystem}
             onChange={(e) => setParam('isSystem', e.target.value)}
           >

@@ -117,8 +117,7 @@ export class RolesService {
       },
     });
 
-    await this.audit.append({
-      userId: actor.id,
+    await this.audit.appendForActor(actor, {
       action: 'CREATE_ROLE',
       entity: 'role',
       entityId: role.id,
@@ -163,8 +162,7 @@ export class RolesService {
 
     await this.permissionResolver.invalidateRole(roleId);
 
-    await this.audit.append({
-      userId: actor.id,
+    await this.audit.appendForActor(actor, {
       action: 'UPDATE_ROLE',
       entity: 'role',
       entityId: roleId,
@@ -188,8 +186,7 @@ export class RolesService {
     await this.permissionResolver.invalidateRole(roleId);
     await this.prisma.role.delete({ where: { id: roleId } });
 
-    await this.audit.append({
-      userId: actor.id,
+    await this.audit.appendForActor(actor, {
       action: 'DELETE_ROLE',
       entity: 'role',
       entityId: roleId,
@@ -252,8 +249,7 @@ export class RolesService {
       userId: input.userId,
     } satisfies UserPermissionCacheInvalidatePayload);
 
-    await this.audit.append({
-      userId: actor.id,
+    await this.audit.appendForActor(actor, {
       action: 'ASSIGN_ROLE',
       entity: 'user_role',
       entityId: created.id,
@@ -283,8 +279,7 @@ export class RolesService {
       userId,
     } satisfies UserPermissionCacheInvalidatePayload);
 
-    await this.audit.append({
-      userId: actor.id,
+    await this.audit.appendForActor(actor, {
       action: 'UNASSIGN_ROLE',
       entity: 'user_role',
       entityId: userId,

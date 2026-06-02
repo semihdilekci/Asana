@@ -11,6 +11,7 @@ import {
   RoleRuleConditionOperator,
 } from '@leanmgmt/shared-types';
 
+import { Button, inputClassName } from '@/components/base';
 import { AttributeRuleBuilderRuleList } from '@/components/roles/AttributeRuleBuilderRuleList';
 import type { LocalCond } from '@/components/roles/role-rule-local';
 import { RoleRuleValueInput } from '@/components/roles/RoleRuleValueInput';
@@ -217,7 +218,7 @@ export function AttributeRuleBuilder({ roleId }: { roleId: string }) {
                   <label className="text-xs">
                     Alan
                     <select
-                      className="ls-input mt-0.5 block text-sm"
+                      className={inputClassName('md', 'mt-0.5 block text-sm')}
                       value={c.attributeKey}
                       onChange={(e) =>
                         updateCond(si, ci, { attributeKey: e.target.value, value: '' })
@@ -233,7 +234,7 @@ export function AttributeRuleBuilder({ roleId }: { roleId: string }) {
                   <label className="text-xs">
                     Operatör
                     <select
-                      className="ls-input mt-0.5 block text-sm"
+                      className={inputClassName('md', 'mt-0.5 block text-sm')}
                       value={c.operator}
                       onChange={(e) => updateCond(si, ci, { operator: e.target.value, value: '' })}
                     >
@@ -250,46 +251,38 @@ export function AttributeRuleBuilder({ roleId }: { roleId: string }) {
                     value={c.value}
                     onChange={(v) => updateCond(si, ci, { value: v })}
                   />
-                  <button
-                    type="button"
-                    className="ls-btn ls-btn--neutral ls-btn--sm"
-                    onClick={() => removeCond(si, ci)}
-                  >
+                  <Button color="secondary" size="sm" onPress={() => removeCond(si, ci)}>
                     Sil
-                  </button>
+                  </Button>
                 </div>
               ))}
-              <button
-                type="button"
-                className="ls-btn ls-btn--neutral ls-btn--sm"
-                onClick={() => addCondition(si)}
-              >
+              <Button color="secondary" size="sm" onPress={() => addCondition(si)}>
                 Koşul ekle
-              </button>
+              </Button>
             </div>
           ))}
         </div>
         <div className="mt-3 flex flex-wrap gap-2">
-          <button type="button" className="ls-btn ls-btn--neutral ls-btn--sm" onClick={addSet}>
+          <Button color="secondary" size="sm" onPress={addSet}>
             Grup ekle (VEYA)
-          </button>
+          </Button>
           <PermissionGate permission={Permission.ROLE_RULE_MANAGE}>
-            <button
-              type="button"
-              className="ls-btn ls-btn--neutral ls-btn--sm"
-              disabled={testMutation.isPending}
-              onClick={() => void runTest()}
+            <Button
+              color="secondary"
+              size="sm"
+              isDisabled={testMutation.isPending}
+              onPress={() => void runTest()}
             >
               Taslağı test et
-            </button>
-            <button
-              type="button"
-              className="ls-btn ls-btn--primary ls-btn--sm"
-              disabled={createMutation.isPending}
-              onClick={() => void submitNew()}
+            </Button>
+            <Button
+              color="primary"
+              size="sm"
+              isDisabled={createMutation.isPending}
+              onPress={() => void submitNew()}
             >
               Kuralı kaydet
-            </button>
+            </Button>
           </PermissionGate>
         </div>
       </section>

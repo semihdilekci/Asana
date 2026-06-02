@@ -5,6 +5,7 @@ import { MASTER_DATA_TYPES } from '@leanmgmt/shared-schemas';
 import type { MasterDataType } from '@leanmgmt/shared-schemas';
 
 import { MASTER_DATA_TYPE_LABELS } from '@/lib/queries/master-data';
+import { Alert, Card } from '@/components/base';
 import { MasterDataEditContent } from './MasterDataEditContent';
 
 interface PageProps {
@@ -21,11 +22,7 @@ export default async function MasterDataEditPage({ params }: PageProps) {
   const { type, id } = await params;
 
   if (!MASTER_DATA_TYPES.includes(type as MasterDataType)) {
-    return (
-      <div role="alert" className="ls-alert ls-alert--error">
-        Geçersiz master data tipi.
-      </div>
-    );
+    return <Alert variant="error">Geçersiz master data tipi.</Alert>;
   }
 
   const typeName = MASTER_DATA_TYPE_LABELS[type as MasterDataType] ?? type;
@@ -63,9 +60,9 @@ export default async function MasterDataEditPage({ params }: PageProps) {
         {typeName} Düzenle
       </h1>
 
-      <div className="ls-card p-[var(--space-6)]">
+      <Card className="p-[var(--space-6)]">
         <MasterDataEditContent type={type as MasterDataType} id={id} />
-      </div>
+      </Card>
     </div>
   );
 }

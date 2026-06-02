@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { KtiStartBodySchema, type KtiStartInput } from '@leanmgmt/shared-schemas';
 import { Permission } from '@leanmgmt/shared-types';
 
+import { Alert, Button, Card, inputClassName } from '@/components/base';
 import { DocumentUpload } from '@/components/documents/DocumentUpload';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import { PermissionGate } from '@/components/shared/PermissionGate';
@@ -18,14 +19,11 @@ import { useKtiStartMutation } from '@/lib/queries/processes';
 import { useMasterDataListQuery } from '@/lib/queries/master-data';
 import { useAuthStore } from '@/stores/auth-store';
 
-const CONFIRM_PHRASE = 'ONAYLIYORUM';
-
 export function KtiStartForm() {
   const router = useRouter();
   const user = useAuthStore((s) => s.currentUser);
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<1 | 2>(1);
   const [cancelOpen, setCancelOpen] = useState(false);
-  const [confirmPhrase, setConfirmPhrase] = useState('');
   const ktiMutation = useKtiStartMutation();
 
   const { data: companiesData, isLoading: companiesLoading } = useMasterDataListQuery('companies', {
@@ -78,10 +76,6 @@ export function KtiStartForm() {
   };
 
   const goSubmit = async () => {
-    if (confirmPhrase.trim() !== CONFIRM_PHRASE) {
-      toast.error(`Göndermek için "${CONFIRM_PHRASE}" yazın.`);
-      return;
-    }
     const values = form.getValues();
     try {
       const res = await ktiMutation.mutateAsync(values);
@@ -125,12 +119,12 @@ export function KtiStartForm() {
   return (
     <div className="space-y-[var(--space-6)]">
       {!hasManager ? (
-        <div className="ls-alert ls-alert--danger" role="alert">
+        <Alert variant="error">
           <p className="text-sm font-medium">Profilinizde yönetici atanmamış.</p>
           <p className="mt-[var(--space-2)] text-sm text-[var(--color-neutral-700)]">
             KTİ başlatmak için sistem yöneticinize başvurun.
           </p>
-        </div>
+        </Alert>
       ) : null}
 
       <ol
@@ -142,16 +136,12 @@ export function KtiStartForm() {
         </li>
         <li aria-hidden>›</li>
         <li className={step === 2 ? 'font-semibold text-[var(--color-primary-700)]' : ''}>
-          2. Özet
-        </li>
-        <li aria-hidden>›</li>
-        <li className={step === 3 ? 'font-semibold text-[var(--color-primary-700)]' : ''}>
-          3. Onay ve gönder
+          2. Özet ve onay
         </li>
       </ol>
 
       {step === 1 ? (
-        <div className="ls-card space-y-[var(--space-5)] p-[var(--space-5)]">
+        <Card className="space-y-[var(--space-5)] p-[var(--space-5)]">
           <div>
             <label
               htmlFor="kti-company"
@@ -166,7 +156,7 @@ export function KtiStartForm() {
             ) : (
               <select
                 id="kti-company"
-                className="ls-input w-full max-w-md"
+                className={inputClassName('md', 'w-full max-w-md')}
                 disabled={!hasManager}
                 aria-required
                 {...form.register('companyId')}
@@ -189,10 +179,10 @@ export function KtiStartForm() {
           <PermissionGate
             permission={Permission.DOCUMENT_UPLOAD}
             fallback={
-              <div className="ls-alert ls-alert--danger text-sm" role="alert">
+              <Alert variant="error" className="text-sm">
                 Doküman yüklemek için <strong>DOCUMENT_UPLOAD</strong> yetkisi gerekir.
                 Yöneticinizden talep edin.
-              </div>
+              </Alert>
             }
           >
             <DocumentUpload
@@ -243,7 +233,7 @@ export function KtiStartForm() {
                 type="number"
                 min={0}
                 step={1}
-                className="ls-input w-full"
+                className={inputClassName('md', 'w-full')}
                 disabled={!hasManager}
                 aria-required
                 {...form.register('savingAmount', { valueAsNumber: true })}
@@ -269,7 +259,7 @@ export function KtiStartForm() {
               rows={6}
               maxLength={5000}
               placeholder="Yapılan iyileştirmeyi ve elde edilen faydayı açıklayın…"
-              className="ls-input min-h-[8rem] w-full"
+              className={inputClassName('md', 'min-h-[8rem] w-full')}
               disabled={!hasManager}
               aria-required
               aria-describedby="kti-desc-count"
@@ -284,12 +274,16 @@ export function KtiStartForm() {
               </p>
             ) : null}
           </div>
-        </div>
+        </Card>
       ) : null}
 
       {step === 2 ? (
-        <div className="ls-card space-y-[var(--space-4)] p-[var(--space-5)]">
+        <Card className="space-y-[var(--space-4)] p-[var(--space-5)]">
           <h2 className="text-lg font-semibold text-[var(--color-neutral-900)]">Özet</h2>
+          <p className="text-sm text-[var(--color-neutral-600)]">
+            Bilgileri kontrol edin. Süreci başlatmak için <strong>Onaylıyorum</strong> ile gönderin;
+            başlatma sonrası süreç yöneticinize onaya düşer.
+          </p>
           <dl className="grid gap-[var(--space-3)] text-sm sm:grid-cols-2">
             <div>
               <dt className="text-[var(--color-neutral-500)]">Şirket</dt>
@@ -312,38 +306,14 @@ export function KtiStartForm() {
               <dd className="whitespace-pre-wrap text-[var(--color-neutral-900)]">{description}</dd>
             </div>
           </dl>
-        </div>
-      ) : null}
-
-      {step === 3 ? (
-        <div className="ls-card space-y-[var(--space-4)] p-[var(--space-5)]">
-          <h2 className="text-lg font-semibold text-[var(--color-neutral-900)]">Son onay</h2>
-          <p className="text-sm text-[var(--color-neutral-600)]">
-            Süreci başlatmak için aşağıya <strong className="font-mono">{CONFIRM_PHRASE}</strong>{' '}
-            yazın.
-          </p>
-          <div>
-            <label htmlFor="kti-confirm-phrase" className="sr-only">
-              Onay ifadesi
-            </label>
-            <input
-              id="kti-confirm-phrase"
-              type="text"
-              autoComplete="off"
-              className="ls-input max-w-md font-mono"
-              value={confirmPhrase}
-              onChange={(e) => setConfirmPhrase(e.target.value)}
-              placeholder={CONFIRM_PHRASE}
-            />
-          </div>
-        </div>
+        </Card>
       ) : null}
 
       <div className="flex flex-wrap items-center justify-between gap-[var(--space-3)]">
-        <button
-          type="button"
-          className="ls-btn ls-btn--neutral"
-          onClick={() => {
+        <Button
+          color="secondary"
+          size="md"
+          onPress={() => {
             if (form.formState.isDirty) {
               setCancelOpen(true);
               return;
@@ -352,44 +322,30 @@ export function KtiStartForm() {
           }}
         >
           İptal
-        </button>
+        </Button>
         <div className="flex flex-wrap gap-2">
           {step > 1 ? (
-            <button
-              type="button"
-              className="ls-btn ls-btn--neutral"
-              onClick={() => {
-                if (step === 3) setConfirmPhrase('');
-                setStep((s) => (s === 3 ? 2 : 1));
-              }}
-            >
+            <Button color="secondary" size="md" onPress={() => setStep(1)}>
               Geri
-            </button>
+            </Button>
           ) : null}
           {step === 1 ? (
-            <button
-              type="button"
-              className="ls-btn ls-btn--primary"
-              disabled={step1Blocked}
-              onClick={() => void goNextFromStep1()}
+            <Button
+              color="primary"
+              isDisabled={step1Blocked}
+              onPress={() => void goNextFromStep1()}
             >
               İleri
-            </button>
+            </Button>
           ) : null}
           {step === 2 ? (
-            <button type="button" className="ls-btn ls-btn--primary" onClick={() => setStep(3)}>
-              İleri
-            </button>
-          ) : null}
-          {step === 3 ? (
-            <button
-              type="button"
-              className="ls-btn ls-btn--primary"
-              disabled={ktiMutation.isPending || confirmPhrase.trim() !== CONFIRM_PHRASE}
-              onClick={() => void goSubmit()}
+            <Button
+              color="primary"
+              isDisabled={ktiMutation.isPending}
+              onPress={() => void goSubmit()}
             >
-              {ktiMutation.isPending ? 'Gönderiliyor…' : 'Süreci başlat'}
-            </button>
+              {ktiMutation.isPending ? 'Gönderiliyor…' : 'Onaylıyorum'}
+            </Button>
           ) : null}
         </div>
       </div>

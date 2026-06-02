@@ -1,44 +1,44 @@
 /* =========================================================
    Lean Management — Design System Tokens
-   Cool blue dashboard — kanonik özet: ../../../design-system.json
-   (Referans: açık gri-mavi zemin, canlı mavi marka, beyaz kartlar, çok renkli mini ikonlar)
+   Untitled UI React felsefesi + Elektrik Cyan holding markası (#7df9ff)
+   ADR 0009: Tailwind v4 + React Aria + Untitled UI geçişi
    ========================================================= */
 
 :root {
-  /* ---------- Page canvas (soğuk gri-mavi — ~#F4F7FA çevresi) ---------- */
-  --gradient-page-bg: linear-gradient(110deg, #e8eef5 0%, #f4f7fa 48%, #eef2f7 100%);
-  --gradient-page-bg-alt: linear-gradient(90deg, #e8eef5 0%, #f4f7fa 50%, #edf2f9 100%);
+  /* ---------- Page canvas (nötr beyaz zemin) ---------- */
+  --gradient-page-bg: linear-gradient(110deg, #f8fafc 0%, #ffffff 48%, #f1f5f9 100%);
+  --gradient-page-bg-alt: linear-gradient(90deg, #f8fafc 0%, #ffffff 50%, #f0fdfe 100%);
 
   /* ---------- Color · Surfaces ---------- */
-  --color-bg:                 #ffffff;
-  --color-surface-0:          #f4f7fa; /* solid fallback; body uses gradient */
+  --color-bg:                   #ffffff;
+  --color-surface-0:            #f8fafc;
   --color-surface-1:            rgba(255, 255, 255, 0.85);
   --color-surface-2:            #ffffff;
   --color-surface-card:         #ffffff;
   --color-surface-card-elevated:#ffffff;
 
-  /* Borders: minimal — prefer shadow/whitespace (JSON) */
-  --color-border:         rgba(26, 43, 60, 0.07);
-  --color-border-strong:  rgba(26, 43, 60, 0.12);
-  --color-divider:          #eef1f4;
-  --color-divider-vertical:   rgba(224, 228, 232, 0.85);
-  --color-hover:            rgba(37, 99, 235, 0.07);
-  --color-row-hover:        rgba(37, 99, 235, 0.045);
-  --color-focus-ring:       rgba(37, 99, 235, 0.38);
+  /* ---------- Color · Borders ---------- */
+  --color-border:          rgba(17, 24, 39, 0.08);
+  --color-border-strong:   rgba(17, 24, 39, 0.14);
+  --color-divider:         #e5e7eb;
+  --color-divider-vertical:rgba(209, 213, 219, 0.80);
+  --color-hover:           rgba(10, 167, 176, 0.07);
+  --color-row-hover:       rgba(10, 167, 176, 0.04);
+  --color-focus-ring:      rgba(125, 249, 255, 0.55);
 
   /* ---------- Color · Text ---------- */
-  --color-fg:           #1a1a1a;
-  --color-fg-soft:      #707070;
-  --color-fg-muted:     rgba(112, 112, 112, 0.92);
+  --color-fg:           #111827;
+  --color-fg-soft:      #6b7280;
+  --color-fg-muted:     rgba(107, 114, 128, 0.90);
   --color-fg-subtle:    #9ca3af;
   --color-fg-inverse:   #ffffff;
-  --color-fg-on-primary-muted: rgba(255, 255, 255, 0.82);
-  --color-link:         #2563eb;
+  --color-fg-on-primary-muted: rgba(255, 255, 255, 0.80);
+  --color-link:         #0aa7b0;
 
-  /* Sol sidebar — pasif nav metni (mavi uyumlu); seçili öğe gradient üzerinde --color-fg-inverse */
-  --color-sidebar-nav-idle: color-mix(in srgb, var(--color-primary-800) 62%, var(--color-neutral-700) 38%);
+  /* Sol sidebar — pasif nav metni; seçili öğe gradient üzerinde --color-fg-inverse */
+  --color-sidebar-nav-idle: #94a3b8;
 
-  /* ---------- Neutral scale (soğuk gri — UI yoğun metin / kenarlık) ---------- */
+  /* ---------- Neutral scale (slate) ---------- */
   --color-neutral-0:    #ffffff;
   --color-neutral-50:   #f8fafc;
   --color-neutral-100:  #f1f5f9;
@@ -46,35 +46,94 @@
   --color-neutral-300:  #cbd5e1;
   --color-neutral-400:  #94a3b8;
   --color-neutral-500:  #64748b;
-  --color-neutral-600:  #707070;
-  --color-neutral-700:  #525252;
-  --color-neutral-800:  #404040;
-  --color-neutral-900:  #1a1a1a;
+  --color-neutral-600:  #475569;
+  --color-neutral-700:  #334155;
+  --color-neutral-800:  #1e293b;
+  --color-neutral-900:  #0f172a;
+  --color-neutral-950:  #020617;
 
-  /* ---------- Primary · canlı mavi (sidebar aktif, link, CTA) ---------- */
-  --color-primary-base: #2563eb;
-  --gradient-primary:   linear-gradient(135deg, #60a5fa 0%, #1d4ed8 100%);
-  --gradient-banner:    linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+  /* ---------- Brand · Elektrik Cyan — #7df9ff temel ton ----------
+     brand-300 = #7df9ff (holding imzası; vurgu, glow, focus ring)
+     brand-600 = #0aa7b0 (eylem; buton arkaplanı, sidebar aktif pill)
+     brand-700 = #077d84 (hover durumu)
+     ---------------------------------------------------------------- */
+  --color-brand-50:   #f0fdfe;
+  --color-brand-100:  #cdfafe;
+  --color-brand-200:  #9af4fb;
+  --color-brand-300:  #7df9ff;  /* ← #7df9ff imza tonu */
+  --color-brand-400:  #38edf7;
+  --color-brand-500:  #0dd4de;
+  --color-brand-600:  #0aa7b0;  /* ← birincil eylem rengi */
+  --color-brand-700:  #077d84;  /* ← hover */
+  --color-brand-800:  #045358;
+  --color-brand-900:  #033237;
+  --color-brand-950:  #01191c;
 
-  --color-primary-50:   #eff6ff;
-  --color-primary-100:  #dbeafe;
-  --color-primary-200:  #bfdbfe;
-  --color-primary-300:  #93c5fd;
-  --color-primary-400:  #60a5fa;
-  --color-primary-500:  #3b82f6;
-  --color-primary-600:  #2563eb;
-  --color-primary-700:  #1d4ed8;
-  --color-primary-800:  #1e40af;
-  --color-primary-900:  #1e3a8a;
+  /* Geriye dönük uyumluluk — eski ls-* primary referansları */
+  --color-primary-base: var(--color-brand-600);
+  --gradient-primary:   linear-gradient(135deg, var(--color-brand-400) 0%, var(--color-brand-700) 100%);
+  --gradient-banner:    linear-gradient(135deg, var(--color-brand-500) 0%, var(--color-brand-300) 100%);
 
-  --color-primary-a06:  rgba(37, 99, 235, 0.06);
-  --color-primary-a10:  rgba(37, 99, 235, 0.10);
-  --color-primary-a14:  rgba(37, 99, 235, 0.14);
-  --color-primary-a20:  rgba(37, 99, 235, 0.20);
-  --color-primary-a28:  rgba(37, 99, 235, 0.28);
-  --color-primary-a40:  rgba(37, 99, 235, 0.40);
+  --color-primary-50:   var(--color-brand-50);
+  --color-primary-100:  var(--color-brand-100);
+  --color-primary-200:  var(--color-brand-200);
+  --color-primary-300:  var(--color-brand-300);
+  --color-primary-400:  var(--color-brand-400);
+  --color-primary-500:  var(--color-brand-500);
+  --color-primary-600:  var(--color-brand-600);
+  --color-primary-700:  var(--color-brand-700);
+  --color-primary-800:  var(--color-brand-800);
+  --color-primary-900:  var(--color-brand-900);
 
-  /* ---------- Secondary · slate (ikincil buton, nötr yüzey ayrımı) ---------- */
+  --color-primary-a06:  rgba(10, 167, 176, 0.06);
+  --color-primary-a10:  rgba(10, 167, 176, 0.10);
+  --color-primary-a14:  rgba(10, 167, 176, 0.14);
+  --color-primary-a20:  rgba(10, 167, 176, 0.20);
+  --color-primary-a28:  rgba(10, 167, 176, 0.28);
+  --color-primary-a40:  rgba(10, 167, 176, 0.40);
+
+  /* ---------- Untitled UI semantic tokens (Faz 12 bileşen katmanı için) ---------- */
+  --color-bg-primary:         #ffffff;
+  --color-bg-secondary:       #f8fafc;
+  --color-bg-tertiary:        #f1f5f9;
+  --color-bg-quaternary:      #e2e8f0;
+  --color-bg-brand-primary:   var(--color-brand-50);
+  --color-bg-brand-secondary: var(--color-brand-100);
+  --color-bg-brand-solid:     var(--color-brand-600);
+  --color-bg-brand-solid-hover: var(--color-brand-700);
+  --color-bg-error-primary:   #fff1f2;
+  --color-bg-error-secondary: #ffe4e6;
+  --color-bg-error-solid:     #e11d48;
+  --color-bg-warning-primary: #fffbeb;
+  --color-bg-success-primary: #f0fdf4;
+  --color-bg-success-solid:   #16a34a;
+
+  --color-text-primary:       #111827;
+  --color-text-secondary:     #374151;
+  --color-text-tertiary:      #6b7280;
+  --color-text-quaternary:    #9ca3af;
+  --color-text-placeholder:   #9ca3af;
+  --color-text-brand-primary: var(--color-brand-900);
+  --color-text-brand-secondary: var(--color-brand-700);
+  --color-text-error-primary: #be123c;
+  --color-text-warning-primary: #92400e;
+  --color-text-success-primary: #14532d;
+  --color-text-white:         #ffffff;
+
+  --color-border-primary:     #d1d5db;
+  --color-border-secondary:   #e5e7eb;
+  --color-border-tertiary:    #f3f4f6;
+  --color-border-brand:       var(--color-brand-500);
+  --color-border-error:       #f87171;
+  --color-border-error-subtle:#fca5a5;
+
+  --color-fg-brand-primary:   var(--color-brand-600);
+  --color-fg-brand-secondary: var(--color-brand-500);
+  --color-fg-error-primary:   #e11d48;
+  --color-fg-warning-primary: #d97706;
+  --color-fg-success-primary: #16a34a;
+
+  /* ---------- Secondary · slate (ikincil buton, nötr yüzey) ---------- */
   --color-secondary-50:   #f8fafc;
   --color-secondary-100:  #f1f5f9;
   --color-secondary-200:  #e2e8f0;
@@ -86,19 +145,19 @@
   --color-secondary-800:  #1e293b;
   --color-secondary-900:  #0f172a;
 
-  --color-secondary-a06: rgba(100, 116, 139, 0.06);
-  --color-secondary-a10: rgba(100, 116, 139, 0.10);
-  --color-secondary-a16: rgba(100, 116, 139, 0.16);
-  --color-secondary-a26: rgba(100, 116, 139, 0.26);
+  --color-secondary-a06: rgba(71, 85, 105, 0.06);
+  --color-secondary-a10: rgba(71, 85, 105, 0.10);
+  --color-secondary-a16: rgba(71, 85, 105, 0.16);
+  --color-secondary-a26: rgba(71, 85, 105, 0.26);
 
-  /* ---------- Accent · fuşya / magenta (versus, progress ucu, dikkat) ---------- */
-  --color-accent-base:    #e879f9;
-  --gradient-accent:      linear-gradient(135deg, #f472b6 0%, #e879f9 100%);
-  --color-accent-500:     #e879f9;
-  --color-accent-600:     #d946ef;
+  /* ---------- Accent · cyan glow (vurgu CTA, gradient uç) ---------- */
+  --color-accent-base:    var(--color-brand-300);
+  --gradient-accent:      linear-gradient(135deg, var(--color-brand-300) 0%, var(--color-brand-500) 100%);
+  --color-accent-500:     var(--color-brand-500);
+  --color-accent-600:     var(--color-brand-600);
 
-  /* ---------- Stat tile icon badge swatches (dashboard mini ikonlar) ---------- */
-  --color-stat-sky:      #93c5fd;
+  /* ---------- Stat tile icon badge swatches ---------- */
+  --color-stat-sky:      var(--color-brand-300);
   --color-stat-mint:     #5eead4;
   --color-stat-lavender: #c4b5fd;
   --color-stat-pink:     #f9a8d4;
@@ -200,12 +259,14 @@
   --radius-card: 22px;
   --radius-pill: 999px;
 
-  /* ---------- Shadow / elevation (soft, tinted — blur ≥16px) ---------- */
+  /* ---------- Shadow / elevation (Untitled UI model — neutral tinted) ---------- */
   --shadow-none: none;
-  --shadow-card:       0 4px 24px rgba(30, 50, 70, 0.06);
-  --shadow-card-hover: 0 8px 32px rgba(30, 50, 70, 0.10);
-  --shadow-elevated:   0 12px 40px rgba(30, 50, 70, 0.12);
-  --shadow-cta:        0 12px 32px rgba(37, 99, 235, 0.22);
+  --shadow-xs:         0px 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm:         0px 1px 3px rgba(0, 0, 0, 0.10), 0px 1px 2px -1px rgba(0, 0, 0, 0.10);
+  --shadow-card:       0px 4px 6px -1px rgba(0, 0, 0, 0.10), 0px 2px 4px -2px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0px 12px 16px -4px rgba(0, 0, 0, 0.08), 0px 4px 6px -2px rgba(0, 0, 0, 0.03);
+  --shadow-elevated:   0px 20px 24px -4px rgba(0, 0, 0, 0.08), 0px 8px 8px -4px rgba(0, 0, 0, 0.03);
+  --shadow-cta:        0 12px 32px rgba(10, 167, 176, 0.28);  /* brand-600 tinted */
 
   /* Geriye dönük isimler */
   --shadow-0:    var(--shadow-none);
@@ -214,7 +275,7 @@
   --shadow-3:    var(--shadow-card-hover);
   --shadow-4:    var(--shadow-elevated);
   --shadow-md:   var(--shadow-card);
-  --shadow-focus: 0 0 0 2px var(--color-bg), 0 0 0 4px var(--color-primary-500);
+  --shadow-focus: 0 0 0 2px var(--color-bg), 0 0 0 4px var(--color-brand-300);
 
   /* ---------- Motion (design-system.json motion.durations / easings) ---------- */
   --ease-standard:   cubic-bezier(0.32, 0.72, 0.24, 1);
@@ -264,7 +325,7 @@ body {
 }
 
 ::selection {
-  background: rgba(37, 99, 235, 0.18);
+  background: rgba(125, 249, 255, 0.22);  /* brand-300 */
   color: var(--color-fg);
 }
 

@@ -2,7 +2,7 @@
 
 import { calendarDaysUntilPasswordExpiry } from '@leanmgmt/shared-utils/password-expiry-calendar';
 import Link from 'next/link';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from '@untitledui/icons';
 
 export { calendarDaysUntilPasswordExpiry };
 

@@ -4,6 +4,16 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useMemo } from 'react';
 
+import {
+  Alert,
+  Badge,
+  Button,
+  Card,
+  DatePicker,
+  dateValueToIsoDateString,
+  inputClassName,
+  isoDateStringToDateValue,
+} from '@/components/base';
 import { useMasterDataListQuery } from '@/lib/queries/master-data';
 import { useProcessesListQuery } from '@/lib/queries/processes';
 import type { ProcessListFilters } from '@/lib/query-keys';
@@ -90,17 +100,18 @@ export function ProcessAdminList() {
 
   if (isError) {
     return (
-      <div className="ls-alert ls-alert--danger" role="alert">
+      <Alert variant="error">
         <p>Süreçler yüklenemedi.</p>
         <p className="text-sm opacity-90">{(error as Error)?.message ?? 'Bilinmeyen hata'}</p>
-        <button
-          type="button"
-          className="ls-btn ls-btn--neutral ls-btn--sm mt-[var(--space-2)]"
-          onClick={() => refetch()}
+        <Button
+          color="secondary"
+          size="sm"
+          className="mt-[var(--space-2)]"
+          onPress={() => void refetch()}
         >
           Tekrar dene
-        </button>
-      </div>
+        </Button>
+      </Alert>
     );
   }
 
@@ -108,13 +119,13 @@ export function ProcessAdminList() {
 
   return (
     <div className="space-y-[var(--space-6)]">
-      <div className="ls-card space-y-[var(--space-4)] p-[var(--space-4)]">
+      <Card className="space-y-[var(--space-4)] p-[var(--space-4)]">
         <div className="flex flex-wrap items-end gap-[var(--space-3)]">
           <label className="flex min-w-[10rem] flex-col gap-1 text-sm">
             <span className="text-[var(--color-neutral-600)]">Süreç ID</span>
             <input
               type="text"
-              className="ls-input text-sm"
+              className={inputClassName('md', 'text-sm')}
               placeholder="KTI-000001"
               defaultValue={searchParams.get('displayId') ?? ''}
               onBlur={(e) => setParam('displayId', e.target.value.trim() || null)}
@@ -123,7 +134,7 @@ export function ProcessAdminList() {
           <label className="flex min-w-[10rem] flex-col gap-1 text-sm">
             <span className="text-[var(--color-neutral-600)]">Durum</span>
             <select
-              className="ls-input text-sm"
+              className={inputClassName('md', 'text-sm')}
               value={searchParams.get('status') ?? ''}
               onChange={(e) => setParam('status', e.target.value || null)}
             >
@@ -137,7 +148,7 @@ export function ProcessAdminList() {
           <label className="flex min-w-[10rem] flex-col gap-1 text-sm">
             <span className="text-[var(--color-neutral-600)]">Süreç tipi</span>
             <select
-              className="ls-input text-sm"
+              className={inputClassName('md', 'text-sm')}
               value={searchParams.get('processType') ?? ''}
               onChange={(e) => setParam('processType', e.target.value || null)}
             >
@@ -145,28 +156,28 @@ export function ProcessAdminList() {
               <option value="BEFORE_AFTER_KAIZEN">BEFORE_AFTER_KAIZEN (KTİ)</option>
             </select>
           </label>
-          <label className="flex min-w-[10rem] flex-col gap-1 text-sm">
+          <div className="flex min-w-[10rem] flex-col gap-1 text-sm">
             <span className="text-[var(--color-neutral-600)]">Başlangıç (başlangıç)</span>
-            <input
-              type="date"
-              className="ls-input text-sm"
-              value={searchParams.get('startedAtFrom') ?? ''}
-              onChange={(e) => setParam('startedAtFrom', e.target.value || null)}
+            <DatePicker
+              aria-label="Başlangıç tarihi (başlangıç)"
+              size="sm"
+              value={isoDateStringToDateValue(searchParams.get('startedAtFrom'))}
+              onChange={(v) => setParam('startedAtFrom', v ? dateValueToIsoDateString(v) : null)}
             />
-          </label>
-          <label className="flex min-w-[10rem] flex-col gap-1 text-sm">
+          </div>
+          <div className="flex min-w-[10rem] flex-col gap-1 text-sm">
             <span className="text-[var(--color-neutral-600)]">Başlangıç (bitiş)</span>
-            <input
-              type="date"
-              className="ls-input text-sm"
-              value={searchParams.get('startedAtTo') ?? ''}
-              onChange={(e) => setParam('startedAtTo', e.target.value || null)}
+            <DatePicker
+              aria-label="Başlangıç tarihi (bitiş)"
+              size="sm"
+              value={isoDateStringToDateValue(searchParams.get('startedAtTo'))}
+              onChange={(v) => setParam('startedAtTo', v ? dateValueToIsoDateString(v) : null)}
             />
-          </label>
+          </div>
           <label className="flex min-w-[12rem] flex-col gap-1 text-sm">
             <span className="text-[var(--color-neutral-600)]">Şirket</span>
             <select
-              className="ls-input text-sm"
+              className={inputClassName('md', 'text-sm')}
               value={searchParams.get('companyId') ?? ''}
               onChange={(e) => setParam('companyId', e.target.value || null)}
             >
@@ -182,7 +193,7 @@ export function ProcessAdminList() {
             <span className="text-[var(--color-neutral-600)]">Başlatan kullanıcı ID</span>
             <input
               type="text"
-              className="ls-input font-mono text-sm"
+              className={inputClassName('md', 'font-mono text-sm')}
               placeholder="UUID"
               defaultValue={searchParams.get('startedByUserId') ?? ''}
               onBlur={(e) => setParam('startedByUserId', e.target.value.trim() || null)}
@@ -197,20 +208,16 @@ export function ProcessAdminList() {
             />
             İptal edilenleri göster
           </label>
-          <button
-            type="button"
-            className="ls-btn ls-btn--neutral ls-btn--sm"
-            onClick={clearFilters}
-          >
+          <Button color="secondary" size="sm" onPress={clearFilters}>
             Filtreleri temizle
-          </button>
+          </Button>
         </div>
-      </div>
+      </Card>
 
       {items.length === 0 ? (
-        <div className="ls-card p-[var(--space-8)] text-center">
+        <Card className="p-[var(--space-8)] text-center">
           <p className="text-[var(--color-neutral-700)]">Filtrelere uyan süreç bulunamadı.</p>
-        </div>
+        </Card>
       ) : (
         <div className="overflow-x-auto rounded-[var(--radius-md)] border border-[var(--color-neutral-200)]">
           <table className="w-full min-w-[960px] text-left text-sm">
@@ -244,9 +251,14 @@ export function ProcessAdminList() {
                       href={`/users/${encodeURIComponent(row.startedBy.id)}`}
                       className="text-[var(--color-primary-700)] hover:underline"
                     >
-                      {row.startedBy.firstName} {row.startedBy.lastName}
+                      {row.performerDisplayLabel ??
+                        `${row.startedBy.firstName} ${row.startedBy.lastName}`}
                     </Link>
-                    {row.startedBy.sicil ? (
+                    {row.performedViaImpersonation ? (
+                      <Badge color="warning" size="sm" className="mt-[var(--space-1)]">
+                        Impersonation
+                      </Badge>
+                    ) : row.startedBy.sicil ? (
                       <span className="block text-xs text-[var(--color-neutral-500)]">
                         Sicil {row.startedBy.sicil}
                       </span>

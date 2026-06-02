@@ -4,6 +4,7 @@ import Link from 'next/link';
 
 import type { MasterDataType } from '@leanmgmt/shared-schemas';
 
+import { Alert, Button } from '@/components/base';
 import { useMasterDataUsersQuery } from '@/lib/queries/master-data';
 
 interface MasterDataUsersContentProps {
@@ -30,16 +31,17 @@ export function MasterDataUsersContent({ type, id }: MasterDataUsersContentProps
 
   if (error) {
     return (
-      <div role="alert" className="ls-alert ls-alert--error">
+      <Alert variant="error">
         <p>Kullanıcılar yüklenemedi.</p>
-        <button
-          type="button"
-          className="ls-btn ls-btn--neutral ls-btn--sm mt-[var(--space-2)]"
-          onClick={() => void refetch()}
+        <Button
+          color="secondary"
+          size="sm"
+          className="mt-[var(--space-2)]"
+          onPress={() => void refetch()}
         >
           Tekrar dene
-        </button>
-      </div>
+        </Button>
+      </Alert>
     );
   }
 

@@ -43,9 +43,7 @@ test('hatalı şifre ile giriş uyarısı', async ({ page }) => {
   await page.getByLabel('E-posta').fill(SUPERADMIN_EMAIL);
   await page.getByLabel('Şifre', { exact: true }).fill('YanlisSifre123!@#');
   await page.getByRole('button', { name: 'Giriş yap' }).click();
-  await expect(page.locator('.ls-alert.ls-alert--danger')).toContainText(
-    /hatalı|Email veya şifre/i,
-  );
+  await expect(page.getByRole('alert')).toContainText(/hatalı|Email veya şifre/i);
 });
 
 test('şifre sıfırlama: talep ve yeni şifre ile onay', async ({ page }) => {

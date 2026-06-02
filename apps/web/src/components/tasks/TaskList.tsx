@@ -6,6 +6,7 @@ import { useCallback, useMemo } from 'react';
 
 import type { TaskListQuery } from '@leanmgmt/shared-schemas';
 
+import { Alert, Button, Card, inputClassName } from '@/components/base';
 import {
   HorizontalMorphSegmented,
   type MorphSegmentItem,
@@ -96,17 +97,18 @@ export function TaskList() {
 
   if (isError) {
     return (
-      <div className="ls-alert ls-alert--danger" role="alert">
+      <Alert variant="error">
         <p>Görevler yüklenemedi.</p>
         <p className="text-sm opacity-90">{(error as Error)?.message ?? ''}</p>
-        <button
-          type="button"
-          className="ls-btn ls-btn--neutral ls-btn--sm mt-[var(--space-2)]"
-          onClick={() => refetch()}
+        <Button
+          color="secondary"
+          size="sm"
+          className="mt-[var(--space-2)]"
+          onPress={() => void refetch()}
         >
           Tekrar dene
-        </button>
-      </div>
+        </Button>
+      </Alert>
     );
   }
 
@@ -127,7 +129,7 @@ export function TaskList() {
           type="search"
           placeholder="Süreç no (ör. KTI-000042)"
           defaultValue={search ?? ''}
-          className="ls-input max-w-xs text-sm"
+          className={inputClassName('md', 'max-w-xs text-sm')}
           aria-label="Süreç numarası ara"
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
@@ -142,10 +144,10 @@ export function TaskList() {
             }
           }}
         />
-        <button
-          type="button"
-          className="ls-btn ls-btn--neutral ls-btn--sm"
-          onClick={() => {
+        <Button
+          color="secondary"
+          size="sm"
+          onPress={() => {
             setParams((p) => {
               p.delete('search');
               p.delete('processType');
@@ -155,15 +157,15 @@ export function TaskList() {
           }}
         >
           Filtreleri temizle
-        </button>
+        </Button>
       </div>
 
       {items.length === 0 ? (
-        <div className="ls-card p-[var(--space-8)] text-center text-sm text-[var(--color-neutral-700)]">
+        <Card className="p-[var(--space-8)] text-center text-sm text-[var(--color-neutral-700)]">
           {tab === 'pending' ? 'Size atanmış bekleyen görev yok.' : null}
           {tab === 'started' ? <p>Başlattığınız aktif süreç yok.</p> : null}
           {tab === 'completed' ? 'Henüz tamamladığınız görev yok.' : null}
-        </div>
+        </Card>
       ) : (
         <div className="overflow-x-auto rounded-[var(--radius-md)] border border-[var(--color-neutral-200)]">
           <table className="min-w-full text-left text-sm">
@@ -259,14 +261,14 @@ export function TaskList() {
 
       {hasNextPage ? (
         <div className="flex justify-center">
-          <button
-            type="button"
-            className="ls-btn ls-btn--neutral ls-btn--sm"
-            disabled={isFetchingNextPage}
-            onClick={() => void fetchNextPage()}
+          <Button
+            color="secondary"
+            size="sm"
+            isDisabled={isFetchingNextPage}
+            onPress={() => void fetchNextPage()}
           >
             {isFetchingNextPage ? 'Yükleniyor…' : 'Daha fazla yükle'}
-          </button>
+          </Button>
         </div>
       ) : null}
     </div>

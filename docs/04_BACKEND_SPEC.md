@@ -545,6 +545,7 @@ export enum Permission {
   CONSENT_VERSION_VIEW = 'CONSENT_VERSION_VIEW',
   CONSENT_VERSION_EDIT = 'CONSENT_VERSION_EDIT',
   CONSENT_VERSION_PUBLISH = 'CONSENT_VERSION_PUBLISH',
+  USER_IMPERSONATION = 'USER_IMPERSONATION',
 }
 
 export type PermissionCategory = 'MENU' | 'ACTION' | 'DATA' | 'FIELD';
@@ -567,6 +568,12 @@ export const PERMISSION_METADATA: Record<Permission, PermissionMetadata> = {
     key: Permission.AUDIT_LOG_VIEW,
     category: 'MENU',
     description: 'Denetim kayıtlarını görüntüleme yetkisi — genellikle Superadmin.',
+    isSensitive: true,
+  },
+  [Permission.USER_IMPERSONATION]: {
+    key: Permission.USER_IMPERSONATION,
+    category: 'ACTION',
+    description: 'Kullanıcı impersonation (başka kullanıcı adına oturum).',
     isSensitive: true,
   },
   // ... tüm diğer Permission'lar

@@ -5,6 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import type { FastifyRequest } from 'fastify';
 
 import { IS_PUBLIC_KEY } from '../../common/decorators/public.decorator.js';
+import type { AuthenticatedUser } from '../../common/decorators/current-user.decorator.js';
 import type { Env } from '../../config/env.schema.js';
 import { RedisService } from '../../redis/redis.service.js';
 import {
@@ -51,11 +52,13 @@ export class JwtAuthGuard implements CanActivate {
       if (revoked) {
         throw new AuthSessionRevokedException();
       }
-      request.user = {
+      const user: AuthenticatedUser = {
         id: payload.sub,
         sessionId: payload.sid,
         jti: payload.jti,
+        ...(payload.imp ? { impersonatorId: payload.imp } : {}),
       };
+      request.user = user;
       return true;
     } catch (err) {
       if (err instanceof AuthSessionRevokedException) {

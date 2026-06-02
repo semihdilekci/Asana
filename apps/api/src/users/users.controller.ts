@@ -22,6 +22,7 @@ import {
   CurrentUser,
   type AuthenticatedUser,
 } from '../common/decorators/current-user.decorator.js';
+import { RequireAnyPermission } from '../common/decorators/require-any-permission.decorator.js';
 import { RequirePermission } from '../common/decorators/require-permission.decorator.js';
 import { createZodValidationPipe } from '../common/pipes/zod-validation.pipe.js';
 import { UsersService } from './users.service.js';
@@ -31,7 +32,7 @@ export class UsersController {
   constructor(@Inject(UsersService) private readonly usersService: UsersService) {}
 
   @Get()
-  @RequirePermission(Permission.USER_LIST_VIEW)
+  @RequireAnyPermission(Permission.USER_LIST_VIEW, Permission.USER_IMPERSONATION)
   async list(@Query(createZodValidationPipe(UserListQuerySchema)) query: UserListQuery) {
     return this.usersService.findMany(query);
   }

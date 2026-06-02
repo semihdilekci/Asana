@@ -2,6 +2,7 @@
 
 import type { MasterDataType } from '@leanmgmt/shared-schemas';
 
+import { Alert } from '@/components/base';
 import { MasterDataForm } from '@/components/master-data/MasterDataForm';
 import { useMasterDataDetailQuery } from '@/lib/queries/master-data';
 
@@ -28,11 +29,7 @@ export function MasterDataEditContent({ type, id }: MasterDataEditContentProps) 
   }
 
   if (error || !item) {
-    return (
-      <div role="alert" className="ls-alert ls-alert--error">
-        Kayıt bilgileri yüklenemedi.
-      </div>
-    );
+    return <Alert variant="error">Kayıt bilgileri yüklenemedi.</Alert>;
   }
 
   return <MasterDataForm mode="edit" type={type} itemId={id} defaultValues={item} />;

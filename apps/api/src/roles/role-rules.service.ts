@@ -305,8 +305,7 @@ export class RoleRulesService {
       roleId,
     } satisfies RoleAffectsUserPermissionsCachePayload);
 
-    await this.audit.append({
-      userId: actor.id,
+    await this.audit.appendForActor(actor, {
       action: 'CREATE_ROLE_RULE',
       entity: 'role_rule',
       entityId: rule.id,
@@ -372,8 +371,7 @@ export class RoleRulesService {
       roleId,
     } satisfies RoleAffectsUserPermissionsCachePayload);
 
-    await this.audit.append({
-      userId: actor.id,
+    await this.audit.appendForActor(actor, {
       action: 'UPDATE_ROLE_RULE',
       entity: 'role_rule',
       entityId: ruleId,
@@ -395,8 +393,7 @@ export class RoleRulesService {
       roleId,
     } satisfies RoleAffectsUserPermissionsCachePayload);
 
-    await this.audit.append({
-      userId: actor.id,
+    await this.audit.appendForActor(actor, {
       action: 'DELETE_ROLE_RULE',
       entity: 'role_rule',
       entityId: ruleId,

@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from 'react';
 
-import { Bell } from 'lucide-react';
+import { Bell01 } from '@untitledui/icons';
 
 import {
   useMarkNotificationReadMutation,
@@ -49,7 +49,7 @@ export function NotificationBell() {
         aria-controls={open ? menuId : undefined}
         onClick={() => setOpen((v) => !v)}
       >
-        <Bell className="h-5 w-5" aria-hidden />
+        <Bell01 className="size-5" aria-hidden />
         {unread > 0 ? (
           <span className="absolute -right-0.5 -top-0.5 flex min-h-[1.125rem] min-w-[1.125rem] items-center justify-center rounded-full bg-[var(--color-danger-600)] px-1 text-[10px] font-semibold text-white">
             {unread > 99 ? '99+' : unread}

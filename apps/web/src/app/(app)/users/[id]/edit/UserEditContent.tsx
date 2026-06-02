@@ -1,5 +1,6 @@
 'use client';
 
+import { Alert } from '@/components/base';
 import { UserForm } from '@/components/users/UserForm';
 import { useUserQuery } from '@/lib/queries/users';
 
@@ -25,11 +26,7 @@ export function UserEditContent({ userId }: UserEditContentProps) {
   }
 
   if (error || !user) {
-    return (
-      <div role="alert" className="ls-alert ls-alert--error">
-        Kullanıcı bilgileri yüklenemedi.
-      </div>
-    );
+    return <Alert variant="error">Kullanıcı bilgileri yüklenemedi.</Alert>;
   }
 
   return <UserForm mode="edit" userId={userId} defaultValues={user} />;

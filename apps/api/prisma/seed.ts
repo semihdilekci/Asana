@@ -59,7 +59,11 @@ const ALL_PERMISSION_KEYS: string[] = [
   'CONSENT_VERSION_PUBLISH',
   'USER_PROFILE_VIEW',
   'MASTER_DATA_VIEW',
+  'USER_IMPERSONATION',
 ];
+
+/** SUPERADMIN otomatik almaz — bilinçli rol ataması (ADR 0010) */
+const SUPERADMIN_EXCLUDED_PERMISSION_KEYS = new Set(['USER_IMPERSONATION']);
 
 function requireEnv32Hex(name: string): Buffer {
   const v = process.env[name];
@@ -236,6 +240,7 @@ async function main(): Promise<void> {
   if (!superadminRole) throw new Error('SUPERADMIN rolü oluşturulamadı');
 
   for (const key of ALL_PERMISSION_KEYS) {
+    if (SUPERADMIN_EXCLUDED_PERMISSION_KEYS.has(key)) continue;
     await prisma.rolePermission.upsert({
       where: {
         roleId_permissionKey: {
@@ -251,6 +256,13 @@ async function main(): Promise<void> {
       update: {},
     });
   }
+
+  await prisma.rolePermission.deleteMany({
+    where: {
+      roleId: superadminRole.id,
+      permissionKey: { in: [...SUPERADMIN_EXCLUDED_PERMISSION_KEYS] },
+    },
+  });
 
   await prisma.rolePermission.deleteMany({
     where: { permissionKey: { notIn: ALL_PERMISSION_KEYS } },
@@ -277,6 +289,7 @@ async function main(): Promise<void> {
     'USER_ANONYMIZE',
     'MASTER_DATA_MANAGE',
     'MASTER_DATA_VIEW',
+    'USER_IMPERSONATION',
   ];
   const processManagerPerms = [
     'PROCESS_VIEW_ALL',
@@ -433,6 +446,18 @@ async function main(): Promise<void> {
     update: {},
   });
 
+  await prisma.userRole.upsert({
+    where: {
+      userId_roleId: { userId: seedManager.id, roleId: userManagerRole.id },
+    },
+    create: {
+      userId: seedManager.id,
+      roleId: userManagerRole.id,
+      assignedByUserId: superadmin.id,
+    },
+    update: {},
+  });
+
   /** Faz 4: integration — USER_LIST_VIEW dışı yetkilerle kullanıcı */
   const processManagerRole = createdRoles.find((x) => x.code === 'PROCESS_MANAGER');
   if (!processManagerRole) throw new Error('PROCESS_MANAGER rolü yok');
@@ -495,6 +520,68 @@ async function main(): Promise<void> {
       ipHash: createHash('sha256').update('seed-onlyproc').digest('hex'),
       userAgent: 'seed',
       signature: onlyProcSignature,
+    },
+    update: {},
+  });
+
+  /** E2E / impersonation hedefi — Rıza (consent pending) yerine; mutating aksiyon testleri için USER_MANAGER */
+  const e2eTargetSicil = '00000010';
+  const e2eTargetSicilEnc = encryptAes256GcmDeterministic(e2eTargetSicil, piiKey, 'user:sicil:v1');
+  const e2eTargetSicilBlind = hmacBlindIndexHex(e2eTargetSicil, pepper);
+  const e2eTargetEmail = 'e2e.impersonation.target@leanmgmt.local';
+  const e2eTargetEnc = encryptAes256GcmDeterministic(e2eTargetEmail, piiKey, 'user:email:v1');
+  const e2eTargetBlind = hmacBlindIndexHex(e2eTargetEmail, pepper);
+  const e2eTargetPasswordHash = await bcrypt.hash('E2ETargetPass123!@#', BCRYPT_COST);
+  const e2eImpersonationTarget = await prisma.user.upsert({
+    where: { sicilBlindIndex: e2eTargetSicilBlind },
+    create: {
+      sicilEncrypted: bufferToPrismaBytes(e2eTargetSicilEnc),
+      sicilBlindIndex: e2eTargetSicilBlind,
+      firstName: 'E2E',
+      lastName: 'Hedef',
+      emailEncrypted: bufferToPrismaBytes(e2eTargetEnc),
+      emailBlindIndex: e2eTargetBlind,
+      passwordHash: e2eTargetPasswordHash,
+      employeeType: 'WHITE_COLLAR',
+      companyId: company.id,
+      locationId: location.id,
+      departmentId: department.id,
+      positionId: position.id,
+      levelId: level.id,
+      teamId: team.id,
+      workAreaId: workArea.id,
+      workSubAreaId: workSubArea.id,
+      passwordChangedAt: new Date(),
+    },
+    update: {},
+  });
+  await prisma.userRole.upsert({
+    where: {
+      userId_roleId: { userId: e2eImpersonationTarget.id, roleId: userManagerRole.id },
+    },
+    create: {
+      userId: e2eImpersonationTarget.id,
+      roleId: userManagerRole.id,
+      assignedByUserId: superadmin.id,
+    },
+    update: {},
+  });
+  const e2eTargetConsentSignature = createHash('sha256')
+    .update(`${e2eImpersonationTarget.id}:${publishedConsent.id}:${pepperHex}`)
+    .digest('hex');
+  await prisma.userConsent.upsert({
+    where: {
+      userId_consentVersionId: {
+        userId: e2eImpersonationTarget.id,
+        consentVersionId: publishedConsent.id,
+      },
+    },
+    create: {
+      userId: e2eImpersonationTarget.id,
+      consentVersionId: publishedConsent.id,
+      ipHash: createHash('sha256').update('seed-e2e-impersonation-target').digest('hex'),
+      userAgent: 'seed',
+      signature: e2eTargetConsentSignature,
     },
     update: {},
   });

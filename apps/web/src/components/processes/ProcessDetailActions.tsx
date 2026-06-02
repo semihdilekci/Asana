@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 
 import { Permission } from '@leanmgmt/shared-types';
 
+import { Button, inputClassName } from '@/components/base';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import { PermissionGate } from '@/components/shared/PermissionGate';
 import {
@@ -63,24 +64,26 @@ export function ProcessDetailActions({ detail }: { detail: ProcessDetail }) {
     <div className="flex flex-wrap gap-2">
       <PermissionGate permission={Permission.PROCESS_CANCEL}>
         {showCancel ? (
-          <button
-            type="button"
-            className="ls-btn ls-btn--sm border border-[var(--color-error-600)] text-[var(--color-error-800)]"
-            onClick={() => setCancelOpen(true)}
+          <Button
+            color="secondary"
+            size="sm"
+            className="border border-[var(--color-error-600)] text-[var(--color-error-800)]"
+            onPress={() => setCancelOpen(true)}
           >
             Süreci iptal et
-          </button>
+          </Button>
         ) : null}
       </PermissionGate>
       <PermissionGate permission={Permission.PROCESS_ROLLBACK}>
         {showRollback ? (
-          <button
-            type="button"
-            className="ls-btn ls-btn--sm border border-[var(--color-error-600)] text-[var(--color-error-800)]"
-            onClick={() => setRollbackOpen(true)}
+          <Button
+            color="secondary"
+            size="sm"
+            className="border border-[var(--color-error-600)] text-[var(--color-error-800)]"
+            onPress={() => setRollbackOpen(true)}
           >
             Geri al
-          </button>
+          </Button>
         ) : null}
       </PermissionGate>
 
@@ -130,7 +133,7 @@ export function ProcessDetailActions({ detail }: { detail: ProcessDetail }) {
             <textarea
               id="cancel-reason"
               rows={4}
-              className="ls-input min-h-[5rem] w-full"
+              className={inputClassName('md', 'min-h-[5rem] w-full')}
               value={cancelReason}
               onChange={(e) => setCancelReason(e.target.value)}
             />
@@ -145,7 +148,7 @@ export function ProcessDetailActions({ detail }: { detail: ProcessDetail }) {
             <input
               id="cancel-phrase"
               type="text"
-              className="ls-input w-full font-mono"
+              className={inputClassName('md', 'w-full font-mono')}
               value={cancelPhrase}
               onChange={(e) => setCancelPhrase(e.target.value)}
               autoComplete="off"
@@ -203,7 +206,7 @@ export function ProcessDetailActions({ detail }: { detail: ProcessDetail }) {
             <textarea
               id="rollback-reason"
               rows={4}
-              className="ls-input min-h-[5rem] w-full"
+              className={inputClassName('md', 'min-h-[5rem] w-full')}
               value={rollbackReason}
               onChange={(e) => setRollbackReason(e.target.value)}
             />
@@ -218,7 +221,7 @@ export function ProcessDetailActions({ detail }: { detail: ProcessDetail }) {
             <input
               id="rollback-phrase"
               type="text"
-              className="ls-input w-full font-mono"
+              className={inputClassName('md', 'w-full font-mono')}
               value={rollbackPhrase}
               onChange={(e) => setRollbackPhrase(e.target.value)}
               autoComplete="off"

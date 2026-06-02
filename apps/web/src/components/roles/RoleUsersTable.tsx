@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 
+import { Button, inputClassName } from '@/components/base';
 import { PermissionGate } from '@/components/shared/PermissionGate';
 import { RoleSummaryBand } from '@/components/roles/RoleSummaryBand';
 import {
@@ -98,7 +99,7 @@ export function RoleUsersTable({ roleId }: { roleId: string }) {
         <label className="text-xs text-[var(--color-neutral-600)]">
           Kaynak
           <select
-            className="ls-input mt-1 block"
+            className={inputClassName('md', 'mt-1 block')}
             value={source}
             onChange={(e) => setSource(e.target.value)}
           >
@@ -111,7 +112,7 @@ export function RoleUsersTable({ roleId }: { roleId: string }) {
           Listede ara (sicil / ad)
           <input
             type="search"
-            className="ls-input mt-1 block w-full"
+            className={inputClassName('md', 'mt-1 block w-full')}
             value={listSearchInput}
             onChange={(e) => setListSearchInput(e.target.value)}
             onBlur={() => {
@@ -140,7 +141,7 @@ export function RoleUsersTable({ roleId }: { roleId: string }) {
               <label className="text-xs">
                 Ara
                 <input
-                  className="ls-input mt-1 w-full"
+                  className={inputClassName('md', 'mt-1 w-full')}
                   value={assignInput}
                   onChange={(e) => {
                     setAssignInput(e.target.value);
@@ -184,11 +185,12 @@ export function RoleUsersTable({ roleId }: { roleId: string }) {
                 </ul>
               ) : null}
             </div>
-            <button
+            <Button
               type="button"
-              className="ls-btn ls-btn--primary ls-btn--sm"
-              disabled={assignMutation.isPending || !selectedUser}
-              onClick={async () => {
+              color="primary"
+              size="sm"
+              isDisabled={assignMutation.isPending || !selectedUser}
+              onPress={async () => {
                 if (!selectedUser) return;
                 try {
                   await assignMutation.mutateAsync(selectedUser.id);
@@ -202,7 +204,7 @@ export function RoleUsersTable({ roleId }: { roleId: string }) {
               }}
             >
               Ata
-            </button>
+            </Button>
           </div>
           {selectedUser ? (
             <p className="text-xs text-[var(--color-neutral-600)]">Seçili: {selectedUser.label}</p>

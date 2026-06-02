@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import { Card } from '@/components/base';
 import { UserSessions } from '@/components/users/UserSessions';
 
 export const metadata: Metadata = {
@@ -38,9 +39,9 @@ export default async function UserSessionsPage({ params }: PageProps) {
         Kullanıcı Oturumları
       </h1>
 
-      <div className="ls-card p-[var(--space-6)]">
+      <Card className="p-[var(--space-6)]">
         <UserSessions userId={id} />
-      </div>
+      </Card>
     </div>
   );
 }

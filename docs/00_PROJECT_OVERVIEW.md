@@ -37,6 +37,7 @@ Platformun iki temel kullanıcı kategorisi vardır:
 - **Doküman yönetimi** — S3 tabanlı depolama, CloudFront + 8 katmanlı defense-in-depth erişim kontrolü, asenkron ClamAV virüs taraması, in-app önizleme (PDF, Word, Excel, görsel), 10 MB dosya limiti.
 - **Süreç Yönetimi Paneli** — Superadmin ve Süreç Yöneticisi erişimli; başlatılmış süreçlerin listelenmesi, detayları, iptal ve rollback aksiyonları.
 - **Audit log altyapısı** — tüm admin ve kullanıcı aksiyonlarının append-only, tamper-evident (chain hash) olarak kaydedilmesi; 1 yıl saklama.
+- **User impersonation** — `USER_IMPERSONATION` yetkisine sahip kullanıcılar, troubleshooting/denetim/test için hedef kullanıcı adına tam uygulama deneyimi (audit'te gerçek aktör görünür); go-live öncesi Faz 13.
 - **Bildirim sistemi** — in-app bildirim merkezi (çan ikonu, 30 saniye polling) ve kurumsal SMTP üzerinden email bildirimi; görev atama, SLA yaklaşma/aşım, süreç tamamlanma/iptal, güvenlik olayları için tanımlı tetikleyici olaylar.
 - **Sistem Ayarları ekranı** — Superadmin erişimli; email şablonları, KVKK rıza metni yönetimi, rate limit parametreleri.
 - **KVKK uyum katmanı** — açık rıza versiyonlama, kullanıcı profil ekranında "Verilerim" görüntüleme, IP hash + PII encryption + tamper-evident log + veri saklama matrisi.
@@ -44,6 +45,7 @@ Platformun iki temel kullanıcı kategorisi vardır:
 
 ### Kapsam dışı (v2+ veya reddedilen)
 
+- **Impersonation otomatik süre sınırı / hedef kullanıcıya “hesabınız görüntülendi” bildirimi** — MVP'de yok; audit log yeterli.
 - **Mobil uygulama** — teknoloji yığını mobile genişlemeye izin verir; MVP'de yalnızca web.
 - **Çoklu dil** — MVP yalnızca Türkçe; çoklu dil altyapısı ileriki aşamada.
 - **MFA / 2FA** — sonraki iterasyonda TOTP olarak gelecek; Superadmin için zorunlu olarak planlı.

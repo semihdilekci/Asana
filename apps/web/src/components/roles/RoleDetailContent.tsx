@@ -6,6 +6,7 @@ import { useState } from 'react';
 
 import { Permission } from '@leanmgmt/shared-types';
 
+import { Button, ButtonLink, inputClassName } from '@/components/base';
 import { PermissionGate } from '@/components/shared/PermissionGate';
 import {
   useDeleteRoleMutation,
@@ -100,40 +101,29 @@ export function RoleDetailContent({ roleId }: { roleId: string }) {
           <PermissionGate permission={Permission.ROLE_UPDATE}>
             {editing ? (
               <>
-                <button
-                  type="button"
-                  className="ls-btn ls-btn--primary ls-btn--sm"
-                  onClick={() => void saveEdit()}
-                >
+                <Button color="primary" size="sm" onPress={() => void saveEdit()}>
                   Kaydet
-                </button>
-                <button
-                  type="button"
-                  className="ls-btn ls-btn--neutral ls-btn--sm"
-                  onClick={() => setEditing(false)}
-                >
+                </Button>
+                <Button color="secondary" size="sm" onPress={() => setEditing(false)}>
                   İptal
-                </button>
+                </Button>
               </>
             ) : (
-              <button
-                type="button"
-                className="ls-btn ls-btn--neutral ls-btn--sm"
-                onClick={startEdit}
-              >
+              <Button color="secondary" size="sm" onPress={startEdit}>
                 Düzenle
-              </button>
+              </Button>
             )}
           </PermissionGate>
           <PermissionGate permission={Permission.ROLE_DELETE}>
             {!role.isSystem ? (
-              <button
-                type="button"
-                className="ls-btn ls-btn--neutral ls-btn--sm text-[var(--color-error-700)]"
-                onClick={() => void onDelete()}
+              <Button
+                color="secondary"
+                size="sm"
+                className="text-[var(--color-error-700)]"
+                onPress={() => void onDelete()}
               >
                 Sil
-              </button>
+              </Button>
             ) : null}
           </PermissionGate>
         </div>
@@ -146,7 +136,7 @@ export function RoleDetailContent({ roleId }: { roleId: string }) {
           <label className="block text-sm">
             <span className="text-[var(--color-neutral-700)]">Ad</span>
             <input
-              className="ls-input mt-1 w-full"
+              className={inputClassName('md', 'mt-1 w-full')}
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
@@ -154,7 +144,7 @@ export function RoleDetailContent({ roleId }: { roleId: string }) {
           <label className="block text-sm">
             <span className="text-[var(--color-neutral-700)]">Açıklama</span>
             <textarea
-              className="ls-input mt-1 min-h-[4rem] w-full"
+              className={inputClassName('md', 'mt-1 min-h-[4rem] w-full')}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
@@ -165,15 +155,15 @@ export function RoleDetailContent({ roleId }: { roleId: string }) {
       )}
 
       <div className="flex flex-wrap gap-2 border-t border-[var(--color-neutral-200)] pt-4">
-        <Link href={`/roles/${role.id}/permissions`} className="ls-btn ls-btn--neutral ls-btn--sm">
+        <ButtonLink href={`/roles/${role.id}/permissions`} color="secondary" size="sm">
           Yetkiler ({role.permissionCount})
-        </Link>
-        <Link href={`/roles/${role.id}/rules`} className="ls-btn ls-btn--neutral ls-btn--sm">
+        </ButtonLink>
+        <ButtonLink href={`/roles/${role.id}/rules`} color="secondary" size="sm">
           Kurallar ({role.ruleCount})
-        </Link>
-        <Link href={`/roles/${role.id}/users`} className="ls-btn ls-btn--neutral ls-btn--sm">
+        </ButtonLink>
+        <ButtonLink href={`/roles/${role.id}/users`} color="secondary" size="sm">
           Kullanıcılar
-        </Link>
+        </ButtonLink>
       </div>
     </div>
   );

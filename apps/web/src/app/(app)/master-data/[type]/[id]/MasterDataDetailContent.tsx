@@ -1,11 +1,11 @@
 'use client';
 
-import Link from 'next/link';
 import { toast } from 'sonner';
 
 import { Permission } from '@leanmgmt/shared-types';
 import type { MasterDataType } from '@leanmgmt/shared-schemas';
 
+import { Alert, Button, ButtonLink, Card } from '@/components/base';
 import { PermissionGate } from '@/components/shared/PermissionGate';
 import {
   useDeactivateMasterDataMutation,
@@ -29,32 +29,29 @@ export function MasterDataDetailContent({ type, id }: MasterDataDetailContentPro
       <div role="status" aria-live="polite" aria-busy className="space-y-[var(--space-4)]">
         <span className="sr-only">Yükleniyor...</span>
         <div className="h-10 w-64 animate-pulse rounded-[var(--radius-md)] bg-[var(--color-neutral-100)]" />
-        <div className="ls-card h-32 animate-pulse" />
+        <Card className="h-32 animate-pulse" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div role="alert" className="ls-alert ls-alert--error">
+      <Alert variant="error">
         <p>Kayıt yüklenemedi.</p>
-        <button
-          type="button"
-          className="ls-btn ls-btn--neutral ls-btn--sm mt-[var(--space-2)]"
-          onClick={() => void refetch()}
+        <Button
+          color="secondary"
+          size="sm"
+          className="mt-[var(--space-2)]"
+          onPress={() => void refetch()}
         >
           Tekrar dene
-        </button>
-      </div>
+        </Button>
+      </Alert>
     );
   }
 
   if (!item) {
-    return (
-      <div role="alert" className="ls-alert ls-alert--error">
-        Kayıt bulunamadı.
-      </div>
-    );
+    return <Alert variant="error">Kayıt bulunamadı.</Alert>;
   }
 
   const typeName = MASTER_DATA_TYPE_LABELS[type] ?? type;
@@ -73,21 +70,18 @@ export function MasterDataDetailContent({ type, id }: MasterDataDetailContentPro
 
         <div className="flex flex-wrap gap-[var(--space-2)]">
           <PermissionGate permission={Permission.MASTER_DATA_MANAGE}>
-            <Link
-              href={`/master-data/${type}/${id}/edit`}
-              className="ls-btn ls-btn--neutral ls-btn--sm"
-            >
+            <ButtonLink href={`/master-data/${type}/${id}/edit`} color="secondary" size="sm">
               Düzenle
-            </Link>
+            </ButtonLink>
           </PermissionGate>
 
           {item.isActive ? (
             <PermissionGate permission={Permission.MASTER_DATA_MANAGE}>
-              <button
-                type="button"
-                className="ls-btn ls-btn--danger ls-btn--sm"
-                disabled={deactivateMutation.isPending}
-                onClick={() => {
+              <Button
+                color="destructive"
+                size="sm"
+                isDisabled={deactivateMutation.isPending}
+                onPress={() => {
                   if (!confirm('Bu kaydı pasif yapmak istediğinizden emin misiniz?')) return;
                   deactivateMutation.mutate(id, {
                     onSuccess: () => toast.success('Kayıt pasif yapıldı'),
@@ -96,15 +90,15 @@ export function MasterDataDetailContent({ type, id }: MasterDataDetailContentPro
                 }}
               >
                 Pasif yap
-              </button>
+              </Button>
             </PermissionGate>
           ) : (
             <PermissionGate permission={Permission.MASTER_DATA_MANAGE}>
-              <button
-                type="button"
-                className="ls-btn ls-btn--primary ls-btn--sm"
-                disabled={reactivateMutation.isPending}
-                onClick={() => {
+              <Button
+                color="primary"
+                size="sm"
+                isDisabled={reactivateMutation.isPending}
+                onPress={() => {
                   reactivateMutation.mutate(id, {
                     onSuccess: () => toast.success('Kayıt aktif yapıldı'),
                     onError: () => toast.error('İşlem başarısız'),
@@ -112,7 +106,7 @@ export function MasterDataDetailContent({ type, id }: MasterDataDetailContentPro
                 }}
               >
                 Aktif yap
-              </button>
+              </Button>
             </PermissionGate>
           )}
         </div>
@@ -134,7 +128,7 @@ export function MasterDataDetailContent({ type, id }: MasterDataDetailContentPro
         </span>
       </div>
 
-      <div className="ls-card p-[var(--space-6)]">
+      <Card className="p-[var(--space-6)]">
         <dl className="grid gap-[var(--space-4)] sm:grid-cols-2">
           <div>
             <dt className="text-xs font-medium uppercase tracking-wide text-[var(--color-neutral-500)]">
@@ -169,15 +163,12 @@ export function MasterDataDetailContent({ type, id }: MasterDataDetailContentPro
             </dd>
           </div>
         </dl>
-      </div>
+      </Card>
 
       <div className="flex items-center gap-[var(--space-3)]">
-        <Link
-          href={`/master-data/${type}/${id}/users`}
-          className="ls-btn ls-btn--neutral ls-btn--sm"
-        >
+        <ButtonLink href={`/master-data/${type}/${id}/users`} color="secondary" size="sm">
           Bu {typeName} Kaydına Bağlı Kullanıcılar
-        </Link>
+        </ButtonLink>
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import type { FastifyRequest } from 'fastify';
 import type { Permission } from '@leanmgmt/shared-types';
 
 import { ANY_PERMISSIONS_KEY } from '../decorators/require-any-permission.decorator.js';
+import { IMPERSONATOR_PERMISSIONS_KEY } from '../decorators/require-impersonator-permission.decorator.js';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator.js';
 import { PERMISSIONS_KEY } from '../decorators/require-permission.decorator.js';
 import { AppException } from '../exceptions/app.exception.js';
@@ -33,18 +34,48 @@ export class PermissionGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
-    if (!anyRequired?.length && !required?.length) return true;
+    const impersonatorRequired = this.reflector.getAllAndOverride<Permission[]>(
+      IMPERSONATOR_PERMISSIONS_KEY,
+      [context.getHandler(), context.getClass()],
+    );
+    if (!anyRequired?.length && !required?.length && !impersonatorRequired?.length) return true;
 
-    const request = context.switchToHttp().getRequest<FastifyRequest & { user?: { id: string } }>();
+    const request = context
+      .switchToHttp()
+      .getRequest<FastifyRequest & { user?: { id: string; impersonatorId?: string } }>();
     const user = request.user;
     if (!user) {
       throw new AppException('PERMISSION_DENIED', 'Bu işlem için yetkiniz bulunmamaktadır.', 403);
     }
 
+    if (impersonatorRequired?.length) {
+      const actorId = user.impersonatorId ?? user.id;
+      const permissions = await this.permissionResolver.getUserPermissions(actorId);
+      const missing = impersonatorRequired.filter((p) => !permissions.has(p));
+      if (missing.length > 0) {
+        throw new AppException(
+          'PERMISSION_DENIED',
+          'Bu işlem için yetkiniz bulunmamaktadır.',
+          403,
+          {
+            required: impersonatorRequired,
+            missing,
+          },
+        );
+      }
+      return true;
+    }
+
     const permissions = await this.permissionResolver.getUserPermissions(user.id);
 
     if (anyRequired?.length) {
-      const hasOne = anyRequired.some((p) => permissions.has(p));
+      let hasOne = anyRequired.some((p) => permissions.has(p));
+      if (!hasOne && user.impersonatorId) {
+        const impersonatorPermissions = await this.permissionResolver.getUserPermissions(
+          user.impersonatorId,
+        );
+        hasOne = anyRequired.some((p) => impersonatorPermissions.has(p));
+      }
       if (!hasOne) {
         throw new AppException(
           'PERMISSION_DENIED',

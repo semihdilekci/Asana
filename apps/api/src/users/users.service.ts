@@ -324,8 +324,7 @@ export class UsersService {
       include: USER_DETAIL_INCLUDE,
     });
 
-    await this.audit.append({
-      userId: actor.id,
+    await this.audit.appendForActor(actor, {
       action: 'CREATE_USER',
       entity: 'user',
       entityId: user.id,
@@ -516,8 +515,7 @@ export class UsersService {
       userId: id,
     } satisfies UserPermissionCacheInvalidatePayload);
 
-    await this.audit.append({
-      userId: actor.id,
+    await this.audit.appendForActor(actor, {
       action: 'UPDATE_USER_ATTRIBUTE',
       entity: 'user',
       entityId: id,
@@ -547,8 +545,7 @@ export class UsersService {
       userId: id,
     } satisfies UserPermissionCacheInvalidatePayload);
 
-    await this.audit.append({
-      userId: actor.id,
+    await this.audit.appendForActor(actor, {
       action: 'DEACTIVATE_USER',
       entity: 'user',
       entityId: id,
@@ -565,8 +562,7 @@ export class UsersService {
 
     await this.prisma.user.update({ where: { id }, data: { isActive: true } });
 
-    await this.audit.append({
-      userId: actor.id,
+    await this.audit.appendForActor(actor, {
       action: 'REACTIVATE_USER',
       entity: 'user',
       entityId: id,
@@ -621,8 +617,7 @@ export class UsersService {
       userId: id,
     } satisfies UserPermissionCacheInvalidatePayload);
 
-    await this.audit.append({
-      userId: actor.id,
+    await this.audit.appendForActor(actor, {
       action: 'ANONYMIZE_USER',
       entity: 'user',
       entityId: id,
@@ -779,8 +774,7 @@ export class UsersService {
       await this.redis.raw.del(`csrf:${sessionId}`);
     }
 
-    await this.audit.append({
-      userId: actor.id,
+    await this.audit.appendForActor(actor, {
       action: 'REVOKE_USER_SESSION',
       entity: 'session',
       entityId: sessionId,
@@ -809,8 +803,7 @@ export class UsersService {
     }
     await pipeline.exec();
 
-    await this.audit.append({
-      userId: actor.id,
+    await this.audit.appendForActor(actor, {
       action: 'REVOKE_ALL_USER_SESSIONS',
       entity: 'user',
       entityId: userId,

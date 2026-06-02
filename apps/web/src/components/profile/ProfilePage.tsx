@@ -8,6 +8,7 @@ import { Permission } from '@leanmgmt/shared-types';
 import { calendarDaysUntilPasswordExpiry } from '@leanmgmt/shared-utils/password-expiry-calendar';
 import { toast } from 'sonner';
 
+import { Button, Card } from '@/components/base';
 import { UserAvatar } from '@/components/profile/UserAvatar';
 import { PermissionGate } from '@/components/shared/PermissionGate';
 import { useAuthMeQuery, useUpdateAvatarMutation } from '@/lib/queries/profile';
@@ -53,16 +54,17 @@ export function ProfilePage() {
 
   if (isError) {
     return (
-      <div className="ls-card p-[var(--space-6)]">
+      <Card className="p-[var(--space-6)]">
         <p className="text-[var(--color-neutral-700)]">Profil yüklenemedi.</p>
-        <button
-          type="button"
-          className="ls-btn ls-btn--primary ls-btn--sm mt-[var(--space-4)]"
-          onClick={() => void refetch()}
+        <Button
+          color="primary"
+          size="sm"
+          className="mt-[var(--space-4)]"
+          onPress={() => void refetch()}
         >
           Tekrar dene
-        </button>
-      </div>
+        </Button>
+      </Card>
     );
   }
 
@@ -166,7 +168,7 @@ export function ProfilePage() {
             </div>
           </section>
 
-          <div className="ls-card p-[var(--space-5)] shadow-[var(--shadow-sm)]">
+          <Card className="p-[var(--space-5)] shadow-[var(--shadow-sm)]">
             <h2 className="mb-[var(--space-4)] text-sm font-semibold text-[var(--color-neutral-800)]">
               Kimlik
             </h2>
@@ -198,9 +200,9 @@ export function ProfilePage() {
                 </dd>
               </div>
             </dl>
-          </div>
+          </Card>
 
-          <div className="ls-card p-[var(--space-5)] shadow-[var(--shadow-sm)]">
+          <Card className="p-[var(--space-5)] shadow-[var(--shadow-sm)]">
             <h2 className="mb-[var(--space-4)] text-sm font-semibold text-[var(--color-neutral-800)]">
               Organizasyon
             </h2>
@@ -240,9 +242,9 @@ export function ProfilePage() {
                 </dd>
               </div>
             </dl>
-          </div>
+          </Card>
 
-          <div className="ls-card p-[var(--space-5)] shadow-[var(--shadow-sm)]">
+          <Card className="p-[var(--space-5)] shadow-[var(--shadow-sm)]">
             <h2 className="mb-[var(--space-4)] text-sm font-semibold text-[var(--color-neutral-800)]">
               Yönetim
             </h2>
@@ -251,12 +253,12 @@ export function ProfilePage() {
                 ? `${me.manager.firstName} ${me.manager.lastName}`
                 : 'Atanmış yönetici yok'}
             </p>
-          </div>
+          </Card>
         </div>
       ) : null}
 
       {tab === 'data' ? (
-        <div className="ls-card space-y-[var(--space-4)] p-[var(--space-5)] shadow-[var(--shadow-sm)]">
+        <Card className="space-y-[var(--space-4)] p-[var(--space-5)] shadow-[var(--shadow-sm)]">
           <p className="text-sm text-[var(--color-neutral-700)]">
             &quot;Verilerim&quot; özeti (roller, süreçler, görevler, oturum ve rıza geçmişi) için
             backend verisi bağlandığında bu sekme doldurulacaktır. MVP kapsamında veri indirme
@@ -265,12 +267,12 @@ export function ProfilePage() {
           <p className="text-sm text-[var(--color-neutral-600)]">
             Kapsamlı KVKK taleplerinizi kvkk@holding.com adresine iletebilirsiniz.
           </p>
-        </div>
+        </Card>
       ) : null}
 
       {tab === 'security' ? (
         <div className="space-y-[var(--space-5)]">
-          <div className="ls-card p-[var(--space-5)] shadow-[var(--shadow-sm)]">
+          <Card className="p-[var(--space-5)] shadow-[var(--shadow-sm)]">
             <h2 className="mb-[var(--space-3)] text-sm font-semibold text-[var(--color-neutral-800)]">
               Şifre
             </h2>
@@ -281,9 +283,9 @@ export function ProfilePage() {
             >
               Şifre değiştir
             </Link>
-          </div>
+          </Card>
 
-          <div className="ls-card p-[var(--space-5)] shadow-[var(--shadow-sm)]">
+          <Card className="p-[var(--space-5)] shadow-[var(--shadow-sm)]">
             <h2 className="mb-[var(--space-3)] text-sm font-semibold text-[var(--color-neutral-800)]">
               Aktif oturumlarım
             </h2>
@@ -291,10 +293,10 @@ export function ProfilePage() {
               Oturum listesi ve uzaktan kapatma için API entegrasyonu tamamlandığında burada
               gösterilecektir.
             </p>
-          </div>
+          </Card>
 
           <PermissionGate permission={Permission.AUDIT_LOG_VIEW}>
-            <div className="ls-card p-[var(--space-5)] shadow-[var(--shadow-sm)]">
+            <Card className="p-[var(--space-5)] shadow-[var(--shadow-sm)]">
               <h2 className="mb-[var(--space-3)] text-sm font-semibold text-[var(--color-neutral-800)]">
                 Denetim kayıtları
               </h2>
@@ -304,7 +306,7 @@ export function ProfilePage() {
               >
                 Benim için oluşturulan denetim kayıtları
               </Link>
-            </div>
+            </Card>
           </PermissionGate>
         </div>
       ) : null}

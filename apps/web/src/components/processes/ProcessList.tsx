@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+
+import { Alert, Button, Card } from '@/components/base';
 import { useProcessesListQuery } from '@/lib/queries/processes';
 
 export function ProcessList() {
@@ -26,17 +28,18 @@ export function ProcessList() {
 
   if (isError) {
     return (
-      <div className="ls-alert ls-alert--danger" role="alert">
+      <Alert variant="error">
         <p>Süreçler yüklenemedi.</p>
         <p className="text-sm opacity-90">{(error as Error)?.message ?? 'Bilinmeyen hata'}</p>
-        <button
-          type="button"
-          className="ls-btn ls-btn--neutral ls-btn--sm mt-[var(--space-2)]"
-          onClick={() => refetch()}
+        <Button
+          color="secondary"
+          size="sm"
+          className="mt-[var(--space-2)]"
+          onPress={() => void refetch()}
         >
           Tekrar dene
-        </button>
-      </div>
+        </Button>
+      </Alert>
     );
   }
 
@@ -45,9 +48,9 @@ export function ProcessList() {
   return (
     <div className="space-y-[var(--space-6)]">
       {items.length === 0 ? (
-        <div className="ls-card p-[var(--space-8)] text-center">
+        <Card className="p-[var(--space-8)] text-center">
           <p className="text-[var(--color-neutral-700)]">Henüz süreç başlatmadınız.</p>
-        </div>
+        </Card>
       ) : (
         <div className="overflow-x-auto rounded-[var(--radius-md)] border border-[var(--color-neutral-200)]">
           <table className="w-full min-w-[640px] text-left text-sm">

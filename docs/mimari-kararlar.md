@@ -1464,6 +1464,8 @@ Bu iterasyonda kapsam dışı bırakılan ancak planlı güvenlik geliştirmeler
 
 **Karar [AUD-004]:** **Superadmin aksiyonları** da istisnasız audit log'a yazılır. Superadmin'in kurtarıcı veya olağanüstü aksiyonlarının (örn: başka bir kullanıcı adına rollback, rol atama, iptal) izlenebilirliği sağlanır. Superadmin audit kayıtlarından muaf değildir.
 
+**Karar [AUD-005]:** **User impersonation** altında yapılan tüm mutating aksiyonlarda `audit_logs.user_id` **impersonator** (gerçek aktör) olmalıdır; hedef kullanıcı `metadata.impersonatedUserId` (ve sicil/görünen ad) ile taşınır. `metadata.isImpersonation: true` zorunludur. Admin UI'da aksiyon yanında **Impersonation** etiketi ve `{Impersonator} ({Hedef} yerine)` formatı kullanılır. SUPERADMIN rolündeki kullanıcı impersonation **hedefi olamaz**. Detay: [IMP-001], ADR 0010.
+
 ### 11.2. Saklama Süresi
 
 **Karar [AUD-002]:** Audit log kayıtları **1 yıl** süreyle saklanır.
@@ -1744,6 +1746,8 @@ packages/
 - Token revoke/blacklist: Redis üzerinde.
 - Auth.js / Clerk / Auth0 **kullanılmaz** (superadmin seed, KVKK veri kontrolü, kurumsal IdP’ye doğrudan entegrasyon ve maliyet gerekçesi).
 - MFA/2FA MVP'de yoktur (bkz. [A-008]); eklenirken TOTP (Google Authenticator uyumlu) tercih edilir.
+
+**Karar [IMP-001]:** **User impersonation** go-live öncesi (Faz 13) kapsamdadır. `USER_IMPERSONATION` permission ile sınırlandırılır; JWT'de `sub`=hedef, `imp`=impersonator; pasif/superadmin/kendisi hedef olamaz; tam hedef deneyimi (bildirimler dahil); audit gerçek aktör modeli [AUD-005]. OIDC login akışına karışmaz. ADR 0010.
 
 ### 14.10. Veritabanı Engine
 

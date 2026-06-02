@@ -4,6 +4,7 @@ import Link from 'next/link';
 
 import { Permission } from '@leanmgmt/shared-types';
 
+import { Alert } from '@/components/base';
 import { NotificationPreferencesForm } from '@/components/notifications/NotificationPreferencesForm';
 import { PermissionGate } from '@/components/shared/PermissionGate';
 
@@ -12,7 +13,7 @@ export default function NotificationSettingsPage() {
     <PermissionGate
       permission={Permission.NOTIFICATION_EDIT}
       fallback={
-        <div className="ls-alert ls-alert--danger" role="alert">
+        <Alert variant="error">
           <p>Bu sayfayı görüntülemek için bildirim ayarlarını düzenleme yetkisi gerekir.</p>
           <Link
             href="/dashboard"
@@ -20,7 +21,7 @@ export default function NotificationSettingsPage() {
           >
             Ana sayfaya dön
           </Link>
-        </div>
+        </Alert>
       }
     >
       <NotificationPreferencesForm />

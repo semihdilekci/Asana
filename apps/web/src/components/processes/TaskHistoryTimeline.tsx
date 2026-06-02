@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+import { Button, Card } from '@/components/base';
+import { ActionPerformerLine } from '@/components/shared/ActionPerformerLine';
 import { STEP_LABEL_MAP } from '@/lib/step-labels';
 import type { TaskPreviousTask } from '@/lib/queries/tasks';
 import type { ProcessTaskItem } from '@/lib/queries/processes';
@@ -55,7 +57,7 @@ export function TaskHistoryTimeline({ previousTasks }: TaskHistoryTimelineProps)
                 className="absolute -left-[calc(var(--space-5)+5px)] mt-1.5 h-2.5 w-2.5 rounded-full border border-[var(--color-success-300)] bg-[var(--color-success-100)]"
                 aria-hidden
               />
-              <div className="ls-card space-y-[var(--space-3)] p-[var(--space-4)]">
+              <Card className="space-y-[var(--space-3)] p-[var(--space-4)]">
                 <div className="flex flex-wrap items-start justify-between gap-[var(--space-2)]">
                   <div>
                     <p className="text-sm font-medium text-[var(--color-neutral-900)]">
@@ -72,11 +74,12 @@ export function TaskHistoryTimeline({ previousTasks }: TaskHistoryTimelineProps)
                     </time>
                   ) : null}
                 </div>
-                {pt.completedBy ? (
-                  <p className="text-sm text-[var(--color-neutral-700)]">
-                    Tamamlayan: {pt.completedBy.firstName} {pt.completedBy.lastName}
-                  </p>
-                ) : null}
+                <ActionPerformerLine
+                  roleLabel="Tamamlayan"
+                  performerDisplayLabel={pt.performerDisplayLabel}
+                  performedViaImpersonation={pt.performedViaImpersonation}
+                  user={pt.completedBy}
+                />
                 {pt.completionAction ? (
                   <p className="text-xs text-[var(--color-neutral-600)]">
                     İşlem: {pt.completionAction}
@@ -84,16 +87,16 @@ export function TaskHistoryTimeline({ previousTasks }: TaskHistoryTimelineProps)
                 ) : null}
                 {showFormButton ? (
                   <div>
-                    <button
-                      type="button"
-                      className="ls-btn ls-btn--neutral ls-btn--sm"
-                      onClick={() => setModalTask(toModalTask(pt))}
+                    <Button
+                      color="secondary"
+                      size="sm"
+                      onPress={() => setModalTask(toModalTask(pt))}
                     >
                       Form Detayını Görüntüle
-                    </button>
+                    </Button>
                   </div>
                 ) : null}
-              </div>
+              </Card>
             </li>
           );
         })}

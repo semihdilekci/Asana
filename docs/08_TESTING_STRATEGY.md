@@ -33,11 +33,11 @@ Rakamlar **zorunluluk değil, ideal dağılım**. Proje ilerledikçe e2e oranı 
 
 Her modülün test önceliği eşit değil. Bu projede iş riskine göre üç seviye:
 
-| Seviye | Modüller | Coverage hedefi | Test türü |
-|---|---|---|---|
-| **Yüksek** | Auth (login/refresh/logout/password), Encryption (email/phone encrypt/decrypt), Permission resolver (RBAC+ABAC), Process state machine (KTİ workflow), Audit chain | %85-95+ | Unit + integration + e2e |
-| **Orta** | User CRUD, Role CRUD, Master data, Document upload, Notification dispatch, Rate limit | %75-85 | Unit + integration |
-| **Düşük** | UI styling, Static content render, Navigation links, Layout responsive | %50-70 | Unit + manual QA |
+| Seviye     | Modüller                                                                                                                                                           | Coverage hedefi | Test türü                |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------- | ------------------------ |
+| **Yüksek** | Auth (login/refresh/logout/password), Encryption (email/phone encrypt/decrypt), Permission resolver (RBAC+ABAC), Process state machine (KTİ workflow), Audit chain | %85-95+         | Unit + integration + e2e |
+| **Orta**   | User CRUD, Role CRUD, Master data, Document upload, Notification dispatch, Rate limit                                                                              | %75-85          | Unit + integration       |
+| **Düşük**  | UI styling, Static content render, Navigation links, Layout responsive                                                                                             | %50-70          | Unit + manual QA         |
 
 Yüksek seviye modüllerde **hem happy path hem edge case** test yazılır — saldırgan olsa ne yapar, concurrent istek ne olur, invalid state geldiğinde ne olur. Orta seviyede happy + en olası edge case'ler. Düşük seviyede smoke testler (bileşen render oluyor mu, crash yok mu).
 
@@ -52,6 +52,7 @@ Agent'ın kaçınması gereken iki ekstrem:
 ### 1.4 "Write Tests First" Değil, "Write Tests With"
 
 Strict TDD (test-driven development) zorunlu değil. Ancak:
+
 - Her PR'da değişen public method için **en az 1 test** zorunlu
 - Bug fix PR'ında önce failing test yazılır, sonra fix — regression önlemi
 - Yeni feature'da test + implementation PR'da birlikte gelir; "sonra test yazarız" lafı yasak
@@ -71,7 +72,7 @@ import { defineConfig } from 'vitest/config';
 export const baseConfig = defineConfig({
   test: {
     globals: true,
-    environment: 'node',  // Frontend'de 'jsdom' override
+    environment: 'node', // Frontend'de 'jsdom' override
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
@@ -91,20 +92,21 @@ export const baseConfig = defineConfig({
 
 ### 2.2 Nerede Unit Test Yazılır
 
-| Katman | Örnek dosya | Test dosyası |
-|---|---|---|
-| Backend service | `apps/api/src/users/users.service.ts` | `users.service.test.ts` (yan yana) |
-| Backend util | `apps/api/src/common/utils/encryption.ts` | `encryption.test.ts` |
-| Zod schema | `packages/shared-schemas/src/users.ts` | `users.schema.test.ts` |
-| React hook | `apps/web/src/hooks/usePermissions.ts` | `usePermissions.test.ts` |
-| React component (pure) | `apps/web/src/components/shared/SlaBadge.tsx` | `SlaBadge.test.tsx` |
-| Workflow state machine | `apps/api/src/processes/workflow/kti.workflow.ts` | `kti.workflow.test.ts` |
+| Katman                 | Örnek dosya                                       | Test dosyası                       |
+| ---------------------- | ------------------------------------------------- | ---------------------------------- |
+| Backend service        | `apps/api/src/users/users.service.ts`             | `users.service.test.ts` (yan yana) |
+| Backend util           | `apps/api/src/common/utils/encryption.ts`         | `encryption.test.ts`               |
+| Zod schema             | `packages/shared-schemas/src/users.ts`            | `users.schema.test.ts`             |
+| React hook             | `apps/web/src/hooks/usePermissions.ts`            | `usePermissions.test.ts`           |
+| React component (pure) | `apps/web/src/components/shared/SlaBadge.tsx`     | `SlaBadge.test.tsx`                |
+| Workflow state machine | `apps/api/src/processes/workflow/kti.workflow.ts` | `kti.workflow.test.ts`             |
 
 Test dosyaları **source dosyasının yanında** durur (co-location). `__tests__/` alt dizini kullanılmaz — refactor sırasında dosya taşıma + test taşıma aynı anda yapılır.
 
 ### 2.3 Mock Stratejisi
 
 **External dependency'ler mock:**
+
 - Prisma Client — in-memory / manual mock
 - Redis — `ioredis-mock` veya manual
 - AWS SDK (S3, Secrets Manager, CloudFront) — `aws-sdk-client-mock`
@@ -113,6 +115,7 @@ Test dosyaları **source dosyasının yanında** durur (co-location). `__tests__
 - Date/time — `vi.useFakeTimers()`
 
 **Business logic mock'lanmaz:**
+
 - Service'ler birbirini çağırır — gerçek instance kullanılır (DI ile inject, mock değil)
 - Pure function'lar mock'lanmaz (util, validator, serializer)
 - Domain entity'leri mock'lanmaz
@@ -124,7 +127,7 @@ Yanlış pattern (kaçınılmalı):
 const userRepoMock = { findById: vi.fn().mockResolvedValue(mockUser) };
 const userService = new UserService(userRepoMock);
 const result = await userService.doSomething(userId);
-expect(userRepoMock.findById).toHaveBeenCalledWith(userId);  // Mock verify — gerçek davranış yok
+expect(userRepoMock.findById).toHaveBeenCalledWith(userId); // Mock verify — gerçek davranış yok
 ```
 
 Doğru pattern:
@@ -137,8 +140,8 @@ prismaMock.users.findUnique.mockResolvedValue({ ...validUser });
 const userService = new UserService(prismaMock, redisMock);
 const result = await userService.getUser(userId);
 
-expect(result.email).toBe(validUser.email);  // Gerçek davranış verify
-expect(result.password_hash).toBeUndefined();  // Service'in serializer çalıştı mı
+expect(result.email).toBe(validUser.email); // Gerçek davranış verify
+expect(result.password_hash).toBeUndefined(); // Service'in serializer çalıştı mı
 ```
 
 ### 2.4 Testcontainers Kullanılmaz (Unit'te)
@@ -161,7 +164,7 @@ describe('UserService', () => {
 
   beforeEach(() => {
     prisma = mockDeep<PrismaClient>();
-    service = new UserService(prisma, /* other deps */);
+    service = new UserService(prisma /* other deps */);
   });
 
   describe('create', () => {
@@ -176,14 +179,14 @@ describe('UserService', () => {
     };
 
     it('should create user with valid input', async () => {
-      prisma.users.findFirst.mockResolvedValue(null);  // Sicil unique
+      prisma.users.findFirst.mockResolvedValue(null); // Sicil unique
       prisma.users.create.mockResolvedValue({ id: 'new-user-id', ...validInput } as any);
 
       const result = await service.create(validInput, { id: 'admin-1' });
 
       expect(result.id).toBe('new-user-id');
       expect(prisma.users.create).toHaveBeenCalledWith(
-        expect.objectContaining({ data: expect.objectContaining({ sicil: '12345678' }) })
+        expect.objectContaining({ data: expect.objectContaining({ sicil: '12345678' }) }),
       );
     });
 
@@ -191,7 +194,7 @@ describe('UserService', () => {
       prisma.users.findFirst.mockResolvedValue({ id: 'existing' } as any);
 
       await expect(service.create(validInput, { id: 'admin-1' })).rejects.toThrow(
-        UserSicilDuplicateException
+        UserSicilDuplicateException,
       );
       expect(prisma.users.create).not.toHaveBeenCalled();
     });
@@ -203,7 +206,7 @@ describe('UserService', () => {
         .mockResolvedValueOnce({ id: 'user-c', manager_user_id: 'user-a' } as any);
 
       await expect(
-        service.update('user-a', { managerUserId: 'user-c' }, { id: 'admin-1' })
+        service.update('user-a', { managerUserId: 'user-c' }, { id: 'admin-1' }),
       ).rejects.toThrow(UserManagerCycleException);
     });
   });
@@ -222,7 +225,7 @@ describe('<SlaBadge>', () => {
   it('renders green badge when >80% time remains', () => {
     const slaDue = new Date(Date.now() + 80 * 3600 * 1000).toISOString();
     render(<SlaBadge slaDueAt={slaDue} taskStatus="PENDING" />);
-    
+
     const badge = screen.getByRole('status');
     expect(badge).toHaveClass('bg-green-100');
     expect(badge).toHaveTextContent(/gün kaldı/);
@@ -231,7 +234,7 @@ describe('<SlaBadge>', () => {
   it('renders red badge when breached', () => {
     const slaDue = new Date(Date.now() - 3 * 3600 * 1000).toISOString();
     render(<SlaBadge slaDueAt={slaDue} taskStatus="PENDING" />);
-    
+
     expect(screen.getByRole('status')).toHaveClass('bg-red-100');
     expect(screen.getByText(/gecikti/i)).toBeInTheDocument();
   });
@@ -336,13 +339,14 @@ Integration test dosyaları `*.integration.test.ts` suffix ile işaretlenir. Vit
 export default defineConfig({
   test: {
     include: ['**/*.integration.test.ts'],
-    testTimeout: 30000,  // DB ops için
+    testTimeout: 30000, // DB ops için
     globalSetup: './test/integration-setup.ts',
   },
 });
 ```
 
 Unit ve integration ayrı çalıştırılır:
+
 ```bash
 pnpm test          # Sadece unit (hızlı — geliştirici local)
 pnpm test:integration  # Docker up gerekli
@@ -393,10 +397,10 @@ describe('KTİ Workflow Integration', () => {
 
     // Dokümanları hazırla (pre-scan CLEAN)
     const beforeDoc = await prisma.documents.create({
-      data: { scan_status: 'CLEAN', /* ... */ },
+      data: { scan_status: 'CLEAN' /* ... */ },
     });
     const afterDoc = await prisma.documents.create({
-      data: { scan_status: 'CLEAN', /* ... */ },
+      data: { scan_status: 'CLEAN' /* ... */ },
     });
 
     const initiatorToken = await authHelper.loginAs(app, initiator);
@@ -456,7 +460,7 @@ describe('KTİ Workflow Integration', () => {
     expect(auditLogs.map((l) => l.action)).toContain('PROCESS_COMPLETED');
 
     // Assert — audit chain integrity
-    expect(auditLogs[0].prev_hash).toMatch(/^0{64}$/);  // ilk kayıt 0 prev
+    expect(auditLogs[0].prev_hash).toMatch(/^0{64}$/); // ilk kayıt 0 prev
     for (let i = 1; i < auditLogs.length; i++) {
       expect(auditLogs[i].prev_hash).toBe(auditLogs[i - 1].current_hash);
     }
@@ -488,6 +492,7 @@ describe('KTİ Workflow Integration', () => {
 ### 3.4 Integration Test Scope
 
 Integration test için uygun senaryolar:
+
 - Full flow (başlatma → task completion → süreç bitirme)
 - Transaction davranışı (rollback edildiğinde DB state temiz kalmalı)
 - Trigger davranışı (audit log append-only, chain hash otomatik compute)
@@ -496,6 +501,7 @@ Integration test için uygun senaryolar:
 - Rate limit (10 başarısız login → 11. 429 döner)
 
 Integration'a **taşıma değil:**
+
 - Pure validation testi (Zod schema) — unit
 - UI component render — unit
 - Business logic izole — unit
@@ -505,6 +511,7 @@ Integration'a **taşıma değil:**
 Her test'in başında DB reset. İki yaklaşım:
 
 **A. `TRUNCATE CASCADE`** (hızlı, standart):
+
 ```typescript
 beforeEach(async () => {
   await prisma.$executeRaw`TRUNCATE TABLE users, processes, tasks, documents, audit_logs RESTART IDENTITY CASCADE`;
@@ -512,6 +519,7 @@ beforeEach(async () => {
 ```
 
 **B. Transaction rollback** (daha hızlı ama framework desteği):
+
 ```typescript
 let tx: PrismaClient;
 beforeEach(async () => {
@@ -546,7 +554,7 @@ interface UserOverrides {
 export const userFactory = {
   async create(prisma: PrismaClient, overrides: UserOverrides = {}) {
     const defaultCompany = await this.ensureDefaultCompany(prisma);
-    
+
     return prisma.users.create({
       data: {
         sicil: overrides.sicil ?? faker.string.numeric(8),
@@ -600,9 +608,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
   },
-  projects: [
-    { name: 'chromium', use: devices['Desktop Chrome'] },
-  ],
+  projects: [{ name: 'chromium', use: devices['Desktop Chrome'] }],
 });
 ```
 
@@ -616,8 +622,9 @@ E2E her ekran için değil, **platform'un çalıştığını kanıtlayan** akı�
 4. **Role management** — Superadmin login → rol oluştur → permission ata → user'a assign → user bu permission ile endpoint'e erişebiliyor mu
 5. **Admin audit search + export** — Superadmin login → audit-logs sayfası → filter uygula → CSV export → dosya indiriliyor mu
 6. **Password reset flow** — Forgot password → email link (mock intercept) → reset page → new password → login yeni şifre ile
+7. **User impersonation** — Yetkili kullanıcı login → header isim → hedef seç → effective user menüsü/bildirimleri → mutating aksiyon → admin audit'te Impersonation badge + actor format → switch ikonu ile kendi hesaba dön
 
-Her journey 1-3 test case ile temsil edilir — 12-18 e2e test total MVP için yeterli.
+Her journey 1-3 test case ile temsil edilir — 14-20 e2e test total MVP için yeterli (impersonation +1 journey).
 
 ### 4.3 E2E Test Örneği — KTİ Happy Path
 
@@ -628,7 +635,7 @@ import { setupTestUsers, generateTestDocument } from './helpers';
 
 test.describe('KTİ Happy Path', () => {
   test.beforeAll(async () => {
-    await setupTestUsers();  // Initiator + Manager users seed
+    await setupTestUsers(); // Initiator + Manager users seed
   });
 
   test('initiator starts KTİ, manager approves, process completes', async ({ page, context }) => {
@@ -645,7 +652,10 @@ test.describe('KTİ Happy Path', () => {
 
     // ADIM 3: Formu doldur
     await page.fill('input[name="savingAmount"]', '50000');
-    await page.fill('textarea[name="description"]', 'Üretim hattında iyileştirme yapıldı. 50K TL yıllık tasarruf sağlandı.');
+    await page.fill(
+      'textarea[name="description"]',
+      'Üretim hattında iyileştirme yapıldı. 50K TL yıllık tasarruf sağlandı.',
+    );
 
     // ADIM 4: Dokümanları yükle (before/after)
     const beforeFile = await generateTestDocument('before.jpg');
@@ -654,7 +664,9 @@ test.describe('KTİ Happy Path', () => {
     await page.setInputFiles('input[name="after-photos"]', afterFile);
 
     // Scan tamamlanmasını bekle (CLEAN)
-    await expect(page.locator('[data-testid="scan-status"]').first()).toHaveText('Temiz', { timeout: 30000 });
+    await expect(page.locator('[data-testid="scan-status"]').first()).toHaveText('Temiz', {
+      timeout: 30000,
+    });
 
     // ADIM 5: Başlat
     await page.click('button:has-text("Süreci Başlat")');
@@ -703,6 +715,7 @@ test.describe('KTİ Happy Path', () => {
 ### 4.4 E2E Best Practices
 
 **Selector stratejisi (öncelik sırası):**
+
 1. `data-testid` attribute (kararlı, refactor safe)
 2. Role + accessible name (`page.getByRole('button', { name: 'Kaydet' })`)
 3. Text content (`:has-text("Kaydet")`)
@@ -711,22 +724,26 @@ test.describe('KTİ Happy Path', () => {
 ID/class selector'ları **kullanılmaz** — DOM refactor'da kırılır.
 
 **Wait stratejisi:**
+
 - `await expect(locator).toBeVisible()` — auto-wait (default 5 sn)
 - `page.waitForURL()` — redirect bekleme
 - `page.waitForResponse()` — specific API call bekleme
 - **`page.waitForTimeout(3000)` asla kullanılmaz** — flaky; timeout yerine explicit condition
 
 **Test izolasyonu:**
+
 - Her test kendi data set'ini oluşturur (veya unique ID ile çakışma önler)
 - Test sonu cleanup gerekli değil — staging env her e2e suite'te reset edilir
 
 **Secrets:**
+
 - Test user credentials staging environment'ta seed edilir
 - `.env.test` dosyası (git ignore) lokalde; CI'da GitHub Secrets
 
 ### 4.5 E2E Çalıştırma Ortamı
 
 E2E **staging environment** üzerinde çalışır:
+
 - Production veriye dokunmaz
 - Real PostgreSQL + Redis + S3 (staging account)
 - Mock email/SMS (Mailpit container — email UI test için)
@@ -775,28 +792,28 @@ services:
 
 ### 5.1 Modül-Bazlı Coverage Hedefleri
 
-| Modül | Line | Branch | Function | Gerekçe |
-|---|---|---|---|---|
-| `auth/*` | 95% | 90% | 100% | Giriş kapısı — güvenlik kritik |
-| `common/encryption/*` | 95% | 90% | 100% | PII encrypt/decrypt — data loss riski |
-| `processes/workflow/*` | 90% | 85% | 100% | State machine — yanlış transition süreç bozar |
-| `roles/permission-resolver/*` | 90% | 85% | 100% | RBAC+ABAC — yetki eskalasyon riski |
-| `audit/*` | 90% | 85% | 100% | Chain integrity + append-only doğruluk |
-| `users/*` | 85% | 75% | 90% | CRUD + manager cycle check |
-| `tasks/*` | 85% | 75% | 90% | Claim + complete + SLA |
-| `documents/*` | 80% | 70% | 85% | Upload + scan polling |
-| `notifications/*` | 75% | 65% | 85% | Dispatch + read state |
-| `master-data/*` | 75% | 65% | 80% | CRUD + cascade |
-| `admin/settings/*` | 75% | 65% | 80% | Bulk update + atomic |
-| `admin/email-templates/*` | 75% | 65% | 80% | Handlebars render + preview |
-| `admin/consent-versions/*` | 80% | 70% | 85% | Publish flow atomic |
-| **Frontend — hooks** | 85% | 75% | 90% | Custom logic |
-| **Frontend — stores (Zustand)** | 90% | 80% | 95% | Auth state kritik |
-| **Frontend — UI components (shadcn + shared)** | 65% | 55% | 75% | Smoke + edge case |
-| **Frontend — page components** | 60% | 50% | 70% | E2E kapsamı tamamlar |
-| **Overall backend** | ≥ 80% | ≥ 70% | ≥ 85% | — |
-| **Overall frontend** | ≥ 75% | ≥ 65% | ≥ 80% | — |
-| **Proje toplam** | ≥ 75% | ≥ 65% | ≥ 80% | CI gate |
+| Modül                                          | Line  | Branch | Function | Gerekçe                                       |
+| ---------------------------------------------- | ----- | ------ | -------- | --------------------------------------------- |
+| `auth/*`                                       | 95%   | 90%    | 100%     | Giriş kapısı — güvenlik kritik                |
+| `common/encryption/*`                          | 95%   | 90%    | 100%     | PII encrypt/decrypt — data loss riski         |
+| `processes/workflow/*`                         | 90%   | 85%    | 100%     | State machine — yanlış transition süreç bozar |
+| `roles/permission-resolver/*`                  | 90%   | 85%    | 100%     | RBAC+ABAC — yetki eskalasyon riski            |
+| `audit/*`                                      | 90%   | 85%    | 100%     | Chain integrity + append-only doğruluk        |
+| `users/*`                                      | 85%   | 75%    | 90%      | CRUD + manager cycle check                    |
+| `tasks/*`                                      | 85%   | 75%    | 90%      | Claim + complete + SLA                        |
+| `documents/*`                                  | 80%   | 70%    | 85%      | Upload + scan polling                         |
+| `notifications/*`                              | 75%   | 65%    | 85%      | Dispatch + read state                         |
+| `master-data/*`                                | 75%   | 65%    | 80%      | CRUD + cascade                                |
+| `admin/settings/*`                             | 75%   | 65%    | 80%      | Bulk update + atomic                          |
+| `admin/email-templates/*`                      | 75%   | 65%    | 80%      | Handlebars render + preview                   |
+| `admin/consent-versions/*`                     | 80%   | 70%    | 85%      | Publish flow atomic                           |
+| **Frontend — hooks**                           | 85%   | 75%    | 90%      | Custom logic                                  |
+| **Frontend — stores (Zustand)**                | 90%   | 80%    | 95%      | Auth state kritik                             |
+| **Frontend — UI components (shadcn + shared)** | 65%   | 55%    | 75%      | Smoke + edge case                             |
+| **Frontend — page components**                 | 60%   | 50%    | 70%      | E2E kapsamı tamamlar                          |
+| **Overall backend**                            | ≥ 80% | ≥ 70%  | ≥ 85%    | —                                             |
+| **Overall frontend**                           | ≥ 75% | ≥ 65%  | ≥ 80%    | —                                             |
+| **Proje toplam**                               | ≥ 75% | ≥ 65%  | ≥ 80%    | CI gate                                       |
 
 ### 5.2 Coverage Raporu
 
@@ -823,6 +840,7 @@ Coverage rakamları doğruluğun **proxy'sidir**, doğruluğun kendisi değil. %
 ### 6.1 Factory Pattern
 
 Her domain entity için factory (`test/factories/`):
+
 - `user.factory.ts`
 - `role.factory.ts`
 - `process.factory.ts`
@@ -832,6 +850,7 @@ Her domain entity için factory (`test/factories/`):
 - `master-data.factory.ts`
 
 Factory sorumlulukları:
+
 - Default değerler ile minimal valid entity
 - Override parametreleri ile customization
 - Bağımlılıkları otomatik çözme (user'a company gerekir → company da yoksa oluştur)
@@ -844,7 +863,7 @@ Factory sorumlulukları:
 import { faker } from '@faker-js/faker/locale/tr';
 
 beforeEach(() => {
-  faker.seed(42);  // Deterministic test data
+  faker.seed(42); // Deterministic test data
 });
 ```
 
@@ -874,7 +893,7 @@ async function main() {
     update: {},
     create: { code: 'SUPERADMIN', name: 'Süperadmin', is_system: true, is_active: true },
   });
-  
+
   // 3. Role-permission seed — tüm permission metadata'yı tara
   const allPermissions = Object.keys(PERMISSION_METADATA);
   await prisma.role_permissions.createMany({
@@ -899,7 +918,7 @@ async function main() {
       company_id: acme.id,
       // ... diğer zorunlu field'lar default company'lerden resolve edilir
       is_active: true,
-      consent_accepted_at: null,  // İlk login'de onaylayacak
+      consent_accepted_at: null, // İlk login'de onaylayacak
     },
   });
 
@@ -924,7 +943,7 @@ async function main() {
   });
 
   // 6. Email template'ler — her event için minimal Handlebars
-  const emailEvents = ['TASK_ASSIGNED', 'PROCESS_COMPLETED', /* ... */];
+  const emailEvents = ['TASK_ASSIGNED', 'PROCESS_COMPLETED' /* ... */];
   for (const eventType of emailEvents) {
     await prisma.email_templates.upsert({
       where: { event_type: eventType },
@@ -940,10 +959,13 @@ async function main() {
   console.log('✓ Seed completed');
 }
 
-main().catch(console.error).finally(() => prisma.$disconnect());
+main()
+  .catch(console.error)
+  .finally(() => prisma.$disconnect());
 ```
 
 Çalıştırma:
+
 ```bash
 pnpm --filter api prisma db seed
 ```
@@ -953,6 +975,7 @@ pnpm --filter api prisma db seed
 Staging için daha zengin seed (manuel QA + acceptance testing):
 
 `apps/api/prisma/seed-staging.ts` — dev seed üzerine:
+
 - 10 şirket (farklı sektörler)
 - 20 lokasyon
 - 15 departman × 10 pozisyon = 150 pozisyon kombinasyonu
@@ -974,6 +997,7 @@ pnpm --filter api seed:staging
 ```
 
 QA team bu dataset üzerinde:
+
 - Filtre combinations test (500+ süreç listesi nasıl görünür?)
 - Pagination test (cursor-based üçüncü sayfa çalışıyor mu?)
 - Permission scenarios test (farklı roller farklı ekranlar görüyor mu?)
@@ -981,6 +1005,7 @@ QA team bu dataset üzerinde:
 ### 6.5 Staging Reset
 
 Her sprint başı staging DB reset:
+
 ```bash
 # Scripts/reset-staging.sh
 pnpm prisma migrate reset --force
@@ -992,6 +1017,7 @@ QA'nın manual test state'i siliner — reproducible test için doküman öneril
 ### 6.6 Production Data Staging'e Kopyalanmaz
 
 Privacy + compliance endişesiyle prod DB snapshot staging'e restore **edilmez**. Gerekliyse:
+
 1. Prod snapshot → ayrı test hesabına restore
 2. Anonymization script çalıştır (names, emails, phones replace)
 3. Schema subset export (audit log hariç)
@@ -1006,6 +1032,7 @@ Bu playbook `docs/runbooks/prod-subset-to-staging.md`'de; MVP'de nadir kullanıl
 ### 7.1 Auth Modülü
 
 **Login:**
+
 - Happy path — valid email + password → 200 + tokens
 - Invalid email (format) → 400 VALIDATION_FAILED
 - Non-existent email → 401 AUTH_INVALID_CREDENTIALS (timing attack test: response time benzer)
@@ -1018,6 +1045,7 @@ Bu playbook `docs/runbooks/prod-subset-to-staging.md`'de; MVP'de nadir kullanıl
 - Rate limit: 11. istek /dk → 429 RATE_LIMIT_LOGIN
 
 **Token refresh:**
+
 - Happy — valid refresh → new tokens (generation++)
 - Expired refresh → 401 AUTH_TOKEN_EXPIRED
 - Revoked family → 401 AUTH_SESSION_REVOKED
@@ -1025,6 +1053,7 @@ Bu playbook `docs/runbooks/prod-subset-to-staging.md`'de; MVP'de nadir kullanıl
 - Concurrent refresh (race) → one succeeds, other 401; no duplicate family
 
 **Password reset:**
+
 - Happy — request email → Redis'te key var, email queued
 - Non-existent email → 200 (generic), Redis'te key yok
 - Rate limit 3/hour per email → 429
@@ -1038,6 +1067,7 @@ Bu playbook `docs/runbooks/prod-subset-to-staging.md`'de; MVP'de nadir kullanıl
 ### 7.2 KTİ Workflow
 
 **Başlatma:**
+
 - Happy — tüm zorunlu field valid, docs CLEAN → 201 + task creation
 - Manager yok → 422 USER_NOT_FOUND (uygun error code)
 - Doc PENDING_SCAN → 409 DOCUMENT_SCAN_PENDING
@@ -1046,6 +1076,7 @@ Bu playbook `docs/runbooks/prod-subset-to-staging.md`'de; MVP'de nadir kullanıl
 - Permission yok → 403 PROCESS_START_FORBIDDEN
 
 **Manager approval:**
+
 - APPROVE → process COMPLETED, task COMPLETED, notification sent
 - REJECT + reason → process REJECTED, process COMPLETED timestamp, notification
 - REJECT without reason → 400 TASK_REASON_REQUIRED
@@ -1053,15 +1084,18 @@ Bu playbook `docs/runbooks/prod-subset-to-staging.md`'de; MVP'de nadir kullanıl
 - Invalid action → 400 TASK_COMPLETION_ACTION_INVALID
 
 **Revision:**
+
 - Happy → yeniden manager'a task
 - Third revision cycle → backend kısıtı yok (unlimited — opsiyonel limit ADR ile)
 
 **Cancel:**
+
 - Active süreç → CANCELLED, active task SKIPPED_BY_ROLLBACK
 - Terminal süreç → 409 PROCESS_NOT_CANCELLABLE
 - Reason missing → 400
 
 **Rollback:**
+
 - Happy (IN_PROGRESS, önceki task var) → new task for previous step
 - INITIATED state (henüz task yok) → 409 PROCESS_NOT_ROLLBACKABLE
 - Terminal → 409
@@ -1070,6 +1104,7 @@ Bu playbook `docs/runbooks/prod-subset-to-staging.md`'de; MVP'de nadir kullanıl
 ### 7.3 Permission
 
 **Resolver:**
+
 - Direct role → permission set match
 - Attribute rule match → resolved permission set
 - Direct + attribute rule union → duplicate permission'lar tekil
@@ -1077,12 +1112,14 @@ Bu playbook `docs/runbooks/prod-subset-to-staging.md`'de; MVP'de nadir kullanıl
 - User attribute değişimi (company) → attribute rule re-evaluation
 
 **Enforcement:**
+
 - Auth guard: valid JWT → pass; expired → 401
 - Permission decorator: `@RequirePermission(X)` ile X yok → 403 + details.missing
 - Resource ownership: process other user's → 403 PROCESS_ACCESS_DENIED
 - Field-level: non-owner sees limited fields
 
 **Cache invalidation:**
+
 - Role permission update → tüm rol üyeleri cache silinir
 - User role assignment → tek user cache silinir
 - Attribute rule update → matching user'lar cache silinir
@@ -1090,33 +1127,39 @@ Bu playbook `docs/runbooks/prod-subset-to-staging.md`'de; MVP'de nadir kullanıl
 ### 7.4 Audit Chain
 
 **Append-only garanti:**
+
 - INSERT → yeni kayıt, trigger hash compute
 - UPDATE audit_logs → PostgreSQL exception
 - DELETE audit_logs → PostgreSQL exception
 - Application user UPDATE permission yok (test: `grant` inspection)
 
 **Chain integrity:**
+
 - Sequential insert → prev_hash zinciri doğru
 - Concurrent insert (100 eşzamanlı) → sequence_number gap yok, chain bozulmaz
 - Manual tampering simulation (direct SQL UPDATE ile hash bozma) → verify_audit_chain function `false` return eder + broken_at_id set
 
 **Hash consistency:**
+
 - Trigger compute = manual compute (aynı formül)
 - Hash deterministic (aynı input aynı output)
 
 ### 7.5 Encryption
 
 **Deterministic encryption (email):**
+
 - Encrypt same value twice → same ciphertext (lookup için)
 - Encrypt different values → different ciphertext
 - Decrypt → original plaintext
 - Wrong key → decrypt fail
 
 **Probabilistic encryption (phone):**
+
 - Encrypt same value twice → different ciphertext (random IV)
 - Decrypt both → aynı plaintext
 
 **Key rotation:**
+
 - New encryption key with old data → decrypt fails (until re-encrypt migration)
 - Dual-key read support — old + new key fallback
 
@@ -1231,6 +1274,7 @@ jobs:
 ### 8.2 Coverage Gate
 
 CI block eden eşikler:
+
 - Proje line coverage < 75% → fail
 - Branch coverage < 65% → fail
 - Function coverage < 80% → fail
@@ -1265,7 +1309,7 @@ on:
 jobs:
   deploy-staging:
     # ... build + push ECR + deploy ECS staging
-  
+
   e2e-staging:
     needs: deploy-staging
     runs-on: ubuntu-latest
@@ -1282,10 +1326,10 @@ jobs:
         with:
           name: playwright-report
           path: apps/web/playwright-report/
-  
+
   deploy-prod:
     needs: e2e-staging
-    environment: production  # Manual approval
+    environment: production # Manual approval
     # ... production deploy
 ```
 
@@ -1360,6 +1404,7 @@ Failure → email + Slack alert.
 ### 9.2 Review Checklist — Reviewer
 
 Her PR'da reviewer sormalı:
+
 - Her public method testli mi?
 - Test assertion'lar anlamlı mı (trivial `toBeDefined()` yerine davranış doğrulaması)?
 - Edge case'ler kapsanmış mı (null input, empty array, concurrent request)?
@@ -1369,13 +1414,13 @@ Her PR'da reviewer sormalı:
 
 ### 9.3 Approval Gerekli Senaryolar
 
-| Değişiklik türü | Onay sayısı | Özel onay |
-|---|---|---|
-| Standard PR | 1 reviewer | — |
-| Security-related (auth, encryption, permission) | 2 reviewer | Security lead |
-| Database migration | 2 reviewer | DBA/backend lead |
-| Infra / IAM değişikliği | 2 reviewer | DevOps lead |
-| Production hotfix | 1 reviewer | On-call + post-merge audit |
+| Değişiklik türü                                 | Onay sayısı | Özel onay                  |
+| ----------------------------------------------- | ----------- | -------------------------- |
+| Standard PR                                     | 1 reviewer  | —                          |
+| Security-related (auth, encryption, permission) | 2 reviewer  | Security lead              |
+| Database migration                              | 2 reviewer  | DBA/backend lead           |
+| Infra / IAM değişikliği                         | 2 reviewer  | DevOps lead                |
+| Production hotfix                               | 1 reviewer  | On-call + post-merge audit |
 
 Solo developer senaryosunda (MVP başı): self-review disiplini zorunlu. PR açılır, 24 saat bekletilir, sonra self-review + merge. Rush merge yasak.
 
@@ -1389,18 +1434,18 @@ Staging seed'in platform test'leme kapsamı:
 
 **Ekran × scenario test matrix:**
 
-| Ekran | Test senaryosu | Beklenen data |
-|---|---|---|
-| S-USER-LIST | Filtre: companyId=ACME, isActive=true | ~15 kullanıcı |
-| S-USER-LIST | Arama: "ali" | 3-5 sonuç |
-| S-PROC-LIST-MY | Happy — aktif user için | 2-5 süreç |
-| S-PROC-LIST-ADMIN | CANCELLED toggle on | +5 süreç |
-| S-TASK-LIST (pending tab) | Manager user için | 1-3 bekleyen |
-| S-TASK-LIST (completed tab) | Çeşitli completion action'lar | 10+ |
-| S-PROC-DETAIL | Full chain — 4 adım complete | Her task görünür |
-| S-ROLE-USERS | Direct + rule mix | 20+ user |
-| S-ADMIN-AUDIT | Son 24 saat filter | 200+ kayıt |
-| S-NOTIF-LIST | Mix read/unread | 15+ bildirim |
+| Ekran                       | Test senaryosu                        | Beklenen data    |
+| --------------------------- | ------------------------------------- | ---------------- |
+| S-USER-LIST                 | Filtre: companyId=ACME, isActive=true | ~15 kullanıcı    |
+| S-USER-LIST                 | Arama: "ali"                          | 3-5 sonuç        |
+| S-PROC-LIST-MY              | Happy — aktif user için               | 2-5 süreç        |
+| S-PROC-LIST-ADMIN           | CANCELLED toggle on                   | +5 süreç         |
+| S-TASK-LIST (pending tab)   | Manager user için                     | 1-3 bekleyen     |
+| S-TASK-LIST (completed tab) | Çeşitli completion action'lar         | 10+              |
+| S-PROC-DETAIL               | Full chain — 4 adım complete          | Her task görünür |
+| S-ROLE-USERS                | Direct + rule mix                     | 20+ user         |
+| S-ADMIN-AUDIT               | Son 24 saat filter                    | 200+ kayıt       |
+| S-NOTIF-LIST                | Mix read/unread                       | 15+ bildirim     |
 
 Seed sonrası manuel QA checklist oluşturulur (QA team + Notion/Confluence doc).
 
@@ -1415,11 +1460,13 @@ k6 JavaScript-based, CloudWatch metric emit, distributed load test desteği. k6 
 ### 11.2 Hedef Metrikler
 
 **Target kapasite:**
+
 - 1000 eşzamanlı kullanıcı
 - 100 req/sec steady state
 - Burst: 500 req/sec (login storm simülasyonu)
 
 **Performance SLO:**
+
 - P50 response time < 200ms
 - P95 response time < 500ms
 - P99 response time < 1000ms
@@ -1453,22 +1500,26 @@ export const options = {
   thresholds: {
     http_req_duration: ['p(95)<500', 'p(99)<1000'],
     errors: ['rate<0.01'],
-    login_duration: ['p(95)<800'],  // Login bcrypt hesap ağır
+    login_duration: ['p(95)<800'], // Login bcrypt hesap ağır
   },
 };
 
-const TEST_USERS = JSON.parse(open('./test-users.json'));  // 1000 test user
+const TEST_USERS = JSON.parse(open('./test-users.json')); // 1000 test user
 
 export default function () {
   const user = TEST_USERS[Math.floor(Math.random() * TEST_USERS.length)];
 
-  const loginRes = http.post(`${__ENV.API_URL}/api/v1/auth/login`, JSON.stringify({
-    email: user.email,
-    password: user.password,
-  }), {
-    headers: { 'Content-Type': 'application/json' },
-    tags: { endpoint: 'login' },
-  });
+  const loginRes = http.post(
+    `${__ENV.API_URL}/api/v1/auth/login`,
+    JSON.stringify({
+      email: user.email,
+      password: user.password,
+    }),
+    {
+      headers: { 'Content-Type': 'application/json' },
+      tags: { endpoint: 'login' },
+    },
+  );
 
   const loginOk = check(loginRes, {
     'login status 200': (r) => r.status === 200,
@@ -1487,28 +1538,30 @@ export default function () {
     check(meRes, { 'me status 200': (r) => r.status === 200 });
   }
 
-  sleep(1);  // Think time
+  sleep(1); // Think time
 }
 ```
 
 Çalıştırma:
+
 ```bash
 API_URL=https://staging.lean-mgmt.holding.com k6 run --out cloudwatch loadtest/login-storm.js
 ```
 
 ### 11.4 Senaryolar
 
-| Script | Target | Sıklık |
-|---|---|---|
-| `login-storm.js` | Login endpoint 500 VU | Aylık |
-| `process-list-pagination.js` | Büyük liste pagination | Aylık |
-| `kti-start-burst.js` | 50 eşzamanlı KTİ başlatma | Aylık |
-| `dashboard-mixed.js` | Tipik kullanıcı akışı — dashboard + task + process carousel | Çeyrek |
-| `sustained-2h.js` | 2 saat steady 100 req/sec — memory leak tespiti | Çeyrek |
+| Script                       | Target                                                      | Sıklık |
+| ---------------------------- | ----------------------------------------------------------- | ------ |
+| `login-storm.js`             | Login endpoint 500 VU                                       | Aylık  |
+| `process-list-pagination.js` | Büyük liste pagination                                      | Aylık  |
+| `kti-start-burst.js`         | 50 eşzamanlı KTİ başlatma                                   | Aylık  |
+| `dashboard-mixed.js`         | Tipik kullanıcı akışı — dashboard + task + process carousel | Çeyrek |
+| `sustained-2h.js`            | 2 saat steady 100 req/sec — memory leak tespiti             | Çeyrek |
 
 ### 11.5 Capacity Planning
 
 Load test sonuçları infra ölçeklendirme kararlarına veri sağlar:
+
 - CPU bottleneck varsa → ECS task sayısı ↑ veya instance type ↑
 - RDS connection pool exhausted → PgBouncer eklenir veya pool size ↑
 - Redis latency spike → memory ↑ veya shard
@@ -1521,6 +1574,7 @@ Load test sonuçları infra ölçeklendirme kararlarına veri sağlar:
 ### 12.1 Lighthouse CI
 
 Her PR'da kritik 3 sayfa için Lighthouse:
+
 - `/login` (unauthenticated)
 - `/dashboard` (authenticated)
 - `/processes` (liste — büyük data)
@@ -1549,10 +1603,10 @@ jobs:
   "ci": {
     "assert": {
       "assertions": {
-        "categories:performance": ["error", { "minScore": 0.80 }],
-        "categories:accessibility": ["error", { "minScore": 0.90 }],
-        "categories:best-practices": ["error", { "minScore": 0.90 }],
-        "categories:seo": ["warn", { "minScore": 0.80 }],
+        "categories:performance": ["error", { "minScore": 0.8 }],
+        "categories:accessibility": ["error", { "minScore": 0.9 }],
+        "categories:best-practices": ["error", { "minScore": 0.9 }],
+        "categories:seo": ["warn", { "minScore": 0.8 }],
         "first-contentful-paint": ["error", { "maxNumericValue": 1800 }],
         "largest-contentful-paint": ["error", { "maxNumericValue": 2500 }],
         "cumulative-layout-shift": ["error", { "maxNumericValue": 0.1 }],
@@ -1566,11 +1620,13 @@ jobs:
 ### 12.2 Web Vitals Monitoring
 
 Production'da Real User Monitoring (RUM):
+
 - Vercel Analytics (varsayılan, free tier yeterli)
 - Web Vitals API → CloudWatch custom metric
 - Sentry Performance Monitoring (browser transactions)
 
 Haftalık özet rapor:
+
 - P75 LCP, INP, CLS
 - Yavaş route'lar top 5
 - Yavaş API call'lar top 5
@@ -1588,7 +1644,7 @@ export default {
     if (!isServer) {
       config.performance = {
         hints: 'error',
-        maxAssetSize: 200 * 1024,  // 200 KB
+        maxAssetSize: 200 * 1024, // 200 KB
         maxEntrypointSize: 250 * 1024,
       };
     }
@@ -1598,6 +1654,7 @@ export default {
 ```
 
 `@next/bundle-analyzer` PR'da bundle delta report:
+
 - > 10 KB artış → warning (reviewer decision)
 - > 50 KB artış → block + justification
 
@@ -1608,12 +1665,14 @@ export default {
 ### 13.1 SAST (Static Application Security Testing)
 
 **Snyk Code** her PR'da:
+
 - Node.js security rules
 - OWASP Top 10 patterns
 - Custom rule: `eval`, `dangerouslySetInnerHTML`, raw SQL concat
 - Severity threshold: HIGH+ → PR block
 
 **ESLint security plugins:**
+
 - `eslint-plugin-security` — detect unsafe patterns
 - `eslint-plugin-no-secrets` — credential leaks
 - Custom rules: banned imports, require decorator on controllers
@@ -1621,12 +1680,14 @@ export default {
 ### 13.2 Dependency Scanning
 
 **Snyk + Dependabot:**
+
 - Snyk weekly full scan
 - Dependabot daily PR for security patches
 - Transitive dependency vulnerability tracking
 - License compliance check (GPL reject, MIT/Apache/ISC allow)
 
 Vulnerable dependency handling flowchart:
+
 1. Dependabot PR açar
 2. Test suite green? → auto-merge (patch version)
 3. Manual intervention gerekli (major version) → backlog
@@ -1665,6 +1726,7 @@ Kural seti: AWS key, GitHub token, JWT secret, private key pattern'leri. `.gitle
 ### 13.5 Penetration Test
 
 Yılda 1 kez dış firma ile pen-test:
+
 - Scope: production environment read-only + staging full access
 - Duration: 2-3 hafta
 - Deliverable: vulnerability report + remediation priority
@@ -1701,15 +1763,27 @@ describe('ClassName / FunctionName / ComponentName', () => {
 ```typescript
 describe('UserService', () => {
   describe('create', () => {
-    it('should create user with valid input', () => { /* ... */ });
-    it('should throw UserSicilDuplicateException when sicil already exists', () => { /* ... */ });
-    it('should throw ValidationError when email format is invalid', () => { /* ... */ });
+    it('should create user with valid input', () => {
+      /* ... */
+    });
+    it('should throw UserSicilDuplicateException when sicil already exists', () => {
+      /* ... */
+    });
+    it('should throw ValidationError when email format is invalid', () => {
+      /* ... */
+    });
   });
 
   describe('update', () => {
-    it('should update user attributes when caller has USER_UPDATE_ATTRIBUTE permission', () => { /* ... */ });
-    it('should throw PermissionDeniedException when caller lacks permission', () => { /* ... */ });
-    it('should throw UserManagerCycleException when manager creates reference cycle', () => { /* ... */ });
+    it('should update user attributes when caller has USER_UPDATE_ATTRIBUTE permission', () => {
+      /* ... */
+    });
+    it('should throw PermissionDeniedException when caller lacks permission', () => {
+      /* ... */
+    });
+    it('should throw UserManagerCycleException when manager creates reference cycle', () => {
+      /* ... */
+    });
   });
 });
 ```
@@ -1725,15 +1799,17 @@ it('should create process when all validations pass', async () => {
   const manager = await userFactory.create(prisma);
   await linkManager(prisma, initiator.id, manager.id);
   const docs = await documentFactory.createBatch(prisma, 2);
-  const input = { /* ... */ };
-  
+  const input = {
+    /* ... */
+  };
+
   // Act
   const result = await service.startKti(input, initiator);
-  
+
   // Assert
   expect(result.status).toBe('IN_PROGRESS');
   expect(result.displayId).toMatch(/^KTI-\d{6}$/);
-  
+
   const tasks = await prisma.tasks.findMany({ where: { process_id: result.id } });
   expect(tasks).toHaveLength(1);
   expect(tasks[0].step_label).toBe('Yönetici Onay');
@@ -1745,6 +1821,7 @@ Küçük testlerde AAA yorumu gereksiz — 2-3 satırlık testlerde mental model
 ### 14.4 Assertion Kalitesi
 
 **Kötü:**
+
 ```typescript
 expect(result).toBeDefined();
 expect(result).toBeTruthy();
@@ -1752,13 +1829,12 @@ expect(result.someProperty).toBeTruthy();
 ```
 
 **İyi:**
+
 ```typescript
 expect(result.status).toBe('COMPLETED');
 expect(result.tasks).toHaveLength(3);
 expect(result.tasks.map((t) => t.status)).toEqual(['COMPLETED', 'COMPLETED', 'COMPLETED']);
-expect(result.auditLogs).toContainEqual(
-  expect.objectContaining({ action: 'PROCESS_STARTED' })
-);
+expect(result.auditLogs).toContainEqual(expect.objectContaining({ action: 'PROCESS_STARTED' }));
 ```
 
 Specific assertion → test kırıldığında ne yanlış olduğu net.
@@ -1774,7 +1850,11 @@ Specific assertion → test kırıldığında ne yanlış olduğu net.
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mockDeep } from 'vitest-mock-extended';
 import { AuthService } from './auth.service';
-import { AuthInvalidCredentialsException, AuthAccountLockedException, AuthPasswordExpiredException } from './auth.exceptions';
+import {
+  AuthInvalidCredentialsException,
+  AuthAccountLockedException,
+  AuthPasswordExpiredException,
+} from './auth.exceptions';
 
 describe('AuthService.login', () => {
   let service: AuthService;
@@ -1814,19 +1894,19 @@ describe('AuthService.login', () => {
     expect(prisma.users.update).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({ failed_login_count: 0, last_login_at: expect.any(Date) }),
-      })
+      }),
     );
   });
 
   it('should throw AuthInvalidCredentialsException when user not found', async () => {
     prisma.users.findUnique.mockResolvedValue(null);
-    bcrypt.compare.mockResolvedValue(false);  // Timing protection — dummy hash compare
+    bcrypt.compare.mockResolvedValue(false); // Timing protection — dummy hash compare
 
-    await expect(
-      service.login('ghost@test.com', 'password', '1.1.1.1', 'UA')
-    ).rejects.toThrow(AuthInvalidCredentialsException);
+    await expect(service.login('ghost@test.com', 'password', '1.1.1.1', 'UA')).rejects.toThrow(
+      AuthInvalidCredentialsException,
+    );
 
-    expect(bcrypt.compare).toHaveBeenCalled();  // Dummy compare çalıştı
+    expect(bcrypt.compare).toHaveBeenCalled(); // Dummy compare çalıştı
   });
 
   it('should lock account after max failed attempts', async () => {
@@ -1836,15 +1916,15 @@ describe('AuthService.login', () => {
       password_hash: 'hashed',
       is_active: true,
       locked_until: null,
-      failed_login_count: 4,  // 5. deneme lockout tetikler
+      failed_login_count: 4, // 5. deneme lockout tetikler
       password_changed_at: new Date(),
     };
     prisma.users.findUnique.mockResolvedValue(user);
     bcrypt.compare.mockResolvedValue(false);
 
-    await expect(
-      service.login('ali@test.com', 'wrong', '1.1.1.1', 'UA')
-    ).rejects.toThrow(AuthAccountLockedException);
+    await expect(service.login('ali@test.com', 'wrong', '1.1.1.1', 'UA')).rejects.toThrow(
+      AuthAccountLockedException,
+    );
 
     expect(prisma.users.update).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -1852,7 +1932,7 @@ describe('AuthService.login', () => {
           locked_until: expect.any(Date),
           failed_login_count: 5,
         }),
-      })
+      }),
     );
   });
 
@@ -1864,14 +1944,14 @@ describe('AuthService.login', () => {
       is_active: true,
       locked_until: null,
       failed_login_count: 0,
-      password_changed_at: new Date(Date.now() - 100 * 24 * 3600 * 1000),  // 100 gün önce (> 90)
+      password_changed_at: new Date(Date.now() - 100 * 24 * 3600 * 1000), // 100 gün önce (> 90)
     };
     prisma.users.findUnique.mockResolvedValue(user);
     bcrypt.compare.mockResolvedValue(true);
 
-    await expect(
-      service.login('ali@test.com', 'password', '1.1.1.1', 'UA')
-    ).rejects.toThrow(AuthPasswordExpiredException);
+    await expect(service.login('ali@test.com', 'password', '1.1.1.1', 'UA')).rejects.toThrow(
+      AuthPasswordExpiredException,
+    );
   });
 });
 ```
@@ -1884,8 +1964,12 @@ describe('Permission Cache Invalidation', () => {
   it('should invalidate cache when role permission is updated', async () => {
     const user = await userFactory.create(prisma);
     const role = await roleFactory.create(prisma, { code: 'TEST_ROLE' });
-    await prisma.user_roles.create({ data: { user_id: user.id, role_id: role.id, source: 'DIRECT' } });
-    await prisma.role_permissions.create({ data: { role_id: role.id, permission_key: 'USER_LIST_VIEW' } });
+    await prisma.user_roles.create({
+      data: { user_id: user.id, role_id: role.id, source: 'DIRECT' },
+    });
+    await prisma.role_permissions.create({
+      data: { role_id: role.id, permission_key: 'USER_LIST_VIEW' },
+    });
 
     // İlk cache populate
     await permissionResolver.getUserPermissions(user.id);
@@ -1893,10 +1977,12 @@ describe('Permission Cache Invalidation', () => {
     expect(await redis.get(cacheKey)).toBeTruthy();
 
     // Role permission güncellemesi
-    await prisma.role_permissions.create({ data: { role_id: role.id, permission_key: 'USER_CREATE' } });
+    await prisma.role_permissions.create({
+      data: { role_id: role.id, permission_key: 'USER_CREATE' },
+    });
     await permissionService.invalidateRolePermissionCache(role.id);
 
-    expect(await redis.get(cacheKey)).toBeNull();  // Cache temizlendi
+    expect(await redis.get(cacheKey)).toBeNull(); // Cache temizlendi
 
     // Yeni cache yeni permission içermeli
     const updated = await permissionResolver.getUserPermissions(user.id);
@@ -1921,7 +2007,7 @@ describe('Audit Log Chain — Concurrent Inserts', () => {
           ip: '1.1.1.1',
           outcome: 'SUCCESS',
         },
-      })
+      }),
     );
 
     await Promise.all(insertPromises);
@@ -2025,10 +2111,14 @@ export function setup() {
   // Login 100 users, return tokens
   const tokens = [];
   for (const user of USERS.slice(0, 100)) {
-    const res = http.post(`${__ENV.API_URL}/api/v1/auth/login`, JSON.stringify({
-      email: user.email,
-      password: user.password,
-    }), { headers: { 'Content-Type': 'application/json' } });
+    const res = http.post(
+      `${__ENV.API_URL}/api/v1/auth/login`,
+      JSON.stringify({
+        email: user.email,
+        password: user.password,
+      }),
+      { headers: { 'Content-Type': 'application/json' } },
+    );
     if (res.status === 200) tokens.push(res.json('data.accessToken'));
   }
   return { tokens };
@@ -2052,13 +2142,17 @@ export default function (data) {
   sleep(2);
 
   group('Process list browse', () => {
-    const listRes = http.get(`${__ENV.API_URL}/api/v1/processes?scope=my-started&limit=20`, { headers });
+    const listRes = http.get(`${__ENV.API_URL}/api/v1/processes?scope=my-started&limit=20`, {
+      headers,
+    });
     check(listRes, { 'processes list 200': (r) => r.status === 200 });
 
     const processes = listRes.json('data.items');
     if (processes && processes.length > 0) {
       const randomProc = processes[Math.floor(Math.random() * processes.length)];
-      const detailRes = http.get(`${__ENV.API_URL}/api/v1/processes/${randomProc.displayId}`, { headers });
+      const detailRes = http.get(`${__ENV.API_URL}/api/v1/processes/${randomProc.displayId}`, {
+        headers,
+      });
       check(detailRes, { 'process detail 200': (r) => r.status === 200 });
     }
   });
@@ -2074,6 +2168,7 @@ export default function (data) {
 Her PR için tamamlanması gereken:
 
 **Backend PR:**
+
 - [ ] Değişen public method için unit test
 - [ ] DB schema değişikliği varsa integration test
 - [ ] Yeni endpoint için permission enforcement test
@@ -2083,6 +2178,7 @@ Her PR için tamamlanması gereken:
 - [ ] Coverage delta düşürmüyor
 
 **Frontend PR:**
+
 - [ ] Yeni hook için unit test
 - [ ] Yeni component için smoke test + kritik behavior
 - [ ] Yeni page için e2e flow var (kritik ekransa)
@@ -2091,6 +2187,7 @@ Her PR için tamamlanması gereken:
 - [ ] Bundle size delta kabul edilebilir
 
 **Infra PR:**
+
 - [ ] Terraform / CDK değişikliği için unit test (terratest, cdk-nag)
 - [ ] IAM policy minimal permission doğrulandı
 - [ ] CloudFormation drift detection

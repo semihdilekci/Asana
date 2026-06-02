@@ -3,6 +3,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useId, useRef, useState } from 'react';
 
+import { Alert, Button } from '@/components/base';
 import { type ApiErrorBody, apiClient, logoutRequest } from '@/lib/api-client';
 import { authQueryKeys, useConsentVersionQuery } from '@/lib/queries/auth';
 import { type AuthUser } from '@/stores/auth-store';
@@ -133,28 +134,31 @@ export function ConsentBlockingDialog({ user, open }: Props) {
         </label>
 
         {formError ? (
-          <div className="ls-alert ls-alert--danger mt-[var(--space-3)]" role="alert">
+          <Alert variant="error" className="mt-[var(--space-3)]">
             {formError}
-          </div>
+          </Alert>
         ) : null}
 
         <div className="mt-[var(--space-6)] flex flex-col-reverse gap-[var(--space-3)] sm:flex-row sm:justify-end">
-          <button
+          <Button
             type="button"
-            className="ls-btn ls-btn--neutral w-full sm:w-auto"
-            onClick={() => void onLogout()}
-            disabled={submitting}
+            color="secondary"
+            size="md"
+            className="w-full sm:w-auto"
+            onPress={() => void onLogout()}
+            isDisabled={submitting}
           >
             Çıkış Yap
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
-            className="ls-btn ls-btn--primary w-full sm:w-auto"
-            disabled={!agreed || submitting || query.isLoading || !query.data}
-            onClick={() => void onAccept()}
+            color="primary"
+            className="w-full sm:w-auto"
+            isDisabled={!agreed || submitting || query.isLoading || !query.data}
+            onPress={() => void onAccept()}
           >
             {submitting ? 'Kaydediliyor…' : 'Onaylıyorum'}
-          </button>
+          </Button>
         </div>
       </div>
     </dialog>

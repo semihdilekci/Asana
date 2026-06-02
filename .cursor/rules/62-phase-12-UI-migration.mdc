@@ -1,0 +1,169 @@
+---
+description: "[Faz 12] Untitled UI geçişi — 5 iterasyon/chat (altyapı → base bileşenler → shell → ekran dalga 1 → ekran dalga 2 + ls-* temizliği). Mesajda \"Faz 12 — İterasyon N\" belirt."
+---
+
+# Faz 12: UI Katmanı Migrasyonu — Untitled UI React + Tailwind v4 + Elektrik Cyan
+
+## Goal
+
+Mevcut `ls-*` CSS sınıf tabanlı UI'ı Untitled UI React felsefesiyle yeniden inşa et.  
+Tailwind v3 → v4 geçişi, React Aria primitifleri, `#7df9ff` elektrik cyan marka paleti.  
+Faz sonunda `ls-*` tamamen kaldırılmış; her ekran `base/` bileşenlerinden oluşmuş olacak.
+
+**ADR:** `docs/adr/0009-untitledui-tailwind4-react-aria-ui-migration.md`
+
+## Bu fazın çalışma modeli (iterasyonlar)
+
+`@62-phase-12-UI-migration` + **"Faz 12 — İterasyon N"**. Her iterasyon tek PR.  
+**Görsel regresyon kontrolü zorunludur** — her iterasyon sonunda ekran karşılaştırması (manuel veya Playwright screenshot).
+
+---
+
+### İterasyon 1 — Altyapı Omurgası
+
+**Hedef:** Tailwind v4 kurulumu + paket güncellemeleri + `globals.css` revizesi + `theme.css` + yardımcı utils.
+
+**Yapılacaklar:**
+1. `tailwindcss@4`, `tailwindcss-animate`, `tailwindcss-react-aria-components` kur
+2. `react-aria-components`, `@untitledui/icons`, `tailwind-merge` kur
+3. `apps/web/tailwind.config.ts` → Tailwind v4 formatına dönüştür (JS config kaldır; `@theme` CSS'e taşı)
+4. `apps/web/src/app/globals.css` → `@import "tailwindcss"` + `@import "./theme.css"`
+5. `apps/web/src/styles/theme.css` oluştur — brand token'larını `@theme` bloğuna ekle  
+   (`--color-brand-*`, `--color-bg-*`, `--color-text-*`, `--color-border-*`, shadow, font)
+6. `apps/web/src/utils/cx.ts` — `tailwind-merge` tabanlı `cx()` + `sortCx()`
+7. `apps/web/src/hooks/use-breakpoint.ts` oluştur
+8. Mevcut `ls-*` kodu derlemeye devam eder (token isimleri geriye dönük uyumlu)
+
+**Bu iterasyonda yok:** Bileşen migrasyonu, ekran değişikliği.
+
+**Stop:** [ ] `pnpm build` yeşil; [ ] Tailwind v4 sınıfları IntelliSense çalışıyor; [ ] mevcut sayfalar görsel açıdan bozulmadı. PR/onay.
+
+---
+
+### İterasyon 2 — Base Bileşen Katmanı
+
+**Hedef:** Untitled UI Free bileşenlerini `apps/web/src/components/base/` altına kur; mevcut shadcn/ls-* karşılıklarını eşle.
+
+**Yapılacaklar:**
+1. `apps/web/src/components/base/` klasör yapısı oluştur
+2. Aşağıdaki bileşenleri Untitled UI sitesinden kopyala-yapıştır + brand token uyumunu sağla:
+   - `buttons/Button.tsx` — `color: primary | secondary | destructive | ghost`
+   - `inputs/Input.tsx` + `TextField.tsx` (React Aria tabanlı)
+   - `inputs/Select.tsx` — React Aria Select
+   - `feedback/Badge.tsx` — `color: brand | success | warning | error | neutral`
+   - `feedback/Alert.tsx` — `variant: error | warning | success | info`
+   - `overlay/Modal.tsx` — React Aria Dialog
+   - `data/Table.tsx` + `TableRow.tsx`
+   - `layout/Card.tsx` (eski `ls-card` karşılığı)
+3. `cx()` ile stil hiyerarşisi: `base → variant → size → className prop`
+4. Her bileşen için en az 1 snapshot/unit test
+
+**Brand mapping kontrolü:**
+- Primary button: `bg-[var(--color-brand-600)] hover:bg-[var(--color-brand-700)] text-white`
+- Focus ring: `focus-visible:ring-2 focus-visible:ring-[var(--color-brand-300)]`
+- Badge brand: `bg-[var(--color-brand-50)] text-[var(--color-brand-700)]`
+
+**Bu iterasyonda yok:** Mevcut sayfaların bileşen değişimi — sadece `base/` katmanı.
+
+**Stop:** [ ] Tüm base bileşenler Storybook'suz da görsel olarak test edildi; [ ] unit testler; [ ] `ls-*`'dan bağımsız çalışıyor. PR/onay.
+
+---
+
+### İterasyon 3 — Shell Migrasyonu
+
+**Hedef:** App shell (layout, sidebar, header, navigation) Untitled UI application bileşenlerine geçiş.
+
+**Yapılacaklar:**
+1. `apps/web/src/components/application/` klasörü oluştur
+2. `AppSidebar.tsx` — Untitled UI sidebar pattern; `brand-600` aktif pill, `brand-300` glow
+3. `AppHeader.tsx` — top bar; notification, avatar, breadcrumb
+4. `SidebarNavItem.tsx` — eski `ls-sidebar-nav-link` karşılığı
+5. `apps/web/src/app/(app)/layout.tsx` → yeni `AppSidebar` + `AppHeader`
+6. `apps/web/src/app/(admin)/layout.tsx` → aynı shell, admin badge farkı
+7. Sidebar aktif state: `var(--color-brand-600)` background + `var(--color-brand-300)` sol border/glow
+8. `ls-sidebar-nav-link`, `ls-sidebar-nav-morph-pill`, `AppSidebarNav.tsx` eski implementasyonu kaldır
+9. Playwright e2e: navigation çalışıyor, auth redirect korundu
+
+**Stop:** [ ] Her iki layout (app + admin) yeni shell'de çalışıyor; [ ] Playwright navigation testi yeşil. PR/onay.
+
+---
+
+### İterasyon 4 — Ekran Dalga 1 (Auth + Kullanıcı + Roller)
+
+**Hedef:** Auth ekranları + kullanıcı/rol listeleri + detay sayfaları `ls-*`'dan temizlenir.
+
+**Kapsam:**
+- `(auth)` group: `login-form`, `forgot-password-form`, `reset-password-form`, `change-password-form`
+- `(app)/users/**`: `UserList`, `UserListFilters`, `UserForm`, `UserDetailCard`, `UserSessions`
+- `(app)/roles/**`: `RoleList`, `RoleForm`, `RoleDetailContent`, `PermissionMatrix`, `AttributeRuleBuilder`
+- `(app)/profile/**`: `ProfilePage`
+
+**Dönüşüm kuralı her dosya için:**
+1. `ls-btn *` → `<Button>` (base/)
+2. `ls-input` → `<Input>` / `<TextField>` (base/)
+3. `ls-card` → `<Card>` (base/)
+4. `ls-alert *` → `<Alert>` (base/)
+5. `className="ls-*"` sıfır kalmalı dosyada
+
+**Stop:** [ ] Hedef dosyalarda `ls-*` sıfır; [ ] visual smoke test; [ ] form validation çalışıyor. PR/onay.
+
+---
+
+### İterasyon 5 — Ekran Dalga 2 + `ls-*` Temizliği
+
+**Hedef:** Süreç, görev, admin, bildirim ekranları + tüm `ls-*` referanslarının silinmesi + `components.css` kaldırma.
+
+**Kapsam:**
+- `(app)/processes/**`: `ProcessList`, `ProcessDetail`, `KtiStartForm`, `KtiFormDataModal`
+- `(app)/tasks/**`: `TaskList`, `TaskDetail`, `TaskActions`
+- `(app)/dashboard/**`: dashboard page, stat tiles
+- `(app)/master-data/**`: tüm master data bileşenleri
+- `(admin)/**`: `AuditLogsPageClient`, `EmailTemplateEditor`, `SystemSettingsPageClient` vb.
+- `(app)/notifications/**`: tüm bildirim bileşenleri
+
+**Temizlik adımları:**
+1. Tüm hedef dosyalarda `ls-*` sıfıra indir
+2. `rg "ls-" apps/web/src` → sıfır sonuç olmalı
+3. `docs/lean-design-system/components.css` → dosya başına `/* REMOVED — Faz 12 İter 5 */` ekle; içerikleri boşalt
+4. `globals.css`'den `docs/lean-design-system/index.css` importunu kaldır; sadece `theme.css` kalır
+5. `lucide-react` → `@untitledui/icons` tam geçiş
+6. `icons.jsx` deprecated işareti kaldır; yeni ikon kataloğu `base/icons/` altında
+7. `docs/lean-design-system/README.md`'i güncelle: geçiş tamamlandı notu
+
+**Stop:** Faz 12 Done Definition. PR/onay.
+
+---
+
+## Required Context
+
+- `docs/lean-design-system/README.md` — token + bileşen eşleme tablosu
+- `docs/lean-design-system/tokens.css` — brand token'ları
+- `docs/adr/0009-untitledui-tailwind4-react-aria-ui-migration.md`
+- [Untitled UI React docs](https://www.untitledui.com/react/docs/introduction)
+- [Untitled UI kurulum](https://www.untitledui.com/react/docs/installation) — `theme.css` tam içeriği
+- Auto-attached: `26-lean-design-system` (her UI değişikliğinde)
+
+## Kısıtlar & Riskler
+
+| Risk | Önlem |
+|------|-------|
+| Tailwind v4 breaking changes | Her bileşen geçişinde `pnpm typecheck + lint` |
+| `ls-*` gizli referans kalması | `rg "ls-"` iterasyon sonunda zorunlu kontrol |
+| React Aria hidrasyon uyumsuzluğu | `"use client"` direktifi ekle; SSR'sız primitiveler |
+| `#7df9ff` düşük kontrast metin | `brand-300` yalnızca dekoratif/glow; eylemler `brand-600`+ |
+| Playwright test kırılması | İter 1 sonrası e2e'yi Tailwind v4 ile çalıştır; kırılanları hemen sabitle |
+
+## Done Definition
+
+- [ ] `rg "ls-" apps/web/src` → 0 sonuç
+- [ ] `components.css` boşaltıldı; `index.css` importu kaldırıldı
+- [ ] Tüm bileşenler `base/` + `application/` + `shared/` mimarisinde
+- [ ] React Aria keyboard navigation testleri yeşil
+- [ ] Lighthouse accessibility ≥ 0.90
+- [ ] `pnpm lint + typecheck + test` yeşil
+- [ ] Playwright e2e kritik journey'ler yeşil
+- [ ] `docs/lean-design-system/README.md` "geçiş tamamlandı" güncellemesi
+
+## Sonraki fazlarla ilişki
+
+Faz 12 tamamlanınca Faz 9 (Dashboard polish) ve Faz 11 (Security hardening) Untitled UI temelli bileşenler üzerinde devam eder.

@@ -4,6 +4,7 @@ import Link from 'next/link';
 
 import { Permission } from '@leanmgmt/shared-types';
 
+import { Button, Card } from '@/components/base';
 import { LoadingSplash } from '@/components/shared/LoadingSplash';
 import { PermissionGate } from '@/components/shared/PermissionGate';
 import { notificationEventLabel } from '@/lib/notification-ui';
@@ -18,21 +19,17 @@ export function EmailTemplateList() {
 
   if (isError || !data) {
     return (
-      <div className="ls-card p-[var(--space-8)] shadow-[var(--shadow-md)]">
+      <Card className="p-[var(--space-8)] shadow-[var(--shadow-md)]">
         <p className="text-[var(--color-danger-600)]">Liste yüklenemedi.</p>
-        <button
-          type="button"
-          className="ls-btn ls-btn--neutral ls-btn--sm mt-3"
-          onClick={() => refetch()}
-        >
+        <Button color="secondary" size="sm" className="mt-3" onPress={() => refetch()}>
           Tekrar dene
-        </button>
-      </div>
+        </Button>
+      </Card>
     );
   }
 
   return (
-    <div className="ls-card overflow-hidden shadow-[var(--shadow-md)]">
+    <Card className="overflow-hidden p-0 shadow-[var(--shadow-md)]">
       <div className="border-b border-[var(--color-neutral-200)] p-[var(--space-4)]">
         <h1 className="font-[family-name:var(--font-display)] text-xl font-semibold text-[var(--color-neutral-900)]">
           E-posta şablonları
@@ -83,6 +80,6 @@ export function EmailTemplateList() {
           </tbody>
         </table>
       </div>
-    </div>
+    </Card>
   );
 }

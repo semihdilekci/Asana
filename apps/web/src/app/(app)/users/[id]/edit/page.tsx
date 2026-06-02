@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import { Card } from '@/components/base';
+
 import { UserEditContent } from './UserEditContent';
 
 export const metadata: Metadata = {
@@ -38,9 +40,9 @@ export default async function UserEditPage({ params }: PageProps) {
         Kullanıcıyı Düzenle
       </h1>
 
-      <div className="ls-card p-[var(--space-6)]">
+      <Card className="p-[var(--space-6)]">
         <UserEditContent userId={id} />
-      </div>
+      </Card>
     </div>
   );
 }

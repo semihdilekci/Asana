@@ -242,8 +242,7 @@ export class MasterDataService {
 
     const created = (await model.create({ data: createData })) as Record<string, unknown>;
 
-    await this.audit.append({
-      userId: actor.id,
+    await this.audit.appendForActor(actor, {
       action: 'CREATE_MASTER_DATA',
       entity: TYPE_TO_SINGULAR[type as MasterDataType],
       entityId: created['id'] as string,
@@ -275,8 +274,7 @@ export class MasterDataService {
       data: { name: dto.name },
     })) as Record<string, unknown>;
 
-    await this.audit.append({
-      userId: actor.id,
+    await this.audit.appendForActor(actor, {
       action: 'UPDATE_MASTER_DATA',
       entity: TYPE_TO_SINGULAR[type as MasterDataType],
       entityId: id,
@@ -322,8 +320,7 @@ export class MasterDataService {
       }
     });
 
-    await this.audit.append({
-      userId: actor.id,
+    await this.audit.appendForActor(actor, {
       action: 'DEACTIVATE_MASTER_DATA',
       entity: TYPE_TO_SINGULAR[type as MasterDataType],
       entityId: id,
@@ -356,8 +353,7 @@ export class MasterDataService {
 
     await model.update({ where: { id }, data: { isActive: true } });
 
-    await this.audit.append({
-      userId: actor.id,
+    await this.audit.appendForActor(actor, {
       action: 'REACTIVATE_MASTER_DATA',
       entity: TYPE_TO_SINGULAR[type as MasterDataType],
       entityId: id,

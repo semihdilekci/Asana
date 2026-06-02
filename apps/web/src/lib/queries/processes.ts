@@ -12,13 +12,20 @@ export interface ProcessStartedBy {
   lastName: string;
 }
 
+/** Impersonation altında süreç/görev aksiyonu — API performer alanları */
+export interface ActionPerformerFields {
+  performedViaImpersonation?: boolean;
+  performerDisplayLabel?: string;
+  actionActor?: ProcessStartedBy;
+}
+
 export interface ProcessCompany {
   id: string;
   code: string;
   name: string;
 }
 
-export interface ProcessListItem {
+export interface ProcessListItem extends ActionPerformerFields {
   id: string;
   displayId: string;
   processType: string;
@@ -31,7 +38,7 @@ export interface ProcessListItem {
   cancelledAt: string | null;
 }
 
-export interface ProcessTaskItem {
+export interface ProcessTaskItem extends ActionPerformerFields {
   id: string;
   stepKey: string;
   stepOrder: number;
@@ -55,7 +62,7 @@ export interface ProcessDocumentItem {
   thumbnailUrl: string | null;
 }
 
-export interface ProcessDetail {
+export interface ProcessDetail extends ActionPerformerFields {
   id: string;
   displayId: string;
   processType: string;
@@ -122,6 +129,7 @@ export function useKtiStartMutation() {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.processes.lists() });
       void queryClient.invalidateQueries({ queryKey: queryKeys.tasks.lists() });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.tasks.activeCount() });
     },
   });
 }

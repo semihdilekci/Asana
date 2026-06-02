@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Permission } from '@leanmgmt/shared-types';
 import type { MasterDataType } from '@leanmgmt/shared-schemas';
 
+import { Alert, Button } from '@/components/base';
 import { PermissionGate } from '@/components/shared/PermissionGate';
 import {
   useDeactivateMasterDataMutation,
@@ -43,16 +44,17 @@ export function MasterDataTable({ type, filters = {} }: MasterDataTableProps) {
 
   if (error) {
     return (
-      <div role="alert" className="ls-alert ls-alert--error">
+      <Alert variant="error">
         <p>Veriler yüklenemedi.</p>
-        <button
-          type="button"
-          className="ls-btn ls-btn--neutral ls-btn--sm mt-[var(--space-2)]"
-          onClick={() => void refetch()}
+        <Button
+          color="secondary"
+          size="sm"
+          className="mt-[var(--space-2)]"
+          onPress={() => void refetch()}
         >
           Tekrar dene
-        </button>
-      </div>
+        </Button>
+      </Alert>
     );
   }
 
@@ -127,20 +129,20 @@ export function MasterDataTable({ type, filters = {} }: MasterDataTableProps) {
                 </td>
                 <td className="px-[var(--space-4)] py-[var(--space-3)] text-right">
                   <div className="flex items-center justify-end gap-[var(--space-2)]">
-                    <button
-                      type="button"
-                      className="ls-btn ls-btn--neutral ls-btn--xs"
-                      onClick={() => router.push(`/master-data/${type}/${item.id}`)}
+                    <Button
+                      color="secondary"
+                      size="xs"
+                      onPress={() => router.push(`/master-data/${type}/${item.id}`)}
                     >
                       Detay
-                    </button>
+                    </Button>
                     {item.isActive ? (
                       <PermissionGate permission={Permission.MASTER_DATA_MANAGE}>
-                        <button
-                          type="button"
-                          className="ls-btn ls-btn--danger ls-btn--xs"
-                          disabled={deactivateMutation.isPending}
-                          onClick={() => {
+                        <Button
+                          color="destructive"
+                          size="xs"
+                          isDisabled={deactivateMutation.isPending}
+                          onPress={() => {
                             if (!confirm('Bu kaydı pasif yapmak istediğinizden emin misiniz?'))
                               return;
                             deactivateMutation.mutate(item.id, {
@@ -151,15 +153,15 @@ export function MasterDataTable({ type, filters = {} }: MasterDataTableProps) {
                           }}
                         >
                           Pasif yap
-                        </button>
+                        </Button>
                       </PermissionGate>
                     ) : (
                       <PermissionGate permission={Permission.MASTER_DATA_MANAGE}>
-                        <button
-                          type="button"
-                          className="ls-btn ls-btn--primary ls-btn--xs"
-                          disabled={reactivateMutation.isPending}
-                          onClick={() => {
+                        <Button
+                          color="primary"
+                          size="xs"
+                          isDisabled={reactivateMutation.isPending}
+                          onPress={() => {
                             reactivateMutation.mutate(item.id, {
                               onSuccess: () => toast.success('Kayıt aktif yapıldı'),
                               onError: () => toast.error('İşlem başarısız'),
@@ -167,7 +169,7 @@ export function MasterDataTable({ type, filters = {} }: MasterDataTableProps) {
                           }}
                         >
                           Aktif yap
-                        </button>
+                        </Button>
                       </PermissionGate>
                     )}
                   </div>

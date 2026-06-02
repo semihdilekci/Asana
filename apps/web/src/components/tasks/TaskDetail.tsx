@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { isAxiosError } from 'axios';
 
+import { Alert, Button, ButtonLink } from '@/components/base';
 import { TaskHistoryTimeline } from '@/components/processes/TaskHistoryTimeline';
 import { useTaskDetailQuery } from '@/lib/queries/tasks';
 
@@ -37,35 +38,31 @@ export function TaskDetail({ taskId }: TaskDetailProps) {
       : undefined;
     if (status === 404 || code === 'TASK_NOT_FOUND') {
       return (
-        <div className="ls-alert ls-alert--danger" role="alert">
+        <Alert variant="error">
           <p>Görev bulunamadı.</p>
           <Link href="/tasks" className="mt-2 inline-block text-sm underline">
             Görevlerime dön
           </Link>
-        </div>
+        </Alert>
       );
     }
     if (status === 403 || code === 'TASK_ACCESS_DENIED') {
       return (
-        <div className="ls-alert ls-alert--danger" role="alert">
+        <Alert variant="error">
           <p>Bu görevi görüntüleme yetkiniz yok.</p>
           <Link href="/tasks" className="mt-2 inline-block text-sm underline">
             Görevlerime dön
           </Link>
-        </div>
+        </Alert>
       );
     }
     return (
-      <div className="ls-alert ls-alert--danger" role="alert">
+      <Alert variant="error">
         <p>Yüklenemedi.</p>
-        <button
-          type="button"
-          className="ls-btn ls-btn--neutral ls-btn--sm mt-2"
-          onClick={() => refetch()}
-        >
+        <Button color="secondary" size="sm" className="mt-2" onPress={() => void refetch()}>
           Tekrar dene
-        </button>
-      </div>
+        </Button>
+      </Alert>
     );
   }
 
@@ -121,12 +118,14 @@ export function TaskDetail({ taskId }: TaskDetailProps) {
             />
           </div>
         </div>
-        <Link
+        <ButtonLink
           href={`/processes/${encodeURIComponent(task.process.displayId)}`}
-          className="ls-btn ls-btn--neutral ls-btn--sm shrink-0"
+          color="secondary"
+          size="sm"
+          className="shrink-0"
         >
           Süreç Detayı
-        </Link>
+        </ButtonLink>
       </div>
 
       {isRevision ? (

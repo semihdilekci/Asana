@@ -159,3 +159,31 @@ export class AuthOidcInvalidClaimsException extends AppException {
     super('AUTH_OIDC_INVALID_CLAIMS', 'Kimlik sağlayıcıdan gelen kullanıcı bilgisi eksik.', 400);
   }
 }
+
+export class AuthImpersonationForbiddenException extends AppException {
+  constructor() {
+    super(
+      'AUTH_IMPERSONATION_FORBIDDEN',
+      'Bu kullanıcı adına oturum açma yetkiniz bulunmuyor.',
+      403,
+    );
+  }
+}
+
+export class AuthImpersonationNotActiveException extends AppException {
+  constructor() {
+    super('AUTH_IMPERSONATION_NOT_ACTIVE', 'Aktif bir impersonation oturumu bulunmuyor.', 409);
+  }
+}
+
+export class AuthImpersonationTargetInactiveException extends AppException {
+  constructor() {
+    super('AUTH_IMPERSONATION_TARGET_INACTIVE', 'Pasif kullanıcı adına oturum açılamaz.', 409);
+  }
+}
+
+export class AuthImpersonationTargetNotFoundException extends AppException {
+  constructor() {
+    super('AUTH_IMPERSONATION_TARGET_NOT_FOUND', 'Kullanıcı bulunamadı.', 404);
+  }
+}

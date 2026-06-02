@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 
 import { Permission } from '@leanmgmt/shared-types';
 
+import { Alert, Button } from '@/components/base';
 import { PermissionGate } from '@/components/shared/PermissionGate';
 import {
   useRevokeAllSessionsMutation,
@@ -42,16 +43,17 @@ export function UserSessions({ userId }: UserSessionsProps) {
 
   if (error) {
     return (
-      <div role="alert" className="ls-alert ls-alert--error">
+      <Alert variant="error">
         <p>Oturumlar yüklenemedi.</p>
-        <button
-          type="button"
-          className="ls-btn ls-btn--neutral ls-btn--sm mt-[var(--space-2)]"
-          onClick={() => void refetch()}
+        <Button
+          color="secondary"
+          size="sm"
+          className="mt-[var(--space-2)]"
+          onPress={() => void refetch()}
         >
           Tekrar dene
-        </button>
-      </div>
+        </Button>
+      </Alert>
     );
   }
 
@@ -65,11 +67,11 @@ export function UserSessions({ userId }: UserSessionsProps) {
         </p>
         {activeSessions.length > 0 && (
           <PermissionGate permission={Permission.USER_SESSION_REVOKE}>
-            <button
-              type="button"
-              className="ls-btn ls-btn--danger ls-btn--sm"
-              disabled={revokeAllMutation.isPending}
-              onClick={() => {
+            <Button
+              color="destructive"
+              size="sm"
+              isDisabled={revokeAllMutation.isPending}
+              onPress={() => {
                 if (!confirm('Tüm aktif oturumları iptal etmek istediğinizden emin misiniz?'))
                   return;
                 revokeAllMutation.mutate(userId, {
@@ -79,7 +81,7 @@ export function UserSessions({ userId }: UserSessionsProps) {
               }}
             >
               Tümünü iptal et
-            </button>
+            </Button>
           </PermissionGate>
         )}
       </div>
@@ -153,11 +155,11 @@ export function UserSessions({ userId }: UserSessionsProps) {
                   <td className="px-[var(--space-4)] py-[var(--space-3)] text-right">
                     {session.status === 'ACTIVE' && (
                       <PermissionGate permission={Permission.USER_SESSION_REVOKE}>
-                        <button
-                          type="button"
-                          className="ls-btn ls-btn--danger ls-btn--xs"
-                          disabled={revokeMutation.isPending}
-                          onClick={() => {
+                        <Button
+                          color="destructive"
+                          size="xs"
+                          isDisabled={revokeMutation.isPending}
+                          onPress={() => {
                             revokeMutation.mutate(
                               { userId, sessionId: session.id },
                               {
@@ -168,7 +170,7 @@ export function UserSessions({ userId }: UserSessionsProps) {
                           }}
                         >
                           İptal et
-                        </button>
+                        </Button>
                       </PermissionGate>
                     )}
                   </td>

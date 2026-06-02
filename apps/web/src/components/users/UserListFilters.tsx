@@ -3,6 +3,7 @@
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
+import { Button, inputClassName } from '@/components/base';
 import { useAllMasterDataQuery } from '@/lib/queries/master-data';
 
 const EMPLOYEE_TYPE_OPTIONS = [
@@ -137,17 +138,13 @@ export function UserListFiltersPanel() {
                   applySearch();
                 }
               }}
-              className="ls-input min-w-0 flex-1"
+              className={inputClassName('md', 'min-w-0 flex-1')}
               placeholder="Örn. Yılmaz veya sicil"
               autoComplete="off"
             />
-            <button
-              type="button"
-              className="ls-btn ls-btn--primary ls-btn--sm shrink-0"
-              onClick={applySearch}
-            >
+            <Button color="primary" size="sm" className="shrink-0" onPress={applySearch}>
               Ara
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -160,7 +157,7 @@ export function UserListFiltersPanel() {
           </label>
           <select
             id="filter-company"
-            className="ls-input mt-[var(--space-1)] w-full"
+            className={inputClassName('md', 'mt-[var(--space-1)] w-full')}
             value={searchParams.get('companyId') ?? ''}
             onChange={(e) => setFilterParams({ companyId: e.target.value || undefined })}
           >
@@ -182,7 +179,7 @@ export function UserListFiltersPanel() {
           </label>
           <select
             id="filter-location"
-            className="ls-input mt-[var(--space-1)] w-full"
+            className={inputClassName('md', 'mt-[var(--space-1)] w-full')}
             value={searchParams.get('locationId') ?? ''}
             onChange={(e) => setFilterParams({ locationId: e.target.value || undefined })}
           >
@@ -204,7 +201,7 @@ export function UserListFiltersPanel() {
           </label>
           <select
             id="filter-department"
-            className="ls-input mt-[var(--space-1)] w-full"
+            className={inputClassName('md', 'mt-[var(--space-1)] w-full')}
             value={searchParams.get('departmentId') ?? ''}
             onChange={(e) => setFilterParams({ departmentId: e.target.value || undefined })}
           >
@@ -226,7 +223,7 @@ export function UserListFiltersPanel() {
           </label>
           <select
             id="filter-position"
-            className="ls-input mt-[var(--space-1)] w-full"
+            className={inputClassName('md', 'mt-[var(--space-1)] w-full')}
             value={searchParams.get('positionId') ?? ''}
             onChange={(e) => setFilterParams({ positionId: e.target.value || undefined })}
           >
@@ -248,7 +245,7 @@ export function UserListFiltersPanel() {
           </label>
           <select
             id="filter-level"
-            className="ls-input mt-[var(--space-1)] w-full"
+            className={inputClassName('md', 'mt-[var(--space-1)] w-full')}
             value={searchParams.get('levelId') ?? ''}
             onChange={(e) => setFilterParams({ levelId: e.target.value || undefined })}
           >
@@ -270,7 +267,7 @@ export function UserListFiltersPanel() {
           </label>
           <select
             id="filter-employee-type"
-            className="ls-input mt-[var(--space-1)] w-full"
+            className={inputClassName('md', 'mt-[var(--space-1)] w-full')}
             value={searchParams.get('employeeType') ?? ''}
             onChange={(e) => setFilterParams({ employeeType: e.target.value || undefined })}
           >
@@ -291,7 +288,7 @@ export function UserListFiltersPanel() {
           </label>
           <select
             id="filter-is-active"
-            className="ls-input mt-[var(--space-1)] w-full"
+            className={inputClassName('md', 'mt-[var(--space-1)] w-full')}
             value={searchParams.get('isActive') ?? 'true'}
             onChange={(e) => {
               const v = e.target.value;
@@ -315,7 +312,7 @@ export function UserListFiltersPanel() {
           </label>
           <select
             id="filter-sort"
-            className="ls-input mt-[var(--space-1)] w-full"
+            className={inputClassName('md', 'mt-[var(--space-1)] w-full')}
             value={sortValue}
             onChange={(e) => {
               const v = e.target.value;
@@ -333,9 +330,9 @@ export function UserListFiltersPanel() {
 
       {hasActiveFilters && (
         <div className="mt-[var(--space-4)] flex justify-end border-t border-[var(--color-neutral-100)] pt-[var(--space-3)]">
-          <button type="button" className="ls-btn ls-btn--neutral ls-btn--sm" onClick={clearAll}>
+          <Button color="secondary" size="sm" onPress={clearAll}>
             Filtreleri temizle
-          </button>
+          </Button>
         </div>
       )}
     </div>

@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 
 import type { UpdateEmailTemplateInput } from '@leanmgmt/shared-schemas';
 
+import { Button, Card, inputClassName } from '@/components/base';
 import { LoadingSplash } from '@/components/shared/LoadingSplash';
 import { notificationEventLabel } from '@/lib/notification-ui';
 import {
@@ -152,16 +153,12 @@ export function EmailTemplateEditor({ eventType }: { eventType: string }) {
 
   if (isError || !data) {
     return (
-      <div className="ls-card p-[var(--space-8)] shadow-[var(--shadow-md)]">
+      <Card className="p-[var(--space-8)] shadow-[var(--shadow-md)]">
         <p className="text-[var(--color-danger-600)]">Şablon yüklenemedi.</p>
-        <button
-          type="button"
-          className="ls-btn ls-btn--neutral ls-btn--sm mt-3"
-          onClick={() => refetch()}
-        >
+        <Button color="secondary" size="sm" className="mt-3" onPress={() => refetch()}>
           Tekrar dene
-        </button>
-      </div>
+        </Button>
+      </Card>
     );
   }
 
@@ -175,7 +172,7 @@ export function EmailTemplateEditor({ eventType }: { eventType: string }) {
         <span className="text-[var(--color-neutral-900)]">{notificationEventLabel(eventType)}</span>
       </nav>
 
-      <div className="ls-card shadow-[var(--shadow-md)]">
+      <Card className="p-0 shadow-[var(--shadow-md)]">
         <div className="border-b border-[var(--color-neutral-200)] p-[var(--space-4)]">
           <h1 className="font-[family-name:var(--font-display)] text-xl font-semibold text-[var(--color-neutral-900)]">
             Şablon: {notificationEventLabel(eventType)}
@@ -191,7 +188,7 @@ export function EmailTemplateEditor({ eventType }: { eventType: string }) {
             <label className="block text-sm font-medium text-[var(--color-neutral-800)]">
               Konu
               <input
-                className="ls-input mt-1 w-full"
+                className={inputClassName('md', 'mt-1 w-full')}
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 maxLength={300}
@@ -201,7 +198,7 @@ export function EmailTemplateEditor({ eventType }: { eventType: string }) {
             <label className="block text-sm font-medium text-[var(--color-neutral-800)]">
               HTML gövde
               <textarea
-                className="ls-textarea mt-1 min-h-[220px] w-full font-mono text-xs"
+                className={inputClassName('md', 'mt-1 min-h-[220px] w-full font-mono text-xs')}
                 value={html}
                 onChange={(e) => setHtml(e.target.value)}
                 spellCheck={false}
@@ -211,7 +208,7 @@ export function EmailTemplateEditor({ eventType }: { eventType: string }) {
             <label className="block text-sm font-medium text-[var(--color-neutral-800)]">
               Düz metin gövde
               <textarea
-                className="ls-textarea mt-1 min-h-[120px] w-full font-mono text-xs"
+                className={inputClassName('md', 'mt-1 min-h-[120px] w-full font-mono text-xs')}
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 spellCheck={false}
@@ -221,7 +218,7 @@ export function EmailTemplateEditor({ eventType }: { eventType: string }) {
             <label className="block text-sm font-medium text-[var(--color-neutral-800)]">
               Zorunlu değişkenler (JSON dizi)
               <textarea
-                className="ls-textarea mt-1 min-h-[72px] w-full font-mono text-xs"
+                className={inputClassName('md', 'mt-1 min-h-[72px] w-full font-mono text-xs')}
                 value={requiredJson}
                 onChange={(e) => setRequiredJson(e.target.value)}
                 spellCheck={false}
@@ -231,7 +228,7 @@ export function EmailTemplateEditor({ eventType }: { eventType: string }) {
             <label className="block text-sm font-medium text-[var(--color-neutral-800)]">
               Önizleme değişkenleri (JSON nesne)
               <textarea
-                className="ls-textarea mt-1 min-h-[72px] w-full font-mono text-xs"
+                className={inputClassName('md', 'mt-1 min-h-[72px] w-full font-mono text-xs')}
                 value={varsJson}
                 onChange={(e) => setVarsJson(e.target.value)}
                 spellCheck={false}
@@ -239,40 +236,44 @@ export function EmailTemplateEditor({ eventType }: { eventType: string }) {
               />
             </label>
             <div className="flex flex-wrap gap-2">
-              <button
+              <Button
                 type="button"
-                className="ls-btn ls-btn--neutral ls-btn--sm"
-                onClick={() => void runPreview()}
-                disabled={previewMut.isPending}
+                color="secondary"
+                size="sm"
+                onPress={() => void runPreview()}
+                isDisabled={previewMut.isPending}
               >
                 {previewMut.isPending ? 'Önizleme…' : 'Önizlemeyi yenile'}
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
-                className="ls-btn ls-btn--primary ls-btn--sm"
-                onClick={() => void save()}
-                disabled={update.isPending}
+                color="primary"
+                size="sm"
+                onPress={() => void save()}
+                isDisabled={update.isPending}
               >
                 {update.isPending ? 'Kaydediliyor…' : 'Kaydet'}
-              </button>
+              </Button>
             </div>
             <div className="rounded border border-[var(--color-neutral-200)] p-[var(--space-3)]">
               <p className="text-sm font-medium text-[var(--color-neutral-800)]">Test e-postası</p>
               <input
                 type="email"
-                className="ls-input mt-2 w-full"
+                className={inputClassName('md', 'mt-2 w-full')}
                 value={testEmail}
                 onChange={(e) => setTestEmail(e.target.value)}
                 aria-label="Test alıcı e-postası"
               />
-              <button
+              <Button
                 type="button"
-                className="ls-btn ls-btn--neutral ls-btn--sm mt-2"
-                onClick={() => void sendTestEmail()}
-                disabled={sendTestMut.isPending}
+                color="secondary"
+                size="sm"
+                className="mt-2"
+                onPress={() => void sendTestEmail()}
+                isDisabled={sendTestMut.isPending}
               >
                 {sendTestMut.isPending ? 'Gönderiliyor…' : 'Test e-postası gönder'}
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -297,7 +298,7 @@ export function EmailTemplateEditor({ eventType }: { eventType: string }) {
             )}
           </div>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

@@ -8,6 +8,7 @@ import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { Alert, Button, ButtonLink, Card, inputClassName } from '@/components/base';
 import { apiClient, type ApiErrorBody } from '@/lib/api-client';
 
 const FormSchema = PasswordResetConfirmSchema;
@@ -56,24 +57,24 @@ export function ResetPasswordForm() {
 
   if (!tokenFromUrl) {
     return (
-      <div className="ls-card p-[var(--space-6)] shadow-[var(--shadow-md)]" role="alert">
-        <p className="mb-[var(--space-4)] text-sm text-[var(--color-neutral-700)]">
+      <Card className="p-[var(--space-6)] shadow-md" role="alert">
+        <p className="mb-[var(--space-4)] text-sm text-text-secondary">
           Geçerli bir sıfırlama bağlantısı bulunamadı. E-postadaki bağlantıyı kullanın veya yeni
           talep oluşturun.
         </p>
-        <Link href="/forgot-password" className="ls-btn ls-btn--secondary">
+        <ButtonLink href="/forgot-password" color="secondary">
           Şifre sıfırlama talebi
-        </Link>
-      </div>
+        </ButtonLink>
+      </Card>
     );
   }
 
   return (
-    <div className="ls-card p-[var(--space-6)] shadow-[var(--shadow-md)]">
-      <h1 className="mb-[var(--space-2)] text-xl font-semibold text-[var(--color-neutral-900)]">
+    <Card className="p-[var(--space-6)] shadow-md">
+      <h1 className="mb-[var(--space-2)] text-xl font-semibold text-text-primary">
         Yeni şifre belirle
       </h1>
-      <p className="mb-[var(--space-6)] text-sm text-[var(--color-neutral-600)]">
+      <p className="mb-[var(--space-6)] text-sm text-text-tertiary">
         En az 12 karakter; büyük, küçük harf, rakam ve özel karakter içermelidir.
       </p>
 
@@ -82,54 +83,46 @@ export function ResetPasswordForm() {
         onSubmit={form.handleSubmit(onSubmit)}
         noValidate
       >
-        {formError ? (
-          <div className="ls-alert ls-alert--danger" role="alert">
-            {formError}
-          </div>
-        ) : null}
+        {formError ? <Alert variant="error">{formError}</Alert> : null}
 
         <input type="hidden" {...form.register('token')} />
 
         <div className="flex flex-col gap-[var(--space-1)]">
-          <label
-            htmlFor="rp-password"
-            className="text-sm font-medium text-[var(--color-neutral-800)]"
-          >
+          <label htmlFor="rp-password" className="text-sm font-medium text-text-secondary">
             Yeni şifre
           </label>
           <input
             id="rp-password"
             type="password"
             autoComplete="new-password"
-            className="ls-input"
+            className={inputClassName()}
             aria-describedby="rp-password-hint"
             {...form.register('newPassword')}
           />
-          <p id="rp-password-hint" className="text-xs text-[var(--color-neutral-600)]">
+          <p id="rp-password-hint" className="text-xs text-text-tertiary">
             En az 12 karakter; büyük harf, küçük harf, rakam ve özel karakter zorunludur.
           </p>
           {form.formState.errors.newPassword?.message ? (
-            <p className="text-sm text-[var(--color-danger-600)]">
-              {form.formState.errors.newPassword.message}
-            </p>
+            <p className="text-sm text-error-600">{form.formState.errors.newPassword.message}</p>
           ) : null}
         </div>
 
-        <button
+        <Button
           type="submit"
-          className="ls-btn ls-btn--primary w-full"
-          disabled={form.formState.isSubmitting}
+          color="primary"
+          className="w-full"
+          isDisabled={form.formState.isSubmitting}
         >
           {form.formState.isSubmitting ? 'Kaydediliyor…' : 'Şifreyi güncelle'}
-        </button>
+        </Button>
 
         <Link
           href="/login"
-          className="text-center text-sm text-[var(--color-primary-600)] underline decoration-[var(--color-primary-600)] underline-offset-2"
+          className="text-center text-sm text-brand-600 underline decoration-brand-600 underline-offset-2"
         >
           Girişe dön
         </Link>
       </form>
-    </div>
+    </Card>
   );
 }

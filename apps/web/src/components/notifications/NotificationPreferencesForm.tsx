@@ -10,6 +10,7 @@ import {
   type NotificationPreferencesPutInput,
 } from '@leanmgmt/shared-schemas';
 
+import { Button, Card } from '@/components/base';
 import { LoadingSplash } from '@/components/shared/LoadingSplash';
 import { notificationEventLabel } from '@/lib/notification-ui';
 import {
@@ -49,98 +50,92 @@ export function NotificationPreferencesForm() {
 
   if (isError || !data?.length) {
     return (
-      <div className="ls-card p-[var(--space-8)] shadow-[var(--shadow-md)]">
+      <Card className="p-[var(--space-8)] shadow-[var(--shadow-md)]">
         <p className="text-[var(--color-danger-600)]">Tercihler yüklenemedi.</p>
-        <button
-          type="button"
-          className="ls-btn ls-btn--neutral ls-btn--sm mt-3"
-          onClick={() => refetch()}
-        >
+        <Button color="secondary" size="sm" className="mt-3" onPress={() => refetch()}>
           Tekrar dene
-        </button>
-      </div>
+        </Button>
+      </Card>
     );
   }
 
   const prefs = form.watch('preferences');
 
   return (
-    <form onSubmit={onSubmit} className="ls-card overflow-hidden shadow-[var(--shadow-md)]">
-      <div className="border-b border-[var(--color-neutral-200)] p-[var(--space-4)]">
-        <h1 className="font-[family-name:var(--font-display)] text-xl font-semibold text-[var(--color-neutral-900)]">
-          Bildirim Ayarları
-        </h1>
-        <p className="mt-1 text-sm text-[var(--color-neutral-600)]">
-          Bu sayfada yapılan değişiklikler tüm sistem kullanıcıları için geçerlidir.
-        </p>
-      </div>
+    <form onSubmit={onSubmit}>
+      <Card className="overflow-hidden p-0 shadow-[var(--shadow-md)]">
+        <div className="border-b border-[var(--color-neutral-200)] p-[var(--space-4)]">
+          <h1 className="font-[family-name:var(--font-display)] text-xl font-semibold text-[var(--color-neutral-900)]">
+            Bildirim Ayarları
+          </h1>
+          <p className="mt-1 text-sm text-[var(--color-neutral-600)]">
+            Bu sayfada yapılan değişiklikler tüm sistem kullanıcıları için geçerlidir.
+          </p>
+        </div>
 
-      <div
-        className="border-b border-[var(--color-primary-200)] bg-[var(--color-primary-a14)] px-[var(--space-4)] py-[var(--space-3)] text-sm text-[var(--color-neutral-800)]"
-        role="status"
-      >
-        <strong className="font-medium">Bilgi:</strong> Kanal tercihleri (uygulama içi / e-posta)
-        olay tipi bazında güncellenir. Günlük özet MVP kapsamında kullanılmıyor.
-      </div>
-
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[640px] border-collapse text-left text-sm">
-          <thead>
-            <tr className="border-b border-[var(--color-neutral-200)] bg-[var(--color-neutral-50)]">
-              <th className="px-[var(--space-3)] py-[var(--space-3)] font-medium text-[var(--color-neutral-800)]">
-                Olay
-              </th>
-              <th className="px-[var(--space-3)] py-[var(--space-3)] font-medium text-[var(--color-neutral-800)]">
-                Uygulama içi
-              </th>
-              <th className="px-[var(--space-3)] py-[var(--space-3)] font-medium text-[var(--color-neutral-800)]">
-                E-posta
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {prefs.map((_, index) => {
-              const row = prefs[index];
-              if (!row) return null;
-              return (
-                <tr key={row.eventType} className="border-b border-[var(--color-neutral-100)]">
-                  <td className="px-[var(--space-3)] py-[var(--space-2)] text-[var(--color-neutral-800)]">
-                    <span className="font-medium">{notificationEventLabel(row.eventType)}</span>
-                    <span className="mt-0.5 block text-xs text-[var(--color-neutral-500)]">
-                      {row.eventType}
-                    </span>
-                  </td>
-                  {(['inAppEnabled', 'emailEnabled'] as const).map((field) => (
-                    <td key={field} className="px-[var(--space-3)] py-[var(--space-2)]">
-                      <input
-                        type="checkbox"
-                        className="h-4 w-4 rounded border-[var(--color-neutral-300)]"
-                        checked={row[field]}
-                        onChange={(e) =>
-                          form.setValue(`preferences.${index}.${field}`, e.target.checked, {
-                            shouldDirty: true,
-                          })
-                        }
-                        aria-label={`${row.eventType} ${field}`}
-                      />
-                    </td>
-                  ))}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="flex justify-end gap-[var(--space-2)] border-t border-[var(--color-neutral-100)] p-[var(--space-4)]">
-        <button
-          type="submit"
-          className="ls-btn ls-btn--primary ls-btn--sm"
-          disabled={update.isPending || !form.formState.isDirty}
+        <div
+          className="border-b border-[var(--color-primary-200)] bg-[var(--color-primary-a14)] px-[var(--space-4)] py-[var(--space-3)] text-sm text-[var(--color-neutral-800)]"
+          role="status"
         >
-          {update.isPending ? 'Kaydediliyor…' : 'Kaydet'}
-        </button>
-      </div>
+          <strong className="font-medium">Bilgi:</strong> Kanal tercihleri (uygulama içi / e-posta)
+          olay tipi bazında güncellenir. Günlük özet MVP kapsamında kullanılmıyor.
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[640px] border-collapse text-left text-sm">
+            <thead>
+              <tr className="border-b border-[var(--color-neutral-200)] bg-[var(--color-neutral-50)]">
+                <th className="px-[var(--space-3)] py-[var(--space-3)] font-medium text-[var(--color-neutral-800)]">
+                  Olay
+                </th>
+                <th className="px-[var(--space-3)] py-[var(--space-3)] font-medium text-[var(--color-neutral-800)]">
+                  Uygulama içi
+                </th>
+                <th className="px-[var(--space-3)] py-[var(--space-3)] font-medium text-[var(--color-neutral-800)]">
+                  E-posta
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {prefs.map((_, index) => {
+                const row = prefs[index];
+                if (!row) return null;
+                return (
+                  <tr key={row.eventType} className="border-b border-[var(--color-neutral-100)]">
+                    <td className="px-[var(--space-3)] py-[var(--space-2)] text-[var(--color-neutral-800)]">
+                      <span className="font-medium">{notificationEventLabel(row.eventType)}</span>
+                      <span className="mt-0.5 block text-xs text-[var(--color-neutral-500)]">
+                        {row.eventType}
+                      </span>
+                    </td>
+                    {(['inAppEnabled', 'emailEnabled'] as const).map((field) => (
+                      <td key={field} className="px-[var(--space-3)] py-[var(--space-2)]">
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 rounded border-[var(--color-neutral-300)]"
+                          checked={row[field]}
+                          onChange={(e) =>
+                            form.setValue(`preferences.${index}.${field}`, e.target.checked, {
+                              shouldDirty: true,
+                            })
+                          }
+                          aria-label={`${row.eventType} ${field}`}
+                        />
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="flex justify-end gap-[var(--space-2)] border-t border-[var(--color-neutral-100)] p-[var(--space-4)]">
+          <Button type="submit" size="sm" isDisabled={update.isPending || !form.formState.isDirty}>
+            {update.isPending ? 'Kaydediliyor…' : 'Kaydet'}
+          </Button>
+        </div>
+      </Card>
     </form>
   );
 }

@@ -30,17 +30,32 @@ export interface AuthUser {
   manager?: AuthUserManager | null;
 }
 
+export interface ImpersonatorSummary {
+  id: string;
+  sicil: string;
+  firstName: string;
+  lastName: string;
+}
+
+export interface ImpersonationState {
+  active: boolean;
+  impersonator: ImpersonatorSummary | null;
+}
+
 interface AuthState {
   accessToken: string | null;
   accessTokenExpiresAt: string | null;
   csrfToken: string | null;
   currentUser: AuthUser | null;
+  impersonation: ImpersonationState;
   setAuth: (input: {
     accessToken: string;
     accessTokenExpiresAt: string;
     csrfToken: string;
     user: AuthUser;
+    impersonation?: ImpersonationState;
   }) => void;
+  setSessionUser: (input: { user: AuthUser; impersonation: ImpersonationState }) => void;
   setTokens: (input: {
     accessToken: string;
     accessTokenExpiresAt: string;
@@ -49,13 +64,26 @@ interface AuthState {
   clearAuth: () => void;
 }
 
+const DEFAULT_IMPERSONATION: ImpersonationState = {
+  active: false,
+  impersonator: null,
+};
+
 export const useAuthStore = create<AuthState>((set) => ({
   accessToken: null,
   accessTokenExpiresAt: null,
   csrfToken: null,
   currentUser: null,
-  setAuth: ({ accessToken, accessTokenExpiresAt, csrfToken, user }) =>
-    set({ accessToken, accessTokenExpiresAt, csrfToken, currentUser: user }),
+  impersonation: DEFAULT_IMPERSONATION,
+  setAuth: ({ accessToken, accessTokenExpiresAt, csrfToken, user, impersonation }) =>
+    set({
+      accessToken,
+      accessTokenExpiresAt,
+      csrfToken,
+      currentUser: user,
+      impersonation: impersonation ?? DEFAULT_IMPERSONATION,
+    }),
+  setSessionUser: ({ user, impersonation }) => set({ currentUser: user, impersonation }),
   setTokens: ({ accessToken, accessTokenExpiresAt, csrfToken }) =>
     set((s) => ({ ...s, accessToken, accessTokenExpiresAt, csrfToken })),
   clearAuth: () =>
@@ -64,5 +92,6 @@ export const useAuthStore = create<AuthState>((set) => ({
       accessTokenExpiresAt: null,
       csrfToken: null,
       currentUser: null,
+      impersonation: DEFAULT_IMPERSONATION,
     }),
 }));

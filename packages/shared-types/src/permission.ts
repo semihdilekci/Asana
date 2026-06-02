@@ -36,6 +36,7 @@ export enum Permission {
   CONSENT_VERSION_PUBLISH = 'CONSENT_VERSION_PUBLISH',
   USER_PROFILE_VIEW = 'USER_PROFILE_VIEW',
   MASTER_DATA_VIEW = 'MASTER_DATA_VIEW',
+  USER_IMPERSONATION = 'USER_IMPERSONATION',
 }
 
 export type PermissionCategory = 'MENU' | 'ACTION' | 'DATA' | 'FIELD';
@@ -245,6 +246,12 @@ export const PERMISSION_METADATA: Record<Permission, PermissionMetadata> = {
     category: 'DATA',
     description: 'Master data salt okunur listeleme',
     isSensitive: false,
+  },
+  [Permission.USER_IMPERSONATION]: {
+    key: Permission.USER_IMPERSONATION,
+    category: 'ACTION',
+    description: 'Kullanıcı impersonation (başka kullanıcı adına oturum)',
+    isSensitive: true,
   },
 };
 

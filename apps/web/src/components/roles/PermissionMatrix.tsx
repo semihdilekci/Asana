@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
+import { Button, inputClassName } from '@/components/base';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import { PermissionGate } from '@/components/shared/PermissionGate';
 import { useUnsavedChangesWarning } from '@/hooks/useUnsavedChangesWarning';
@@ -28,7 +29,7 @@ export function PermissionMatrix({ roleId }: { roleId: string }) {
   const replaceMutation = useReplaceRolePermissionsMutation(roleId);
 
   const initialKeys = useMemo(
-    () => new Set(filterKnownPermissionKeys(grantedRows?.map((r) => r.key) ?? [])),
+    () => new Set<string>(filterKnownPermissionKeys(grantedRows?.map((r) => r.key) ?? [])),
     [grantedRows],
   );
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -203,7 +204,7 @@ export function PermissionMatrix({ roleId }: { roleId: string }) {
 
       <input
         type="search"
-        className="ls-input max-w-md"
+        className={inputClassName('md', 'max-w-md')}
         placeholder="Yetki ara…"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
@@ -330,10 +331,10 @@ export function PermissionMatrix({ roleId }: { roleId: string }) {
             +{added.length} eklenecek, −{removed.length} kaldırılacak
           </p>
           <div className="flex gap-2">
-            <button
-              type="button"
-              className="ls-btn ls-btn--neutral ls-btn--sm"
-              onClick={() => {
+            <Button
+              color="secondary"
+              size="sm"
+              onPress={() => {
                 setSelected(
                   new Set(filterKnownPermissionKeys(grantedRows?.map((r) => r.key) ?? [])),
                 );
@@ -341,16 +342,16 @@ export function PermissionMatrix({ roleId }: { roleId: string }) {
               }}
             >
               Vazgeç
-            </button>
+            </Button>
             <PermissionGate permission={Permission.ROLE_PERMISSION_MANAGE}>
-              <button
-                type="button"
-                className="ls-btn ls-btn--primary ls-btn--sm"
-                disabled={replaceMutation.isPending}
-                onClick={() => setSaveDialogOpen(true)}
+              <Button
+                color="primary"
+                size="sm"
+                isDisabled={replaceMutation.isPending}
+                onPress={() => setSaveDialogOpen(true)}
               >
                 Kaydet
-              </button>
+              </Button>
             </PermissionGate>
           </div>
         </div>

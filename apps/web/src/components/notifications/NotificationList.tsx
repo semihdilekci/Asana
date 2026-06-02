@@ -8,6 +8,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { NOTIFICATION_EVENT_TYPES } from '@leanmgmt/shared-schemas';
 import type { NotificationListQuery } from '@leanmgmt/shared-schemas';
 
+import { Button, Card, inputClassName } from '@/components/base';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import {
   formatNotificationRelativeTime,
@@ -82,16 +83,16 @@ function ListRow({
       </button>
       {unread ? (
         <div className="flex items-center pr-[var(--space-2)]">
-          <button
-            type="button"
-            className="ls-btn ls-btn--neutral ls-btn--sm opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
-            onClick={(e) => {
-              e.stopPropagation();
+          <Button
+            color="secondary"
+            size="sm"
+            className="opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
+            onPress={() => {
               void markRead.mutateAsync(item.id).catch(() => {});
             }}
           >
             Okundu
-          </button>
+          </Button>
         </div>
       ) : null}
     </li>
@@ -143,7 +144,7 @@ export function NotificationList() {
   );
 
   return (
-    <div className="ls-card overflow-hidden shadow-[var(--shadow-md)]">
+    <Card className="overflow-hidden p-0 shadow-[var(--shadow-md)]">
       <div className="flex flex-col gap-[var(--space-4)] border-b border-[var(--color-neutral-200)] p-[var(--space-4)] sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="font-[family-name:var(--font-display)] text-xl font-semibold text-[var(--color-neutral-900)]">
@@ -153,37 +154,38 @@ export function NotificationList() {
             In-app bildirimleriniz; e-posta ayrı kanaldadır.
           </p>
         </div>
-        <button
-          type="button"
-          className="ls-btn ls-btn--neutral ls-btn--sm shrink-0 self-start disabled:opacity-50"
-          disabled={!unreadOnPage || markAll.isPending}
-          onClick={() => setConfirmAllOpen(true)}
+        <Button
+          color="secondary"
+          size="sm"
+          className="shrink-0 self-start"
+          isDisabled={!unreadOnPage || markAll.isPending}
+          onPress={() => setConfirmAllOpen(true)}
         >
           Tümünü okundu işaretle
-        </button>
+        </Button>
       </div>
 
       <div className="flex flex-col gap-[var(--space-3)] border-b border-[var(--color-neutral-100)] p-[var(--space-4)] sm:flex-row sm:flex-wrap">
         <div className="flex gap-2" role="tablist" aria-label="Okunma durumu">
-          <button
-            type="button"
-            className={`ls-btn ls-btn--sm ${isRead === 'false' ? 'ls-btn--primary' : 'ls-btn--neutral'}`}
-            onClick={() => setParam('isRead', 'false')}
+          <Button
+            size="sm"
+            color={isRead === 'false' ? 'primary' : 'secondary'}
+            onPress={() => setParam('isRead', 'false')}
           >
             Okunmamış
-          </button>
-          <button
-            type="button"
-            className={`ls-btn ls-btn--sm ${isRead === 'all' ? 'ls-btn--primary' : 'ls-btn--neutral'}`}
-            onClick={() => setParam('isRead', 'all')}
+          </Button>
+          <Button
+            size="sm"
+            color={isRead === 'all' ? 'primary' : 'secondary'}
+            onPress={() => setParam('isRead', 'all')}
           >
             Tümü
-          </button>
+          </Button>
         </div>
         <label className="flex items-center gap-2 text-sm text-[var(--color-neutral-700)]">
           <span className="shrink-0">Olay tipi</span>
           <select
-            className="ls-input min-w-[12rem] py-1.5 text-sm"
+            className={inputClassName('sm', 'min-w-[12rem] py-1.5')}
             value={eventType ?? ''}
             onChange={(e) => setParam('eventType', e.target.value || null)}
             aria-label="Olay tipi filtresi"
@@ -212,13 +214,9 @@ export function NotificationList() {
       {isError ? (
         <div className="p-[var(--space-6)] text-center">
           <p className="text-sm text-[var(--color-danger-600)]">Bildirimler yüklenemedi.</p>
-          <button
-            type="button"
-            className="ls-btn ls-btn--neutral ls-btn--sm mt-2"
-            onClick={() => refetch()}
-          >
+          <Button color="secondary" size="sm" className="mt-2" onPress={() => refetch()}>
             Tekrar dene
-          </button>
+          </Button>
         </div>
       ) : null}
 
@@ -247,14 +245,14 @@ export function NotificationList() {
           </ul>
           {hasNextPage ? (
             <div className="border-t border-[var(--color-neutral-100)] p-[var(--space-4)] text-center">
-              <button
-                type="button"
-                className="ls-btn ls-btn--neutral ls-btn--sm"
-                disabled={isFetchingNextPage}
-                onClick={() => fetchNextPage()}
+              <Button
+                color="secondary"
+                size="sm"
+                isDisabled={isFetchingNextPage}
+                onPress={() => fetchNextPage()}
               >
                 {isFetchingNextPage ? 'Yükleniyor…' : 'Daha fazla yükle'}
-              </button>
+              </Button>
             </div>
           ) : null}
         </>
@@ -272,6 +270,6 @@ export function NotificationList() {
           setConfirmAllOpen(false);
         }}
       />
-    </div>
+    </Card>
   );
 }

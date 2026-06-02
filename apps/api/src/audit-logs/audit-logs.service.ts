@@ -6,6 +6,8 @@ import type { AuditLogListQuery, AuditLogExportQuery } from '@leanmgmt/shared-sc
 import {
   bytesToNodeBuffer,
   decryptAes256GcmProbabilistic,
+  formatAuditActorDisplayLabel,
+  isImpersonationMutatingAudit,
   verifyAuditLogChain,
 } from '@leanmgmt/shared-utils';
 
@@ -181,8 +183,7 @@ export class AuditLogsService {
     }
 
     const filterSummary = this.summarizeFiltersForAudit(query);
-    await this.audit.append({
-      userId: actor.id,
+    await this.audit.appendForActor(actor, {
       action: 'EXPORT_AUDIT_LOG',
       entity: 'audit_log',
       entityId: null,
@@ -419,6 +420,19 @@ export class AuditLogsService {
     if (oldV) this.deepMaskPiiInPlace(oldV);
     if (newV) this.deepMaskPiiInPlace(newV);
 
+    const actorDisplayLabel =
+      userOut !== null
+        ? formatAuditActorDisplayLabel(
+            {
+              firstName: userOut.firstName,
+              lastName: userOut.lastName,
+              sicil: (userOut as { sicil: string | null }).sicil,
+            },
+            r.metadata,
+          )
+        : null;
+    const isImpersonationMutating = isImpersonationMutatingAudit(r.metadata);
+
     const base: Record<string, unknown> = {
       id: r.id,
       timestamp: r.timestamp.toISOString(),
@@ -430,6 +444,8 @@ export class AuditLogsService {
             lastName: userOut.lastName,
           }
         : null,
+      actorDisplayLabel,
+      isImpersonationMutating,
       action: r.action,
       entity: r.entity,
       entityId: r.entityId,

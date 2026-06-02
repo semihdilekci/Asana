@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { Alert, Button, ButtonLink, Card, inputClassName } from '@/components/base';
 import { apiClient, type ApiErrorBody } from '@/lib/api-client';
 
 type FormValues = z.infer<typeof PasswordResetRequestSchema>;
@@ -42,26 +43,26 @@ export function ForgotPasswordForm() {
 
   if (done) {
     return (
-      <div className="ls-card p-[var(--space-6)] shadow-[var(--shadow-md)]">
-        <h1 className="mb-[var(--space-2)] text-lg font-semibold text-[var(--color-neutral-900)]">
+      <Card className="p-[var(--space-6)] shadow-md">
+        <h1 className="mb-[var(--space-2)] text-lg font-semibold text-text-primary">
           E-posta gönderildi
         </h1>
-        <p className="mb-[var(--space-6)] text-sm text-[var(--color-neutral-600)]">
+        <p className="mb-[var(--space-6)] text-sm text-text-tertiary">
           Eğer bu email sistemde kayıtlıysa, şifre sıfırlama bağlantısı gönderildi.
         </p>
-        <Link href="/login" className="ls-btn ls-btn--secondary inline-block text-center">
+        <ButtonLink href="/login" color="secondary" className="inline-block text-center">
           Girişe dön
-        </Link>
-      </div>
+        </ButtonLink>
+      </Card>
     );
   }
 
   return (
-    <div className="ls-card p-[var(--space-6)] shadow-[var(--shadow-md)]">
-      <h1 className="mb-[var(--space-2)] font-[family-name:var(--font-display)] text-xl font-semibold text-[var(--color-neutral-900)]">
+    <Card className="p-[var(--space-6)] shadow-md">
+      <h1 className="mb-[var(--space-2)] font-display text-xl font-semibold text-text-primary">
         Şifre sıfırlama
       </h1>
-      <p className="mb-[var(--space-6)] text-sm text-[var(--color-neutral-600)]">
+      <p className="mb-[var(--space-6)] text-sm text-text-tertiary">
         Hesabınıza kayıtlı e-posta adresini girin; size bağlantı göndereceğiz.
       </p>
 
@@ -70,45 +71,40 @@ export function ForgotPasswordForm() {
         onSubmit={form.handleSubmit(onSubmit)}
         noValidate
       >
-        {formError ? (
-          <div className="ls-alert ls-alert--danger" role="alert">
-            {formError}
-          </div>
-        ) : null}
+        {formError ? <Alert variant="error">{formError}</Alert> : null}
 
         <div className="flex flex-col gap-[var(--space-1)]">
-          <label htmlFor="fp-email" className="text-sm font-medium text-[var(--color-neutral-800)]">
+          <label htmlFor="fp-email" className="text-sm font-medium text-text-secondary">
             E-posta
           </label>
           <input
             id="fp-email"
             type="email"
             autoComplete="email"
-            className="ls-input"
+            className={inputClassName()}
             {...form.register('email')}
           />
           {form.formState.errors.email?.message ? (
-            <p className="text-sm text-[var(--color-danger-600)]">
-              {form.formState.errors.email.message}
-            </p>
+            <p className="text-sm text-error-600">{form.formState.errors.email.message}</p>
           ) : null}
         </div>
 
-        <button
+        <Button
           type="submit"
-          className="ls-btn ls-btn--primary w-full"
-          disabled={form.formState.isSubmitting}
+          color="primary"
+          className="w-full"
+          isDisabled={form.formState.isSubmitting}
         >
           {form.formState.isSubmitting ? 'Gönderiliyor…' : 'Bağlantı gönder'}
-        </button>
+        </Button>
 
         <Link
           href="/login"
-          className="text-center text-sm text-[var(--color-primary-600)] underline decoration-[var(--color-primary-600)] underline-offset-2"
+          className="text-center text-sm text-brand-600 underline decoration-brand-600 underline-offset-2"
         >
           Girişe dön
         </Link>
       </form>
-    </div>
+    </Card>
   );
 }

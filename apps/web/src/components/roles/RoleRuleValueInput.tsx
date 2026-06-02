@@ -3,6 +3,7 @@
 import type { MasterDataType } from '@leanmgmt/shared-schemas';
 import { RoleRuleAttributeKey, RoleRuleConditionOperator } from '@leanmgmt/shared-types';
 
+import { inputClassName } from '@/components/base';
 import { useAllMasterDataQuery } from '@/lib/queries/master-data';
 
 const EMPLOYEE_TYPES = ['WHITE_COLLAR', 'BLUE_COLLAR', 'INTERN'] as const;
@@ -70,7 +71,7 @@ function EmployeeTypeValueInput({
         </div>
       ) : (
         <select
-          className="ls-input mt-0.5 block w-full text-sm"
+          className={inputClassName('md', 'mt-0.5 block w-full text-sm')}
           value={value}
           onChange={(e) => onChange(e.target.value)}
         >
@@ -140,7 +141,7 @@ function MasterDataValueInput({
     <label className="min-w-[10rem] flex-1 text-xs">
       Değer
       <select
-        className="ls-input mt-0.5 block w-full text-sm"
+        className={inputClassName('md', 'mt-0.5 block w-full text-sm')}
         value={value}
         onChange={(e) => onChange(e.target.value)}
       >
@@ -182,7 +183,7 @@ export function RoleRuleValueInput({
     <label className="min-w-[8rem] flex-1 text-xs">
       Değer
       <input
-        className="ls-input mt-0.5 block w-full text-sm"
+        className={inputClassName('md', 'mt-0.5 block w-full text-sm')}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={isMultiOperator(operator) ? 'Virgülle ayırın' : 'Değer'}

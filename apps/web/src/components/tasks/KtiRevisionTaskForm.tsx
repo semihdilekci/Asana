@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { KtiStartBodySchema, type KtiStartInput } from '@leanmgmt/shared-schemas';
 import { Permission } from '@leanmgmt/shared-types';
 
+import { Alert, Button, Card, inputClassName } from '@/components/base';
 import { DocumentUpload } from '@/components/documents/DocumentUpload';
 import { PermissionGate } from '@/components/shared/PermissionGate';
 import { useUnsavedChangesWarning } from '@/hooks/useUnsavedChangesWarning';
@@ -82,136 +83,138 @@ export function KtiRevisionTaskForm({ task }: { task: TaskDetail }) {
   };
 
   return (
-    <form
-      onSubmit={form.handleSubmit(onSubmit)}
-      className="ls-card space-y-[var(--space-5)] p-[var(--space-5)]"
-    >
-      <p className="text-sm text-[var(--color-neutral-700)]">
-        Yöneticinizin revize talebine göre formu güncelleyip yeniden gönderin.
-      </p>
-
-      <div>
-        <label
-          htmlFor="rev-company"
-          className="mb-[var(--space-1)] block text-sm font-medium text-[var(--color-neutral-900)]"
-        >
-          Şirket <span className="text-[var(--color-error-600)]">*</span>
-        </label>
-        {companiesLoading ? (
-          <p className="text-sm text-[var(--color-neutral-500)]" role="status">
-            Şirketler yükleniyor…
-          </p>
-        ) : (
-          <select
-            id="rev-company"
-            className="ls-input w-full max-w-md"
-            {...form.register('companyId')}
-          >
-            <option value="">Şirket seçin</option>
-            {companiesForUser.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name} ({c.code})
-              </option>
-            ))}
-          </select>
-        )}
-        {form.formState.errors.companyId ? (
-          <p className="mt-1 text-sm text-[var(--color-error-700)]">
-            {form.formState.errors.companyId.message}
-          </p>
-        ) : null}
-      </div>
-
-      <PermissionGate
-        permission={Permission.DOCUMENT_UPLOAD}
-        fallback={
-          <div className="ls-alert ls-alert--danger text-sm" role="alert">
-            Doküman yüklemek için <strong>DOCUMENT_UPLOAD</strong> yetkisi gerekir.
-          </div>
-        }
-      >
-        <DocumentUpload
-          label="Öncesi fotoğraflar *"
-          value={beforeIds}
-          onChange={(ids) =>
-            form.setValue('beforePhotoDocumentIds', ids, {
-              shouldDirty: true,
-              shouldValidate: true,
-            })
-          }
-        />
-        {form.formState.errors.beforePhotoDocumentIds ? (
-          <p className="text-sm text-[var(--color-error-700)]">
-            {form.formState.errors.beforePhotoDocumentIds.message as string}
-          </p>
-        ) : null}
-
-        <DocumentUpload
-          label="Sonrası fotoğraflar *"
-          value={afterIds}
-          onChange={(ids) =>
-            form.setValue('afterPhotoDocumentIds', ids, { shouldDirty: true, shouldValidate: true })
-          }
-        />
-        {form.formState.errors.afterPhotoDocumentIds ? (
-          <p className="text-sm text-[var(--color-error-700)]">
-            {form.formState.errors.afterPhotoDocumentIds.message as string}
-          </p>
-        ) : null}
-      </PermissionGate>
-
-      <div>
-        <label
-          htmlFor="rev-saving"
-          className="mb-[var(--space-1)] block text-sm font-medium text-[var(--color-neutral-900)]"
-        >
-          Kazanç tutarı (TL) <span className="text-[var(--color-error-600)]">*</span>
-        </label>
-        <input
-          id="rev-saving"
-          type="number"
-          min={0}
-          step={1}
-          className="ls-input max-w-xs"
-          {...form.register('savingAmount', { valueAsNumber: true })}
-        />
-        {form.formState.errors.savingAmount ? (
-          <p className="mt-1 text-sm text-[var(--color-error-700)]">
-            {form.formState.errors.savingAmount.message}
-          </p>
-        ) : null}
-      </div>
-
-      <div>
-        <label
-          htmlFor="rev-desc"
-          className="mb-[var(--space-1)] block text-sm font-medium text-[var(--color-neutral-900)]"
-        >
-          Açıklama <span className="text-[var(--color-error-600)]">*</span>
-        </label>
-        <textarea
-          id="rev-desc"
-          rows={6}
-          maxLength={5000}
-          className="ls-input min-h-[8rem] w-full"
-          aria-describedby="rev-desc-count"
-          {...form.register('description')}
-        />
-        <p id="rev-desc-count" className="mt-1 text-xs text-[var(--color-neutral-500)]">
-          {description.length} / 5000
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      <Card className="space-y-[var(--space-5)] p-[var(--space-5)]">
+        <p className="text-sm text-[var(--color-neutral-700)]">
+          Yöneticinizin revize talebine göre formu güncelleyip yeniden gönderin.
         </p>
-        {form.formState.errors.description ? (
-          <p className="mt-1 text-sm text-[var(--color-error-700)]">
-            {form.formState.errors.description.message}
-          </p>
-        ) : null}
-      </div>
 
-      <div className="flex justify-end">
-        <button type="submit" className="ls-btn ls-btn--primary" disabled={complete.isPending}>
-          {complete.isPending ? 'Gönderiliyor…' : 'Yeniden Gönder'}
-        </button>
-      </div>
+        <div>
+          <label
+            htmlFor="rev-company"
+            className="mb-[var(--space-1)] block text-sm font-medium text-[var(--color-neutral-900)]"
+          >
+            Şirket <span className="text-[var(--color-error-600)]">*</span>
+          </label>
+          {companiesLoading ? (
+            <p className="text-sm text-[var(--color-neutral-500)]" role="status">
+              Şirketler yükleniyor…
+            </p>
+          ) : (
+            <select
+              id="rev-company"
+              className={inputClassName('md', 'w-full max-w-md')}
+              {...form.register('companyId')}
+            >
+              <option value="">Şirket seçin</option>
+              {companiesForUser.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name} ({c.code})
+                </option>
+              ))}
+            </select>
+          )}
+          {form.formState.errors.companyId ? (
+            <p className="mt-1 text-sm text-[var(--color-error-700)]">
+              {form.formState.errors.companyId.message}
+            </p>
+          ) : null}
+        </div>
+
+        <PermissionGate
+          permission={Permission.DOCUMENT_UPLOAD}
+          fallback={
+            <Alert variant="error" className="text-sm">
+              Doküman yüklemek için <strong>DOCUMENT_UPLOAD</strong> yetkisi gerekir.
+            </Alert>
+          }
+        >
+          <DocumentUpload
+            label="Öncesi fotoğraflar *"
+            value={beforeIds}
+            onChange={(ids) =>
+              form.setValue('beforePhotoDocumentIds', ids, {
+                shouldDirty: true,
+                shouldValidate: true,
+              })
+            }
+          />
+          {form.formState.errors.beforePhotoDocumentIds ? (
+            <p className="text-sm text-[var(--color-error-700)]">
+              {form.formState.errors.beforePhotoDocumentIds.message as string}
+            </p>
+          ) : null}
+
+          <DocumentUpload
+            label="Sonrası fotoğraflar *"
+            value={afterIds}
+            onChange={(ids) =>
+              form.setValue('afterPhotoDocumentIds', ids, {
+                shouldDirty: true,
+                shouldValidate: true,
+              })
+            }
+          />
+          {form.formState.errors.afterPhotoDocumentIds ? (
+            <p className="text-sm text-[var(--color-error-700)]">
+              {form.formState.errors.afterPhotoDocumentIds.message as string}
+            </p>
+          ) : null}
+        </PermissionGate>
+
+        <div>
+          <label
+            htmlFor="rev-saving"
+            className="mb-[var(--space-1)] block text-sm font-medium text-[var(--color-neutral-900)]"
+          >
+            Kazanç tutarı (TL) <span className="text-[var(--color-error-600)]">*</span>
+          </label>
+          <input
+            id="rev-saving"
+            type="number"
+            min={0}
+            step={1}
+            className={inputClassName('md', 'max-w-xs')}
+            {...form.register('savingAmount', { valueAsNumber: true })}
+          />
+          {form.formState.errors.savingAmount ? (
+            <p className="mt-1 text-sm text-[var(--color-error-700)]">
+              {form.formState.errors.savingAmount.message}
+            </p>
+          ) : null}
+        </div>
+
+        <div>
+          <label
+            htmlFor="rev-desc"
+            className="mb-[var(--space-1)] block text-sm font-medium text-[var(--color-neutral-900)]"
+          >
+            Açıklama <span className="text-[var(--color-error-600)]">*</span>
+          </label>
+          <textarea
+            id="rev-desc"
+            rows={6}
+            maxLength={5000}
+            className={inputClassName('md', 'min-h-[8rem] w-full')}
+            aria-describedby="rev-desc-count"
+            {...form.register('description')}
+          />
+          <p id="rev-desc-count" className="mt-1 text-xs text-[var(--color-neutral-500)]">
+            {description.length} / 5000
+          </p>
+          {form.formState.errors.description ? (
+            <p className="mt-1 text-sm text-[var(--color-error-700)]">
+              {form.formState.errors.description.message}
+            </p>
+          ) : null}
+        </div>
+
+        <div className="flex justify-end">
+          <Button type="submit" color="primary" isDisabled={complete.isPending}>
+            {complete.isPending ? 'Gönderiliyor…' : 'Yeniden Gönder'}
+          </Button>
+        </div>
+      </Card>
     </form>
   );
 }

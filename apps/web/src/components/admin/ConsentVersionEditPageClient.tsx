@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 
 import { Permission } from '@leanmgmt/shared-types';
 
+import { Button, inputClassName } from '@/components/base';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import { LoadingSplash } from '@/components/shared/LoadingSplash';
 import { PermissionGate } from '@/components/shared/PermissionGate';
@@ -139,7 +140,7 @@ export function ConsentVersionEditPageClient() {
             <label className="block text-sm text-[var(--color-neutral-700)]">
               İçerik
               <textarea
-                className="ls-input mt-1 min-h-[16rem] w-full font-mono text-sm"
+                className={inputClassName('md', 'mt-1 min-h-[16rem] w-full font-mono text-sm')}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 minLength={100}
@@ -148,22 +149,24 @@ export function ConsentVersionEditPageClient() {
             </label>
             <p className="text-xs text-[var(--color-neutral-500)]">{content.length} karakter</p>
             <div className="flex flex-wrap gap-2">
-              <button
+              <Button
                 type="button"
-                className="ls-btn ls-btn--primary ls-btn--sm"
-                disabled={patch.isPending}
-                onClick={() => void onSave()}
+                color="primary"
+                size="sm"
+                isDisabled={patch.isPending}
+                onPress={() => void onSave()}
               >
                 {patch.isPending ? 'Kaydediliyor…' : 'Taslağı kaydet'}
-              </button>
+              </Button>
               <PermissionGate permission={Permission.CONSENT_VERSION_PUBLISH}>
-                <button
+                <Button
                   type="button"
-                  className="ls-btn ls-btn--neutral ls-btn--sm"
-                  onClick={() => setPublishOpen(true)}
+                  color="secondary"
+                  size="sm"
+                  onPress={() => setPublishOpen(true)}
                 >
                   Yayınla…
-                </button>
+                </Button>
               </PermissionGate>
             </div>
           </section>
@@ -198,7 +201,7 @@ export function ConsentVersionEditPageClient() {
           Yürürlük tarihi (yerel)
           <input
             type="datetime-local"
-            className="ls-input mt-1 w-full max-w-xs"
+            className={inputClassName('md', 'mt-1 w-full max-w-xs')}
             min={isoToDatetimeLocalValue(minEffectiveFromIsoForPublish(Date.now()))}
             value={effectiveLocal}
             onChange={(e) => setEffectiveLocal(e.target.value)}

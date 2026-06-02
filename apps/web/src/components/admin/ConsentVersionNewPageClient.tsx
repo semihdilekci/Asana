@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
+import { Button, inputClassName } from '@/components/base';
 import { useCreateConsentVersionMutation } from '@/lib/queries/admin-consent-versions';
 
 const PLACEHOLDER =
@@ -49,7 +50,7 @@ export function ConsentVersionNewPageClient() {
             required
             minLength={100}
             maxLength={50_000}
-            className="ls-input mt-1 min-h-[16rem] w-full font-mono text-sm"
+            className={inputClassName('md', 'mt-1 min-h-[16rem] w-full font-mono text-sm')}
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder={PLACEHOLDER}
@@ -58,13 +59,9 @@ export function ConsentVersionNewPageClient() {
         <p className="text-xs text-[var(--color-neutral-500)]">
           {content.length} / 50.000 karakter
         </p>
-        <button
-          type="submit"
-          className="ls-btn ls-btn--primary ls-btn--sm"
-          disabled={create.isPending}
-        >
+        <Button type="submit" color="primary" size="sm" isDisabled={create.isPending}>
           {create.isPending ? 'Oluşturuluyor…' : 'Taslak oluştur'}
-        </button>
+        </Button>
       </form>
     </div>
   );

@@ -1,9 +1,9 @@
 'use client';
 
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type { UseMutationResult } from '@tanstack/react-query';
 
+import { ButtonLink } from '@/components/base';
 import { formatNotificationRelativeTime, notificationEventIcon } from '@/lib/notification-ui';
 import type { NotificationItem } from '@/lib/queries/notifications';
 
@@ -97,13 +97,15 @@ export function NotificationDropdown({
         </ul>
       )}
       <div className="border-t border-[var(--color-neutral-100)] p-[var(--space-2)]">
-        <Link
+        <ButtonLink
           href="/notifications"
-          className="ls-btn ls-btn--neutral ls-btn--sm block w-full text-center no-underline"
+          color="secondary"
+          size="sm"
+          className="block w-full text-center no-underline"
           onClick={onClose}
         >
           Tümünü gör
-        </Link>
+        </ButtonLink>
       </div>
     </div>
   );

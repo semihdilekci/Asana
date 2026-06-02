@@ -3,6 +3,7 @@
 import { useReducedMotion } from 'framer-motion';
 import type { ReactNode } from 'react';
 
+import { Card } from '@/components/base';
 import { ElectricBorder } from '@/components/ui/ElectricBorder';
 
 const ELECTRIC_COLOR = '#7df9ff';
@@ -98,13 +99,13 @@ export function LoadingSplash({
   }
 
   return (
-    <div
-      className={`ls-card overflow-visible p-[var(--space-2)] shadow-[var(--shadow-md)] ${className}`}
+    <Card
+      className={`overflow-visible p-[var(--space-2)] shadow-[var(--shadow-md)] ${className}`}
       role="status"
       aria-live="polite"
       aria-busy="true"
     >
       {frame}
-    </div>
+    </Card>
   );
 }

@@ -12,6 +12,7 @@ import {
 } from '@leanmgmt/shared-schemas';
 
 import { AuditChainIntegrityPanel } from '@/components/admin/AuditChainIntegrityPanel';
+import { Badge, Button, inputClassName } from '@/components/base';
 import { SimpleAlertDialog } from '@/components/shared/SimpleAlertDialog';
 import {
   type AuditLogRow,
@@ -19,6 +20,14 @@ import {
   useAuditLogsInfiniteQuery,
 } from '@/lib/queries/admin-audit-logs';
 import { datetimeLocalToIsoUtc, isoToDatetimeLocalValue } from '@/lib/consent-publish-ui';
+function formatUserCell(row: AuditLogRow): string {
+  if (row.actorDisplayLabel) return row.actorDisplayLabel;
+  if (row.user) {
+    return `${row.user.firstName} ${row.user.lastName}${row.user.sicil ? ` · ${row.user.sicil}` : ''}`;
+  }
+  return '—';
+}
+
 function defaultRangeIso(): { from: string; to: string } {
   const to = new Date();
   const from = new Date(to.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -140,7 +149,7 @@ export function AuditLogsPageClient() {
             Başlangıç
             <input
               type="datetime-local"
-              className="ls-input min-w-[200px]"
+              className={inputClassName('md', 'min-w-[200px]')}
               value={localFrom}
               onChange={(e) => setLocalFrom(e.target.value)}
             />
@@ -149,7 +158,7 @@ export function AuditLogsPageClient() {
             Bitiş
             <input
               type="datetime-local"
-              className="ls-input min-w-[200px]"
+              className={inputClassName('md', 'min-w-[200px]')}
               value={localTo}
               onChange={(e) => setLocalTo(e.target.value)}
             />
@@ -158,7 +167,7 @@ export function AuditLogsPageClient() {
             Aksiyon
             <input
               type="text"
-              className="ls-input min-w-[140px]"
+              className={inputClassName('md', 'min-w-[140px]')}
               value={localAction}
               onChange={(e) => setLocalAction(e.target.value)}
               placeholder="örn. USER_CREATED"
@@ -168,27 +177,19 @@ export function AuditLogsPageClient() {
             Varlık
             <input
               type="text"
-              className="ls-input min-w-[140px]"
+              className={inputClassName('md', 'min-w-[140px]')}
               value={localEntity}
               onChange={(e) => setLocalEntity(e.target.value)}
               placeholder="örn. user"
             />
           </label>
           <div className="flex items-end gap-2">
-            <button
-              type="button"
-              className="ls-btn ls-btn--primary ls-btn--sm"
-              onClick={applyFilters}
-            >
+            <Button type="button" color="primary" size="sm" onPress={applyFilters}>
               Uygula
-            </button>
-            <button
-              type="button"
-              className="ls-btn ls-btn--neutral ls-btn--sm"
-              onClick={() => void onExport()}
-            >
+            </Button>
+            <Button type="button" color="secondary" size="sm" onPress={() => void onExport()}>
               CSV dışa aktar
-            </button>
+            </Button>
           </div>
         </div>
       </section>
@@ -230,7 +231,14 @@ export function AuditLogsPageClient() {
                     {new Date(r.timestamp).toLocaleString('tr-TR')}
                   </td>
                   <td className="px-3 py-2 font-mono text-xs text-[var(--color-neutral-800)]">
-                    {r.action}
+                    <span className="inline-flex flex-wrap items-center gap-1.5">
+                      {r.action}
+                      {r.isImpersonationMutating ? (
+                        <Badge color="warning" size="sm">
+                          Impersonation
+                        </Badge>
+                      ) : null}
+                    </span>
                   </td>
                   <td className="px-3 py-2 text-[var(--color-neutral-800)]">
                     {r.entity}
@@ -238,11 +246,7 @@ export function AuditLogsPageClient() {
                       <span className="text-[var(--color-neutral-500)]"> ({r.entityId})</span>
                     ) : null}
                   </td>
-                  <td className="px-3 py-2 text-[var(--color-neutral-800)]">
-                    {r.user
-                      ? `${r.user.firstName} ${r.user.lastName}${r.user.sicil ? ` · ${r.user.sicil}` : ''}`
-                      : '—'}
-                  </td>
+                  <td className="px-3 py-2 text-[var(--color-neutral-800)]">{formatUserCell(r)}</td>
                 </tr>
               ))
             )}
@@ -252,14 +256,15 @@ export function AuditLogsPageClient() {
 
       {infinite.hasNextPage ? (
         <div className="flex justify-center">
-          <button
+          <Button
             type="button"
-            className="ls-btn ls-btn--neutral ls-btn--sm"
-            disabled={infinite.isFetchingNextPage}
-            onClick={() => void infinite.fetchNextPage()}
+            color="secondary"
+            size="sm"
+            isDisabled={infinite.isFetchingNextPage}
+            onPress={() => void infinite.fetchNextPage()}
           >
             {infinite.isFetchingNextPage ? 'Yükleniyor…' : 'Daha fazla'}
-          </button>
+          </Button>
         </div>
       ) : null}
 

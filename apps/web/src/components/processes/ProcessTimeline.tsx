@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 
-import Link from 'next/link';
-
+import { Button, ButtonLink, Card } from '@/components/base';
+import { ActionPerformerLine } from '@/components/shared/ActionPerformerLine';
 import { STEP_LABEL_MAP } from '@/lib/step-labels';
 import type { ProcessTaskItem } from '@/lib/queries/processes';
 import { useAuthStore } from '@/stores/auth-store';
@@ -72,7 +72,7 @@ export function ProcessTimeline({ tasks }: { tasks: ProcessTaskItem[] }) {
                 className="absolute -left-[calc(var(--space-5)+5px)] mt-1.5 h-2.5 w-2.5 rounded-full border border-[var(--color-neutral-200)] bg-[var(--color-neutral-0)]"
                 aria-hidden
               />
-              <div className="ls-card space-y-[var(--space-3)] p-[var(--space-4)]">
+              <Card className="space-y-[var(--space-3)] p-[var(--space-4)]">
                 <div className="flex flex-wrap items-start justify-between gap-[var(--space-2)]">
                   <div>
                     <p className="text-sm font-medium text-[var(--color-neutral-900)]">
@@ -92,12 +92,13 @@ export function ProcessTimeline({ tasks }: { tasks: ProcessTaskItem[] }) {
                       </time>
                     ) : null}
                     {showGoToTask ? (
-                      <Link
+                      <ButtonLink
                         href={`/tasks/${encodeURIComponent(task.id)}`}
-                        className="ls-btn ls-btn--neutral ls-btn--sm"
+                        color="secondary"
+                        size="sm"
                       >
                         Göreve Git
-                      </Link>
+                      </ButtonLink>
                     ) : null}
                   </div>
                 </div>
@@ -107,11 +108,12 @@ export function ProcessTimeline({ tasks }: { tasks: ProcessTaskItem[] }) {
                     {task.assignedTo.sicil ? ` · Sicil ${task.assignedTo.sicil}` : ''}
                   </p>
                 ) : null}
-                {task.completedBy ? (
-                  <p className="text-sm text-[var(--color-neutral-700)]">
-                    Tamamlayan: {task.completedBy.firstName} {task.completedBy.lastName}
-                  </p>
-                ) : null}
+                <ActionPerformerLine
+                  roleLabel="Tamamlayan"
+                  performerDisplayLabel={task.performerDisplayLabel}
+                  performedViaImpersonation={task.performedViaImpersonation}
+                  user={task.completedBy}
+                />
                 {task.completionAction ? (
                   <p className="text-xs text-[var(--color-neutral-600)]">
                     İşlem: {task.completionAction}
@@ -124,16 +126,12 @@ export function ProcessTimeline({ tasks }: { tasks: ProcessTaskItem[] }) {
                 ) : null}
                 {showFormButton ? (
                   <div>
-                    <button
-                      type="button"
-                      className="ls-btn ls-btn--neutral ls-btn--sm"
-                      onClick={() => setModalTask(task)}
-                    >
+                    <Button color="secondary" size="sm" onPress={() => setModalTask(task)}>
                       Form Detayını Görüntüle
-                    </button>
+                    </Button>
                   </div>
                 ) : null}
-              </div>
+              </Card>
             </li>
           );
         })}

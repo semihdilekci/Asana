@@ -260,7 +260,7 @@ Signing secret AWS Secrets Manager'da tutulur: `lean-mgmt/prod/jwt-access-secret
 ```json
 {
   "sub": "user_uuid",
-  "sessionId": "session_uuid",
+  "sid": "session_uuid",
   "iat": 1714000000,
   "exp": 1714000900,
   "jti": "unique_token_id",
@@ -269,7 +269,22 @@ Signing secret AWS Secrets Manager'da tutulur: `lean-mgmt/prod/jwt-access-secret
 }
 ```
 
-Roller ve permission'lar **token'a kodlanmaz**. Nedeni: runtime'da rol değişirse token expire olana kadar eski yetki geçerli olurdu. Bunun yerine permission set request başına Redis'ten çekilir (aşağıda).
+**Impersonation aktifken** opsiyonel claim:
+
+```json
+{
+  "sub": "effective_target_user_uuid",
+  "imp": "impersonator_user_uuid",
+  "sid": "session_uuid",
+  "jti": "unique_token_id"
+}
+```
+
+- `sub` — permission resolver ve iş kuralları için **effective (hedef) kullanıcı**.
+- `imp` — yalnız impersonation modunda; audit ve lifecycle event'lerde **gerçek aktör**.
+- Detay: `docs/adr/0010-user-impersonation-jwt-audit-model.md`, Faz 13 `@63-phase-13-user-impersonation`.
+
+Roller ve permission'lar **token'a kodlanmaz**.
 
 **TTL:** 15 dakika. Kısa TTL + rotation stratejisi: access token leak window'u minimize edilir.
 
@@ -337,6 +352,23 @@ Key: family_revoked:{familyId}
 Value: { revokedAt, reason: "THEFT_DETECTED" | "USER_LOGOUT" | "PASSWORD_CHANGED" }
 TTL: 30 gün (forensic log)
 ```
+
+### 3.3.1 User Impersonation (Faz 13)
+
+Troubleshooting, denetim ve test için yetkili kullanıcılar hedef kullanıcı adına tam uygulama deneyimi yaşar. **ADR:** `docs/adr/0010-user-impersonation-jwt-audit-model.md`.
+
+| Kural           | Uygulama                                                                   |
+| --------------- | -------------------------------------------------------------------------- |
+| Yetki           | `USER_IMPERSONATION` (ACTION, `isSensitive: true`) — seçili rollere atanır |
+| Effective user  | JWT `sub`; permission resolver, bildirimler, menü hedef kullanıcıya göre   |
+| Gerçek aktör    | JWT `imp` (opsiyonel); audit `user_id` = impersonator                      |
+| Yasak hedefler  | Pasif kullanıcı, SUPERADMIN rolü, impersonator'ın kendisi                  |
+| Süre sınırı     | MVP'de yok                                                                 |
+| OIDC            | Impersonation OIDC login flow'una karışmaz — mevcut app session üzerinden  |
+| Endpoint'ler    | `POST /auth/impersonate/start`, `stop`, `switch` — CSRF + rate limit       |
+| Hedef bildirimi | MVP'de yok (“hesabınız görüntülendi” e-postası/push)                       |
+
+Audit görüntüleme: `{Impersonator Ad Soyad - sicil} ({Hedef Ad Soyad - sicil} yerine)` + **Impersonation** badge. Lifecycle: `IMPERSONATION_STARTED`, `IMPERSONATION_STOPPED`, `IMPERSONATION_SWITCHED`.
 
 ### 3.4 CSRF Token
 
@@ -703,6 +735,7 @@ MVP’de `Permission` enum’undaki tüm değerleri × 4 tablo satırı burada l
 | USER_CREATE            | ✓             | ✓          | ✓        | ✗        | ✗             |
 | USER_DEACTIVATE        | ✓             | ✓          | ✓        | ✗        | ✗             |
 | USER_SESSION_VIEW      | ✓             | ✓          | ✗        | ✗        | ✗             |
+| USER_IMPERSONATION     | ✓             | ○\*        | ✗        | ✗        | ✗             |
 | ROLE_PERMISSION_MANAGE | ✓             | ✓          | ✗        | ✓        | ✗             |
 | ROLE_RULE_MANAGE       | ✓             | ✓          | ✗        | ✓        | ✗             |
 | PROCESS_VIEW_ALL       | ✓             | ✓          | ✗        | ✗        | ✓             |
@@ -715,6 +748,8 @@ MVP’de `Permission` enum’undaki tüm değerleri × 4 tablo satırı burada l
 | MASTER_DATA_MANAGE     | —             | ✓          | ✓        | ✗        | ✗             |
 
 `isSensitive: true` olan permission'lar rol-yetki tablosu UI'da kırmızı "Hassas" rozeti ile işaretlenir ve atama sırasında ek onay gerekir (`06_SCREEN_CATALOG` S-ROLE-PERMISSIONS).
+
+\* `USER_IMPERSONATION` varsayılan sistem rollerine otomatik atanmaz; yalnız bilinçli rol ataması ile verilir (Superadmin tüm permission'lara sahip olabilir ama impersonation ayrı hassas yetkidir — hedef SUPERADMIN olamaz). Detay: ADR 0010, Faz 13.
 
 ---
 
@@ -1350,6 +1385,8 @@ Identifier: IP (authenticated olmayan endpoint'ler için) veya userId (authentic
 | `POST /auth/password-reset-request`         | email         | 3     | 1 saat | RATE_LIMIT_PASSWORD_RESET |
 | `POST /auth/password-reset-confirm`         | IP            | 10    | 1 saat | RATE_LIMIT_IP             |
 | `POST /auth/refresh`                        | userId        | 30    | 1 dk   | RATE_LIMIT_USER           |
+| `POST /auth/impersonate/start`              | userId        | 10    | 1 dk   | RATE_LIMIT_USER           |
+| `POST /auth/impersonate/switch`             | userId        | 10    | 1 dk   | RATE_LIMIT_USER           |
 | Tüm API (authenticated — default)           | userId        | 600   | 1 dk   | RATE_LIMIT_USER           |
 | Tüm API (unauth — default)                  | IP            | 60    | 1 dk   | RATE_LIMIT_IP             |
 | `POST /documents/upload-initiate`           | userId        | 20    | 1 dk   | RATE_LIMIT_UPLOAD         |

@@ -5,6 +5,7 @@ import { MASTER_DATA_TYPES } from '@leanmgmt/shared-schemas';
 import type { MasterDataType } from '@leanmgmt/shared-schemas';
 
 import { MASTER_DATA_TYPE_LABELS } from '@/lib/queries/master-data';
+import { Alert, Card } from '@/components/base';
 import { MasterDataForm } from '@/components/master-data/MasterDataForm';
 
 interface PageProps {
@@ -21,11 +22,7 @@ export default async function NewMasterDataPage({ params }: PageProps) {
   const { type } = await params;
 
   if (!MASTER_DATA_TYPES.includes(type as MasterDataType)) {
-    return (
-      <div role="alert" className="ls-alert ls-alert--error">
-        Geçersiz master data tipi: {type}
-      </div>
-    );
+    return <Alert variant="error">Geçersiz master data tipi: {type}</Alert>;
   }
 
   const typeName = MASTER_DATA_TYPE_LABELS[type as MasterDataType] ?? type;
@@ -54,9 +51,9 @@ export default async function NewMasterDataPage({ params }: PageProps) {
         Yeni {typeName} Oluştur
       </h1>
 
-      <div className="ls-card p-[var(--space-6)]">
+      <Card className="p-[var(--space-6)]">
         <MasterDataForm mode="create" type={type as MasterDataType} />
-      </div>
+      </Card>
     </div>
   );
 }

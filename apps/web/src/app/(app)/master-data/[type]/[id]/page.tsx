@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { MASTER_DATA_TYPES } from '@leanmgmt/shared-schemas';
 import type { MasterDataType } from '@leanmgmt/shared-schemas';
 
+import { Alert } from '@/components/base';
 import { MASTER_DATA_TYPE_LABELS } from '@/lib/queries/master-data';
 import { MasterDataDetailContent } from './MasterDataDetailContent';
 
@@ -21,11 +22,7 @@ export default async function MasterDataDetailPage({ params }: PageProps) {
   const { type, id } = await params;
 
   if (!MASTER_DATA_TYPES.includes(type as MasterDataType)) {
-    return (
-      <div role="alert" className="ls-alert ls-alert--error">
-        Geçersiz master data tipi: {type}
-      </div>
-    );
+    return <Alert variant="error">Geçersiz master data tipi: {type}</Alert>;
   }
 
   const typeName = MASTER_DATA_TYPE_LABELS[type as MasterDataType] ?? type;

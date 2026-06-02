@@ -6,19 +6,24 @@ import type { FastifyReply, FastifyRequest } from 'fastify';
 import {
   ChangePasswordSchema,
   ConsentAcceptSchema,
+  ImpersonateStartSchema,
   LoginSchema,
   PasswordResetConfirmSchema,
   PasswordResetRequestSchema,
   UpdateMyAvatarSchema,
   type ChangePasswordInput,
   type ConsentAcceptInput,
+  type ImpersonateStartInput,
   type LoginInput,
   type PasswordResetConfirmInput,
   type PasswordResetRequestInput,
   type UpdateMyAvatarInput,
 } from '@leanmgmt/shared-schemas';
 
+import { Permission } from '@leanmgmt/shared-types';
+
 import { Public } from '../common/decorators/public.decorator.js';
+import { RequireImpersonatorPermission } from '../common/decorators/require-impersonator-permission.decorator.js';
 import { SkipConsent } from '../common/decorators/skip-consent.decorator.js';
 import { SkipCsrf } from '../common/decorators/skip-csrf.decorator.js';
 import { SkipEnvelope } from '../common/decorators/skip-envelope.decorator.js';
@@ -34,6 +39,15 @@ import { AuthService } from './auth.service.js';
 import type { AccessTokenPayload } from './auth.types.js';
 import { buildPostOidcLoginUrl } from './oidc-login-redirect.js';
 import { OidcGoogleAuthService } from './oidc-google-auth.service.js';
+
+function toAccessTokenPayload(user: AuthenticatedUser): AccessTokenPayload {
+  return {
+    sub: user.id,
+    sid: user.sessionId,
+    jti: user.jti,
+    ...(user.impersonatorId ? { imp: user.impersonatorId } : {}),
+  };
+}
 
 @Controller('auth')
 export class AuthController {
@@ -125,7 +139,7 @@ export class AuthController {
     @Req() req: FastifyRequest,
     @Res({ passthrough: true }) reply: FastifyReply,
   ): Promise<void> {
-    const actor: AccessTokenPayload = { sub: user.id, sid: user.sessionId, jti: user.jti };
+    const actor = toAccessTokenPayload(user);
     await this.auth.logout(
       actor,
       req.ip ?? '0.0.0.0',
@@ -170,7 +184,7 @@ export class AuthController {
     @Req() req: FastifyRequest,
     @Res({ passthrough: true }) reply: FastifyReply,
   ): Promise<void> {
-    const actor: AccessTokenPayload = { sub: user.id, sid: user.sessionId, jti: user.jti };
+    const actor = toAccessTokenPayload(user);
     await this.auth.changePassword(
       actor,
       dto,
@@ -184,7 +198,7 @@ export class AuthController {
   @Get('me')
   @HttpCode(200)
   async me(@CurrentUser() user: AuthenticatedUser): Promise<Record<string, unknown>> {
-    return this.auth.getMe(user.id);
+    return this.auth.getMe(user);
   }
 
   @SkipConsent()
@@ -214,9 +228,55 @@ export class AuthController {
     @Body(createZodValidationPipe(ConsentAcceptSchema)) dto: ConsentAcceptInput,
     @Req() req: FastifyRequest,
   ): Promise<Record<string, unknown>> {
-    const actor: AccessTokenPayload = { sub: user.id, sid: user.sessionId, jti: user.jti };
+    const actor = toAccessTokenPayload(user);
     return this.auth.acceptConsent(
       actor,
+      dto,
+      req.ip ?? '0.0.0.0',
+      req.headers['user-agent'] ?? '',
+    );
+  }
+
+  @SkipConsent()
+  @RequireImpersonatorPermission(Permission.USER_IMPERSONATION)
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  @Post('impersonate/start')
+  @HttpCode(200)
+  async impersonateStart(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body(createZodValidationPipe(ImpersonateStartSchema)) dto: ImpersonateStartInput,
+    @Req() req: FastifyRequest,
+  ): Promise<Record<string, unknown>> {
+    return this.auth.impersonateStart(
+      user,
+      dto,
+      req.ip ?? '0.0.0.0',
+      req.headers['user-agent'] ?? '',
+    );
+  }
+
+  @SkipConsent()
+  @Post('impersonate/stop')
+  @HttpCode(200)
+  async impersonateStop(
+    @CurrentUser() user: AuthenticatedUser,
+    @Req() req: FastifyRequest,
+  ): Promise<Record<string, unknown>> {
+    return this.auth.impersonateStop(user, req.ip ?? '0.0.0.0', req.headers['user-agent'] ?? '');
+  }
+
+  @SkipConsent()
+  @RequireImpersonatorPermission(Permission.USER_IMPERSONATION)
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  @Post('impersonate/switch')
+  @HttpCode(200)
+  async impersonateSwitch(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body(createZodValidationPipe(ImpersonateStartSchema)) dto: ImpersonateStartInput,
+    @Req() req: FastifyRequest,
+  ): Promise<Record<string, unknown>> {
+    return this.auth.impersonateSwitch(
+      user,
       dto,
       req.ip ?? '0.0.0.0',
       req.headers['user-agent'] ?? '',
