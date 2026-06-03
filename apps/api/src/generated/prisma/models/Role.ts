@@ -214,7 +214,6 @@ export type RoleWhereInput = {
   userRoles?: Prisma.UserRoleListRelationFilter;
   rolePermissions?: Prisma.RolePermissionListRelationFilter;
   roleRules?: Prisma.RoleRuleListRelationFilter;
-  taskAssignments?: Prisma.TaskAssignmentListRelationFilter;
 };
 
 export type RoleOrderByWithRelationInput = {
@@ -231,7 +230,6 @@ export type RoleOrderByWithRelationInput = {
   userRoles?: Prisma.UserRoleOrderByRelationAggregateInput;
   rolePermissions?: Prisma.RolePermissionOrderByRelationAggregateInput;
   roleRules?: Prisma.RoleRuleOrderByRelationAggregateInput;
-  taskAssignments?: Prisma.TaskAssignmentOrderByRelationAggregateInput;
 };
 
 export type RoleWhereUniqueInput = Prisma.AtLeast<
@@ -255,7 +253,6 @@ export type RoleWhereUniqueInput = Prisma.AtLeast<
     userRoles?: Prisma.UserRoleListRelationFilter;
     rolePermissions?: Prisma.RolePermissionListRelationFilter;
     roleRules?: Prisma.RoleRuleListRelationFilter;
-    taskAssignments?: Prisma.TaskAssignmentListRelationFilter;
   },
   'id' | 'code'
 >;
@@ -303,7 +300,6 @@ export type RoleCreateInput = {
   userRoles?: Prisma.UserRoleCreateNestedManyWithoutRoleInput;
   rolePermissions?: Prisma.RolePermissionCreateNestedManyWithoutRoleInput;
   roleRules?: Prisma.RoleRuleCreateNestedManyWithoutRoleInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutRoleInput;
 };
 
 export type RoleUncheckedCreateInput = {
@@ -319,7 +315,6 @@ export type RoleUncheckedCreateInput = {
   userRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutRoleInput;
   rolePermissions?: Prisma.RolePermissionUncheckedCreateNestedManyWithoutRoleInput;
   roleRules?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutRoleInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutRoleInput;
 };
 
 export type RoleUpdateInput = {
@@ -335,7 +330,6 @@ export type RoleUpdateInput = {
   userRoles?: Prisma.UserRoleUpdateManyWithoutRoleNestedInput;
   rolePermissions?: Prisma.RolePermissionUpdateManyWithoutRoleNestedInput;
   roleRules?: Prisma.RoleRuleUpdateManyWithoutRoleNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutRoleNestedInput;
 };
 
 export type RoleUncheckedUpdateInput = {
@@ -351,7 +345,6 @@ export type RoleUncheckedUpdateInput = {
   userRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutRoleNestedInput;
   rolePermissions?: Prisma.RolePermissionUncheckedUpdateManyWithoutRoleNestedInput;
   roleRules?: Prisma.RoleRuleUncheckedUpdateManyWithoutRoleNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutRoleNestedInput;
 };
 
 export type RoleCreateManyInput = {
@@ -438,11 +431,6 @@ export type RoleMinOrderByAggregateInput = {
 export type RoleScalarRelationFilter = {
   is?: Prisma.RoleWhereInput;
   isNot?: Prisma.RoleWhereInput;
-};
-
-export type RoleNullableScalarRelationFilter = {
-  is?: Prisma.RoleWhereInput | null;
-  isNot?: Prisma.RoleWhereInput | null;
 };
 
 export type RoleCreateNestedManyWithoutCreatedByUserInput = {
@@ -609,34 +597,6 @@ export type RoleUpdateOneRequiredWithoutRolePermissionsNestedInput = {
   >;
 };
 
-export type RoleCreateNestedOneWithoutTaskAssignmentsInput = {
-  create?: Prisma.XOR<
-    Prisma.RoleCreateWithoutTaskAssignmentsInput,
-    Prisma.RoleUncheckedCreateWithoutTaskAssignmentsInput
-  >;
-  connectOrCreate?: Prisma.RoleCreateOrConnectWithoutTaskAssignmentsInput;
-  connect?: Prisma.RoleWhereUniqueInput;
-};
-
-export type RoleUpdateOneWithoutTaskAssignmentsNestedInput = {
-  create?: Prisma.XOR<
-    Prisma.RoleCreateWithoutTaskAssignmentsInput,
-    Prisma.RoleUncheckedCreateWithoutTaskAssignmentsInput
-  >;
-  connectOrCreate?: Prisma.RoleCreateOrConnectWithoutTaskAssignmentsInput;
-  upsert?: Prisma.RoleUpsertWithoutTaskAssignmentsInput;
-  disconnect?: Prisma.RoleWhereInput | boolean;
-  delete?: Prisma.RoleWhereInput | boolean;
-  connect?: Prisma.RoleWhereUniqueInput;
-  update?: Prisma.XOR<
-    Prisma.XOR<
-      Prisma.RoleUpdateToOneWithWhereWithoutTaskAssignmentsInput,
-      Prisma.RoleUpdateWithoutTaskAssignmentsInput
-    >,
-    Prisma.RoleUncheckedUpdateWithoutTaskAssignmentsInput
-  >;
-};
-
 export type RoleCreateWithoutCreatedByUserInput = {
   id?: string;
   code: string;
@@ -649,7 +609,6 @@ export type RoleCreateWithoutCreatedByUserInput = {
   userRoles?: Prisma.UserRoleCreateNestedManyWithoutRoleInput;
   rolePermissions?: Prisma.RolePermissionCreateNestedManyWithoutRoleInput;
   roleRules?: Prisma.RoleRuleCreateNestedManyWithoutRoleInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutRoleInput;
 };
 
 export type RoleUncheckedCreateWithoutCreatedByUserInput = {
@@ -664,7 +623,6 @@ export type RoleUncheckedCreateWithoutCreatedByUserInput = {
   userRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutRoleInput;
   rolePermissions?: Prisma.RolePermissionUncheckedCreateNestedManyWithoutRoleInput;
   roleRules?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutRoleInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutRoleInput;
 };
 
 export type RoleCreateOrConnectWithoutCreatedByUserInput = {
@@ -735,7 +693,6 @@ export type RoleCreateWithoutRoleRulesInput = {
   createdByUser?: Prisma.UserCreateNestedOneWithoutRolesCreatedInput;
   userRoles?: Prisma.UserRoleCreateNestedManyWithoutRoleInput;
   rolePermissions?: Prisma.RolePermissionCreateNestedManyWithoutRoleInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutRoleInput;
 };
 
 export type RoleUncheckedCreateWithoutRoleRulesInput = {
@@ -750,7 +707,6 @@ export type RoleUncheckedCreateWithoutRoleRulesInput = {
   createdByUserId?: string | null;
   userRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutRoleInput;
   rolePermissions?: Prisma.RolePermissionUncheckedCreateNestedManyWithoutRoleInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutRoleInput;
 };
 
 export type RoleCreateOrConnectWithoutRoleRulesInput = {
@@ -793,7 +749,6 @@ export type RoleUpdateWithoutRoleRulesInput = {
   createdByUser?: Prisma.UserUpdateOneWithoutRolesCreatedNestedInput;
   userRoles?: Prisma.UserRoleUpdateManyWithoutRoleNestedInput;
   rolePermissions?: Prisma.RolePermissionUpdateManyWithoutRoleNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutRoleNestedInput;
 };
 
 export type RoleUncheckedUpdateWithoutRoleRulesInput = {
@@ -808,7 +763,6 @@ export type RoleUncheckedUpdateWithoutRoleRulesInput = {
   createdByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   userRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutRoleNestedInput;
   rolePermissions?: Prisma.RolePermissionUncheckedUpdateManyWithoutRoleNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutRoleNestedInput;
 };
 
 export type RoleCreateWithoutUserRolesInput = {
@@ -823,7 +777,6 @@ export type RoleCreateWithoutUserRolesInput = {
   createdByUser?: Prisma.UserCreateNestedOneWithoutRolesCreatedInput;
   rolePermissions?: Prisma.RolePermissionCreateNestedManyWithoutRoleInput;
   roleRules?: Prisma.RoleRuleCreateNestedManyWithoutRoleInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutRoleInput;
 };
 
 export type RoleUncheckedCreateWithoutUserRolesInput = {
@@ -838,7 +791,6 @@ export type RoleUncheckedCreateWithoutUserRolesInput = {
   createdByUserId?: string | null;
   rolePermissions?: Prisma.RolePermissionUncheckedCreateNestedManyWithoutRoleInput;
   roleRules?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutRoleInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutRoleInput;
 };
 
 export type RoleCreateOrConnectWithoutUserRolesInput = {
@@ -881,7 +833,6 @@ export type RoleUpdateWithoutUserRolesInput = {
   createdByUser?: Prisma.UserUpdateOneWithoutRolesCreatedNestedInput;
   rolePermissions?: Prisma.RolePermissionUpdateManyWithoutRoleNestedInput;
   roleRules?: Prisma.RoleRuleUpdateManyWithoutRoleNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutRoleNestedInput;
 };
 
 export type RoleUncheckedUpdateWithoutUserRolesInput = {
@@ -896,7 +847,6 @@ export type RoleUncheckedUpdateWithoutUserRolesInput = {
   createdByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   rolePermissions?: Prisma.RolePermissionUncheckedUpdateManyWithoutRoleNestedInput;
   roleRules?: Prisma.RoleRuleUncheckedUpdateManyWithoutRoleNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutRoleNestedInput;
 };
 
 export type RoleCreateWithoutRolePermissionsInput = {
@@ -911,7 +861,6 @@ export type RoleCreateWithoutRolePermissionsInput = {
   createdByUser?: Prisma.UserCreateNestedOneWithoutRolesCreatedInput;
   userRoles?: Prisma.UserRoleCreateNestedManyWithoutRoleInput;
   roleRules?: Prisma.RoleRuleCreateNestedManyWithoutRoleInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutRoleInput;
 };
 
 export type RoleUncheckedCreateWithoutRolePermissionsInput = {
@@ -926,7 +875,6 @@ export type RoleUncheckedCreateWithoutRolePermissionsInput = {
   createdByUserId?: string | null;
   userRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutRoleInput;
   roleRules?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutRoleInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutRoleInput;
 };
 
 export type RoleCreateOrConnectWithoutRolePermissionsInput = {
@@ -969,7 +917,6 @@ export type RoleUpdateWithoutRolePermissionsInput = {
   createdByUser?: Prisma.UserUpdateOneWithoutRolesCreatedNestedInput;
   userRoles?: Prisma.UserRoleUpdateManyWithoutRoleNestedInput;
   roleRules?: Prisma.RoleRuleUpdateManyWithoutRoleNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutRoleNestedInput;
 };
 
 export type RoleUncheckedUpdateWithoutRolePermissionsInput = {
@@ -983,95 +930,6 @@ export type RoleUncheckedUpdateWithoutRolePermissionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   createdByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   userRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutRoleNestedInput;
-  roleRules?: Prisma.RoleRuleUncheckedUpdateManyWithoutRoleNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutRoleNestedInput;
-};
-
-export type RoleCreateWithoutTaskAssignmentsInput = {
-  id?: string;
-  code: string;
-  name: string;
-  description?: string | null;
-  isSystem?: boolean;
-  isActive?: boolean;
-  createdAt?: Date | string;
-  updatedAt?: Date | string;
-  createdByUser?: Prisma.UserCreateNestedOneWithoutRolesCreatedInput;
-  userRoles?: Prisma.UserRoleCreateNestedManyWithoutRoleInput;
-  rolePermissions?: Prisma.RolePermissionCreateNestedManyWithoutRoleInput;
-  roleRules?: Prisma.RoleRuleCreateNestedManyWithoutRoleInput;
-};
-
-export type RoleUncheckedCreateWithoutTaskAssignmentsInput = {
-  id?: string;
-  code: string;
-  name: string;
-  description?: string | null;
-  isSystem?: boolean;
-  isActive?: boolean;
-  createdAt?: Date | string;
-  updatedAt?: Date | string;
-  createdByUserId?: string | null;
-  userRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutRoleInput;
-  rolePermissions?: Prisma.RolePermissionUncheckedCreateNestedManyWithoutRoleInput;
-  roleRules?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutRoleInput;
-};
-
-export type RoleCreateOrConnectWithoutTaskAssignmentsInput = {
-  where: Prisma.RoleWhereUniqueInput;
-  create: Prisma.XOR<
-    Prisma.RoleCreateWithoutTaskAssignmentsInput,
-    Prisma.RoleUncheckedCreateWithoutTaskAssignmentsInput
-  >;
-};
-
-export type RoleUpsertWithoutTaskAssignmentsInput = {
-  update: Prisma.XOR<
-    Prisma.RoleUpdateWithoutTaskAssignmentsInput,
-    Prisma.RoleUncheckedUpdateWithoutTaskAssignmentsInput
-  >;
-  create: Prisma.XOR<
-    Prisma.RoleCreateWithoutTaskAssignmentsInput,
-    Prisma.RoleUncheckedCreateWithoutTaskAssignmentsInput
-  >;
-  where?: Prisma.RoleWhereInput;
-};
-
-export type RoleUpdateToOneWithWhereWithoutTaskAssignmentsInput = {
-  where?: Prisma.RoleWhereInput;
-  data: Prisma.XOR<
-    Prisma.RoleUpdateWithoutTaskAssignmentsInput,
-    Prisma.RoleUncheckedUpdateWithoutTaskAssignmentsInput
-  >;
-};
-
-export type RoleUpdateWithoutTaskAssignmentsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string;
-  code?: Prisma.StringFieldUpdateOperationsInput | string;
-  name?: Prisma.StringFieldUpdateOperationsInput | string;
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  createdByUser?: Prisma.UserUpdateOneWithoutRolesCreatedNestedInput;
-  userRoles?: Prisma.UserRoleUpdateManyWithoutRoleNestedInput;
-  rolePermissions?: Prisma.RolePermissionUpdateManyWithoutRoleNestedInput;
-  roleRules?: Prisma.RoleRuleUpdateManyWithoutRoleNestedInput;
-};
-
-export type RoleUncheckedUpdateWithoutTaskAssignmentsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string;
-  code?: Prisma.StringFieldUpdateOperationsInput | string;
-  name?: Prisma.StringFieldUpdateOperationsInput | string;
-  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  isSystem?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  createdByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  userRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutRoleNestedInput;
-  rolePermissions?: Prisma.RolePermissionUncheckedUpdateManyWithoutRoleNestedInput;
   roleRules?: Prisma.RoleRuleUncheckedUpdateManyWithoutRoleNestedInput;
 };
 
@@ -1098,7 +956,6 @@ export type RoleUpdateWithoutCreatedByUserInput = {
   userRoles?: Prisma.UserRoleUpdateManyWithoutRoleNestedInput;
   rolePermissions?: Prisma.RolePermissionUpdateManyWithoutRoleNestedInput;
   roleRules?: Prisma.RoleRuleUpdateManyWithoutRoleNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutRoleNestedInput;
 };
 
 export type RoleUncheckedUpdateWithoutCreatedByUserInput = {
@@ -1113,7 +970,6 @@ export type RoleUncheckedUpdateWithoutCreatedByUserInput = {
   userRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutRoleNestedInput;
   rolePermissions?: Prisma.RolePermissionUncheckedUpdateManyWithoutRoleNestedInput;
   roleRules?: Prisma.RoleRuleUncheckedUpdateManyWithoutRoleNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutRoleNestedInput;
 };
 
 export type RoleUncheckedUpdateManyWithoutCreatedByUserInput = {
@@ -1135,7 +991,6 @@ export type RoleCountOutputType = {
   userRoles: number;
   rolePermissions: number;
   roleRules: number;
-  taskAssignments: number;
 };
 
 export type RoleCountOutputTypeSelect<
@@ -1144,7 +999,6 @@ export type RoleCountOutputTypeSelect<
   userRoles?: boolean | RoleCountOutputTypeCountUserRolesArgs;
   rolePermissions?: boolean | RoleCountOutputTypeCountRolePermissionsArgs;
   roleRules?: boolean | RoleCountOutputTypeCountRoleRulesArgs;
-  taskAssignments?: boolean | RoleCountOutputTypeCountTaskAssignmentsArgs;
 };
 
 /**
@@ -1186,15 +1040,6 @@ export type RoleCountOutputTypeCountRoleRulesArgs<
   where?: Prisma.RoleRuleWhereInput;
 };
 
-/**
- * RoleCountOutputType without action
- */
-export type RoleCountOutputTypeCountTaskAssignmentsArgs<
-  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
-> = {
-  where?: Prisma.TaskAssignmentWhereInput;
-};
-
 export type RoleSelect<
   ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = runtime.Types.Extensions.GetSelect<
@@ -1212,7 +1057,6 @@ export type RoleSelect<
     userRoles?: boolean | Prisma.Role$userRolesArgs<ExtArgs>;
     rolePermissions?: boolean | Prisma.Role$rolePermissionsArgs<ExtArgs>;
     roleRules?: boolean | Prisma.Role$roleRulesArgs<ExtArgs>;
-    taskAssignments?: boolean | Prisma.Role$taskAssignmentsArgs<ExtArgs>;
     _count?: boolean | Prisma.RoleCountOutputTypeDefaultArgs<ExtArgs>;
   },
   ExtArgs['result']['role']
@@ -1287,7 +1131,6 @@ export type RoleInclude<
   userRoles?: boolean | Prisma.Role$userRolesArgs<ExtArgs>;
   rolePermissions?: boolean | Prisma.Role$rolePermissionsArgs<ExtArgs>;
   roleRules?: boolean | Prisma.Role$roleRulesArgs<ExtArgs>;
-  taskAssignments?: boolean | Prisma.Role$taskAssignmentsArgs<ExtArgs>;
   _count?: boolean | Prisma.RoleCountOutputTypeDefaultArgs<ExtArgs>;
 };
 export type RoleIncludeCreateManyAndReturn<
@@ -1310,7 +1153,6 @@ export type $RolePayload<
     userRoles: Prisma.$UserRolePayload<ExtArgs>[];
     rolePermissions: Prisma.$RolePermissionPayload<ExtArgs>[];
     roleRules: Prisma.$RoleRulePayload<ExtArgs>[];
-    taskAssignments: Prisma.$TaskAssignmentPayload<ExtArgs>[];
   };
   scalars: runtime.Types.Extensions.GetPayloadResult<
     {
@@ -1873,17 +1715,6 @@ export interface Prisma__RoleClient<
   ): Prisma.PrismaPromise<
     | runtime.Types.Result.GetResult<
         Prisma.$RoleRulePayload<ExtArgs>,
-        T,
-        'findMany',
-        GlobalOmitOptions
-      >
-    | Null
-  >;
-  taskAssignments<T extends Prisma.Role$taskAssignmentsArgs<ExtArgs> = {}>(
-    args?: Prisma.Subset<T, Prisma.Role$taskAssignmentsArgs<ExtArgs>>,
-  ): Prisma.PrismaPromise<
-    | runtime.Types.Result.GetResult<
-        Prisma.$TaskAssignmentPayload<ExtArgs>,
         T,
         'findMany',
         GlobalOmitOptions
@@ -2456,34 +2287,6 @@ export type Role$roleRulesArgs<
   take?: number;
   skip?: number;
   distinct?: Prisma.RoleRuleScalarFieldEnum | Prisma.RoleRuleScalarFieldEnum[];
-};
-
-/**
- * Role.taskAssignments
- */
-export type Role$taskAssignmentsArgs<
-  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
-> = {
-  /**
-   * Select specific fields to fetch from the TaskAssignment
-   */
-  select?: Prisma.TaskAssignmentSelect<ExtArgs> | null;
-  /**
-   * Omit specific fields from the TaskAssignment
-   */
-  omit?: Prisma.TaskAssignmentOmit<ExtArgs> | null;
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TaskAssignmentInclude<ExtArgs> | null;
-  where?: Prisma.TaskAssignmentWhereInput;
-  orderBy?:
-    | Prisma.TaskAssignmentOrderByWithRelationInput
-    | Prisma.TaskAssignmentOrderByWithRelationInput[];
-  cursor?: Prisma.TaskAssignmentWhereUniqueInput;
-  take?: number;
-  skip?: number;
-  distinct?: Prisma.TaskAssignmentScalarFieldEnum | Prisma.TaskAssignmentScalarFieldEnum[];
 };
 
 /**

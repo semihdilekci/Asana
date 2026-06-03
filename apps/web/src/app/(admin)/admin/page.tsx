@@ -40,15 +40,11 @@ function AdminSummaryMetrics() {
 
   if (!data) return null;
 
-  const items = [
-    { label: 'Aktif kullanıcı', value: data.activeUserCount },
-    { label: 'Açık süreç', value: data.openProcessCount },
-    { label: 'SLA gecikmiş görev', value: data.overdueTaskCount },
-  ] as const;
+  const items = [{ label: 'Aktif kullanıcı', value: data.activeUserCount }] as const;
 
   return (
     <div
-      className="grid gap-[var(--space-3)] sm:grid-cols-3"
+      className="grid gap-[var(--space-3)] sm:max-w-xs"
       role="region"
       aria-label="Kurumsal özet sayıları"
     >

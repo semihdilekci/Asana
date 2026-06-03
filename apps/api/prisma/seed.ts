@@ -39,15 +39,10 @@ const ALL_PERMISSION_KEYS: string[] = [
   'ROLE_PERMISSION_MANAGE',
   'ROLE_ASSIGN',
   'ROLE_RULE_MANAGE',
-  'PROCESS_KTI_START',
-  'PROCESS_CANCEL',
-  'PROCESS_ROLLBACK',
-  'PROCESS_VIEW_ALL',
   'MASTER_DATA_MANAGE',
   'AUDIT_LOG_VIEW',
   'SYSTEM_SETTINGS_VIEW',
   'SYSTEM_SETTINGS_EDIT',
-  'DOCUMENT_UPLOAD',
   'USER_SESSION_VIEW',
   'USER_SESSION_REVOKE',
   'USER_ANONYMIZE',
@@ -169,7 +164,7 @@ async function main(): Promise<void> {
     update: {},
   });
 
-  /** KTİ başlatma testleri ve süreç motoru için superadmin’e atanmış yönetici */
+  /** Auth / impersonation testleri için superadmin’e atanmış yönetici */
   const managerSicil = '00000003';
   const managerSicilEnc = encryptAes256GcmDeterministic(managerSicil, piiKey, 'user:sicil:v1');
   const managerSicilBlind = hmacBlindIndexHex(managerSicil, pepper);
@@ -214,7 +209,6 @@ async function main(): Promise<void> {
     },
     { code: 'USER_MANAGER', name: 'Kullanıcı Yöneticisi', isSystem: true, description: null },
     { code: 'ROLE_MANAGER', name: 'Rol ve Yetki Yöneticisi', isSystem: true, description: null },
-    { code: 'PROCESS_MANAGER', name: 'Süreç Yöneticisi', isSystem: true, description: null },
   ] as const;
 
   const createdRoles: { id: string; code: string }[] = [];
@@ -291,13 +285,6 @@ async function main(): Promise<void> {
     'MASTER_DATA_VIEW',
     'USER_IMPERSONATION',
   ];
-  const processManagerPerms = [
-    'PROCESS_VIEW_ALL',
-    'PROCESS_CANCEL',
-    'PROCESS_ROLLBACK',
-    'AUDIT_LOG_VIEW',
-  ];
-
   const grantToRole = async (code: string, keys: string[]): Promise<void> => {
     const role = createdRoles.find((x) => x.code === code);
     if (!role) return;
@@ -318,7 +305,6 @@ async function main(): Promise<void> {
 
   await grantToRole('ROLE_MANAGER', roleManagerPerms);
   await grantToRole('USER_MANAGER', userManagerPerms);
-  await grantToRole('PROCESS_MANAGER', processManagerPerms);
 
   await prisma.userRole.upsert({
     where: {
@@ -458,28 +444,28 @@ async function main(): Promise<void> {
     update: {},
   });
 
-  /** Faz 4: integration — USER_LIST_VIEW dışı yetkilerle kullanıcı */
-  const processManagerRole = createdRoles.find((x) => x.code === 'PROCESS_MANAGER');
-  if (!processManagerRole) throw new Error('PROCESS_MANAGER rolü yok');
-  const onlyProcSicil = '00000009';
-  const onlyProcSicilEnc = encryptAes256GcmDeterministic(onlyProcSicil, piiKey, 'user:sicil:v1');
-  const onlyProcSicilBlind = hmacBlindIndexHex(onlyProcSicil, pepper);
-  const onlyProcEmail = 'integration_process@leanmgmt.local';
-  const onlyProcEnc = encryptAes256GcmDeterministic(onlyProcEmail, piiKey, 'user:email:v1');
-  const onlyProcBlind = hmacBlindIndexHex(onlyProcEmail, pepper);
-  const onlyProcPassword = process.env.SEED_INTEGRATION_PROCESS_PASSWORD ?? 'OnlyProc123!@#';
-  const onlyProcHash = await bcrypt.hash(onlyProcPassword, BCRYPT_COST);
+  /** Faz 4: integration — USER_LIST_VIEW dışı (ROLE_MANAGER) kullanıcı */
+  const roleManagerRole = createdRoles.find((x) => x.code === 'ROLE_MANAGER');
+  if (!roleManagerRole) throw new Error('ROLE_MANAGER rolü yok');
+  const limitedSicil = '00000009';
+  const limitedSicilEnc = encryptAes256GcmDeterministic(limitedSicil, piiKey, 'user:sicil:v1');
+  const limitedSicilBlind = hmacBlindIndexHex(limitedSicil, pepper);
+  const limitedEmail = 'integration_limited@leanmgmt.local';
+  const limitedEnc = encryptAes256GcmDeterministic(limitedEmail, piiKey, 'user:email:v1');
+  const limitedBlind = hmacBlindIndexHex(limitedEmail, pepper);
+  const limitedPassword = process.env.SEED_INTEGRATION_LIMITED_PASSWORD ?? 'OnlyLim123!@#';
+  const limitedHash = await bcrypt.hash(limitedPassword, BCRYPT_COST);
 
-  const onlyProcessUser = await prisma.user.upsert({
-    where: { sicilBlindIndex: onlyProcSicilBlind },
+  const integrationLimitedUser = await prisma.user.upsert({
+    where: { sicilBlindIndex: limitedSicilBlind },
     create: {
-      sicilEncrypted: bufferToPrismaBytes(onlyProcSicilEnc),
-      sicilBlindIndex: onlyProcSicilBlind,
-      firstName: 'Proc',
-      lastName: 'Only',
-      emailEncrypted: bufferToPrismaBytes(onlyProcEnc),
-      emailBlindIndex: onlyProcBlind,
-      passwordHash: onlyProcHash,
+      sicilEncrypted: bufferToPrismaBytes(limitedSicilEnc),
+      sicilBlindIndex: limitedSicilBlind,
+      firstName: 'Integ',
+      lastName: 'Limited',
+      emailEncrypted: bufferToPrismaBytes(limitedEnc),
+      emailBlindIndex: limitedBlind,
+      passwordHash: limitedHash,
       employeeType: 'WHITE_COLLAR',
       companyId: company.id,
       locationId: location.id,
@@ -495,36 +481,124 @@ async function main(): Promise<void> {
   });
   await prisma.userRole.upsert({
     where: {
-      userId_roleId: { userId: onlyProcessUser.id, roleId: processManagerRole.id },
+      userId_roleId: { userId: integrationLimitedUser.id, roleId: roleManagerRole.id },
     },
     create: {
-      userId: onlyProcessUser.id,
-      roleId: processManagerRole.id,
+      userId: integrationLimitedUser.id,
+      roleId: roleManagerRole.id,
       assignedByUserId: superadmin.id,
     },
     update: {},
   });
-  const onlyProcSignature = createHash('sha256')
-    .update(`${onlyProcessUser.id}:${publishedConsent.id}:${pepperHex}`)
+  const limitedConsentSignature = createHash('sha256')
+    .update(`${integrationLimitedUser.id}:${publishedConsent.id}:${pepperHex}`)
     .digest('hex');
   await prisma.userConsent.upsert({
     where: {
       userId_consentVersionId: {
-        userId: onlyProcessUser.id,
+        userId: integrationLimitedUser.id,
         consentVersionId: publishedConsent.id,
       },
     },
     create: {
-      userId: onlyProcessUser.id,
+      userId: integrationLimitedUser.id,
       consentVersionId: publishedConsent.id,
-      ipHash: createHash('sha256').update('seed-onlyproc').digest('hex'),
+      ipHash: createHash('sha256').update('seed-integration-limited').digest('hex'),
       userAgent: 'seed',
-      signature: onlyProcSignature,
+      signature: limitedConsentSignature,
     },
     update: {},
   });
 
-  /** E2E / impersonation hedefi — Rıza (consent pending) yerine; mutating aksiyon testleri için USER_MANAGER */
+  /** Integration — yalnızca AUDIT_LOG_VIEW (admin summary testi) */
+  const auditViewerRole = await prisma.role.upsert({
+    where: { code: 'INTEGRATION_AUDIT_VIEWER' },
+    create: {
+      code: 'INTEGRATION_AUDIT_VIEWER',
+      name: 'Integration Audit Viewer',
+      description: 'CI: admin summary salt okunur erişim',
+      isSystem: false,
+      createdByUserId: superadmin.id,
+    },
+    update: {},
+  });
+  await prisma.rolePermission.upsert({
+    where: {
+      roleId_permissionKey: {
+        roleId: auditViewerRole.id,
+        permissionKey: 'AUDIT_LOG_VIEW',
+      },
+    },
+    create: {
+      roleId: auditViewerRole.id,
+      permissionKey: 'AUDIT_LOG_VIEW',
+      grantedByUserId: superadmin.id,
+    },
+    update: {},
+  });
+  const auditSicil = '00000011';
+  const auditSicilEnc = encryptAes256GcmDeterministic(auditSicil, piiKey, 'user:sicil:v1');
+  const auditSicilBlind = hmacBlindIndexHex(auditSicil, pepper);
+  const auditEmail = 'integration_audit@leanmgmt.local';
+  const auditEnc = encryptAes256GcmDeterministic(auditEmail, piiKey, 'user:email:v1');
+  const auditBlind = hmacBlindIndexHex(auditEmail, pepper);
+  const auditPassword = process.env.SEED_INTEGRATION_AUDIT_PASSWORD ?? 'OnlyAudit123!@#';
+  const auditHash = await bcrypt.hash(auditPassword, BCRYPT_COST);
+  const integrationAuditUser = await prisma.user.upsert({
+    where: { sicilBlindIndex: auditSicilBlind },
+    create: {
+      sicilEncrypted: bufferToPrismaBytes(auditSicilEnc),
+      sicilBlindIndex: auditSicilBlind,
+      firstName: 'Integ',
+      lastName: 'Audit',
+      emailEncrypted: bufferToPrismaBytes(auditEnc),
+      emailBlindIndex: auditBlind,
+      passwordHash: auditHash,
+      employeeType: 'WHITE_COLLAR',
+      companyId: company.id,
+      locationId: location.id,
+      departmentId: department.id,
+      positionId: position.id,
+      levelId: level.id,
+      teamId: team.id,
+      workAreaId: workArea.id,
+      workSubAreaId: workSubArea.id,
+      passwordChangedAt: new Date(),
+    },
+    update: {},
+  });
+  await prisma.userRole.upsert({
+    where: {
+      userId_roleId: { userId: integrationAuditUser.id, roleId: auditViewerRole.id },
+    },
+    create: {
+      userId: integrationAuditUser.id,
+      roleId: auditViewerRole.id,
+      assignedByUserId: superadmin.id,
+    },
+    update: {},
+  });
+  const auditConsentSignature = createHash('sha256')
+    .update(`${integrationAuditUser.id}:${publishedConsent.id}:${pepperHex}`)
+    .digest('hex');
+  await prisma.userConsent.upsert({
+    where: {
+      userId_consentVersionId: {
+        userId: integrationAuditUser.id,
+        consentVersionId: publishedConsent.id,
+      },
+    },
+    create: {
+      userId: integrationAuditUser.id,
+      consentVersionId: publishedConsent.id,
+      ipHash: createHash('sha256').update('seed-integration-audit').digest('hex'),
+      userAgent: 'seed',
+      signature: auditConsentSignature,
+    },
+    update: {},
+  });
+
+  /** E2E / impersonation hedefi — mutating aksiyon testleri için USER_MANAGER */
   const e2eTargetSicil = '00000010';
   const e2eTargetSicilEnc = encryptAes256GcmDeterministic(e2eTargetSicil, piiKey, 'user:sicil:v1');
   const e2eTargetSicilBlind = hmacBlindIndexHex(e2eTargetSicil, pepper);
@@ -623,14 +697,6 @@ async function main(): Promise<void> {
   /** Faz 7 iter 2 — varsayılan e-posta şablonları (tekrar seed: update boş, admin düzenlemesi korunur) */
   const defaultEmailTemplates: {
     eventType:
-      | 'TASK_ASSIGNED'
-      | 'TASK_CLAIMED_BY_PEER'
-      | 'SLA_WARNING'
-      | 'SLA_BREACH'
-      | 'PROCESS_COMPLETED'
-      | 'PROCESS_REJECTED'
-      | 'PROCESS_CANCELLED'
-      | 'ROLLBACK_PERFORMED'
       | 'PASSWORD_RESET_REQUESTED'
       | 'PASSWORD_CHANGED'
       | 'PASSWORD_EXPIRY_WARNING'
@@ -643,69 +709,6 @@ async function main(): Promise<void> {
     textBodyTemplate: string;
     requiredVariables: string[];
   }[] = [
-    {
-      eventType: 'TASK_ASSIGNED',
-      subjectTemplate: 'Yeni görev: {{taskTitle}}',
-      htmlBodyTemplate:
-        '<p>Merhaba {{firstName}},</p><p><strong>{{taskTitle}}</strong> adımı için görev atandı. Süreç: {{displayId}}</p>',
-      textBodyTemplate: 'Merhaba {{firstName}}, {{taskTitle}} görevi atandı. Süreç {{displayId}}.',
-      requiredVariables: ['firstName', 'taskTitle', 'displayId'],
-    },
-    {
-      eventType: 'TASK_CLAIMED_BY_PEER',
-      subjectTemplate: 'Görev üstlenildi: {{displayId}}',
-      htmlBodyTemplate:
-        '<p>Merhaba {{firstName}},</p><p>{{displayId}} sürecinde görevi başka bir aday üstlendi.</p>',
-      textBodyTemplate: 'Merhaba {{firstName}}, {{displayId}} — görev başka kullanıcıda.',
-      requiredVariables: ['firstName', 'displayId'],
-    },
-    {
-      eventType: 'SLA_WARNING',
-      subjectTemplate: 'SLA uyarısı: {{taskTitle}}',
-      htmlBodyTemplate:
-        '<p>Merhaba {{firstName}},</p><p>{{taskTitle}} görevi için SLA süresi yaklaşıyor ({{displayId}}).</p>',
-      textBodyTemplate: 'Merhaba {{firstName}}, {{taskTitle}} SLA uyarısı. {{displayId}}',
-      requiredVariables: ['firstName', 'taskTitle', 'displayId'],
-    },
-    {
-      eventType: 'SLA_BREACH',
-      subjectTemplate: 'SLA aşımı: {{taskTitle}}',
-      htmlBodyTemplate:
-        '<p>Merhaba {{firstName}},</p><p>{{taskTitle}} görevinde SLA aşıldı. Süreç: {{displayId}}.</p>',
-      textBodyTemplate: 'Merhaba {{firstName}}, {{taskTitle}} SLA aşımı. {{displayId}}',
-      requiredVariables: ['firstName', 'taskTitle', 'displayId'],
-    },
-    {
-      eventType: 'PROCESS_COMPLETED',
-      subjectTemplate: 'Süreç tamamlandı: {{displayId}}',
-      htmlBodyTemplate:
-        '<p>Merhaba {{firstName}},</p><p>{{displayId}} Kaizen süreci onaylandı ve tamamlandı.</p>',
-      textBodyTemplate: 'Merhaba {{firstName}}, {{displayId}} süreci tamamlandı.',
-      requiredVariables: ['firstName', 'displayId'],
-    },
-    {
-      eventType: 'PROCESS_REJECTED',
-      subjectTemplate: 'Süreç reddedildi: {{displayId}}',
-      htmlBodyTemplate:
-        '<p>Merhaba {{firstName}},</p><p>{{displayId}} Kaizen süreci reddedildi.</p>',
-      textBodyTemplate: 'Merhaba {{firstName}}, {{displayId}} süreci reddedildi.',
-      requiredVariables: ['firstName', 'displayId'],
-    },
-    {
-      eventType: 'PROCESS_CANCELLED',
-      subjectTemplate: 'Süreç iptal: {{displayId}}',
-      htmlBodyTemplate: '<p>Merhaba {{firstName}},</p><p>{{displayId}} süreci iptal edildi.</p>',
-      textBodyTemplate: 'Merhaba {{firstName}}, {{displayId}} iptal edildi.',
-      requiredVariables: ['firstName', 'displayId'],
-    },
-    {
-      eventType: 'ROLLBACK_PERFORMED',
-      subjectTemplate: 'Geri alma: {{displayId}}',
-      htmlBodyTemplate:
-        '<p>Merhaba {{firstName}},</p><p>{{displayId}} sürecinde geri alma uygulandı.</p>',
-      textBodyTemplate: 'Merhaba {{firstName}}, {{displayId}} geri alındı.',
-      requiredVariables: ['firstName', 'displayId'],
-    },
     {
       eventType: 'PASSWORD_RESET_REQUESTED',
       subjectTemplate: 'Şifre sıfırlama talebi',
@@ -780,25 +783,31 @@ async function main(): Promise<void> {
   }
 
   const seedIpHash = createHash('sha256').update('seed').digest('hex');
-  const firstChainHash = nextAuditChainHash('GENESIS', {
-    action: 'SEED_COMPLETED',
-    entity: 'system',
-    entityId: 'bootstrap',
-    userId: superadmin.id,
-    sessionId: null,
-    metadata: null,
-    ipHash: seedIpHash,
+  const seedAuditExists = await prisma.auditLog.findFirst({
+    where: { action: 'SEED_COMPLETED', entity: 'system', entityId: 'bootstrap' },
+    select: { id: true },
   });
-  await prisma.auditLog.create({
-    data: {
-      userId: superadmin.id,
+  if (!seedAuditExists) {
+    const firstChainHash = nextAuditChainHash('GENESIS', {
       action: 'SEED_COMPLETED',
       entity: 'system',
       entityId: 'bootstrap',
+      userId: superadmin.id,
+      sessionId: null,
+      metadata: null,
       ipHash: seedIpHash,
-      chainHash: firstChainHash,
-    },
-  });
+    });
+    await prisma.auditLog.create({
+      data: {
+        userId: superadmin.id,
+        action: 'SEED_COMPLETED',
+        entity: 'system',
+        entityId: 'bootstrap',
+        ipHash: seedIpHash,
+        chainHash: firstChainHash,
+      },
+    });
+  }
 
   console.log('Seed tamamlandı. Superadmin:', superadminEmail, 'sicil:', superadminSicil);
 }

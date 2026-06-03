@@ -1,10 +1,8 @@
 import {
   BarChartSquare02,
   Bell01,
-  CheckSquare,
   Database01,
   HomeLine,
-  Rows01,
   Settings01,
   Shield01,
   Users01,
@@ -27,9 +25,6 @@ import { Permission } from '@leanmgmt/shared-types';
 
 const NAV_ICONS = {
   home: HomeLine,
-  tasks: CheckSquare,
-  processes: Rows01,
-  processAdmin: BarChartSquare02,
   users: Users01,
   masterData: Database01,
   roles: Shield01,

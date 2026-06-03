@@ -83,8 +83,8 @@ describe('4-katman + cache invalidation (integration)', () => {
       url: '/api/v1/auth/login',
       headers: { 'content-type': 'application/json' },
       payload: JSON.stringify({
-        email: 'integration_process@leanmgmt.local',
-        password: 'OnlyProc123!@#',
+        email: 'integration_limited@leanmgmt.local',
+        password: 'OnlyLim123!@#',
       }),
     });
     expect(login.statusCode).toBe(200);
@@ -128,8 +128,8 @@ describe('4-katman + cache invalidation (integration)', () => {
       url: '/api/v1/auth/login',
       headers: { 'content-type': 'application/json' },
       payload: JSON.stringify({
-        email: 'integration_process@leanmgmt.local',
-        password: 'OnlyProc123!@#',
+        email: 'integration_limited@leanmgmt.local',
+        password: 'OnlyLim123!@#',
       }),
     });
     const procTok = (JSON.parse(proc.body) as { data: { accessToken: string } }).data.accessToken;
@@ -171,14 +171,14 @@ describe('4-katman + cache invalidation (integration)', () => {
 
   it('Rol yetki değişimi: Redis user_permissions temizlenir', async () => {
     const prisma = app.get(PrismaService);
-    const onlyProc = await prisma.user.findFirst({
-      where: { firstName: 'Proc', lastName: 'Only' },
+    const limitedUser = await prisma.user.findFirst({
+      where: { firstName: 'Integ', lastName: 'Limited' },
     });
-    expect(onlyProc).toBeTruthy();
-    const onlyProcId = onlyProc!.id;
-    const procRole = await prisma.role.findFirstOrThrow({ where: { code: 'PROCESS_MANAGER' } });
+    expect(limitedUser).toBeTruthy();
+    const limitedUserId = limitedUser!.id;
+    const roleManagerRole = await prisma.role.findFirstOrThrow({ where: { code: 'ROLE_MANAGER' } });
     const keys = await prisma.rolePermission.findMany({
-      where: { roleId: procRole.id },
+      where: { roleId: roleManagerRole.id },
       select: { permissionKey: true },
     });
     const permissionKeys = keys.map((k) => k.permissionKey);
@@ -189,8 +189,8 @@ describe('4-katman + cache invalidation (integration)', () => {
       url: '/api/v1/auth/login',
       headers: { 'content-type': 'application/json' },
       payload: JSON.stringify({
-        email: 'integration_process@leanmgmt.local',
-        password: 'OnlyProc123!@#',
+        email: 'integration_limited@leanmgmt.local',
+        password: 'OnlyLim123!@#',
       }),
     });
     const tokP = (JSON.parse(loginP.body) as { data: { accessToken: string } }).data;
@@ -199,11 +199,11 @@ describe('4-katman + cache invalidation (integration)', () => {
       url: '/api/v1/auth/me',
       headers: { authorization: `Bearer ${tokP.accessToken}` },
     });
-    const redisKey = `user_permissions:${onlyProcId}`;
+    const redisKey = `user_permissions:${limitedUserId}`;
     const r0 = app.get(RedisService).raw;
     if (!(await r0.get(redisKey))) {
       const res = app.get(PermissionResolverService);
-      await res.getUserPermissions(onlyProcId);
+      await res.getUserPermissions(limitedUserId);
     }
     expect(await r0.get(redisKey)).toBeTruthy();
 
@@ -217,7 +217,7 @@ describe('4-katman + cache invalidation (integration)', () => {
     const cookies = parseSetCookie(loginS.headers['set-cookie']);
     const put = await srv.inject({
       method: 'PUT',
-      url: `/api/v1/roles/${procRole.id}/permissions`,
+      url: `/api/v1/roles/${roleManagerRole.id}/permissions`,
       headers: {
         authorization: `Bearer ${b.data.accessToken}`,
         'x-csrf-token': b.data.csrfToken,
@@ -232,14 +232,14 @@ describe('4-katman + cache invalidation (integration)', () => {
 
   it('Rol kuralı ekleme: Redis user_permissions temizlenir', async () => {
     const prisma = app.get(PrismaService);
-    const onlyProc = await prisma.user.findFirst({
-      where: { firstName: 'Proc', lastName: 'Only' },
+    const limitedUser = await prisma.user.findFirst({
+      where: { firstName: 'Integ', lastName: 'Limited' },
     });
-    expect(onlyProc).toBeTruthy();
-    const onlyProcId = onlyProc!.id;
-    const companyId = onlyProc!.companyId;
+    expect(limitedUser).toBeTruthy();
+    const limitedUserId = limitedUser!.id;
+    const companyId = limitedUser!.companyId;
     expect(companyId).toBeTruthy();
-    const procRole = await prisma.role.findFirstOrThrow({ where: { code: 'PROCESS_MANAGER' } });
+    const roleManagerRole = await prisma.role.findFirstOrThrow({ where: { code: 'ROLE_MANAGER' } });
 
     const srv = app.getHttpAdapter().getInstance();
     const loginP = await srv.inject({
@@ -247,8 +247,8 @@ describe('4-katman + cache invalidation (integration)', () => {
       url: '/api/v1/auth/login',
       headers: { 'content-type': 'application/json' },
       payload: JSON.stringify({
-        email: 'integration_process@leanmgmt.local',
-        password: 'OnlyProc123!@#',
+        email: 'integration_limited@leanmgmt.local',
+        password: 'OnlyLim123!@#',
       }),
     });
     const tokP = (JSON.parse(loginP.body) as { data: { accessToken: string } }).data;
@@ -257,11 +257,11 @@ describe('4-katman + cache invalidation (integration)', () => {
       url: '/api/v1/auth/me',
       headers: { authorization: `Bearer ${tokP.accessToken}` },
     });
-    const redisKey = `user_permissions:${onlyProcId}`;
+    const redisKey = `user_permissions:${limitedUserId}`;
     const r0 = app.get(RedisService).raw;
     if (!(await r0.get(redisKey))) {
       const res = app.get(PermissionResolverService);
-      await res.getUserPermissions(onlyProcId);
+      await res.getUserPermissions(limitedUserId);
     }
     expect(await r0.get(redisKey)).toBeTruthy();
 
@@ -275,7 +275,7 @@ describe('4-katman + cache invalidation (integration)', () => {
     const cookies = parseSetCookie(loginS.headers['set-cookie']);
     const post = await srv.inject({
       method: 'POST',
-      url: `/api/v1/roles/${procRole.id}/rules`,
+      url: `/api/v1/roles/${roleManagerRole.id}/rules`,
       headers: {
         authorization: `Bearer ${b.data.accessToken}`,
         'x-csrf-token': b.data.csrfToken,
@@ -294,15 +294,15 @@ describe('4-katman + cache invalidation (integration)', () => {
     expect(await r0.get(redisKey)).toBeNull();
   });
 
-  it('MasterData_list: PROCESS_KTI_START yokken companies listesi — 403', async () => {
+  it('MasterData_list: MASTER_DATA yetkisi yokken companies listesi — 403', async () => {
     const srv = app.getHttpAdapter().getInstance();
     const loginP = await srv.inject({
       method: 'POST',
       url: '/api/v1/auth/login',
       headers: { 'content-type': 'application/json' },
       payload: JSON.stringify({
-        email: 'integration_process@leanmgmt.local',
-        password: 'OnlyProc123!@#',
+        email: 'integration_limited@leanmgmt.local',
+        password: 'OnlyLim123!@#',
       }),
     });
     expect(loginP.statusCode).toBe(200);
@@ -310,74 +310,6 @@ describe('4-katman + cache invalidation (integration)', () => {
     const list = await srv.inject({
       method: 'GET',
       url: '/api/v1/master-data/companies?isActive=true',
-      headers: { authorization: `Bearer ${tokP}` },
-    });
-    expect(list.statusCode).toBe(403);
-  });
-
-  it('MasterData_list: PROCESS_KTI_START ile companies — yalnız kendi şirketi', async () => {
-    const prisma = app.get(PrismaService);
-    const onlyProc = await prisma.user.findFirstOrThrow({
-      where: { firstName: 'Proc', lastName: 'Only' },
-    });
-    const procRole = await prisma.role.findFirstOrThrow({ where: { code: 'PROCESS_MANAGER' } });
-    const superUser = await prisma.user.findFirstOrThrow({
-      where: { firstName: 'Super', lastName: 'Admin' },
-    });
-    await prisma.rolePermission.upsert({
-      where: {
-        roleId_permissionKey: { roleId: procRole.id, permissionKey: 'PROCESS_KTI_START' },
-      },
-      create: {
-        roleId: procRole.id,
-        permissionKey: 'PROCESS_KTI_START',
-        grantedByUserId: superUser.id,
-      },
-      update: {},
-    });
-    const r0 = app.get(RedisService).raw;
-    await r0.del(`user_permissions:${onlyProc.id}`);
-
-    const srv = app.getHttpAdapter().getInstance();
-    const loginP = await srv.inject({
-      method: 'POST',
-      url: '/api/v1/auth/login',
-      headers: { 'content-type': 'application/json' },
-      payload: JSON.stringify({
-        email: 'integration_process@leanmgmt.local',
-        password: 'OnlyProc123!@#',
-      }),
-    });
-    expect(loginP.statusCode).toBe(200);
-    const tokP = (JSON.parse(loginP.body) as { data: { accessToken: string } }).data.accessToken;
-    const list = await srv.inject({
-      method: 'GET',
-      url: '/api/v1/master-data/companies?isActive=true',
-      headers: { authorization: `Bearer ${tokP}` },
-    });
-    expect(list.statusCode).toBe(200);
-    const body = JSON.parse(list.body) as { data: Array<{ id: string }> };
-    expect(Array.isArray(body.data)).toBe(true);
-    expect(body.data).toHaveLength(1);
-    expect(body.data[0].id).toBe(onlyProc.companyId);
-  });
-
-  it('MasterData_list: PROCESS_KTI_START ile lokasyon listesi — 403', async () => {
-    const srv = app.getHttpAdapter().getInstance();
-    const loginP = await srv.inject({
-      method: 'POST',
-      url: '/api/v1/auth/login',
-      headers: { 'content-type': 'application/json' },
-      payload: JSON.stringify({
-        email: 'integration_process@leanmgmt.local',
-        password: 'OnlyProc123!@#',
-      }),
-    });
-    expect(loginP.statusCode).toBe(200);
-    const tokP = (JSON.parse(loginP.body) as { data: { accessToken: string } }).data.accessToken;
-    const list = await srv.inject({
-      method: 'GET',
-      url: '/api/v1/master-data/locations?isActive=true',
       headers: { authorization: `Bearer ${tokP}` },
     });
     expect(list.statusCode).toBe(403);

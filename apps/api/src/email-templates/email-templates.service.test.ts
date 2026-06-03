@@ -44,11 +44,11 @@ describe('EmailTemplatesService', () => {
   it('update: zorunlu değişken eksikse hata', async () => {
     prisma.emailTemplate.findUnique.mockResolvedValue({
       id: 't1',
-      eventType: 'TASK_ASSIGNED' as NotificationEventType,
+      eventType: 'ROLE_ASSIGNED' as NotificationEventType,
     });
     await expect(
       service.update(
-        'TASK_ASSIGNED' as NotificationEventType,
+        'ROLE_ASSIGNED' as NotificationEventType,
         {
           subjectTemplate: 'S {{a}}',
           htmlBodyTemplate: '<p>{{a}}</p>',
@@ -75,7 +75,7 @@ describe('EmailTemplatesService', () => {
   it('sendTest: worker kuyruğuna yazar (SMTP API sürecinde çalışmaz)', async () => {
     prisma.emailTemplate.findUnique.mockResolvedValue({
       id: 't1',
-      eventType: 'TASK_ASSIGNED' as NotificationEventType,
+      eventType: 'ROLE_ASSIGNED' as NotificationEventType,
       subjectTemplate: 'Merhaba {{firstName}}',
       htmlBodyTemplate: '<p>{{firstName}}</p>',
       textBodyTemplate: '{{firstName}}',
@@ -83,7 +83,7 @@ describe('EmailTemplatesService', () => {
       updatedAt: new Date(),
       updatedByUserId: null,
     });
-    const r = await service.sendTest('TASK_ASSIGNED' as NotificationEventType, {
+    const r = await service.sendTest('ROLE_ASSIGNED' as NotificationEventType, {
       toEmail: 'test@example.com',
     });
     expect(r.sent).toBe(true);

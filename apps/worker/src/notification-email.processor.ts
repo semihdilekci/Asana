@@ -134,10 +134,6 @@ export async function runNotificationEmailJob(
   const baseUrl = process.env.WEB_APP_BASE_URL ?? 'http://localhost:3000';
   const vars: Record<string, string> = {
     firstName: user.firstName,
-    displayId: metaString(meta, 'displayId'),
-    taskTitle: metaString(meta, 'taskTitle'),
-    processId: metaString(meta, 'processId'),
-    taskId: metaString(meta, 'taskId'),
     resetLink: metaString(meta, 'resetLink'),
     loginUrl: metaString(meta, 'loginUrl') || `${baseUrl}/login`,
     digestDate: metaString(meta, 'digestDate'),

@@ -766,6 +766,8 @@ Audit write başarısız ise (örn. DB bağlantısı koptu) interceptor exceptio
 
 ## 10. Per-Process Module Pattern
 
+> **⛔ Kaldırıldı (Faz 14):** Bu bölüm ASANA pivot sonrası kaldırılacak. ProcessTypeRegistry ve BPM workflow altyapısı Faz 14 ile tamamen decommission edilecek.
+
 ### 10.1 Motivasyon
 
 MVP'de yalnız bir süreç tipi vardır: KTİ (Before & After Kaizen). Ancak platform ileride yeni süreç tipleri ekleyebilmelidir (Ramak Kala Bildirimi, 5S Denetim, vb.). Genel endpoint'ler (`GET /api/v1/processes/:displayId`, `POST /api/v1/tasks/:id/complete`) süreç tipini bilmemelidir. Bunun yerine her süreç kendi submodule'ünde:
@@ -860,7 +862,7 @@ Worker pod'u `packages/shared-types`, `packages/shared-schemas`, infrastructure 
 | -------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
 | `notifications`      | `send-in-app`, `send-email`                                                                   | Domain event'ler (user.created, task.assigned, sla.breached vb.)          |
 | `documents-scan`     | `scan-invoke`, `scan-callback-handle`                                                         | Document create → ClamAV Lambda tetikle + S3 → EventBridge → API callback |
-| `sla-monitor`        | `check-task-sla`                                                                              | Cron — 5 dakikada bir                                                     |
+| `sla-monitor`        | `check-task-sla`                                                                              | Cron — 5 dakikada bir (Faz 14 ile kaldırılacak)                           |
 | `retention`          | `cleanup-notifications`, `cleanup-login-attempts`, `cleanup-reset-tokens`, `archive-sessions` | Cron — gecelik 02:00 TRT                                                  |
 | `audit-chain-check`  | `verify-chain-integrity`                                                                      | Cron — gecelik 03:00 TRT                                                  |
 | `role-recomputation` | `recompute-attribute-roles`                                                                   | Role rule create/update/delete events                                     |
@@ -1547,6 +1549,8 @@ export class UsersModule {}
 - Exception fırlatma pattern'i (`ConflictException`, `NotFoundException`, `UnprocessableException`)
 
 ### 15.2 Per-Process Pattern — KTİ Başlatma
+
+> **⛔ Kaldırıldı (Faz 14):** Bu bölüm ASANA pivot sonrası kaldırılacak. KTİ workflow ve ProcessTypeRegistry Faz 14 ile tamamen decommission edilecek.
 
 Yeni bir süreç tipi eklemek isteyen agent bu pattern'i template olarak kullanır.
 

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-/** GET /auth/me ve login yanıtı ile hizalı (şirket / yönetici KTİ başlatma için) */
+/** GET /auth/me ve login yanıtı ile hizalı (şirket / yönetici özeti) */
 export interface AuthUserCompany {
   id: string;
   code: string;

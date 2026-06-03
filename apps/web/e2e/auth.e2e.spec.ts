@@ -16,8 +16,8 @@ test('başarılı giriş sonrası panel görünür', async ({ page }) => {
   await page.getByLabel('Şifre', { exact: true }).fill(SUPERADMIN_PASSWORD);
   await page.getByRole('button', { name: 'Giriş yap' }).click();
   await expect(page).toHaveURL(/\/dashboard/);
-  await expect(page.getByRole('heading', { name: 'Ana sayfa' })).toBeVisible();
-  await expect(page.getByText(/Hoş geldiniz/)).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  await expect(page.getByText(/Lean Management platformuna hoş geldiniz/)).toBeVisible();
 });
 
 const CONSENT_PENDING_EMAIL = 'consentpending@leanmgmt.local';
@@ -35,7 +35,7 @@ test('KVKK rıza: onay sonrası ana sayfa', async ({ page }) => {
   await expect(page.getByRole('alertdialog', { name: 'Aydınlatma ve Açık Rıza' })).toBeHidden({
     timeout: 20_000,
   });
-  await expect(page.getByRole('heading', { name: 'Ana sayfa' })).toBeVisible();
+  await expect(page.getByText(/Lean Management platformuna hoş geldiniz/)).toBeVisible();
 });
 
 test('hatalı şifre ile giriş uyarısı', async ({ page }) => {
@@ -43,7 +43,9 @@ test('hatalı şifre ile giriş uyarısı', async ({ page }) => {
   await page.getByLabel('E-posta').fill(SUPERADMIN_EMAIL);
   await page.getByLabel('Şifre', { exact: true }).fill('YanlisSifre123!@#');
   await page.getByRole('button', { name: 'Giriş yap' }).click();
-  await expect(page.getByRole('alert')).toContainText(/hatalı|Email veya şifre/i);
+  await expect(
+    page.getByRole('alert').filter({ hasText: /hatalı|Email veya şifre/i }),
+  ).toBeVisible();
 });
 
 test('şifre sıfırlama: talep ve yeni şifre ile onay', async ({ page }) => {

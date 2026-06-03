@@ -84,8 +84,8 @@ describe('MasterDataService — type validation', () => {
   });
 });
 
-describe('MasterDataService — findAll yetki ve kapsam', () => {
-  it('MASTER_DATA_MANAGE yok ve PROCESS_KTI_START yok → MasterDataListAccessDeniedException', async () => {
+describe('MasterDataService — findAll yetki', () => {
+  it('MASTER_DATA_MANAGE ve MASTER_DATA_VIEW yok → MasterDataListAccessDeniedException', async () => {
     const { service, permissionResolver } = makeService();
     (permissionResolver.getUserPermissions as ReturnType<typeof vi.fn>).mockResolvedValue(
       new Set([Permission.NOTIFICATION_EDIT]),
@@ -100,30 +100,14 @@ describe('MasterDataService — findAll yetki ve kapsam', () => {
     ).rejects.toBeInstanceOf(MasterDataListAccessDeniedException);
   });
 
-  it('MASTER_DATA_MANAGE yok, lokasyon listesi → MasterDataListAccessDeniedException', async () => {
-    const { service, permissionResolver } = makeService();
-    (permissionResolver.getUserPermissions as ReturnType<typeof vi.fn>).mockResolvedValue(
-      new Set([Permission.PROCESS_KTI_START]),
-    );
-
-    await expect(
-      service.findAll(
-        'locations',
-        { isActive: 'true', search: undefined, usageFilter: 'all' },
-        makeActor(),
-      ),
-    ).rejects.toBeInstanceOf(MasterDataListAccessDeniedException);
-  });
-
-  it('PROCESS_KTI_START ile companies → yalnızca kullanıcı şirketi için findMany', async () => {
+  it('MASTER_DATA_VIEW ile companies listesi → findMany', async () => {
     const { service, prisma, permissionResolver } = makeService();
     (permissionResolver.getUserPermissions as ReturnType<typeof vi.fn>).mockResolvedValue(
-      new Set([Permission.PROCESS_KTI_START]),
+      new Set([Permission.MASTER_DATA_VIEW]),
     );
-    (prisma.user.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({ companyId: 'c-own' });
     (prisma.company.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([
       {
-        id: 'c-own',
+        id: 'c-1',
         code: 'ACME',
         name: 'Acme',
         isActive: true,
@@ -139,11 +123,10 @@ describe('MasterDataService — findAll yetki ve kapsam', () => {
     );
 
     expect(prisma.company.findMany).toHaveBeenCalledWith({
-      where: { isActive: true, id: 'c-own' },
+      where: { isActive: true },
       orderBy: { name: 'asc' },
     });
     expect(rows).toHaveLength(1);
-    expect(rows[0]['id']).toBe('c-own');
   });
 });
 

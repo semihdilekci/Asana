@@ -55,7 +55,7 @@ describe('EmailTemplateSendTestSchema', () => {
 
 describe('EmailTemplateEventTypeParamSchema', () => {
   it('geçerli event type', () => {
-    expect(EmailTemplateEventTypeParamSchema.parse('TASK_ASSIGNED')).toBe('TASK_ASSIGNED');
+    expect(EmailTemplateEventTypeParamSchema.parse('ROLE_ASSIGNED')).toBe('ROLE_ASSIGNED');
   });
 
   it('geçersiz event type reddeder', () => {

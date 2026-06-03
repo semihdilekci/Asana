@@ -30,17 +30,18 @@
 
 ## 2. Şemaya Genel Bakış
 
-Şema yedi mantıksal gruba ayrılır; toplam 27 tablo. Gruplar domain alt-domain'lerine paraleldir. Aynı alt-domain içindeki tablolar aynı migration dosyalarında yönetilir; cross-grup migration'lar (örn. `user_consents` FK → `consent_versions`) açık olarak belgelenir.
+Şema altı mantıksal gruba ayrılır; toplam **24 tablo** (Faz 14 BPM decommission sonrası). Gruplar domain alt-domain'lerine paraleldir. Aynı alt-domain içindeki tablolar aynı migration dosyalarında yönetilir; cross-grup migration'lar (örn. `user_consents` FK → `consent_versions`) açık olarak belgelenir.
 
 | Grup                              | Tablolar                                                                                                                |
 | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | **Identity & Organization**       | `users`, `sessions`, `password_history`, `password_reset_tokens`, `login_attempts`, `consent_versions`, `user_consents` |
 | **Master Data**                   | `companies`, `locations`, `departments`, `levels`, `positions`, `teams`, `work_areas`, `work_sub_areas`                 |
 | **Authorization**                 | `roles`, `user_roles`, `role_permissions`, `role_rules`, `role_rule_condition_sets`, `role_rule_conditions`             |
-| **Workflow**                      | `processes`, `tasks`, `task_assignments`                                                                                |
-| **Documents**                     | `documents`                                                                                                             |
-| **Notifications & Communication** | `notifications`, `email_templates`                                                                                      |
-| **System & Audit**                | `system_settings`, `audit_logs`                                                                                         |
+| **Documents**                     | `documents` (generic attachment; `uploaded_by_user_id` — süreç/görev FK yok)                                            |
+| **Notifications & Communication** | `notifications`, `notification_preferences`, `email_templates`                                                          |
+| **System & Audit**                | `system_settings`, `audit_logs`, `audit_chain_integrity_checks`                                                         |
+
+> **Faz 14 (ASANA pivot):** `processes`, `tasks`, `task_assignments` tabloları ve ilgili enum'lar migration `20260603120000_remove_bpm_tables` ile kaldırıldı. Geçmiş migration dosyaları tarihsel kayıt olarak kalır.
 
 Şema, tek PostgreSQL database içinde tek schema (`public`) altında yaşar. Schema-per-tenant yoktur — platform multi-tenant değildir ([10. Multi-tenancy / RLS](#10-multi-tenancy--rls)).
 
@@ -94,7 +95,7 @@ Hard delete neredeyse hiç yok. Silme ihtiyacı dört pattern ile karşılanır:
 
 **Pattern 3 — `status` enum (business-level terminal durumlar):**
 
-- Uygulandığı tablolar: `processes` (CANCELLED, COMPLETED, REJECTED terminal), `tasks` (COMPLETED, SKIPPED_BY_PEER, SKIPPED_BY_ROLLBACK terminal), `sessions` (REVOKED, EXPIRED, ROTATED terminal).
+- Uygulandığı tablolar: `sessions` (REVOKED, EXPIRED, ROTATED terminal). _(Eski BPM `processes` / `tasks` tabloları Faz 14 ile kaldırıldı.)_
 - Silme yerine status değişikliği. Kayıt veri olarak saklanır.
 
 **Pattern 4 — Retention job ile hard delete:**
@@ -723,7 +724,14 @@ Bir condition_set içindeki AND ile birbirine bağlı atom koşullar.
 
 ---
 
-### 6.4 Workflow
+### 6.4 Workflow — kaldırıldı (Faz 14)
+
+> **ASANA pivot (Faz 14):** `processes`, `tasks`, `task_assignments` tabloları ve `process_type`, `process_status`, `task_status`, `assignment_mode`, `task_assignment_status` enum'ları veritabanından düşürüldü. Yeni proje/görev/board modeli Faz 15+ ile eklenecek.
+
+Aşağıdaki bölüm **tarihsel referans** içindir; aktif şemada bu tablolar yoktur.
+
+<details>
+<summary>Eski `processes` tablosu (arşiv)</summary>
 
 #### `processes`
 
@@ -863,40 +871,38 @@ Bir task'ın bir veya birden fazla kullanıcıya/role atanmış olduğu ilişki 
 
 **Seed ihtiyacı:** Task seed'iyle birlikte üretilir.
 
+</details>
+
 ---
 
 ### 6.5 Documents
 
 #### `documents`
 
-S3'te fiziksel dosyaların meta kaydı.
+S3'te fiziksel dosyaların meta kaydı. **Faz 14 sonrası generic attachment:** yalnızca yükleyen kullanıcıya (`uploaded_by_user_id`) bağlı; süreç/görev FK yok.
 
 **Kolonlar:**
 
-| Kolon                  | Tip          | Null | Default        | Kısıt                               | Açıklama                                                                 |
-| ---------------------- | ------------ | ---- | -------------- | ----------------------------------- | ------------------------------------------------------------------------ |
-| id                     | TEXT         | No   | cuid()         | PK                                  |                                                                          |
-| process_id             | TEXT         | No   | —              | FK processes(id) ON DELETE RESTRICT |                                                                          |
-| task_id                | TEXT         | No   | —              | FK tasks(id) ON DELETE RESTRICT     |                                                                          |
-| uploaded_by_user_id    | TEXT         | No   | —              | FK users(id) ON DELETE RESTRICT     |                                                                          |
-| s3_key                 | VARCHAR(512) | No   | —              | —                                   | Tarama sonrası: `processes/{processId}/{taskId}/{documentId}-{filename}` |
-| original_filename      | VARCHAR(255) | No   | —              | —                                   | Yükleme anındaki ad                                                      |
-| file_size_bytes        | BIGINT       | No   | —              | —                                   | ≤10 MB = 10_485_760                                                      |
-| content_type           | VARCHAR(100) | No   | —              | —                                   | MIME type (whitelist'ten)                                                |
-| scan_status            | ENUM         | No   | 'PENDING_SCAN' | —                                   | `PENDING_SCAN` / `CLEAN` / `INFECTED` / `SCAN_FAILED`                    |
-| scan_result_detail     | TEXT         | Yes  | —              | —                                   | INFECTED: virüs adı; SCAN_FAILED: hata mesajı                            |
-| thumbnail_s3_key       | VARCHAR(512) | Yes  | —              | —                                   | Sadece görseller                                                         |
-| thumbnail_generated_at | TIMESTAMPTZ  | Yes  | —              | —                                   |                                                                          |
-| uploaded_at            | TIMESTAMPTZ  | No   | now()          | —                                   |                                                                          |
-| created_at             | TIMESTAMPTZ  | No   | now()          | —                                   |                                                                          |
-| updated_at             | TIMESTAMPTZ  | No   | now()          | —                                   | Trigger                                                                  |
+| Kolon                  | Tip          | Null | Default        | Kısıt                           | Açıklama                                                                  |
+| ---------------------- | ------------ | ---- | -------------- | ------------------------------- | ------------------------------------------------------------------------- |
+| id                     | TEXT         | No   | cuid()         | PK                              |                                                                           |
+| uploaded_by_user_id    | TEXT         | No   | —              | FK users(id) ON DELETE RESTRICT |                                                                           |
+| s3_key                 | VARCHAR(512) | No   | —              | —                               | Staging: `staging/{documentId}-{filename}`; tarama sonrası kalıcı anahtar |
+| original_filename      | VARCHAR(255) | No   | —              | —                               | Yükleme anındaki ad                                                       |
+| file_size_bytes        | BIGINT       | No   | —              | —                               | ≤10 MB = 10_485_760                                                       |
+| content_type           | VARCHAR(100) | No   | —              | —                               | MIME type (whitelist'ten)                                                 |
+| scan_status            | ENUM         | No   | 'PENDING_SCAN' | —                               | `PENDING_SCAN` / `CLEAN` / `INFECTED` / `SCAN_FAILED`                     |
+| scan_result_detail     | TEXT         | Yes  | —              | —                               | INFECTED: virüs adı; SCAN_FAILED: hata mesajı                             |
+| thumbnail_s3_key       | VARCHAR(512) | Yes  | —              | —                               | Sadece görseller                                                          |
+| thumbnail_generated_at | TIMESTAMPTZ  | Yes  | —              | —                               |                                                                           |
+| uploaded_at            | TIMESTAMPTZ  | No   | now()          | —                               |                                                                           |
+| created_at             | TIMESTAMPTZ  | No   | now()          | —                               |                                                                           |
+| updated_at             | TIMESTAMPTZ  | No   | now()          | —                               | Trigger                                                                   |
 
 **Index'ler:**
 
-- `documents_process_idx` btree (process_id) — sürecin dokümanları
-- `documents_task_idx` btree (task_id) — task'ın dokümanları
 - `documents_scan_status_idx` btree (scan_status) — scan monitor job
-- `documents_uploaded_at_idx` btree (uploaded_at DESC)
+- `documents_uploaded_by_idx` btree (uploaded_by_user_id) — yükleyen kullanıcının dokümanları
 
 **Business rule enforcement:**
 
@@ -921,21 +927,21 @@ Kullanıcıya gönderilmiş/gönderilecek bildirim kayıtları. In-app ve email 
 
 **Kolonlar:**
 
-| Kolon                   | Tip          | Null | Default   | Kısıt                          | Açıklama                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| ----------------------- | ------------ | ---- | --------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| id                      | TEXT         | No   | cuid()    | PK                             |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| user_id                 | TEXT         | No   | —         | FK users(id) ON DELETE CASCADE |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| event_type              | ENUM         | No   | —         | —                              | Prisma `NotificationEventType` ile aynı küme: `TASK_ASSIGNED`, `TASK_CLAIMED_BY_PEER`, `SLA_WARNING`, `SLA_BREACH`, `PROCESS_COMPLETED`, `PROCESS_REJECTED`, `PROCESS_CANCELLED`, `ROLLBACK_PERFORMED`, `DOCUMENT_INFECTED`, `ACCOUNT_LOCKED`, `PASSWORD_RESET_REQUESTED`, `PASSWORD_CHANGED`, `PASSWORD_EXPIRY_WARNING`, `SUSPICIOUS_LOGIN`, `SUPERADMIN_LOGIN`, `SECURITY_ANOMALY`, `AUDIT_CHAIN_BROKEN`, `USER_LOGIN_WELCOME`, `DAILY_DIGEST`, `CONSENT_VERSION_PUBLISHED`, `ROLE_ASSIGNED` |
-| channel                 | ENUM         | No   | —         | —                              | `IN_APP` / `EMAIL`                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| title                   | VARCHAR(200) | No   | —         | —                              |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| body                    | TEXT         | No   | —         | —                              |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| link_url                | VARCHAR(500) | Yes  | —         | —                              | İlgili süreç/görev URL'i                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| metadata                | JSONB        | Yes  | —         | —                              | processId, taskId vb.                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| read_at                 | TIMESTAMPTZ  | Yes  | —         | —                              | In-app için okundu anı                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| sent_at                 | TIMESTAMPTZ  | No   | now()     | —                              | In-app için created_at'e eşit; email için gönderim zamanı                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| delivery_status         | ENUM         | No   | 'PENDING' | —                              | `PENDING` / `SENT` / `FAILED` / `BOUNCED`                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
-| delivery_failure_reason | TEXT         | Yes  | —         | —                              | FAILED/BOUNCED durumunda                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| created_at              | TIMESTAMPTZ  | No   | now()     | —                              |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| Kolon                   | Tip          | Null | Default   | Kısıt                          | Açıklama                                                                                                                                                                                                                                                                                                                                                        |
+| ----------------------- | ------------ | ---- | --------- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| id                      | TEXT         | No   | cuid()    | PK                             |                                                                                                                                                                                                                                                                                                                                                                 |
+| user_id                 | TEXT         | No   | —         | FK users(id) ON DELETE CASCADE |                                                                                                                                                                                                                                                                                                                                                                 |
+| event_type              | ENUM         | No   | —         | —                              | Prisma `NotificationEventType`: `DOCUMENT_INFECTED`, `ACCOUNT_LOCKED`, `PASSWORD_RESET_REQUESTED`, `PASSWORD_CHANGED`, `PASSWORD_EXPIRY_WARNING`, `SUSPICIOUS_LOGIN`, `SUPERADMIN_LOGIN`, `SECURITY_ANOMALY`, `AUDIT_CHAIN_BROKEN`, `USER_LOGIN_WELCOME`, `DAILY_DIGEST`, `CONSENT_VERSION_PUBLISHED`, `ROLE_ASSIGNED` _(BPM event'leri Faz 14 ile kaldırıldı)_ |
+| channel                 | ENUM         | No   | —         | —                              | `IN_APP` / `EMAIL`                                                                                                                                                                                                                                                                                                                                              |
+| title                   | VARCHAR(200) | No   | —         | —                              |                                                                                                                                                                                                                                                                                                                                                                 |
+| body                    | TEXT         | No   | —         | —                              |                                                                                                                                                                                                                                                                                                                                                                 |
+| link_url                | VARCHAR(500) | Yes  | —         | —                              | İlgili uygulama URL'i                                                                                                                                                                                                                                                                                                                                           |
+| metadata                | JSONB        | Yes  | —         | —                              | Olaya özel bağlam (entity id vb.)                                                                                                                                                                                                                                                                                                                               |
+| read_at                 | TIMESTAMPTZ  | Yes  | —         | —                              | In-app için okundu anı                                                                                                                                                                                                                                                                                                                                          |
+| sent_at                 | TIMESTAMPTZ  | No   | now()     | —                              | In-app için created_at'e eşit; email için gönderim zamanı                                                                                                                                                                                                                                                                                                       |
+| delivery_status         | ENUM         | No   | 'PENDING' | —                              | `PENDING` / `SENT` / `FAILED` / `BOUNCED`                                                                                                                                                                                                                                                                                                                       |
+| delivery_failure_reason | TEXT         | Yes  | —         | —                              | FAILED/BOUNCED durumunda                                                                                                                                                                                                                                                                                                                                        |
+| created_at              | TIMESTAMPTZ  | No   | now()     | —                              |                                                                                                                                                                                                                                                                                                                                                                 |
 
 **Index'ler:**
 
@@ -1146,24 +1152,16 @@ erDiagram
     ROLE_RULE_CONDITION_SETS ||--o{ ROLE_RULE_CONDITIONS : "AND grouped"
 ```
 
-### ERD-3 — Workflow + Documents + Communication + Audit
+### ERD-3 — Documents + Communication + Audit
 
 ```mermaid
 erDiagram
-    USERS ||--o{ PROCESSES : started
-    PROCESSES }o--|| COMPANIES : scoped
-    PROCESSES ||--o{ TASKS : contains
-    TASKS ||--o{ TASK_ASSIGNMENTS : has
-    TASK_ASSIGNMENTS }o--o| USERS : "user_id"
-    TASK_ASSIGNMENTS }o--o| ROLES : "role_id"
-    TASKS ||--o{ DOCUMENTS : attaches
-    PROCESSES ||--o{ DOCUMENTS : owns
     USERS ||--o{ DOCUMENTS : uploaded
     USERS ||--o{ NOTIFICATIONS : receives
+    USERS ||--o{ NOTIFICATION_PREFERENCES : configures
     EMAIL_TEMPLATES ||--o{ NOTIFICATIONS : "event_type match"
     USERS ||--o{ AUDIT_LOGS : authored
     SESSIONS ||--o{ AUDIT_LOGS : "session_id"
-    SYSTEM_SETTINGS }o--|| CONSENT_VERSIONS : "ACTIVE_CONSENT_VERSION_ID"
 ```
 
 ---
@@ -1172,63 +1170,52 @@ erDiagram
 
 Her index'in gerekçesi — hangi sorgu/rapor bu index'i gerektiriyor.
 
-| Tablo                    | Index                                     | Tip                   | Gerekçe                                                            |
-| ------------------------ | ----------------------------------------- | --------------------- | ------------------------------------------------------------------ |
-| users                    | sicil_blind_index                         | UNIQUE                | Sicil ile kullanıcı lookup                                         |
-| users                    | email_blind_index                         | UNIQUE                | Login + email arama                                                |
-| users                    | (company_id, is_active)                   | Composite             | Şirket bazlı kullanıcı listesi, master data pasifleştirme kontrolü |
-| users                    | (location_id, is_active)                  | Composite             | Lokasyon bazlı listeleme                                           |
-| users                    | (department_id, is_active)                | Composite             | Departman bazlı listeleme                                          |
-| users                    | (position_id, is_active)                  | Composite             | Pozisyon bazlı listeleme                                           |
-| users                    | manager_user_id                           | Btree                 | "Yöneticinin astları" (dinamik görev ataması)                      |
-| users                    | is_active partial                         | Btree                 | Aktif kullanıcı listesi                                            |
-| sessions                 | refresh_token_hash                        | UNIQUE                | Refresh endpoint lookup                                            |
-| sessions                 | (user_id, status)                         | Composite             | Concurrent session limit + aktif oturumlar                         |
-| sessions                 | expires_at partial                        | Btree                 | Cleanup job                                                        |
-| password_history         | (user_id, created_at DESC)                | Composite             | Son 5 şifre + ring buffer                                          |
-| password_reset_tokens    | token_hash                                | UNIQUE                | Reset endpoint lookup                                              |
-| password_reset_tokens    | expires_at                                | Btree                 | Cleanup                                                            |
-| login_attempts           | (email_blind_index, attempted_at DESC)    | Composite             | Kullanıcı bazlı deneme tarihçesi                                   |
-| login_attempts           | (ip_hash, attempted_at DESC)              | Composite             | IP rate limit + forensics                                          |
-| login_attempts           | (outcome, attempted_at DESC)              | Composite             | Sonuç bazlı raporlama                                              |
-| login_attempts           | (user_id, attempted_at DESC) partial      | Composite             | Kullanıcı profil güvenlik geçmişi                                  |
-| login_attempts           | lockout_triggered partial                 | Btree                 | Lockout olayları                                                   |
-| consent_versions         | version                                   | UNIQUE                | Versiyon numarası                                                  |
-| consent_versions         | status                                    | Btree                 | Aktif yayın                                                        |
-| user_consents            | (user_id, consent_version_id)             | UNIQUE Composite      | Her kullanıcı her versiyonu bir kez                                |
-| <master_data>            | code                                      | UNIQUE                | Kod lookup                                                         |
-| <master_data>            | is_active partial                         | Btree                 | Aktif liste                                                        |
-| work_sub_areas           | (parent_work_area_code, is_active)        | Composite             | Parent altındaki alt alanlar                                       |
-| roles                    | code                                      | UNIQUE                | Rol kod lookup                                                     |
-| user_roles               | (user_id, role_id)                        | UNIQUE Composite      | Çift atama önleme                                                  |
-| user_roles               | role_id                                   | Btree                 | Role bazlı kullanıcı listesi                                       |
-| role_permissions         | (role_id, permission_key)                 | UNIQUE Composite (PK) | Yetki çözümleme                                                    |
-| role_permissions         | permission_key                            | Btree                 | "Bu yetki hangi rollerde"                                          |
-| role_rules               | (role_id, order)                          | Composite             | Sıralı evaluation                                                  |
-| role_rule_condition_sets | (role_rule_id, order)                     | Composite             | Sıralı                                                             |
-| role_rule_conditions     | condition_set_id                          | Btree                 | Set içi koşullar                                                   |
-| processes                | display_id                                | UNIQUE                | "KTI-000042" arama                                                 |
-| processes                | (process_type, process_number)            | UNIQUE Composite      | Sequence tekillik                                                  |
-| processes                | (started_by_user_id, status)              | Composite             | "Başlattığım Süreçler"                                             |
-| processes                | (company_id, status, started_at DESC)     | Composite             | Şirket bazlı panel listesi                                         |
-| processes                | (status, started_at DESC)                 | Composite             | Süreç Yönetimi Paneli                                              |
-| tasks                    | (process_id, step_order)                  | Composite             | Sürecin task'ları sıralı                                           |
-| tasks                    | (status, sla_due_at) partial              | Composite             | SLA monitor job                                                    |
-| tasks                    | (completed_by_user_id, completed_at DESC) | Composite             | "Tamamlanan Süreçler"                                              |
-| task_assignments         | (task_id, status)                         | Composite             | Task completion tracking                                           |
-| task_assignments         | (user_id, status) partial                 | Composite             | "Onayda Bekleyen"                                                  |
-| documents                | process_id                                | Btree                 | Süreç dokümanları                                                  |
-| documents                | task_id                                   | Btree                 | Task dokümanları                                                   |
-| documents                | scan_status                               | Btree                 | Scan monitor                                                       |
-| notifications            | (user_id, read_at, created_at DESC)       | Composite             | Bildirim merkezi                                                   |
-| notifications            | (user_id, channel)                        | Composite             | In-app okunmamış count                                             |
-| notifications            | delivery_status partial                   | Btree                 | Retry job                                                          |
-| email_templates          | event_type                                | UNIQUE                | Event ile şablon eşleştirme                                        |
-| audit_logs               | chain_hash                                | UNIQUE                | Integrity kontrolü                                                 |
-| audit_logs               | (user_id, timestamp DESC)                 | Composite             | Kullanıcı aksiyon geçmişi                                          |
-| audit_logs               | (entity, entity_id, timestamp DESC)       | Composite             | Varlık aksiyon geçmişi                                             |
-| audit_logs               | (action, timestamp DESC)                  | Composite             | Aksiyon tipi raporu                                                |
-| audit_logs               | timestamp DESC                            | Btree                 | Global zaman serisi                                                |
+| Tablo                    | Index                                  | Tip                   | Gerekçe                                                            |
+| ------------------------ | -------------------------------------- | --------------------- | ------------------------------------------------------------------ |
+| users                    | sicil_blind_index                      | UNIQUE                | Sicil ile kullanıcı lookup                                         |
+| users                    | email_blind_index                      | UNIQUE                | Login + email arama                                                |
+| users                    | (company_id, is_active)                | Composite             | Şirket bazlı kullanıcı listesi, master data pasifleştirme kontrolü |
+| users                    | (location_id, is_active)               | Composite             | Lokasyon bazlı listeleme                                           |
+| users                    | (department_id, is_active)             | Composite             | Departman bazlı listeleme                                          |
+| users                    | (position_id, is_active)               | Composite             | Pozisyon bazlı listeleme                                           |
+| users                    | manager_user_id                        | Btree                 | "Yöneticinin astları" (dinamik görev ataması)                      |
+| users                    | is_active partial                      | Btree                 | Aktif kullanıcı listesi                                            |
+| sessions                 | refresh_token_hash                     | UNIQUE                | Refresh endpoint lookup                                            |
+| sessions                 | (user_id, status)                      | Composite             | Concurrent session limit + aktif oturumlar                         |
+| sessions                 | expires_at partial                     | Btree                 | Cleanup job                                                        |
+| password_history         | (user_id, created_at DESC)             | Composite             | Son 5 şifre + ring buffer                                          |
+| password_reset_tokens    | token_hash                             | UNIQUE                | Reset endpoint lookup                                              |
+| password_reset_tokens    | expires_at                             | Btree                 | Cleanup                                                            |
+| login_attempts           | (email_blind_index, attempted_at DESC) | Composite             | Kullanıcı bazlı deneme tarihçesi                                   |
+| login_attempts           | (ip_hash, attempted_at DESC)           | Composite             | IP rate limit + forensics                                          |
+| login_attempts           | (outcome, attempted_at DESC)           | Composite             | Sonuç bazlı raporlama                                              |
+| login_attempts           | (user_id, attempted_at DESC) partial   | Composite             | Kullanıcı profil güvenlik geçmişi                                  |
+| login_attempts           | lockout_triggered partial              | Btree                 | Lockout olayları                                                   |
+| consent_versions         | version                                | UNIQUE                | Versiyon numarası                                                  |
+| consent_versions         | status                                 | Btree                 | Aktif yayın                                                        |
+| user_consents            | (user_id, consent_version_id)          | UNIQUE Composite      | Her kullanıcı her versiyonu bir kez                                |
+| <master_data>            | code                                   | UNIQUE                | Kod lookup                                                         |
+| <master_data>            | is_active partial                      | Btree                 | Aktif liste                                                        |
+| work_sub_areas           | (parent_work_area_code, is_active)     | Composite             | Parent altındaki alt alanlar                                       |
+| roles                    | code                                   | UNIQUE                | Rol kod lookup                                                     |
+| user_roles               | (user_id, role_id)                     | UNIQUE Composite      | Çift atama önleme                                                  |
+| user_roles               | role_id                                | Btree                 | Role bazlı kullanıcı listesi                                       |
+| role_permissions         | (role_id, permission_key)              | UNIQUE Composite (PK) | Yetki çözümleme                                                    |
+| role_permissions         | permission_key                         | Btree                 | "Bu yetki hangi rollerde"                                          |
+| role_rules               | (role_id, order)                       | Composite             | Sıralı evaluation                                                  |
+| role_rule_condition_sets | (role_rule_id, order)                  | Composite             | Sıralı                                                             |
+| role_rule_conditions     | condition_set_id                       | Btree                 | Set içi koşullar                                                   |
+| documents                | uploaded_by_user_id                    | Btree                 | Yükleyen kullanıcı dokümanları                                     |
+| documents                | scan_status                            | Btree                 | Scan monitor                                                       |
+| notifications            | (user_id, read_at, created_at DESC)    | Composite             | Bildirim merkezi                                                   |
+| notifications            | (user_id, channel)                     | Composite             | In-app okunmamış count                                             |
+| notifications            | delivery_status partial                | Btree                 | Retry job                                                          |
+| email_templates          | event_type                             | UNIQUE                | Event ile şablon eşleştirme                                        |
+| audit_logs               | chain_hash                             | UNIQUE                | Integrity kontrolü                                                 |
+| audit_logs               | (user_id, timestamp DESC)              | Composite             | Kullanıcı aksiyon geçmişi                                          |
+| audit_logs               | (entity, entity_id, timestamp DESC)    | Composite             | Varlık aksiyon geçmişi                                             |
+| audit_logs               | (action, timestamp DESC)               | Composite             | Aksiyon tipi raporu                                                |
+| audit_logs               | timestamp DESC                         | Btree                 | Global zaman serisi                                                |
 
 ---
 
@@ -1292,9 +1279,7 @@ Tam seed çalışır:
 - 4 sistem rolü + default permission atamaları.
 - **500 fake kullanıcı** (Faker.js TR — ad/soyad/sicil/email `<sicil>@staging.leanmgmt.local`).
 - Her kullanıcıya rastgele 1-3 rol.
-- 100 fake süreç (karışık statüde).
-- Ortalama 2-3 task per süreç (~300 task).
-- 200 fake doküman (1-500KB).
+- 200 fake doküman (1-500KB, generic `uploaded_by_user_id`).
 - İlk DRAFT + PUBLISHED consent versiyonu.
 - Default email template'leri (6 event için Türkçe).
 - Default system_settings.
@@ -1306,7 +1291,7 @@ Development ile aynı seed (gerçek production verisi **asla** kopyalanmaz). See
 Sadece **zorunlu sistem seed'i**:
 
 - SYSTEM master data rezerve kayıtları (her master data tablosunda `code='SYSTEM'`, `name='System'`, `is_active=true`).
-- 4 sistem rolü (`SUPERADMIN`, `USER_MANAGER`, `ROLE_MANAGER`, `PROCESS_MANAGER`).
+- 3 sistem rolü (`SUPERADMIN`, `USER_MANAGER`, `ROLE_MANAGER`).
 - Sistem rollerinin default permission atamaları.
 - Default email template'leri (6 event için).
 - Default `system_settings` (login policy, password expiry vb.).
@@ -1314,7 +1299,7 @@ Sadece **zorunlu sistem seed'i**:
 
 **Superadmin kullanıcısı production seed'inin parçası değildir.** Boot-time'da `apps/api/src/bootstrap/superadmin.ts` modülü env değişkenlerini (`SUPERADMIN_EMAIL`, `SUPERADMIN_PASSWORD_HASH`) okur ve DB'de superadmin yoksa seed eder; varsa güncellemez (env'den şifre değişse dahi DB'deki hash değiştirilmez — bu bilinçli; superadmin env bootstrap'ten sonra koda immutable). Superadmin SYSTEM master data'larına bağlanır.
 
-**Kritik kural:** Production seed script'i, dev seed'in "500 fake user" ve "100 fake process" kısımlarını **asla** çalıştırmaz. Seed fonksiyonları `if (process.env.NODE_ENV === 'production')` guard'ıyla ayrılır; fake data üretimi yalnız dev/staging branch'inde.
+**Kritik kural:** Production seed script'i, dev seed'in "500 fake user" kısmını **asla** çalıştırmaz. Seed fonksiyonları `if (process.env.NODE_ENV === 'production')` guard'ıyla ayrılır; fake data üretimi yalnız dev/staging branch'inde.
 
 ---
 

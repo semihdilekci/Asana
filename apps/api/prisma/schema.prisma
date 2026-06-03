@@ -101,49 +101,6 @@ enum RoleRuleConditionOperator {
   @@map("role_rule_condition_operator")
 }
 
-enum ProcessType {
-  BEFORE_AFTER_KAIZEN
-
-  @@map("process_type")
-}
-
-enum ProcessStatus {
-  INITIATED
-  IN_PROGRESS
-  COMPLETED
-  REJECTED
-  CANCELLED
-
-  @@map("process_status")
-}
-
-enum TaskStatus {
-  PENDING
-  CLAIMED
-  IN_PROGRESS
-  COMPLETED
-  SKIPPED_BY_PEER
-  SKIPPED_BY_ROLLBACK
-
-  @@map("task_status")
-}
-
-enum AssignmentMode {
-  SINGLE
-  CLAIM
-  ALL_REQUIRED
-
-  @@map("assignment_mode")
-}
-
-enum TaskAssignmentStatus {
-  PENDING
-  COMPLETED
-  SKIPPED
-
-  @@map("task_assignment_status")
-}
-
 enum DocumentScanStatus {
   PENDING_SCAN
   SCANNING
@@ -154,16 +111,8 @@ enum DocumentScanStatus {
   @@map("document_scan_status")
 }
 
-/** docs/02_DATABASE_SCHEMA.md §6.6 — notifications.event_type */
+/** docs/02_DATABASE_SCHEMA.md §6.6 — notifications.event_type (BPM tipleri Faz 14 ile kaldırıldı) */
 enum NotificationEventType {
-  TASK_ASSIGNED
-  TASK_CLAIMED_BY_PEER
-  SLA_WARNING
-  SLA_BREACH
-  PROCESS_COMPLETED
-  PROCESS_REJECTED
-  PROCESS_CANCELLED
-  ROLLBACK_PERFORMED
   DOCUMENT_INFECTED
   ACCOUNT_LOCKED
   PASSWORD_RESET_REQUESTED
@@ -213,7 +162,6 @@ model Company {
 
   users     User[]     @relation("UserCompany")
   locations Location[]
-  processes Process[]
 
   @@index([isActive], map: "companies_is_active_idx")
   @@map("companies")
@@ -418,11 +366,6 @@ model User {
   rolesCreated          Role[]           @relation("RoleCreatedBy")
   roleRulesCreated      RoleRule[]       @relation("RoleRuleCreatedBy")
   systemSettingsUpdated SystemSetting[]  @relation("SystemSettingUpdatedBy")
-  processesStarted     Process[]        @relation("ProcessStartedBy")
-  processesCancelled  Process[]        @relation("ProcessCancelledBy")
-  tasksCompleted      Task[]           @relation("TaskCompletedBy")
-  tasksClaimed        Task[]           @relation("TaskClaimedBy")
-  taskAssignments     TaskAssignment[] @relation("TaskAssignmentUser")
   documentsUploaded   Document[]       @relation("DocumentUploadedBy")
   notifications       Notification[]
   notificationPreferences NotificationPreference[]
@@ -530,7 +473,6 @@ model Role {
   userRoles        UserRole[]
   rolePermissions  RolePermission[]
   roleRules        RoleRule[]
-  taskAssignments  TaskAssignment[]
 
   @@index([isActive], map: "roles_is_active_idx")
   @@map("roles")
@@ -699,93 +641,7 @@ model AuditChainIntegrityCheck {
   @@map("audit_chain_integrity_checks")
 }
 
-// --- Workflow (Faz 5) — kaynak: docs/02_DATABASE_SCHEMA.md §6.4 ---
-
-model Process {
-  id                 String         @id @default(cuid())
-  processNumber      BigInt         @map("process_number")
-  processType        ProcessType    @map("process_type")
-  displayId          String         @unique @map("display_id") @db.VarChar(32)
-  startedByUserId    String         @map("started_by_user_id")
-  startedBy          User           @relation("ProcessStartedBy", fields: [startedByUserId], references: [id], onDelete: Restrict)
-  companyId          String         @map("company_id")
-  company            Company        @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  status             ProcessStatus  @default(INITIATED)
-  startedAt          DateTime       @default(now()) @map("started_at") @db.Timestamptz(6)
-  completedAt        DateTime?      @map("completed_at") @db.Timestamptz(6)
-  cancelledAt        DateTime?      @map("cancelled_at") @db.Timestamptz(6)
-  cancelReason       String?        @map("cancel_reason") @db.Text
-  cancelledByUserId  String?        @map("cancelled_by_user_id")
-  cancelledBy        User?          @relation("ProcessCancelledBy", fields: [cancelledByUserId], references: [id], onDelete: SetNull)
-  rollbackHistory    Json?          @map("rollback_history")
-  metadata           Json?
-  createdAt          DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt          DateTime       @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
-
-  tasks     Task[]
-  documents Document[]
-
-  @@unique([processType, processNumber], map: "processes_type_number_key")
-  @@index([startedByUserId, status], map: "processes_started_by_status_idx")
-  @@index([companyId, status, startedAt(sort: Desc)], map: "processes_company_status_started_idx")
-  @@index([status, startedAt(sort: Desc)], map: "processes_status_started_idx")
-  @@index([startedAt(sort: Desc)], map: "processes_started_at_idx")
-  @@map("processes")
-}
-
-model Task {
-  id                 String         @id @default(cuid())
-  processId          String         @map("process_id")
-  process            Process        @relation(fields: [processId], references: [id], onDelete: Restrict)
-  stepKey            String         @map("step_key") @db.VarChar(64)
-  stepOrder          Int            @map("step_order")
-  assignmentMode     AssignmentMode @map("assignment_mode")
-  status             TaskStatus     @default(PENDING)
-  completionAction  String?        @map("completion_action") @db.VarChar(64)
-  completionReason  String?        @map("completion_reason") @db.Text
-  formData           Json?         @map("form_data")
-  /** Impersonation altında claim/complete — gerçek aktör user id */
-  actionContext      Json?         @map("action_context")
-  slaDueAt           DateTime?      @map("sla_due_at") @db.Timestamptz(6)
-  slaWarningSentAt  DateTime?     @map("sla_warning_sent_at") @db.Timestamptz(6)
-  slaBreachSentAt   DateTime?     @map("sla_breach_sent_at") @db.Timestamptz(6)
-  completedByUserId  String?       @map("completed_by_user_id")
-  completedBy        User?         @relation("TaskCompletedBy", fields: [completedByUserId], references: [id], onDelete: SetNull)
-  completedAt        DateTime?     @map("completed_at") @db.Timestamptz(6)
-  claimedByUserId    String?       @map("claimed_by_user_id")
-  claimedBy          User?         @relation("TaskClaimedBy", fields: [claimedByUserId], references: [id], onDelete: SetNull)
-  isSlaOverdue       Boolean       @default(false) @map("is_sla_overdue")
-  createdAt         DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt         DateTime       @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
-
-  assignments TaskAssignment[]
-  documents   Document[]
-
-  @@index([processId, stepOrder], map: "tasks_process_order_idx")
-  @@index([status, slaDueAt], map: "tasks_status_sla_idx")
-  @@index([claimedByUserId], map: "tasks_claimed_by_user_id_idx")
-  @@index([completedByUserId, completedAt(sort: Desc)], map: "tasks_completed_by_idx")
-  @@map("tasks")
-}
-
-model TaskAssignment {
-  id               String               @id @default(cuid())
-  taskId           String               @map("task_id")
-  task             Task                 @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  userId           String?              @map("user_id")
-  user             User?                @relation("TaskAssignmentUser", fields: [userId], references: [id], onDelete: SetNull)
-  roleId           String?              @map("role_id")
-  role             Role?                @relation(fields: [roleId], references: [id], onDelete: SetNull)
-  status           TaskAssignmentStatus @default(PENDING)
-  resolvedByRule  Boolean              @default(false) @map("resolved_by_rule")
-  completedAt      DateTime?            @map("completed_at") @db.Timestamptz(6)
-  createdAt        DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
-
-  @@index([taskId, status], map: "task_assignments_task_status_idx")
-  @@index([userId, status], map: "task_assignments_user_status_idx")
-  @@index([roleId], map: "task_assignments_role_idx")
-  @@map("task_assignments")
-}
+// --- Documents (generic attachment — Faz 14 BPM FK kaldırıldı) ---
 
 model Document {
   id               String             @id @default(cuid())
@@ -797,17 +653,12 @@ model Document {
   contentType      String             @map("content_type") @db.VarChar(100)
   scanStatus       DocumentScanStatus @default(PENDING_SCAN) @map("scan_status")
   scanResultDetail String?            @map("scan_result_detail") @db.Text
-  processId        String?            @map("process_id")
-  process          Process?           @relation(fields: [processId], references: [id], onDelete: Restrict)
-  taskId           String?            @map("task_id")
-  task             Task?              @relation(fields: [taskId], references: [id], onDelete: Restrict)
   uploadedAt       DateTime           @default(now()) @map("uploaded_at") @db.Timestamptz(6)
   createdAt        DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt        DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   @@index([scanStatus], map: "documents_scan_status_idx")
   @@index([uploadedByUserId], map: "documents_uploaded_by_idx")
-  @@index([processId], map: "documents_process_idx")
   @@map("documents")
 }
 

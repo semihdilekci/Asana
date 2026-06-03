@@ -9,6 +9,7 @@ dist/
 coverage/
 **/test-results/
 *.tsbuildinfo
+notlarım_kayıtlarım.md
 
 # Terraform
 .terraform/

@@ -179,11 +179,11 @@ describe.sequential('Admin — system settings + audit (integration)', () => {
     });
     expect(r.statusCode).toBe(200);
     const body = JSON.parse(r.body) as {
-      data: { activeUserCount: number; openProcessCount: number; overdueTaskCount: number };
+      data: { activeUserCount: number };
     };
     expect(typeof body.data.activeUserCount).toBe('number');
-    expect(typeof body.data.openProcessCount).toBe('number');
-    expect(typeof body.data.overdueTaskCount).toBe('number');
+    expect(body.data).not.toHaveProperty('openProcessCount');
+    expect(body.data).not.toHaveProperty('overdueTaskCount');
   });
 
   it('seed.manager GET /admin/summary 403 (admin izinleri yok)', async () => {
@@ -197,8 +197,8 @@ describe.sequential('Admin — system settings + audit (integration)', () => {
     expect(r.statusCode).toBe(403);
   });
 
-  it('PROCESS_MANAGER (AUDIT_LOG_VIEW) GET /admin/summary 200', async () => {
-    const { accessToken } = await loginAs('integration_process@leanmgmt.local', 'OnlyProc123!@#');
+  it('AUDIT_LOG_VIEW ile GET /admin/summary 200', async () => {
+    const { accessToken } = await loginAs('integration_audit@leanmgmt.local', 'OnlyAudit123!@#');
     const srv = app.getHttpAdapter().getInstance();
     const r = await srv.inject({
       method: 'GET',

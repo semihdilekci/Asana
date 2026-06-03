@@ -10,7 +10,6 @@ import { GenericContainer, type StartedTestContainer } from 'testcontainers';
 import { PostgreSqlContainer, type StartedPostgreSqlContainer } from '@testcontainers/postgresql';
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, type NestFastifyApplication } from '@nestjs/platform-fastify';
-import { AssignmentMode } from '@leanmgmt/prisma-client';
 import type { NotificationOutboundEmailJobData } from '@leanmgmt/shared-types';
 
 import { NOTIFICATION_DOMAIN_EVENT } from '../src/notifications/notification-domain.events.js';
@@ -99,62 +98,19 @@ async function loginSuperadmin(): Promise<{
   };
 }
 
-async function createSingleAssigneeTask(
-  prisma: PrismaService,
-  startedById: string,
-  assigneeId: string,
-  companyId: string,
-): Promise<{ taskId: string; displayId: string }> {
-  const rows = await prisma.$queryRaw<[{ n: bigint }]>`
-    SELECT nextval('process_seq_before_after_kaizen') AS n
-  `;
-  const n = rows[0].n;
-  const displayId = `KTI-${String(n).padStart(6, '0')}`;
-  const proc = await prisma.process.create({
-    data: {
-      processNumber: n,
-      processType: 'BEFORE_AFTER_KAIZEN',
-      displayId,
-      startedByUserId: startedById,
-      companyId,
-      status: 'IN_PROGRESS',
-    },
-  });
-  const t = await prisma.task.create({
-    data: {
-      processId: proc.id,
-      stepKey: 'KTI_MANAGER_APPROVAL',
-      stepOrder: 2,
-      assignmentMode: AssignmentMode.SINGLE,
-      status: 'PENDING',
-      slaDueAt: new Date(Date.now() + 72 * 3600 * 1000),
-    },
-  });
-  await prisma.taskAssignment.create({
-    data: { taskId: t.id, userId: assigneeId, status: 'PENDING', resolvedByRule: true },
-  });
-  return { taskId: t.id, displayId };
-}
-
 describe('Notifications (integration)', () => {
-  it('task.assigned emit → IN_APP bildirim + liste endpoint’i', async () => {
+  it('role.assigned emit → IN_APP bildirim + liste endpoint’i', async () => {
     const prisma = app.get(PrismaService);
     const emitter = app.get(EventEmitter2);
     const starter = await prisma.user.findFirst({
       where: { firstName: 'Super', lastName: 'Admin' },
     });
     if (!starter) throw new Error('seed');
-    const { taskId, displayId } = await createSingleAssigneeTask(
-      prisma,
-      starter.id,
-      starter.id,
-      starter.companyId,
-    );
 
-    await emitter.emitAsync(NOTIFICATION_DOMAIN_EVENT.TASK_ASSIGNED, {
-      taskId,
+    await emitter.emitAsync(NOTIFICATION_DOMAIN_EVENT.ROLE_ASSIGNED, {
       userId: starter.id,
-      processDisplayId: displayId,
+      roleName: 'Test Rolü',
+      roleCode: 'TEST_ROLE',
     });
 
     const auth = await loginSuperadmin();
@@ -176,15 +132,15 @@ describe('Notifications (integration)', () => {
     };
     expect(body.success).toBe(true);
     expect(body.data.pagination.total).toBeGreaterThanOrEqual(1);
-    const mine = body.data.items.filter((i) => i.body.includes(displayId));
+    const mine = body.data.items.filter((i) => i.body.includes('TEST_ROLE'));
     expect(mine.length).toBeGreaterThanOrEqual(1);
-    expect(mine[0]?.eventType).toBe('TASK_ASSIGNED');
+    expect(mine[0]?.eventType).toBe('ROLE_ASSIGNED');
 
     const emailPending = await prisma.notification.count({
       where: {
         userId: starter.id,
         channel: 'EMAIL',
-        eventType: 'TASK_ASSIGNED',
+        eventType: 'ROLE_ASSIGNED',
         deliveryStatus: 'PENDING',
       },
     });
@@ -198,10 +154,10 @@ describe('Notifications (integration)', () => {
     if (!mgr) throw new Error('seed');
 
     await prisma.notificationPreference.upsert({
-      where: { userId_eventType: { userId: mgr.id, eventType: 'TASK_ASSIGNED' } },
+      where: { userId_eventType: { userId: mgr.id, eventType: 'ROLE_ASSIGNED' } },
       create: {
         userId: mgr.id,
-        eventType: 'TASK_ASSIGNED',
+        eventType: 'ROLE_ASSIGNED',
         inAppEnabled: true,
         emailEnabled: false,
         digestEnabled: false,
@@ -210,7 +166,7 @@ describe('Notifications (integration)', () => {
     });
 
     const beforeEmail = await prisma.notification.count({
-      where: { userId: mgr.id, channel: 'EMAIL', eventType: 'TASK_ASSIGNED' },
+      where: { userId: mgr.id, channel: 'EMAIL', eventType: 'ROLE_ASSIGNED' },
     });
 
     const connection = new Redis(testRedisUrl, { maxRetriesPerRequest: null });
@@ -220,15 +176,15 @@ describe('Notifications (integration)', () => {
 
     await notificationsService.createEmailPendingIfEnabled({
       userId: mgr.id,
-      eventType: 'TASK_ASSIGNED',
+      eventType: 'ROLE_ASSIGNED',
       title: 'Test',
       body: 'Test body',
-      linkUrl: '/tasks/x',
-      metadata: { displayId: 'KTI-000001', taskTitle: 'Adım', processId: 'p', taskId: 't' },
+      linkUrl: '/roles',
+      metadata: { roleCode: 'TEST', roleName: 'Test' },
     });
 
     const afterEmail = await prisma.notification.count({
-      where: { userId: mgr.id, channel: 'EMAIL', eventType: 'TASK_ASSIGNED' },
+      where: { userId: mgr.id, channel: 'EMAIL', eventType: 'ROLE_ASSIGNED' },
     });
     expect(afterEmail).toBe(beforeEmail);
 
@@ -241,7 +197,7 @@ describe('Notifications (integration)', () => {
     await prisma.notification.create({
       data: {
         userId: mgr.id,
-        eventType: 'TASK_ASSIGNED',
+        eventType: 'ROLE_ASSIGNED',
         channel: 'IN_APP',
         title: 'Test',
         body: 'Test body integration',
@@ -251,7 +207,7 @@ describe('Notifications (integration)', () => {
     });
 
     const inAppRows = await prisma.notification.count({
-      where: { userId: mgr.id, channel: 'IN_APP', eventType: 'TASK_ASSIGNED' },
+      where: { userId: mgr.id, channel: 'IN_APP', eventType: 'ROLE_ASSIGNED' },
     });
     expect(inAppRows).toBeGreaterThanOrEqual(1);
   });
@@ -263,10 +219,10 @@ describe('Notifications (integration)', () => {
     if (!mgr) throw new Error('seed');
 
     await prisma.notificationPreference.upsert({
-      where: { userId_eventType: { userId: mgr.id, eventType: 'TASK_ASSIGNED' } },
+      where: { userId_eventType: { userId: mgr.id, eventType: 'ROLE_ASSIGNED' } },
       create: {
         userId: mgr.id,
-        eventType: 'TASK_ASSIGNED',
+        eventType: 'ROLE_ASSIGNED',
         inAppEnabled: true,
         emailEnabled: true,
         digestEnabled: false,
@@ -281,11 +237,11 @@ describe('Notifications (integration)', () => {
 
     await notificationsService.createEmailPendingIfEnabled({
       userId: mgr.id,
-      eventType: 'TASK_ASSIGNED',
+      eventType: 'ROLE_ASSIGNED',
       title: 'E-posta test',
       body: 'İçerik',
-      linkUrl: '/tasks/x',
-      metadata: { displayId: 'KTI-000099', taskTitle: 'Onay', processId: 'p1', taskId: 't1' },
+      linkUrl: '/roles',
+      metadata: { roleCode: 'MGR', roleName: 'Yönetici' },
     });
 
     const afterWaiting = (await q.getJobCounts()).waiting;
@@ -295,7 +251,7 @@ describe('Notifications (integration)', () => {
       where: {
         userId: mgr.id,
         channel: 'EMAIL',
-        eventType: 'TASK_ASSIGNED',
+        eventType: 'ROLE_ASSIGNED',
         deliveryStatus: 'PENDING',
       },
       orderBy: { createdAt: 'desc' },
@@ -339,12 +295,12 @@ describe('Notifications (integration)', () => {
     expect(prefs.statusCode).toBe(403);
   });
 
-  it('GET /admin/email-templates/TASK_ASSIGNED — superadmin şablon döner', async () => {
+  it('GET /admin/email-templates/ROLE_ASSIGNED — superadmin şablon döner', async () => {
     const auth = await loginSuperadmin();
     const srv = app.getHttpAdapter().getInstance();
     const res = await srv.inject({
       method: 'GET',
-      url: '/api/v1/admin/email-templates/TASK_ASSIGNED',
+      url: '/api/v1/admin/email-templates/ROLE_ASSIGNED',
       headers: { authorization: `Bearer ${auth.accessToken}` },
     });
     expect(res.statusCode).toBe(200);
@@ -353,17 +309,17 @@ describe('Notifications (integration)', () => {
       data: { eventType: string; subjectTemplate: string; requiredVariables: string[] };
     };
     expect(body.success).toBe(true);
-    expect(body.data.eventType).toBe('TASK_ASSIGNED');
+    expect(body.data.eventType).toBe('ROLE_ASSIGNED');
     expect(body.data.subjectTemplate.length).toBeGreaterThan(0);
     expect(body.data.requiredVariables).toContain('firstName');
   });
 
-  it('POST /admin/email-templates/TASK_ASSIGNED/send-test — worker kuyruğuna job ekler', async () => {
+  it('POST /admin/email-templates/ROLE_ASSIGNED/send-test — worker kuyruğuna job ekler', async () => {
     const auth = await loginSuperadmin();
     const srv = app.getHttpAdapter().getInstance();
     const res = await srv.inject({
       method: 'POST',
-      url: '/api/v1/admin/email-templates/TASK_ASSIGNED/send-test',
+      url: '/api/v1/admin/email-templates/ROLE_ASSIGNED/send-test',
       headers: {
         authorization: `Bearer ${auth.accessToken}`,
         'content-type': 'application/json',

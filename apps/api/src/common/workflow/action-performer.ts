@@ -21,32 +21,11 @@ function formatEffectiveLabel(effective: UserBriefParts): string {
   return effective.sicil ? `${name} · ${effective.sicil}` : name;
 }
 
-export function readTaskActionContext(raw: unknown): { actorUserId: string } | null {
-  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
-  const actorUserId = (raw as Record<string, unknown>).actorUserId;
-  return typeof actorUserId === 'string' ? { actorUserId } : null;
-}
-
-export function readProcessStartImpersonation(metadata: unknown): { actorUserId: string } | null {
-  if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) return null;
-  const start = (metadata as Record<string, unknown>).startImpersonation;
-  if (!start || typeof start !== 'object' || Array.isArray(start)) return null;
-  const actorUserId = (start as Record<string, unknown>).actorUserId;
-  return typeof actorUserId === 'string' ? { actorUserId } : null;
-}
-
 export function buildImpersonationActionContext(
   actor: AuthenticatedUser,
 ): Prisma.InputJsonValue | undefined {
   if (!actor.impersonatorId) return undefined;
   return { actorUserId: actor.impersonatorId };
-}
-
-export function buildProcessStartMetadata(
-  actor: AuthenticatedUser,
-): Prisma.InputJsonValue | undefined {
-  if (!actor.impersonatorId) return undefined;
-  return { startImpersonation: { actorUserId: actor.impersonatorId } };
 }
 
 export function serializeActionPerformerFields(

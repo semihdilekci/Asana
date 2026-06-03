@@ -4,7 +4,7 @@ import { formatNotificationRelativeTime, notificationEventLabel } from './notifi
 
 describe('notification-ui', () => {
   it('notificationEventLabel bilinen tipleri Türkçe döner', () => {
-    expect(notificationEventLabel('TASK_ASSIGNED')).toBe('Görev atandı');
+    expect(notificationEventLabel('ROLE_ASSIGNED')).toBe('Rol atandı');
   });
 
   it('formatNotificationRelativeTime yakın zaman için metin döner', () => {

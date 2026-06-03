@@ -177,15 +177,15 @@ describe('Roles API (integration)', () => {
     expect(direct.some((r) => r.code === 'SUPERADMIN')).toBe(true);
   });
 
-  it('PROCESS_MANAGER — GET /roles 403', async () => {
+  it('ROLE_VIEW yok — GET /roles 403', async () => {
     const srv = app.getHttpAdapter().getInstance();
     const login = await srv.inject({
       method: 'POST',
       url: '/api/v1/auth/login',
       headers: { 'content-type': 'application/json' },
       payload: JSON.stringify({
-        email: 'integration_process@leanmgmt.local',
-        password: 'OnlyProc123!@#',
+        email: 'integration_audit@leanmgmt.local',
+        password: 'OnlyAudit123!@#',
       }),
     });
     const tok = (JSON.parse(login.body) as { data: { accessToken: string } }).data.accessToken;

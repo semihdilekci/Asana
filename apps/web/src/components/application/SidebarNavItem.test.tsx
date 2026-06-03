@@ -30,14 +30,14 @@ describe('SidebarNavigationSectionDividers', () => {
   it('aktif öğede bg-bg-secondary vurgusu uygular', () => {
     render(
       <SidebarNavigationSectionDividers
-        activeUrl="/tasks"
+        activeUrl="/users"
         items={[
           { label: 'Ana Sayfa', href: '/dashboard', icon: HomeLine },
-          { label: 'Görevlerim', href: '/tasks', icon: HomeLine },
+          { label: 'Kullanıcılar', href: '/users', icon: HomeLine },
         ]}
       />,
     );
-    const active = screen.getByRole('link', { name: 'Görevlerim' });
+    const active = screen.getByRole('link', { name: 'Kullanıcılar' });
     expect(active.className).toContain('bg-bg-secondary');
     expect(active.getAttribute('aria-current')).toBe('page');
   });
@@ -48,15 +48,15 @@ describe('SidebarNavigationSectionDividers', () => {
         activeUrl="/dashboard"
         items={[
           {
-            label: 'Görevlerim',
-            href: '/tasks',
+            label: 'Kullanıcılar',
+            href: '/users',
             icon: HomeLine,
             badge: <NavItemCountBadge count={10} />,
           },
         ]}
       />,
     );
-    const link = screen.getByRole('link', { name: /Görevlerim/i });
+    const link = screen.getByRole('link', { name: /Kullanıcılar/i });
     expect(link.textContent).toContain('10');
     expect(link.querySelector('span.ml-auto')).not.toBeNull();
   });

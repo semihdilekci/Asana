@@ -24,8 +24,6 @@ import { RedisModule } from './redis/redis.module.js';
 import { MasterDataModule } from './master-data/master-data.module.js';
 import { SystemSettingsModule } from './system-settings/system-settings.module.js';
 import { NotificationsModule } from './notifications/notifications.module.js';
-import { ProcessesModule } from './processes/processes.module.js';
-import { TasksModule } from './tasks/tasks.module.js';
 import { UsersModule } from './users/users.module.js';
 
 @Module({
@@ -46,8 +44,6 @@ import { UsersModule } from './users/users.module.js';
     ConsentVersionsModule,
     UsersModule,
     MasterDataModule,
-    ProcessesModule,
-    TasksModule,
     NotificationsModule,
     EmailTemplatesModule,
     SystemSettingsModule,

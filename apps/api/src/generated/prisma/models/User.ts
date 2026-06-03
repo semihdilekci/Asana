@@ -500,11 +500,6 @@ export type UserWhereInput = {
   rolesCreated?: Prisma.RoleListRelationFilter;
   roleRulesCreated?: Prisma.RoleRuleListRelationFilter;
   systemSettingsUpdated?: Prisma.SystemSettingListRelationFilter;
-  processesStarted?: Prisma.ProcessListRelationFilter;
-  processesCancelled?: Prisma.ProcessListRelationFilter;
-  tasksCompleted?: Prisma.TaskListRelationFilter;
-  tasksClaimed?: Prisma.TaskListRelationFilter;
-  taskAssignments?: Prisma.TaskAssignmentListRelationFilter;
   documentsUploaded?: Prisma.DocumentListRelationFilter;
   notifications?: Prisma.NotificationListRelationFilter;
   notificationPreferences?: Prisma.NotificationPreferenceListRelationFilter;
@@ -581,11 +576,6 @@ export type UserOrderByWithRelationInput = {
   rolesCreated?: Prisma.RoleOrderByRelationAggregateInput;
   roleRulesCreated?: Prisma.RoleRuleOrderByRelationAggregateInput;
   systemSettingsUpdated?: Prisma.SystemSettingOrderByRelationAggregateInput;
-  processesStarted?: Prisma.ProcessOrderByRelationAggregateInput;
-  processesCancelled?: Prisma.ProcessOrderByRelationAggregateInput;
-  tasksCompleted?: Prisma.TaskOrderByRelationAggregateInput;
-  tasksClaimed?: Prisma.TaskOrderByRelationAggregateInput;
-  taskAssignments?: Prisma.TaskAssignmentOrderByRelationAggregateInput;
   documentsUploaded?: Prisma.DocumentOrderByRelationAggregateInput;
   notifications?: Prisma.NotificationOrderByRelationAggregateInput;
   notificationPreferences?: Prisma.NotificationPreferenceOrderByRelationAggregateInput;
@@ -672,11 +662,6 @@ export type UserWhereUniqueInput = Prisma.AtLeast<
     rolesCreated?: Prisma.RoleListRelationFilter;
     roleRulesCreated?: Prisma.RoleRuleListRelationFilter;
     systemSettingsUpdated?: Prisma.SystemSettingListRelationFilter;
-    processesStarted?: Prisma.ProcessListRelationFilter;
-    processesCancelled?: Prisma.ProcessListRelationFilter;
-    tasksCompleted?: Prisma.TaskListRelationFilter;
-    tasksClaimed?: Prisma.TaskListRelationFilter;
-    taskAssignments?: Prisma.TaskAssignmentListRelationFilter;
     documentsUploaded?: Prisma.DocumentListRelationFilter;
     notifications?: Prisma.NotificationListRelationFilter;
     notificationPreferences?: Prisma.NotificationPreferenceListRelationFilter;
@@ -831,11 +816,6 @@ export type UserCreateInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -902,11 +882,6 @@ export type UserUncheckedCreateInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -973,11 +948,6 @@ export type UserUpdateInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -1044,11 +1014,6 @@ export type UserUncheckedUpdateInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -2795,144 +2760,6 @@ export type UserUpdateOneWithoutSystemSettingsUpdatedNestedInput = {
   >;
 };
 
-export type UserCreateNestedOneWithoutProcessesStartedInput = {
-  create?: Prisma.XOR<
-    Prisma.UserCreateWithoutProcessesStartedInput,
-    Prisma.UserUncheckedCreateWithoutProcessesStartedInput
-  >;
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutProcessesStartedInput;
-  connect?: Prisma.UserWhereUniqueInput;
-};
-
-export type UserCreateNestedOneWithoutProcessesCancelledInput = {
-  create?: Prisma.XOR<
-    Prisma.UserCreateWithoutProcessesCancelledInput,
-    Prisma.UserUncheckedCreateWithoutProcessesCancelledInput
-  >;
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutProcessesCancelledInput;
-  connect?: Prisma.UserWhereUniqueInput;
-};
-
-export type UserUpdateOneRequiredWithoutProcessesStartedNestedInput = {
-  create?: Prisma.XOR<
-    Prisma.UserCreateWithoutProcessesStartedInput,
-    Prisma.UserUncheckedCreateWithoutProcessesStartedInput
-  >;
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutProcessesStartedInput;
-  upsert?: Prisma.UserUpsertWithoutProcessesStartedInput;
-  connect?: Prisma.UserWhereUniqueInput;
-  update?: Prisma.XOR<
-    Prisma.XOR<
-      Prisma.UserUpdateToOneWithWhereWithoutProcessesStartedInput,
-      Prisma.UserUpdateWithoutProcessesStartedInput
-    >,
-    Prisma.UserUncheckedUpdateWithoutProcessesStartedInput
-  >;
-};
-
-export type UserUpdateOneWithoutProcessesCancelledNestedInput = {
-  create?: Prisma.XOR<
-    Prisma.UserCreateWithoutProcessesCancelledInput,
-    Prisma.UserUncheckedCreateWithoutProcessesCancelledInput
-  >;
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutProcessesCancelledInput;
-  upsert?: Prisma.UserUpsertWithoutProcessesCancelledInput;
-  disconnect?: Prisma.UserWhereInput | boolean;
-  delete?: Prisma.UserWhereInput | boolean;
-  connect?: Prisma.UserWhereUniqueInput;
-  update?: Prisma.XOR<
-    Prisma.XOR<
-      Prisma.UserUpdateToOneWithWhereWithoutProcessesCancelledInput,
-      Prisma.UserUpdateWithoutProcessesCancelledInput
-    >,
-    Prisma.UserUncheckedUpdateWithoutProcessesCancelledInput
-  >;
-};
-
-export type UserCreateNestedOneWithoutTasksCompletedInput = {
-  create?: Prisma.XOR<
-    Prisma.UserCreateWithoutTasksCompletedInput,
-    Prisma.UserUncheckedCreateWithoutTasksCompletedInput
-  >;
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTasksCompletedInput;
-  connect?: Prisma.UserWhereUniqueInput;
-};
-
-export type UserCreateNestedOneWithoutTasksClaimedInput = {
-  create?: Prisma.XOR<
-    Prisma.UserCreateWithoutTasksClaimedInput,
-    Prisma.UserUncheckedCreateWithoutTasksClaimedInput
-  >;
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTasksClaimedInput;
-  connect?: Prisma.UserWhereUniqueInput;
-};
-
-export type UserUpdateOneWithoutTasksCompletedNestedInput = {
-  create?: Prisma.XOR<
-    Prisma.UserCreateWithoutTasksCompletedInput,
-    Prisma.UserUncheckedCreateWithoutTasksCompletedInput
-  >;
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTasksCompletedInput;
-  upsert?: Prisma.UserUpsertWithoutTasksCompletedInput;
-  disconnect?: Prisma.UserWhereInput | boolean;
-  delete?: Prisma.UserWhereInput | boolean;
-  connect?: Prisma.UserWhereUniqueInput;
-  update?: Prisma.XOR<
-    Prisma.XOR<
-      Prisma.UserUpdateToOneWithWhereWithoutTasksCompletedInput,
-      Prisma.UserUpdateWithoutTasksCompletedInput
-    >,
-    Prisma.UserUncheckedUpdateWithoutTasksCompletedInput
-  >;
-};
-
-export type UserUpdateOneWithoutTasksClaimedNestedInput = {
-  create?: Prisma.XOR<
-    Prisma.UserCreateWithoutTasksClaimedInput,
-    Prisma.UserUncheckedCreateWithoutTasksClaimedInput
-  >;
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTasksClaimedInput;
-  upsert?: Prisma.UserUpsertWithoutTasksClaimedInput;
-  disconnect?: Prisma.UserWhereInput | boolean;
-  delete?: Prisma.UserWhereInput | boolean;
-  connect?: Prisma.UserWhereUniqueInput;
-  update?: Prisma.XOR<
-    Prisma.XOR<
-      Prisma.UserUpdateToOneWithWhereWithoutTasksClaimedInput,
-      Prisma.UserUpdateWithoutTasksClaimedInput
-    >,
-    Prisma.UserUncheckedUpdateWithoutTasksClaimedInput
-  >;
-};
-
-export type UserCreateNestedOneWithoutTaskAssignmentsInput = {
-  create?: Prisma.XOR<
-    Prisma.UserCreateWithoutTaskAssignmentsInput,
-    Prisma.UserUncheckedCreateWithoutTaskAssignmentsInput
-  >;
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTaskAssignmentsInput;
-  connect?: Prisma.UserWhereUniqueInput;
-};
-
-export type UserUpdateOneWithoutTaskAssignmentsNestedInput = {
-  create?: Prisma.XOR<
-    Prisma.UserCreateWithoutTaskAssignmentsInput,
-    Prisma.UserUncheckedCreateWithoutTaskAssignmentsInput
-  >;
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTaskAssignmentsInput;
-  upsert?: Prisma.UserUpsertWithoutTaskAssignmentsInput;
-  disconnect?: Prisma.UserWhereInput | boolean;
-  delete?: Prisma.UserWhereInput | boolean;
-  connect?: Prisma.UserWhereUniqueInput;
-  update?: Prisma.XOR<
-    Prisma.XOR<
-      Prisma.UserUpdateToOneWithWhereWithoutTaskAssignmentsInput,
-      Prisma.UserUpdateWithoutTaskAssignmentsInput
-    >,
-    Prisma.UserUncheckedUpdateWithoutTaskAssignmentsInput
-  >;
-};
-
 export type UserCreateNestedOneWithoutDocumentsUploadedInput = {
   create?: Prisma.XOR<
     Prisma.UserCreateWithoutDocumentsUploadedInput,
@@ -3098,11 +2925,6 @@ export type UserCreateWithoutCompaniesCreatedInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -3168,11 +2990,6 @@ export type UserUncheckedCreateWithoutCompaniesCreatedInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -3246,11 +3063,6 @@ export type UserCreateWithoutCompanyInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -3316,11 +3128,6 @@ export type UserUncheckedCreateWithoutCompanyInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -3419,11 +3226,6 @@ export type UserUpdateWithoutCompaniesCreatedInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -3489,11 +3291,6 @@ export type UserUncheckedUpdateWithoutCompaniesCreatedInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -3629,11 +3426,6 @@ export type UserCreateWithoutLocationsCreatedInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -3699,11 +3491,6 @@ export type UserUncheckedCreateWithoutLocationsCreatedInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -3777,11 +3564,6 @@ export type UserCreateWithoutLocationInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -3847,11 +3629,6 @@ export type UserUncheckedCreateWithoutLocationInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -3950,11 +3727,6 @@ export type UserUpdateWithoutLocationsCreatedInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -4020,11 +3792,6 @@ export type UserUncheckedUpdateWithoutLocationsCreatedInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -4118,11 +3885,6 @@ export type UserCreateWithoutDepartmentsCreatedInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -4188,11 +3950,6 @@ export type UserUncheckedCreateWithoutDepartmentsCreatedInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -4266,11 +4023,6 @@ export type UserCreateWithoutDepartmentInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -4336,11 +4088,6 @@ export type UserUncheckedCreateWithoutDepartmentInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -4439,11 +4186,6 @@ export type UserUpdateWithoutDepartmentsCreatedInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -4509,11 +4251,6 @@ export type UserUncheckedUpdateWithoutDepartmentsCreatedInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -4607,11 +4344,6 @@ export type UserCreateWithoutLevelsCreatedInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -4677,11 +4409,6 @@ export type UserUncheckedCreateWithoutLevelsCreatedInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -4755,11 +4482,6 @@ export type UserCreateWithoutLevelInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -4825,11 +4547,6 @@ export type UserUncheckedCreateWithoutLevelInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -4928,11 +4645,6 @@ export type UserUpdateWithoutLevelsCreatedInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -4998,11 +4710,6 @@ export type UserUncheckedUpdateWithoutLevelsCreatedInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -5093,11 +4800,6 @@ export type UserCreateWithoutPositionsCreatedInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -5163,11 +4865,6 @@ export type UserUncheckedCreateWithoutPositionsCreatedInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -5241,11 +4938,6 @@ export type UserCreateWithoutPositionInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -5311,11 +5003,6 @@ export type UserUncheckedCreateWithoutPositionInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -5414,11 +5101,6 @@ export type UserUpdateWithoutPositionsCreatedInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -5484,11 +5166,6 @@ export type UserUncheckedUpdateWithoutPositionsCreatedInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -5582,11 +5259,6 @@ export type UserCreateWithoutTeamsCreatedInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -5652,11 +5324,6 @@ export type UserUncheckedCreateWithoutTeamsCreatedInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -5730,11 +5397,6 @@ export type UserCreateWithoutTeamInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -5800,11 +5462,6 @@ export type UserUncheckedCreateWithoutTeamInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -5900,11 +5557,6 @@ export type UserUpdateWithoutTeamsCreatedInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -5970,11 +5622,6 @@ export type UserUncheckedUpdateWithoutTeamsCreatedInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -6059,11 +5706,6 @@ export type UserCreateWithoutWorkAreasCreatedInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -6129,11 +5771,6 @@ export type UserUncheckedCreateWithoutWorkAreasCreatedInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -6207,11 +5844,6 @@ export type UserCreateWithoutWorkAreaInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -6277,11 +5909,6 @@ export type UserUncheckedCreateWithoutWorkAreaInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -6380,11 +6007,6 @@ export type UserUpdateWithoutWorkAreasCreatedInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -6450,11 +6072,6 @@ export type UserUncheckedUpdateWithoutWorkAreasCreatedInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -6548,11 +6165,6 @@ export type UserCreateWithoutWorkSubAreasCreatedInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -6618,11 +6230,6 @@ export type UserUncheckedCreateWithoutWorkSubAreasCreatedInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -6696,11 +6303,6 @@ export type UserCreateWithoutWorkSubAreaInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -6766,11 +6368,6 @@ export type UserUncheckedCreateWithoutWorkSubAreaInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -6869,11 +6466,6 @@ export type UserUpdateWithoutWorkSubAreasCreatedInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -6939,11 +6531,6 @@ export type UserUncheckedUpdateWithoutWorkSubAreasCreatedInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -7037,11 +6624,6 @@ export type UserCreateWithoutDirectReportsInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -7107,11 +6689,6 @@ export type UserUncheckedCreateWithoutDirectReportsInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -7185,11 +6762,6 @@ export type UserCreateWithoutManagerInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -7255,11 +6827,6 @@ export type UserUncheckedCreateWithoutManagerInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -7338,11 +6905,6 @@ export type UserCreateWithoutCreatedUsersInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -7408,11 +6970,6 @@ export type UserUncheckedCreateWithoutCreatedUsersInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -7486,11 +7043,6 @@ export type UserCreateWithoutCreatedByUserInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -7556,11 +7108,6 @@ export type UserUncheckedCreateWithoutCreatedByUserInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -7659,11 +7206,6 @@ export type UserUpdateWithoutDirectReportsInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -7729,11 +7271,6 @@ export type UserUncheckedUpdateWithoutDirectReportsInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -7847,11 +7384,6 @@ export type UserUpdateWithoutCreatedUsersInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -7917,11 +7449,6 @@ export type UserUncheckedUpdateWithoutCreatedUsersInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -8015,11 +7542,6 @@ export type UserCreateWithoutSessionsInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -8085,11 +7607,6 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -8183,11 +7700,6 @@ export type UserUpdateWithoutSessionsInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -8253,11 +7765,6 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -8323,11 +7830,6 @@ export type UserCreateWithoutPasswordHistoriesInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -8393,11 +7895,6 @@ export type UserUncheckedCreateWithoutPasswordHistoriesInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -8491,11 +7988,6 @@ export type UserUpdateWithoutPasswordHistoriesInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -8561,11 +8053,6 @@ export type UserUncheckedUpdateWithoutPasswordHistoriesInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -8631,11 +8118,6 @@ export type UserCreateWithoutPasswordResetTokensInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -8701,11 +8183,6 @@ export type UserUncheckedCreateWithoutPasswordResetTokensInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -8799,11 +8276,6 @@ export type UserUpdateWithoutPasswordResetTokensInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -8869,11 +8341,6 @@ export type UserUncheckedUpdateWithoutPasswordResetTokensInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -8939,11 +8406,6 @@ export type UserCreateWithoutLoginAttemptsInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -9009,11 +8471,6 @@ export type UserUncheckedCreateWithoutLoginAttemptsInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -9107,11 +8564,6 @@ export type UserUpdateWithoutLoginAttemptsInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -9177,11 +8629,6 @@ export type UserUncheckedUpdateWithoutLoginAttemptsInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -9247,11 +8694,6 @@ export type UserCreateWithoutRolesCreatedInput = {
   userRolesAssigned?: Prisma.UserRoleCreateNestedManyWithoutAssignedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -9317,11 +8759,6 @@ export type UserUncheckedCreateWithoutRolesCreatedInput = {
   userRolesAssigned?: Prisma.UserRoleUncheckedCreateNestedManyWithoutAssignedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -9415,11 +8852,6 @@ export type UserUpdateWithoutRolesCreatedInput = {
   userRolesAssigned?: Prisma.UserRoleUpdateManyWithoutAssignedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -9485,11 +8917,6 @@ export type UserUncheckedUpdateWithoutRolesCreatedInput = {
   userRolesAssigned?: Prisma.UserRoleUncheckedUpdateManyWithoutAssignedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -9555,11 +8982,6 @@ export type UserCreateWithoutRoleRulesCreatedInput = {
   userRolesAssigned?: Prisma.UserRoleCreateNestedManyWithoutAssignedByUserInput;
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -9625,11 +9047,6 @@ export type UserUncheckedCreateWithoutRoleRulesCreatedInput = {
   userRolesAssigned?: Prisma.UserRoleUncheckedCreateNestedManyWithoutAssignedByUserInput;
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -9723,11 +9140,6 @@ export type UserUpdateWithoutRoleRulesCreatedInput = {
   userRolesAssigned?: Prisma.UserRoleUpdateManyWithoutAssignedByUserNestedInput;
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -9793,11 +9205,6 @@ export type UserUncheckedUpdateWithoutRoleRulesCreatedInput = {
   userRolesAssigned?: Prisma.UserRoleUncheckedUpdateManyWithoutAssignedByUserNestedInput;
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -9863,11 +9270,6 @@ export type UserCreateWithoutUserRolesInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -9933,11 +9335,6 @@ export type UserUncheckedCreateWithoutUserRolesInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -10011,11 +9408,6 @@ export type UserCreateWithoutUserRolesAssignedInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -10081,11 +9473,6 @@ export type UserUncheckedCreateWithoutUserRolesAssignedInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -10179,11 +9566,6 @@ export type UserUpdateWithoutUserRolesInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -10249,11 +9631,6 @@ export type UserUncheckedUpdateWithoutUserRolesInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -10339,11 +9716,6 @@ export type UserUpdateWithoutUserRolesAssignedInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -10409,11 +9781,6 @@ export type UserUncheckedUpdateWithoutUserRolesAssignedInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -10479,11 +9846,6 @@ export type UserCreateWithoutRolesGrantedInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -10549,11 +9911,6 @@ export type UserUncheckedCreateWithoutRolesGrantedInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -10647,11 +10004,6 @@ export type UserUpdateWithoutRolesGrantedInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -10717,11 +10069,6 @@ export type UserUncheckedUpdateWithoutRolesGrantedInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -10787,11 +10134,6 @@ export type UserCreateWithoutConsentVersionsCreatedInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -10857,11 +10199,6 @@ export type UserUncheckedCreateWithoutConsentVersionsCreatedInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -10955,11 +10292,6 @@ export type UserUpdateWithoutConsentVersionsCreatedInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -11025,11 +10357,6 @@ export type UserUncheckedUpdateWithoutConsentVersionsCreatedInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -11095,11 +10422,6 @@ export type UserCreateWithoutUserConsentsInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -11165,11 +10487,6 @@ export type UserUncheckedCreateWithoutUserConsentsInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -11263,11 +10580,6 @@ export type UserUpdateWithoutUserConsentsInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -11333,11 +10645,6 @@ export type UserUncheckedUpdateWithoutUserConsentsInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -11403,11 +10710,6 @@ export type UserCreateWithoutAuditLogsInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -11473,11 +10775,6 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -11571,11 +10868,6 @@ export type UserUpdateWithoutAuditLogsInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -11641,11 +10933,6 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -11711,11 +10998,6 @@ export type UserCreateWithoutSystemSettingsUpdatedInput = {
   userRolesAssigned?: Prisma.UserRoleCreateNestedManyWithoutAssignedByUserInput;
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -11781,11 +11063,6 @@ export type UserUncheckedCreateWithoutSystemSettingsUpdatedInput = {
   userRolesAssigned?: Prisma.UserRoleUncheckedCreateNestedManyWithoutAssignedByUserInput;
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -11879,11 +11156,6 @@ export type UserUpdateWithoutSystemSettingsUpdatedInput = {
   userRolesAssigned?: Prisma.UserRoleUpdateManyWithoutAssignedByUserNestedInput;
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -11949,1551 +11221,6 @@ export type UserUncheckedUpdateWithoutSystemSettingsUpdatedInput = {
   userRolesAssigned?: Prisma.UserRoleUncheckedUpdateManyWithoutAssignedByUserNestedInput;
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
-  documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
-  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
-  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
-  emailTemplatesUpdated?: Prisma.EmailTemplateUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-};
-
-export type UserCreateWithoutProcessesStartedInput = {
-  id?: string;
-  sicilEncrypted: runtime.Bytes;
-  sicilBlindIndex: string;
-  firstName: string;
-  lastName: string;
-  emailEncrypted: runtime.Bytes;
-  emailBlindIndex: string;
-  phoneEncrypted?: runtime.Bytes | null;
-  phoneDek?: runtime.Bytes | null;
-  passwordHash?: string | null;
-  employeeType: $Enums.EmployeeType;
-  managerEmailEncrypted?: runtime.Bytes | null;
-  managerEmailBlindIndex?: string | null;
-  hireDate?: Date | string | null;
-  isActive?: boolean;
-  anonymizedAt?: Date | string | null;
-  anonymizationReason?: string | null;
-  passwordChangedAt?: Date | string | null;
-  passwordExpiryWarningStage?: number;
-  failedLoginCount?: number;
-  lockedUntil?: Date | string | null;
-  lastLoginAt?: Date | string | null;
-  externalSubject?: string | null;
-  avatarKey?: string;
-  createdAt?: Date | string;
-  updatedAt?: Date | string;
-  company: Prisma.CompanyCreateNestedOneWithoutUsersInput;
-  location: Prisma.LocationCreateNestedOneWithoutUsersInput;
-  department: Prisma.DepartmentCreateNestedOneWithoutUsersInput;
-  position: Prisma.PositionCreateNestedOneWithoutUsersInput;
-  level: Prisma.LevelCreateNestedOneWithoutUsersInput;
-  team?: Prisma.TeamCreateNestedOneWithoutUsersInput;
-  workArea: Prisma.WorkAreaCreateNestedOneWithoutUsersInput;
-  workSubArea?: Prisma.WorkSubAreaCreateNestedOneWithoutUsersInput;
-  manager?: Prisma.UserCreateNestedOneWithoutDirectReportsInput;
-  directReports?: Prisma.UserCreateNestedManyWithoutManagerInput;
-  createdByUser?: Prisma.UserCreateNestedOneWithoutCreatedUsersInput;
-  createdUsers?: Prisma.UserCreateNestedManyWithoutCreatedByUserInput;
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput;
-  passwordHistories?: Prisma.PasswordHistoryCreateNestedManyWithoutUserInput;
-  passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput;
-  loginAttempts?: Prisma.LoginAttemptCreateNestedManyWithoutUserInput;
-  userRoles?: Prisma.UserRoleCreateNestedManyWithoutUserInput;
-  userConsents?: Prisma.UserConsentCreateNestedManyWithoutUserInput;
-  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
-  consentVersionsCreated?: Prisma.ConsentVersionCreateNestedManyWithoutCreatedByUserInput;
-  companiesCreated?: Prisma.CompanyCreateNestedManyWithoutCreatedByUserInput;
-  locationsCreated?: Prisma.LocationCreateNestedManyWithoutCreatedByUserInput;
-  departmentsCreated?: Prisma.DepartmentCreateNestedManyWithoutCreatedByUserInput;
-  levelsCreated?: Prisma.LevelCreateNestedManyWithoutCreatedByUserInput;
-  positionsCreated?: Prisma.PositionCreateNestedManyWithoutCreatedByUserInput;
-  teamsCreated?: Prisma.TeamCreateNestedManyWithoutCreatedByUserInput;
-  workAreasCreated?: Prisma.WorkAreaCreateNestedManyWithoutCreatedByUserInput;
-  workSubAreasCreated?: Prisma.WorkSubAreaCreateNestedManyWithoutCreatedByUserInput;
-  rolesGranted?: Prisma.RolePermissionCreateNestedManyWithoutGrantedByUserInput;
-  userRolesAssigned?: Prisma.UserRoleCreateNestedManyWithoutAssignedByUserInput;
-  rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
-  roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
-  systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
-  documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
-  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
-  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
-  emailTemplatesUpdated?: Prisma.EmailTemplateCreateNestedManyWithoutUpdatedByUserInput;
-};
-
-export type UserUncheckedCreateWithoutProcessesStartedInput = {
-  id?: string;
-  sicilEncrypted: runtime.Bytes;
-  sicilBlindIndex: string;
-  firstName: string;
-  lastName: string;
-  emailEncrypted: runtime.Bytes;
-  emailBlindIndex: string;
-  phoneEncrypted?: runtime.Bytes | null;
-  phoneDek?: runtime.Bytes | null;
-  passwordHash?: string | null;
-  employeeType: $Enums.EmployeeType;
-  companyId: string;
-  locationId: string;
-  departmentId: string;
-  positionId: string;
-  levelId: string;
-  teamId?: string | null;
-  workAreaId: string;
-  workSubAreaId?: string | null;
-  managerUserId?: string | null;
-  managerEmailEncrypted?: runtime.Bytes | null;
-  managerEmailBlindIndex?: string | null;
-  hireDate?: Date | string | null;
-  isActive?: boolean;
-  anonymizedAt?: Date | string | null;
-  anonymizationReason?: string | null;
-  passwordChangedAt?: Date | string | null;
-  passwordExpiryWarningStage?: number;
-  failedLoginCount?: number;
-  lockedUntil?: Date | string | null;
-  lastLoginAt?: Date | string | null;
-  externalSubject?: string | null;
-  avatarKey?: string;
-  createdAt?: Date | string;
-  updatedAt?: Date | string;
-  createdByUserId?: string | null;
-  directReports?: Prisma.UserUncheckedCreateNestedManyWithoutManagerInput;
-  createdUsers?: Prisma.UserUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
-  passwordHistories?: Prisma.PasswordHistoryUncheckedCreateNestedManyWithoutUserInput;
-  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput;
-  loginAttempts?: Prisma.LoginAttemptUncheckedCreateNestedManyWithoutUserInput;
-  userRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput;
-  userConsents?: Prisma.UserConsentUncheckedCreateNestedManyWithoutUserInput;
-  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
-  consentVersionsCreated?: Prisma.ConsentVersionUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  companiesCreated?: Prisma.CompanyUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  locationsCreated?: Prisma.LocationUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  departmentsCreated?: Prisma.DepartmentUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  levelsCreated?: Prisma.LevelUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  positionsCreated?: Prisma.PositionUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  teamsCreated?: Prisma.TeamUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  workAreasCreated?: Prisma.WorkAreaUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  workSubAreasCreated?: Prisma.WorkSubAreaUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  rolesGranted?: Prisma.RolePermissionUncheckedCreateNestedManyWithoutGrantedByUserInput;
-  userRolesAssigned?: Prisma.UserRoleUncheckedCreateNestedManyWithoutAssignedByUserInput;
-  rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
-  documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
-  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
-  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
-  emailTemplatesUpdated?: Prisma.EmailTemplateUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-};
-
-export type UserCreateOrConnectWithoutProcessesStartedInput = {
-  where: Prisma.UserWhereUniqueInput;
-  create: Prisma.XOR<
-    Prisma.UserCreateWithoutProcessesStartedInput,
-    Prisma.UserUncheckedCreateWithoutProcessesStartedInput
-  >;
-};
-
-export type UserCreateWithoutProcessesCancelledInput = {
-  id?: string;
-  sicilEncrypted: runtime.Bytes;
-  sicilBlindIndex: string;
-  firstName: string;
-  lastName: string;
-  emailEncrypted: runtime.Bytes;
-  emailBlindIndex: string;
-  phoneEncrypted?: runtime.Bytes | null;
-  phoneDek?: runtime.Bytes | null;
-  passwordHash?: string | null;
-  employeeType: $Enums.EmployeeType;
-  managerEmailEncrypted?: runtime.Bytes | null;
-  managerEmailBlindIndex?: string | null;
-  hireDate?: Date | string | null;
-  isActive?: boolean;
-  anonymizedAt?: Date | string | null;
-  anonymizationReason?: string | null;
-  passwordChangedAt?: Date | string | null;
-  passwordExpiryWarningStage?: number;
-  failedLoginCount?: number;
-  lockedUntil?: Date | string | null;
-  lastLoginAt?: Date | string | null;
-  externalSubject?: string | null;
-  avatarKey?: string;
-  createdAt?: Date | string;
-  updatedAt?: Date | string;
-  company: Prisma.CompanyCreateNestedOneWithoutUsersInput;
-  location: Prisma.LocationCreateNestedOneWithoutUsersInput;
-  department: Prisma.DepartmentCreateNestedOneWithoutUsersInput;
-  position: Prisma.PositionCreateNestedOneWithoutUsersInput;
-  level: Prisma.LevelCreateNestedOneWithoutUsersInput;
-  team?: Prisma.TeamCreateNestedOneWithoutUsersInput;
-  workArea: Prisma.WorkAreaCreateNestedOneWithoutUsersInput;
-  workSubArea?: Prisma.WorkSubAreaCreateNestedOneWithoutUsersInput;
-  manager?: Prisma.UserCreateNestedOneWithoutDirectReportsInput;
-  directReports?: Prisma.UserCreateNestedManyWithoutManagerInput;
-  createdByUser?: Prisma.UserCreateNestedOneWithoutCreatedUsersInput;
-  createdUsers?: Prisma.UserCreateNestedManyWithoutCreatedByUserInput;
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput;
-  passwordHistories?: Prisma.PasswordHistoryCreateNestedManyWithoutUserInput;
-  passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput;
-  loginAttempts?: Prisma.LoginAttemptCreateNestedManyWithoutUserInput;
-  userRoles?: Prisma.UserRoleCreateNestedManyWithoutUserInput;
-  userConsents?: Prisma.UserConsentCreateNestedManyWithoutUserInput;
-  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
-  consentVersionsCreated?: Prisma.ConsentVersionCreateNestedManyWithoutCreatedByUserInput;
-  companiesCreated?: Prisma.CompanyCreateNestedManyWithoutCreatedByUserInput;
-  locationsCreated?: Prisma.LocationCreateNestedManyWithoutCreatedByUserInput;
-  departmentsCreated?: Prisma.DepartmentCreateNestedManyWithoutCreatedByUserInput;
-  levelsCreated?: Prisma.LevelCreateNestedManyWithoutCreatedByUserInput;
-  positionsCreated?: Prisma.PositionCreateNestedManyWithoutCreatedByUserInput;
-  teamsCreated?: Prisma.TeamCreateNestedManyWithoutCreatedByUserInput;
-  workAreasCreated?: Prisma.WorkAreaCreateNestedManyWithoutCreatedByUserInput;
-  workSubAreasCreated?: Prisma.WorkSubAreaCreateNestedManyWithoutCreatedByUserInput;
-  rolesGranted?: Prisma.RolePermissionCreateNestedManyWithoutGrantedByUserInput;
-  userRolesAssigned?: Prisma.UserRoleCreateNestedManyWithoutAssignedByUserInput;
-  rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
-  roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
-  systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
-  documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
-  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
-  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
-  emailTemplatesUpdated?: Prisma.EmailTemplateCreateNestedManyWithoutUpdatedByUserInput;
-};
-
-export type UserUncheckedCreateWithoutProcessesCancelledInput = {
-  id?: string;
-  sicilEncrypted: runtime.Bytes;
-  sicilBlindIndex: string;
-  firstName: string;
-  lastName: string;
-  emailEncrypted: runtime.Bytes;
-  emailBlindIndex: string;
-  phoneEncrypted?: runtime.Bytes | null;
-  phoneDek?: runtime.Bytes | null;
-  passwordHash?: string | null;
-  employeeType: $Enums.EmployeeType;
-  companyId: string;
-  locationId: string;
-  departmentId: string;
-  positionId: string;
-  levelId: string;
-  teamId?: string | null;
-  workAreaId: string;
-  workSubAreaId?: string | null;
-  managerUserId?: string | null;
-  managerEmailEncrypted?: runtime.Bytes | null;
-  managerEmailBlindIndex?: string | null;
-  hireDate?: Date | string | null;
-  isActive?: boolean;
-  anonymizedAt?: Date | string | null;
-  anonymizationReason?: string | null;
-  passwordChangedAt?: Date | string | null;
-  passwordExpiryWarningStage?: number;
-  failedLoginCount?: number;
-  lockedUntil?: Date | string | null;
-  lastLoginAt?: Date | string | null;
-  externalSubject?: string | null;
-  avatarKey?: string;
-  createdAt?: Date | string;
-  updatedAt?: Date | string;
-  createdByUserId?: string | null;
-  directReports?: Prisma.UserUncheckedCreateNestedManyWithoutManagerInput;
-  createdUsers?: Prisma.UserUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
-  passwordHistories?: Prisma.PasswordHistoryUncheckedCreateNestedManyWithoutUserInput;
-  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput;
-  loginAttempts?: Prisma.LoginAttemptUncheckedCreateNestedManyWithoutUserInput;
-  userRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput;
-  userConsents?: Prisma.UserConsentUncheckedCreateNestedManyWithoutUserInput;
-  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
-  consentVersionsCreated?: Prisma.ConsentVersionUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  companiesCreated?: Prisma.CompanyUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  locationsCreated?: Prisma.LocationUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  departmentsCreated?: Prisma.DepartmentUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  levelsCreated?: Prisma.LevelUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  positionsCreated?: Prisma.PositionUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  teamsCreated?: Prisma.TeamUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  workAreasCreated?: Prisma.WorkAreaUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  workSubAreasCreated?: Prisma.WorkSubAreaUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  rolesGranted?: Prisma.RolePermissionUncheckedCreateNestedManyWithoutGrantedByUserInput;
-  userRolesAssigned?: Prisma.UserRoleUncheckedCreateNestedManyWithoutAssignedByUserInput;
-  rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
-  documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
-  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
-  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
-  emailTemplatesUpdated?: Prisma.EmailTemplateUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-};
-
-export type UserCreateOrConnectWithoutProcessesCancelledInput = {
-  where: Prisma.UserWhereUniqueInput;
-  create: Prisma.XOR<
-    Prisma.UserCreateWithoutProcessesCancelledInput,
-    Prisma.UserUncheckedCreateWithoutProcessesCancelledInput
-  >;
-};
-
-export type UserUpsertWithoutProcessesStartedInput = {
-  update: Prisma.XOR<
-    Prisma.UserUpdateWithoutProcessesStartedInput,
-    Prisma.UserUncheckedUpdateWithoutProcessesStartedInput
-  >;
-  create: Prisma.XOR<
-    Prisma.UserCreateWithoutProcessesStartedInput,
-    Prisma.UserUncheckedCreateWithoutProcessesStartedInput
-  >;
-  where?: Prisma.UserWhereInput;
-};
-
-export type UserUpdateToOneWithWhereWithoutProcessesStartedInput = {
-  where?: Prisma.UserWhereInput;
-  data: Prisma.XOR<
-    Prisma.UserUpdateWithoutProcessesStartedInput,
-    Prisma.UserUncheckedUpdateWithoutProcessesStartedInput
-  >;
-};
-
-export type UserUpdateWithoutProcessesStartedInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string;
-  sicilEncrypted?: Prisma.BytesFieldUpdateOperationsInput | runtime.Bytes;
-  sicilBlindIndex?: Prisma.StringFieldUpdateOperationsInput | string;
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string;
-  lastName?: Prisma.StringFieldUpdateOperationsInput | string;
-  emailEncrypted?: Prisma.BytesFieldUpdateOperationsInput | runtime.Bytes;
-  emailBlindIndex?: Prisma.StringFieldUpdateOperationsInput | string;
-  phoneEncrypted?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  phoneDek?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  employeeType?: Prisma.EnumEmployeeTypeFieldUpdateOperationsInput | $Enums.EmployeeType;
-  managerEmailEncrypted?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  managerEmailBlindIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  hireDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-  anonymizedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  anonymizationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  passwordChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  passwordExpiryWarningStage?: Prisma.IntFieldUpdateOperationsInput | number;
-  failedLoginCount?: Prisma.IntFieldUpdateOperationsInput | number;
-  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  externalSubject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  avatarKey?: Prisma.StringFieldUpdateOperationsInput | string;
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput;
-  location?: Prisma.LocationUpdateOneRequiredWithoutUsersNestedInput;
-  department?: Prisma.DepartmentUpdateOneRequiredWithoutUsersNestedInput;
-  position?: Prisma.PositionUpdateOneRequiredWithoutUsersNestedInput;
-  level?: Prisma.LevelUpdateOneRequiredWithoutUsersNestedInput;
-  team?: Prisma.TeamUpdateOneWithoutUsersNestedInput;
-  workArea?: Prisma.WorkAreaUpdateOneRequiredWithoutUsersNestedInput;
-  workSubArea?: Prisma.WorkSubAreaUpdateOneWithoutUsersNestedInput;
-  manager?: Prisma.UserUpdateOneWithoutDirectReportsNestedInput;
-  directReports?: Prisma.UserUpdateManyWithoutManagerNestedInput;
-  createdByUser?: Prisma.UserUpdateOneWithoutCreatedUsersNestedInput;
-  createdUsers?: Prisma.UserUpdateManyWithoutCreatedByUserNestedInput;
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput;
-  passwordHistories?: Prisma.PasswordHistoryUpdateManyWithoutUserNestedInput;
-  passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput;
-  loginAttempts?: Prisma.LoginAttemptUpdateManyWithoutUserNestedInput;
-  userRoles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput;
-  userConsents?: Prisma.UserConsentUpdateManyWithoutUserNestedInput;
-  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
-  consentVersionsCreated?: Prisma.ConsentVersionUpdateManyWithoutCreatedByUserNestedInput;
-  companiesCreated?: Prisma.CompanyUpdateManyWithoutCreatedByUserNestedInput;
-  locationsCreated?: Prisma.LocationUpdateManyWithoutCreatedByUserNestedInput;
-  departmentsCreated?: Prisma.DepartmentUpdateManyWithoutCreatedByUserNestedInput;
-  levelsCreated?: Prisma.LevelUpdateManyWithoutCreatedByUserNestedInput;
-  positionsCreated?: Prisma.PositionUpdateManyWithoutCreatedByUserNestedInput;
-  teamsCreated?: Prisma.TeamUpdateManyWithoutCreatedByUserNestedInput;
-  workAreasCreated?: Prisma.WorkAreaUpdateManyWithoutCreatedByUserNestedInput;
-  workSubAreasCreated?: Prisma.WorkSubAreaUpdateManyWithoutCreatedByUserNestedInput;
-  rolesGranted?: Prisma.RolePermissionUpdateManyWithoutGrantedByUserNestedInput;
-  userRolesAssigned?: Prisma.UserRoleUpdateManyWithoutAssignedByUserNestedInput;
-  rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
-  roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
-  systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
-  documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
-  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
-  notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
-  emailTemplatesUpdated?: Prisma.EmailTemplateUpdateManyWithoutUpdatedByUserNestedInput;
-};
-
-export type UserUncheckedUpdateWithoutProcessesStartedInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string;
-  sicilEncrypted?: Prisma.BytesFieldUpdateOperationsInput | runtime.Bytes;
-  sicilBlindIndex?: Prisma.StringFieldUpdateOperationsInput | string;
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string;
-  lastName?: Prisma.StringFieldUpdateOperationsInput | string;
-  emailEncrypted?: Prisma.BytesFieldUpdateOperationsInput | runtime.Bytes;
-  emailBlindIndex?: Prisma.StringFieldUpdateOperationsInput | string;
-  phoneEncrypted?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  phoneDek?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  employeeType?: Prisma.EnumEmployeeTypeFieldUpdateOperationsInput | $Enums.EmployeeType;
-  companyId?: Prisma.StringFieldUpdateOperationsInput | string;
-  locationId?: Prisma.StringFieldUpdateOperationsInput | string;
-  departmentId?: Prisma.StringFieldUpdateOperationsInput | string;
-  positionId?: Prisma.StringFieldUpdateOperationsInput | string;
-  levelId?: Prisma.StringFieldUpdateOperationsInput | string;
-  teamId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  workAreaId?: Prisma.StringFieldUpdateOperationsInput | string;
-  workSubAreaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  managerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  managerEmailEncrypted?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  managerEmailBlindIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  hireDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-  anonymizedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  anonymizationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  passwordChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  passwordExpiryWarningStage?: Prisma.IntFieldUpdateOperationsInput | number;
-  failedLoginCount?: Prisma.IntFieldUpdateOperationsInput | number;
-  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  externalSubject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  avatarKey?: Prisma.StringFieldUpdateOperationsInput | string;
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  createdByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  directReports?: Prisma.UserUncheckedUpdateManyWithoutManagerNestedInput;
-  createdUsers?: Prisma.UserUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
-  passwordHistories?: Prisma.PasswordHistoryUncheckedUpdateManyWithoutUserNestedInput;
-  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput;
-  loginAttempts?: Prisma.LoginAttemptUncheckedUpdateManyWithoutUserNestedInput;
-  userRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput;
-  userConsents?: Prisma.UserConsentUncheckedUpdateManyWithoutUserNestedInput;
-  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
-  consentVersionsCreated?: Prisma.ConsentVersionUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  companiesCreated?: Prisma.CompanyUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  locationsCreated?: Prisma.LocationUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  departmentsCreated?: Prisma.DepartmentUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  levelsCreated?: Prisma.LevelUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  positionsCreated?: Prisma.PositionUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  teamsCreated?: Prisma.TeamUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  workAreasCreated?: Prisma.WorkAreaUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  workSubAreasCreated?: Prisma.WorkSubAreaUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  rolesGranted?: Prisma.RolePermissionUncheckedUpdateManyWithoutGrantedByUserNestedInput;
-  userRolesAssigned?: Prisma.UserRoleUncheckedUpdateManyWithoutAssignedByUserNestedInput;
-  rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
-  documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
-  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
-  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
-  emailTemplatesUpdated?: Prisma.EmailTemplateUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-};
-
-export type UserUpsertWithoutProcessesCancelledInput = {
-  update: Prisma.XOR<
-    Prisma.UserUpdateWithoutProcessesCancelledInput,
-    Prisma.UserUncheckedUpdateWithoutProcessesCancelledInput
-  >;
-  create: Prisma.XOR<
-    Prisma.UserCreateWithoutProcessesCancelledInput,
-    Prisma.UserUncheckedCreateWithoutProcessesCancelledInput
-  >;
-  where?: Prisma.UserWhereInput;
-};
-
-export type UserUpdateToOneWithWhereWithoutProcessesCancelledInput = {
-  where?: Prisma.UserWhereInput;
-  data: Prisma.XOR<
-    Prisma.UserUpdateWithoutProcessesCancelledInput,
-    Prisma.UserUncheckedUpdateWithoutProcessesCancelledInput
-  >;
-};
-
-export type UserUpdateWithoutProcessesCancelledInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string;
-  sicilEncrypted?: Prisma.BytesFieldUpdateOperationsInput | runtime.Bytes;
-  sicilBlindIndex?: Prisma.StringFieldUpdateOperationsInput | string;
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string;
-  lastName?: Prisma.StringFieldUpdateOperationsInput | string;
-  emailEncrypted?: Prisma.BytesFieldUpdateOperationsInput | runtime.Bytes;
-  emailBlindIndex?: Prisma.StringFieldUpdateOperationsInput | string;
-  phoneEncrypted?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  phoneDek?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  employeeType?: Prisma.EnumEmployeeTypeFieldUpdateOperationsInput | $Enums.EmployeeType;
-  managerEmailEncrypted?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  managerEmailBlindIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  hireDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-  anonymizedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  anonymizationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  passwordChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  passwordExpiryWarningStage?: Prisma.IntFieldUpdateOperationsInput | number;
-  failedLoginCount?: Prisma.IntFieldUpdateOperationsInput | number;
-  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  externalSubject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  avatarKey?: Prisma.StringFieldUpdateOperationsInput | string;
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput;
-  location?: Prisma.LocationUpdateOneRequiredWithoutUsersNestedInput;
-  department?: Prisma.DepartmentUpdateOneRequiredWithoutUsersNestedInput;
-  position?: Prisma.PositionUpdateOneRequiredWithoutUsersNestedInput;
-  level?: Prisma.LevelUpdateOneRequiredWithoutUsersNestedInput;
-  team?: Prisma.TeamUpdateOneWithoutUsersNestedInput;
-  workArea?: Prisma.WorkAreaUpdateOneRequiredWithoutUsersNestedInput;
-  workSubArea?: Prisma.WorkSubAreaUpdateOneWithoutUsersNestedInput;
-  manager?: Prisma.UserUpdateOneWithoutDirectReportsNestedInput;
-  directReports?: Prisma.UserUpdateManyWithoutManagerNestedInput;
-  createdByUser?: Prisma.UserUpdateOneWithoutCreatedUsersNestedInput;
-  createdUsers?: Prisma.UserUpdateManyWithoutCreatedByUserNestedInput;
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput;
-  passwordHistories?: Prisma.PasswordHistoryUpdateManyWithoutUserNestedInput;
-  passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput;
-  loginAttempts?: Prisma.LoginAttemptUpdateManyWithoutUserNestedInput;
-  userRoles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput;
-  userConsents?: Prisma.UserConsentUpdateManyWithoutUserNestedInput;
-  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
-  consentVersionsCreated?: Prisma.ConsentVersionUpdateManyWithoutCreatedByUserNestedInput;
-  companiesCreated?: Prisma.CompanyUpdateManyWithoutCreatedByUserNestedInput;
-  locationsCreated?: Prisma.LocationUpdateManyWithoutCreatedByUserNestedInput;
-  departmentsCreated?: Prisma.DepartmentUpdateManyWithoutCreatedByUserNestedInput;
-  levelsCreated?: Prisma.LevelUpdateManyWithoutCreatedByUserNestedInput;
-  positionsCreated?: Prisma.PositionUpdateManyWithoutCreatedByUserNestedInput;
-  teamsCreated?: Prisma.TeamUpdateManyWithoutCreatedByUserNestedInput;
-  workAreasCreated?: Prisma.WorkAreaUpdateManyWithoutCreatedByUserNestedInput;
-  workSubAreasCreated?: Prisma.WorkSubAreaUpdateManyWithoutCreatedByUserNestedInput;
-  rolesGranted?: Prisma.RolePermissionUpdateManyWithoutGrantedByUserNestedInput;
-  userRolesAssigned?: Prisma.UserRoleUpdateManyWithoutAssignedByUserNestedInput;
-  rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
-  roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
-  systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
-  documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
-  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
-  notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
-  emailTemplatesUpdated?: Prisma.EmailTemplateUpdateManyWithoutUpdatedByUserNestedInput;
-};
-
-export type UserUncheckedUpdateWithoutProcessesCancelledInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string;
-  sicilEncrypted?: Prisma.BytesFieldUpdateOperationsInput | runtime.Bytes;
-  sicilBlindIndex?: Prisma.StringFieldUpdateOperationsInput | string;
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string;
-  lastName?: Prisma.StringFieldUpdateOperationsInput | string;
-  emailEncrypted?: Prisma.BytesFieldUpdateOperationsInput | runtime.Bytes;
-  emailBlindIndex?: Prisma.StringFieldUpdateOperationsInput | string;
-  phoneEncrypted?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  phoneDek?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  employeeType?: Prisma.EnumEmployeeTypeFieldUpdateOperationsInput | $Enums.EmployeeType;
-  companyId?: Prisma.StringFieldUpdateOperationsInput | string;
-  locationId?: Prisma.StringFieldUpdateOperationsInput | string;
-  departmentId?: Prisma.StringFieldUpdateOperationsInput | string;
-  positionId?: Prisma.StringFieldUpdateOperationsInput | string;
-  levelId?: Prisma.StringFieldUpdateOperationsInput | string;
-  teamId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  workAreaId?: Prisma.StringFieldUpdateOperationsInput | string;
-  workSubAreaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  managerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  managerEmailEncrypted?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  managerEmailBlindIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  hireDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-  anonymizedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  anonymizationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  passwordChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  passwordExpiryWarningStage?: Prisma.IntFieldUpdateOperationsInput | number;
-  failedLoginCount?: Prisma.IntFieldUpdateOperationsInput | number;
-  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  externalSubject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  avatarKey?: Prisma.StringFieldUpdateOperationsInput | string;
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  createdByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  directReports?: Prisma.UserUncheckedUpdateManyWithoutManagerNestedInput;
-  createdUsers?: Prisma.UserUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
-  passwordHistories?: Prisma.PasswordHistoryUncheckedUpdateManyWithoutUserNestedInput;
-  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput;
-  loginAttempts?: Prisma.LoginAttemptUncheckedUpdateManyWithoutUserNestedInput;
-  userRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput;
-  userConsents?: Prisma.UserConsentUncheckedUpdateManyWithoutUserNestedInput;
-  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
-  consentVersionsCreated?: Prisma.ConsentVersionUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  companiesCreated?: Prisma.CompanyUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  locationsCreated?: Prisma.LocationUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  departmentsCreated?: Prisma.DepartmentUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  levelsCreated?: Prisma.LevelUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  positionsCreated?: Prisma.PositionUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  teamsCreated?: Prisma.TeamUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  workAreasCreated?: Prisma.WorkAreaUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  workSubAreasCreated?: Prisma.WorkSubAreaUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  rolesGranted?: Prisma.RolePermissionUncheckedUpdateManyWithoutGrantedByUserNestedInput;
-  userRolesAssigned?: Prisma.UserRoleUncheckedUpdateManyWithoutAssignedByUserNestedInput;
-  rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
-  documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
-  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
-  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
-  emailTemplatesUpdated?: Prisma.EmailTemplateUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-};
-
-export type UserCreateWithoutTasksCompletedInput = {
-  id?: string;
-  sicilEncrypted: runtime.Bytes;
-  sicilBlindIndex: string;
-  firstName: string;
-  lastName: string;
-  emailEncrypted: runtime.Bytes;
-  emailBlindIndex: string;
-  phoneEncrypted?: runtime.Bytes | null;
-  phoneDek?: runtime.Bytes | null;
-  passwordHash?: string | null;
-  employeeType: $Enums.EmployeeType;
-  managerEmailEncrypted?: runtime.Bytes | null;
-  managerEmailBlindIndex?: string | null;
-  hireDate?: Date | string | null;
-  isActive?: boolean;
-  anonymizedAt?: Date | string | null;
-  anonymizationReason?: string | null;
-  passwordChangedAt?: Date | string | null;
-  passwordExpiryWarningStage?: number;
-  failedLoginCount?: number;
-  lockedUntil?: Date | string | null;
-  lastLoginAt?: Date | string | null;
-  externalSubject?: string | null;
-  avatarKey?: string;
-  createdAt?: Date | string;
-  updatedAt?: Date | string;
-  company: Prisma.CompanyCreateNestedOneWithoutUsersInput;
-  location: Prisma.LocationCreateNestedOneWithoutUsersInput;
-  department: Prisma.DepartmentCreateNestedOneWithoutUsersInput;
-  position: Prisma.PositionCreateNestedOneWithoutUsersInput;
-  level: Prisma.LevelCreateNestedOneWithoutUsersInput;
-  team?: Prisma.TeamCreateNestedOneWithoutUsersInput;
-  workArea: Prisma.WorkAreaCreateNestedOneWithoutUsersInput;
-  workSubArea?: Prisma.WorkSubAreaCreateNestedOneWithoutUsersInput;
-  manager?: Prisma.UserCreateNestedOneWithoutDirectReportsInput;
-  directReports?: Prisma.UserCreateNestedManyWithoutManagerInput;
-  createdByUser?: Prisma.UserCreateNestedOneWithoutCreatedUsersInput;
-  createdUsers?: Prisma.UserCreateNestedManyWithoutCreatedByUserInput;
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput;
-  passwordHistories?: Prisma.PasswordHistoryCreateNestedManyWithoutUserInput;
-  passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput;
-  loginAttempts?: Prisma.LoginAttemptCreateNestedManyWithoutUserInput;
-  userRoles?: Prisma.UserRoleCreateNestedManyWithoutUserInput;
-  userConsents?: Prisma.UserConsentCreateNestedManyWithoutUserInput;
-  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
-  consentVersionsCreated?: Prisma.ConsentVersionCreateNestedManyWithoutCreatedByUserInput;
-  companiesCreated?: Prisma.CompanyCreateNestedManyWithoutCreatedByUserInput;
-  locationsCreated?: Prisma.LocationCreateNestedManyWithoutCreatedByUserInput;
-  departmentsCreated?: Prisma.DepartmentCreateNestedManyWithoutCreatedByUserInput;
-  levelsCreated?: Prisma.LevelCreateNestedManyWithoutCreatedByUserInput;
-  positionsCreated?: Prisma.PositionCreateNestedManyWithoutCreatedByUserInput;
-  teamsCreated?: Prisma.TeamCreateNestedManyWithoutCreatedByUserInput;
-  workAreasCreated?: Prisma.WorkAreaCreateNestedManyWithoutCreatedByUserInput;
-  workSubAreasCreated?: Prisma.WorkSubAreaCreateNestedManyWithoutCreatedByUserInput;
-  rolesGranted?: Prisma.RolePermissionCreateNestedManyWithoutGrantedByUserInput;
-  userRolesAssigned?: Prisma.UserRoleCreateNestedManyWithoutAssignedByUserInput;
-  rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
-  roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
-  systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
-  documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
-  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
-  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
-  emailTemplatesUpdated?: Prisma.EmailTemplateCreateNestedManyWithoutUpdatedByUserInput;
-};
-
-export type UserUncheckedCreateWithoutTasksCompletedInput = {
-  id?: string;
-  sicilEncrypted: runtime.Bytes;
-  sicilBlindIndex: string;
-  firstName: string;
-  lastName: string;
-  emailEncrypted: runtime.Bytes;
-  emailBlindIndex: string;
-  phoneEncrypted?: runtime.Bytes | null;
-  phoneDek?: runtime.Bytes | null;
-  passwordHash?: string | null;
-  employeeType: $Enums.EmployeeType;
-  companyId: string;
-  locationId: string;
-  departmentId: string;
-  positionId: string;
-  levelId: string;
-  teamId?: string | null;
-  workAreaId: string;
-  workSubAreaId?: string | null;
-  managerUserId?: string | null;
-  managerEmailEncrypted?: runtime.Bytes | null;
-  managerEmailBlindIndex?: string | null;
-  hireDate?: Date | string | null;
-  isActive?: boolean;
-  anonymizedAt?: Date | string | null;
-  anonymizationReason?: string | null;
-  passwordChangedAt?: Date | string | null;
-  passwordExpiryWarningStage?: number;
-  failedLoginCount?: number;
-  lockedUntil?: Date | string | null;
-  lastLoginAt?: Date | string | null;
-  externalSubject?: string | null;
-  avatarKey?: string;
-  createdAt?: Date | string;
-  updatedAt?: Date | string;
-  createdByUserId?: string | null;
-  directReports?: Prisma.UserUncheckedCreateNestedManyWithoutManagerInput;
-  createdUsers?: Prisma.UserUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
-  passwordHistories?: Prisma.PasswordHistoryUncheckedCreateNestedManyWithoutUserInput;
-  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput;
-  loginAttempts?: Prisma.LoginAttemptUncheckedCreateNestedManyWithoutUserInput;
-  userRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput;
-  userConsents?: Prisma.UserConsentUncheckedCreateNestedManyWithoutUserInput;
-  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
-  consentVersionsCreated?: Prisma.ConsentVersionUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  companiesCreated?: Prisma.CompanyUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  locationsCreated?: Prisma.LocationUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  departmentsCreated?: Prisma.DepartmentUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  levelsCreated?: Prisma.LevelUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  positionsCreated?: Prisma.PositionUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  teamsCreated?: Prisma.TeamUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  workAreasCreated?: Prisma.WorkAreaUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  workSubAreasCreated?: Prisma.WorkSubAreaUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  rolesGranted?: Prisma.RolePermissionUncheckedCreateNestedManyWithoutGrantedByUserInput;
-  userRolesAssigned?: Prisma.UserRoleUncheckedCreateNestedManyWithoutAssignedByUserInput;
-  rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
-  documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
-  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
-  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
-  emailTemplatesUpdated?: Prisma.EmailTemplateUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-};
-
-export type UserCreateOrConnectWithoutTasksCompletedInput = {
-  where: Prisma.UserWhereUniqueInput;
-  create: Prisma.XOR<
-    Prisma.UserCreateWithoutTasksCompletedInput,
-    Prisma.UserUncheckedCreateWithoutTasksCompletedInput
-  >;
-};
-
-export type UserCreateWithoutTasksClaimedInput = {
-  id?: string;
-  sicilEncrypted: runtime.Bytes;
-  sicilBlindIndex: string;
-  firstName: string;
-  lastName: string;
-  emailEncrypted: runtime.Bytes;
-  emailBlindIndex: string;
-  phoneEncrypted?: runtime.Bytes | null;
-  phoneDek?: runtime.Bytes | null;
-  passwordHash?: string | null;
-  employeeType: $Enums.EmployeeType;
-  managerEmailEncrypted?: runtime.Bytes | null;
-  managerEmailBlindIndex?: string | null;
-  hireDate?: Date | string | null;
-  isActive?: boolean;
-  anonymizedAt?: Date | string | null;
-  anonymizationReason?: string | null;
-  passwordChangedAt?: Date | string | null;
-  passwordExpiryWarningStage?: number;
-  failedLoginCount?: number;
-  lockedUntil?: Date | string | null;
-  lastLoginAt?: Date | string | null;
-  externalSubject?: string | null;
-  avatarKey?: string;
-  createdAt?: Date | string;
-  updatedAt?: Date | string;
-  company: Prisma.CompanyCreateNestedOneWithoutUsersInput;
-  location: Prisma.LocationCreateNestedOneWithoutUsersInput;
-  department: Prisma.DepartmentCreateNestedOneWithoutUsersInput;
-  position: Prisma.PositionCreateNestedOneWithoutUsersInput;
-  level: Prisma.LevelCreateNestedOneWithoutUsersInput;
-  team?: Prisma.TeamCreateNestedOneWithoutUsersInput;
-  workArea: Prisma.WorkAreaCreateNestedOneWithoutUsersInput;
-  workSubArea?: Prisma.WorkSubAreaCreateNestedOneWithoutUsersInput;
-  manager?: Prisma.UserCreateNestedOneWithoutDirectReportsInput;
-  directReports?: Prisma.UserCreateNestedManyWithoutManagerInput;
-  createdByUser?: Prisma.UserCreateNestedOneWithoutCreatedUsersInput;
-  createdUsers?: Prisma.UserCreateNestedManyWithoutCreatedByUserInput;
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput;
-  passwordHistories?: Prisma.PasswordHistoryCreateNestedManyWithoutUserInput;
-  passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput;
-  loginAttempts?: Prisma.LoginAttemptCreateNestedManyWithoutUserInput;
-  userRoles?: Prisma.UserRoleCreateNestedManyWithoutUserInput;
-  userConsents?: Prisma.UserConsentCreateNestedManyWithoutUserInput;
-  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
-  consentVersionsCreated?: Prisma.ConsentVersionCreateNestedManyWithoutCreatedByUserInput;
-  companiesCreated?: Prisma.CompanyCreateNestedManyWithoutCreatedByUserInput;
-  locationsCreated?: Prisma.LocationCreateNestedManyWithoutCreatedByUserInput;
-  departmentsCreated?: Prisma.DepartmentCreateNestedManyWithoutCreatedByUserInput;
-  levelsCreated?: Prisma.LevelCreateNestedManyWithoutCreatedByUserInput;
-  positionsCreated?: Prisma.PositionCreateNestedManyWithoutCreatedByUserInput;
-  teamsCreated?: Prisma.TeamCreateNestedManyWithoutCreatedByUserInput;
-  workAreasCreated?: Prisma.WorkAreaCreateNestedManyWithoutCreatedByUserInput;
-  workSubAreasCreated?: Prisma.WorkSubAreaCreateNestedManyWithoutCreatedByUserInput;
-  rolesGranted?: Prisma.RolePermissionCreateNestedManyWithoutGrantedByUserInput;
-  userRolesAssigned?: Prisma.UserRoleCreateNestedManyWithoutAssignedByUserInput;
-  rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
-  roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
-  systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
-  documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
-  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
-  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
-  emailTemplatesUpdated?: Prisma.EmailTemplateCreateNestedManyWithoutUpdatedByUserInput;
-};
-
-export type UserUncheckedCreateWithoutTasksClaimedInput = {
-  id?: string;
-  sicilEncrypted: runtime.Bytes;
-  sicilBlindIndex: string;
-  firstName: string;
-  lastName: string;
-  emailEncrypted: runtime.Bytes;
-  emailBlindIndex: string;
-  phoneEncrypted?: runtime.Bytes | null;
-  phoneDek?: runtime.Bytes | null;
-  passwordHash?: string | null;
-  employeeType: $Enums.EmployeeType;
-  companyId: string;
-  locationId: string;
-  departmentId: string;
-  positionId: string;
-  levelId: string;
-  teamId?: string | null;
-  workAreaId: string;
-  workSubAreaId?: string | null;
-  managerUserId?: string | null;
-  managerEmailEncrypted?: runtime.Bytes | null;
-  managerEmailBlindIndex?: string | null;
-  hireDate?: Date | string | null;
-  isActive?: boolean;
-  anonymizedAt?: Date | string | null;
-  anonymizationReason?: string | null;
-  passwordChangedAt?: Date | string | null;
-  passwordExpiryWarningStage?: number;
-  failedLoginCount?: number;
-  lockedUntil?: Date | string | null;
-  lastLoginAt?: Date | string | null;
-  externalSubject?: string | null;
-  avatarKey?: string;
-  createdAt?: Date | string;
-  updatedAt?: Date | string;
-  createdByUserId?: string | null;
-  directReports?: Prisma.UserUncheckedCreateNestedManyWithoutManagerInput;
-  createdUsers?: Prisma.UserUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
-  passwordHistories?: Prisma.PasswordHistoryUncheckedCreateNestedManyWithoutUserInput;
-  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput;
-  loginAttempts?: Prisma.LoginAttemptUncheckedCreateNestedManyWithoutUserInput;
-  userRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput;
-  userConsents?: Prisma.UserConsentUncheckedCreateNestedManyWithoutUserInput;
-  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
-  consentVersionsCreated?: Prisma.ConsentVersionUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  companiesCreated?: Prisma.CompanyUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  locationsCreated?: Prisma.LocationUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  departmentsCreated?: Prisma.DepartmentUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  levelsCreated?: Prisma.LevelUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  positionsCreated?: Prisma.PositionUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  teamsCreated?: Prisma.TeamUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  workAreasCreated?: Prisma.WorkAreaUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  workSubAreasCreated?: Prisma.WorkSubAreaUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  rolesGranted?: Prisma.RolePermissionUncheckedCreateNestedManyWithoutGrantedByUserInput;
-  userRolesAssigned?: Prisma.UserRoleUncheckedCreateNestedManyWithoutAssignedByUserInput;
-  rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
-  documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
-  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
-  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
-  emailTemplatesUpdated?: Prisma.EmailTemplateUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-};
-
-export type UserCreateOrConnectWithoutTasksClaimedInput = {
-  where: Prisma.UserWhereUniqueInput;
-  create: Prisma.XOR<
-    Prisma.UserCreateWithoutTasksClaimedInput,
-    Prisma.UserUncheckedCreateWithoutTasksClaimedInput
-  >;
-};
-
-export type UserUpsertWithoutTasksCompletedInput = {
-  update: Prisma.XOR<
-    Prisma.UserUpdateWithoutTasksCompletedInput,
-    Prisma.UserUncheckedUpdateWithoutTasksCompletedInput
-  >;
-  create: Prisma.XOR<
-    Prisma.UserCreateWithoutTasksCompletedInput,
-    Prisma.UserUncheckedCreateWithoutTasksCompletedInput
-  >;
-  where?: Prisma.UserWhereInput;
-};
-
-export type UserUpdateToOneWithWhereWithoutTasksCompletedInput = {
-  where?: Prisma.UserWhereInput;
-  data: Prisma.XOR<
-    Prisma.UserUpdateWithoutTasksCompletedInput,
-    Prisma.UserUncheckedUpdateWithoutTasksCompletedInput
-  >;
-};
-
-export type UserUpdateWithoutTasksCompletedInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string;
-  sicilEncrypted?: Prisma.BytesFieldUpdateOperationsInput | runtime.Bytes;
-  sicilBlindIndex?: Prisma.StringFieldUpdateOperationsInput | string;
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string;
-  lastName?: Prisma.StringFieldUpdateOperationsInput | string;
-  emailEncrypted?: Prisma.BytesFieldUpdateOperationsInput | runtime.Bytes;
-  emailBlindIndex?: Prisma.StringFieldUpdateOperationsInput | string;
-  phoneEncrypted?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  phoneDek?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  employeeType?: Prisma.EnumEmployeeTypeFieldUpdateOperationsInput | $Enums.EmployeeType;
-  managerEmailEncrypted?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  managerEmailBlindIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  hireDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-  anonymizedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  anonymizationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  passwordChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  passwordExpiryWarningStage?: Prisma.IntFieldUpdateOperationsInput | number;
-  failedLoginCount?: Prisma.IntFieldUpdateOperationsInput | number;
-  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  externalSubject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  avatarKey?: Prisma.StringFieldUpdateOperationsInput | string;
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput;
-  location?: Prisma.LocationUpdateOneRequiredWithoutUsersNestedInput;
-  department?: Prisma.DepartmentUpdateOneRequiredWithoutUsersNestedInput;
-  position?: Prisma.PositionUpdateOneRequiredWithoutUsersNestedInput;
-  level?: Prisma.LevelUpdateOneRequiredWithoutUsersNestedInput;
-  team?: Prisma.TeamUpdateOneWithoutUsersNestedInput;
-  workArea?: Prisma.WorkAreaUpdateOneRequiredWithoutUsersNestedInput;
-  workSubArea?: Prisma.WorkSubAreaUpdateOneWithoutUsersNestedInput;
-  manager?: Prisma.UserUpdateOneWithoutDirectReportsNestedInput;
-  directReports?: Prisma.UserUpdateManyWithoutManagerNestedInput;
-  createdByUser?: Prisma.UserUpdateOneWithoutCreatedUsersNestedInput;
-  createdUsers?: Prisma.UserUpdateManyWithoutCreatedByUserNestedInput;
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput;
-  passwordHistories?: Prisma.PasswordHistoryUpdateManyWithoutUserNestedInput;
-  passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput;
-  loginAttempts?: Prisma.LoginAttemptUpdateManyWithoutUserNestedInput;
-  userRoles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput;
-  userConsents?: Prisma.UserConsentUpdateManyWithoutUserNestedInput;
-  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
-  consentVersionsCreated?: Prisma.ConsentVersionUpdateManyWithoutCreatedByUserNestedInput;
-  companiesCreated?: Prisma.CompanyUpdateManyWithoutCreatedByUserNestedInput;
-  locationsCreated?: Prisma.LocationUpdateManyWithoutCreatedByUserNestedInput;
-  departmentsCreated?: Prisma.DepartmentUpdateManyWithoutCreatedByUserNestedInput;
-  levelsCreated?: Prisma.LevelUpdateManyWithoutCreatedByUserNestedInput;
-  positionsCreated?: Prisma.PositionUpdateManyWithoutCreatedByUserNestedInput;
-  teamsCreated?: Prisma.TeamUpdateManyWithoutCreatedByUserNestedInput;
-  workAreasCreated?: Prisma.WorkAreaUpdateManyWithoutCreatedByUserNestedInput;
-  workSubAreasCreated?: Prisma.WorkSubAreaUpdateManyWithoutCreatedByUserNestedInput;
-  rolesGranted?: Prisma.RolePermissionUpdateManyWithoutGrantedByUserNestedInput;
-  userRolesAssigned?: Prisma.UserRoleUpdateManyWithoutAssignedByUserNestedInput;
-  rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
-  roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
-  systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
-  documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
-  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
-  notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
-  emailTemplatesUpdated?: Prisma.EmailTemplateUpdateManyWithoutUpdatedByUserNestedInput;
-};
-
-export type UserUncheckedUpdateWithoutTasksCompletedInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string;
-  sicilEncrypted?: Prisma.BytesFieldUpdateOperationsInput | runtime.Bytes;
-  sicilBlindIndex?: Prisma.StringFieldUpdateOperationsInput | string;
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string;
-  lastName?: Prisma.StringFieldUpdateOperationsInput | string;
-  emailEncrypted?: Prisma.BytesFieldUpdateOperationsInput | runtime.Bytes;
-  emailBlindIndex?: Prisma.StringFieldUpdateOperationsInput | string;
-  phoneEncrypted?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  phoneDek?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  employeeType?: Prisma.EnumEmployeeTypeFieldUpdateOperationsInput | $Enums.EmployeeType;
-  companyId?: Prisma.StringFieldUpdateOperationsInput | string;
-  locationId?: Prisma.StringFieldUpdateOperationsInput | string;
-  departmentId?: Prisma.StringFieldUpdateOperationsInput | string;
-  positionId?: Prisma.StringFieldUpdateOperationsInput | string;
-  levelId?: Prisma.StringFieldUpdateOperationsInput | string;
-  teamId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  workAreaId?: Prisma.StringFieldUpdateOperationsInput | string;
-  workSubAreaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  managerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  managerEmailEncrypted?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  managerEmailBlindIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  hireDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-  anonymizedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  anonymizationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  passwordChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  passwordExpiryWarningStage?: Prisma.IntFieldUpdateOperationsInput | number;
-  failedLoginCount?: Prisma.IntFieldUpdateOperationsInput | number;
-  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  externalSubject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  avatarKey?: Prisma.StringFieldUpdateOperationsInput | string;
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  createdByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  directReports?: Prisma.UserUncheckedUpdateManyWithoutManagerNestedInput;
-  createdUsers?: Prisma.UserUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
-  passwordHistories?: Prisma.PasswordHistoryUncheckedUpdateManyWithoutUserNestedInput;
-  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput;
-  loginAttempts?: Prisma.LoginAttemptUncheckedUpdateManyWithoutUserNestedInput;
-  userRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput;
-  userConsents?: Prisma.UserConsentUncheckedUpdateManyWithoutUserNestedInput;
-  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
-  consentVersionsCreated?: Prisma.ConsentVersionUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  companiesCreated?: Prisma.CompanyUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  locationsCreated?: Prisma.LocationUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  departmentsCreated?: Prisma.DepartmentUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  levelsCreated?: Prisma.LevelUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  positionsCreated?: Prisma.PositionUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  teamsCreated?: Prisma.TeamUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  workAreasCreated?: Prisma.WorkAreaUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  workSubAreasCreated?: Prisma.WorkSubAreaUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  rolesGranted?: Prisma.RolePermissionUncheckedUpdateManyWithoutGrantedByUserNestedInput;
-  userRolesAssigned?: Prisma.UserRoleUncheckedUpdateManyWithoutAssignedByUserNestedInput;
-  rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
-  documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
-  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
-  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
-  emailTemplatesUpdated?: Prisma.EmailTemplateUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-};
-
-export type UserUpsertWithoutTasksClaimedInput = {
-  update: Prisma.XOR<
-    Prisma.UserUpdateWithoutTasksClaimedInput,
-    Prisma.UserUncheckedUpdateWithoutTasksClaimedInput
-  >;
-  create: Prisma.XOR<
-    Prisma.UserCreateWithoutTasksClaimedInput,
-    Prisma.UserUncheckedCreateWithoutTasksClaimedInput
-  >;
-  where?: Prisma.UserWhereInput;
-};
-
-export type UserUpdateToOneWithWhereWithoutTasksClaimedInput = {
-  where?: Prisma.UserWhereInput;
-  data: Prisma.XOR<
-    Prisma.UserUpdateWithoutTasksClaimedInput,
-    Prisma.UserUncheckedUpdateWithoutTasksClaimedInput
-  >;
-};
-
-export type UserUpdateWithoutTasksClaimedInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string;
-  sicilEncrypted?: Prisma.BytesFieldUpdateOperationsInput | runtime.Bytes;
-  sicilBlindIndex?: Prisma.StringFieldUpdateOperationsInput | string;
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string;
-  lastName?: Prisma.StringFieldUpdateOperationsInput | string;
-  emailEncrypted?: Prisma.BytesFieldUpdateOperationsInput | runtime.Bytes;
-  emailBlindIndex?: Prisma.StringFieldUpdateOperationsInput | string;
-  phoneEncrypted?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  phoneDek?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  employeeType?: Prisma.EnumEmployeeTypeFieldUpdateOperationsInput | $Enums.EmployeeType;
-  managerEmailEncrypted?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  managerEmailBlindIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  hireDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-  anonymizedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  anonymizationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  passwordChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  passwordExpiryWarningStage?: Prisma.IntFieldUpdateOperationsInput | number;
-  failedLoginCount?: Prisma.IntFieldUpdateOperationsInput | number;
-  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  externalSubject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  avatarKey?: Prisma.StringFieldUpdateOperationsInput | string;
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput;
-  location?: Prisma.LocationUpdateOneRequiredWithoutUsersNestedInput;
-  department?: Prisma.DepartmentUpdateOneRequiredWithoutUsersNestedInput;
-  position?: Prisma.PositionUpdateOneRequiredWithoutUsersNestedInput;
-  level?: Prisma.LevelUpdateOneRequiredWithoutUsersNestedInput;
-  team?: Prisma.TeamUpdateOneWithoutUsersNestedInput;
-  workArea?: Prisma.WorkAreaUpdateOneRequiredWithoutUsersNestedInput;
-  workSubArea?: Prisma.WorkSubAreaUpdateOneWithoutUsersNestedInput;
-  manager?: Prisma.UserUpdateOneWithoutDirectReportsNestedInput;
-  directReports?: Prisma.UserUpdateManyWithoutManagerNestedInput;
-  createdByUser?: Prisma.UserUpdateOneWithoutCreatedUsersNestedInput;
-  createdUsers?: Prisma.UserUpdateManyWithoutCreatedByUserNestedInput;
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput;
-  passwordHistories?: Prisma.PasswordHistoryUpdateManyWithoutUserNestedInput;
-  passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput;
-  loginAttempts?: Prisma.LoginAttemptUpdateManyWithoutUserNestedInput;
-  userRoles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput;
-  userConsents?: Prisma.UserConsentUpdateManyWithoutUserNestedInput;
-  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
-  consentVersionsCreated?: Prisma.ConsentVersionUpdateManyWithoutCreatedByUserNestedInput;
-  companiesCreated?: Prisma.CompanyUpdateManyWithoutCreatedByUserNestedInput;
-  locationsCreated?: Prisma.LocationUpdateManyWithoutCreatedByUserNestedInput;
-  departmentsCreated?: Prisma.DepartmentUpdateManyWithoutCreatedByUserNestedInput;
-  levelsCreated?: Prisma.LevelUpdateManyWithoutCreatedByUserNestedInput;
-  positionsCreated?: Prisma.PositionUpdateManyWithoutCreatedByUserNestedInput;
-  teamsCreated?: Prisma.TeamUpdateManyWithoutCreatedByUserNestedInput;
-  workAreasCreated?: Prisma.WorkAreaUpdateManyWithoutCreatedByUserNestedInput;
-  workSubAreasCreated?: Prisma.WorkSubAreaUpdateManyWithoutCreatedByUserNestedInput;
-  rolesGranted?: Prisma.RolePermissionUpdateManyWithoutGrantedByUserNestedInput;
-  userRolesAssigned?: Prisma.UserRoleUpdateManyWithoutAssignedByUserNestedInput;
-  rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
-  roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
-  systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
-  documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
-  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
-  notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
-  emailTemplatesUpdated?: Prisma.EmailTemplateUpdateManyWithoutUpdatedByUserNestedInput;
-};
-
-export type UserUncheckedUpdateWithoutTasksClaimedInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string;
-  sicilEncrypted?: Prisma.BytesFieldUpdateOperationsInput | runtime.Bytes;
-  sicilBlindIndex?: Prisma.StringFieldUpdateOperationsInput | string;
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string;
-  lastName?: Prisma.StringFieldUpdateOperationsInput | string;
-  emailEncrypted?: Prisma.BytesFieldUpdateOperationsInput | runtime.Bytes;
-  emailBlindIndex?: Prisma.StringFieldUpdateOperationsInput | string;
-  phoneEncrypted?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  phoneDek?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  employeeType?: Prisma.EnumEmployeeTypeFieldUpdateOperationsInput | $Enums.EmployeeType;
-  companyId?: Prisma.StringFieldUpdateOperationsInput | string;
-  locationId?: Prisma.StringFieldUpdateOperationsInput | string;
-  departmentId?: Prisma.StringFieldUpdateOperationsInput | string;
-  positionId?: Prisma.StringFieldUpdateOperationsInput | string;
-  levelId?: Prisma.StringFieldUpdateOperationsInput | string;
-  teamId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  workAreaId?: Prisma.StringFieldUpdateOperationsInput | string;
-  workSubAreaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  managerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  managerEmailEncrypted?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  managerEmailBlindIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  hireDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-  anonymizedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  anonymizationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  passwordChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  passwordExpiryWarningStage?: Prisma.IntFieldUpdateOperationsInput | number;
-  failedLoginCount?: Prisma.IntFieldUpdateOperationsInput | number;
-  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  externalSubject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  avatarKey?: Prisma.StringFieldUpdateOperationsInput | string;
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  createdByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  directReports?: Prisma.UserUncheckedUpdateManyWithoutManagerNestedInput;
-  createdUsers?: Prisma.UserUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
-  passwordHistories?: Prisma.PasswordHistoryUncheckedUpdateManyWithoutUserNestedInput;
-  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput;
-  loginAttempts?: Prisma.LoginAttemptUncheckedUpdateManyWithoutUserNestedInput;
-  userRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput;
-  userConsents?: Prisma.UserConsentUncheckedUpdateManyWithoutUserNestedInput;
-  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
-  consentVersionsCreated?: Prisma.ConsentVersionUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  companiesCreated?: Prisma.CompanyUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  locationsCreated?: Prisma.LocationUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  departmentsCreated?: Prisma.DepartmentUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  levelsCreated?: Prisma.LevelUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  positionsCreated?: Prisma.PositionUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  teamsCreated?: Prisma.TeamUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  workAreasCreated?: Prisma.WorkAreaUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  workSubAreasCreated?: Prisma.WorkSubAreaUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  rolesGranted?: Prisma.RolePermissionUncheckedUpdateManyWithoutGrantedByUserNestedInput;
-  userRolesAssigned?: Prisma.UserRoleUncheckedUpdateManyWithoutAssignedByUserNestedInput;
-  rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
-  documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
-  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
-  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
-  emailTemplatesUpdated?: Prisma.EmailTemplateUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-};
-
-export type UserCreateWithoutTaskAssignmentsInput = {
-  id?: string;
-  sicilEncrypted: runtime.Bytes;
-  sicilBlindIndex: string;
-  firstName: string;
-  lastName: string;
-  emailEncrypted: runtime.Bytes;
-  emailBlindIndex: string;
-  phoneEncrypted?: runtime.Bytes | null;
-  phoneDek?: runtime.Bytes | null;
-  passwordHash?: string | null;
-  employeeType: $Enums.EmployeeType;
-  managerEmailEncrypted?: runtime.Bytes | null;
-  managerEmailBlindIndex?: string | null;
-  hireDate?: Date | string | null;
-  isActive?: boolean;
-  anonymizedAt?: Date | string | null;
-  anonymizationReason?: string | null;
-  passwordChangedAt?: Date | string | null;
-  passwordExpiryWarningStage?: number;
-  failedLoginCount?: number;
-  lockedUntil?: Date | string | null;
-  lastLoginAt?: Date | string | null;
-  externalSubject?: string | null;
-  avatarKey?: string;
-  createdAt?: Date | string;
-  updatedAt?: Date | string;
-  company: Prisma.CompanyCreateNestedOneWithoutUsersInput;
-  location: Prisma.LocationCreateNestedOneWithoutUsersInput;
-  department: Prisma.DepartmentCreateNestedOneWithoutUsersInput;
-  position: Prisma.PositionCreateNestedOneWithoutUsersInput;
-  level: Prisma.LevelCreateNestedOneWithoutUsersInput;
-  team?: Prisma.TeamCreateNestedOneWithoutUsersInput;
-  workArea: Prisma.WorkAreaCreateNestedOneWithoutUsersInput;
-  workSubArea?: Prisma.WorkSubAreaCreateNestedOneWithoutUsersInput;
-  manager?: Prisma.UserCreateNestedOneWithoutDirectReportsInput;
-  directReports?: Prisma.UserCreateNestedManyWithoutManagerInput;
-  createdByUser?: Prisma.UserCreateNestedOneWithoutCreatedUsersInput;
-  createdUsers?: Prisma.UserCreateNestedManyWithoutCreatedByUserInput;
-  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput;
-  passwordHistories?: Prisma.PasswordHistoryCreateNestedManyWithoutUserInput;
-  passwordResetTokens?: Prisma.PasswordResetTokenCreateNestedManyWithoutUserInput;
-  loginAttempts?: Prisma.LoginAttemptCreateNestedManyWithoutUserInput;
-  userRoles?: Prisma.UserRoleCreateNestedManyWithoutUserInput;
-  userConsents?: Prisma.UserConsentCreateNestedManyWithoutUserInput;
-  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutUserInput;
-  consentVersionsCreated?: Prisma.ConsentVersionCreateNestedManyWithoutCreatedByUserInput;
-  companiesCreated?: Prisma.CompanyCreateNestedManyWithoutCreatedByUserInput;
-  locationsCreated?: Prisma.LocationCreateNestedManyWithoutCreatedByUserInput;
-  departmentsCreated?: Prisma.DepartmentCreateNestedManyWithoutCreatedByUserInput;
-  levelsCreated?: Prisma.LevelCreateNestedManyWithoutCreatedByUserInput;
-  positionsCreated?: Prisma.PositionCreateNestedManyWithoutCreatedByUserInput;
-  teamsCreated?: Prisma.TeamCreateNestedManyWithoutCreatedByUserInput;
-  workAreasCreated?: Prisma.WorkAreaCreateNestedManyWithoutCreatedByUserInput;
-  workSubAreasCreated?: Prisma.WorkSubAreaCreateNestedManyWithoutCreatedByUserInput;
-  rolesGranted?: Prisma.RolePermissionCreateNestedManyWithoutGrantedByUserInput;
-  userRolesAssigned?: Prisma.UserRoleCreateNestedManyWithoutAssignedByUserInput;
-  rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
-  roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
-  systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
-  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
-  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
-  emailTemplatesUpdated?: Prisma.EmailTemplateCreateNestedManyWithoutUpdatedByUserInput;
-};
-
-export type UserUncheckedCreateWithoutTaskAssignmentsInput = {
-  id?: string;
-  sicilEncrypted: runtime.Bytes;
-  sicilBlindIndex: string;
-  firstName: string;
-  lastName: string;
-  emailEncrypted: runtime.Bytes;
-  emailBlindIndex: string;
-  phoneEncrypted?: runtime.Bytes | null;
-  phoneDek?: runtime.Bytes | null;
-  passwordHash?: string | null;
-  employeeType: $Enums.EmployeeType;
-  companyId: string;
-  locationId: string;
-  departmentId: string;
-  positionId: string;
-  levelId: string;
-  teamId?: string | null;
-  workAreaId: string;
-  workSubAreaId?: string | null;
-  managerUserId?: string | null;
-  managerEmailEncrypted?: runtime.Bytes | null;
-  managerEmailBlindIndex?: string | null;
-  hireDate?: Date | string | null;
-  isActive?: boolean;
-  anonymizedAt?: Date | string | null;
-  anonymizationReason?: string | null;
-  passwordChangedAt?: Date | string | null;
-  passwordExpiryWarningStage?: number;
-  failedLoginCount?: number;
-  lockedUntil?: Date | string | null;
-  lastLoginAt?: Date | string | null;
-  externalSubject?: string | null;
-  avatarKey?: string;
-  createdAt?: Date | string;
-  updatedAt?: Date | string;
-  createdByUserId?: string | null;
-  directReports?: Prisma.UserUncheckedCreateNestedManyWithoutManagerInput;
-  createdUsers?: Prisma.UserUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput;
-  passwordHistories?: Prisma.PasswordHistoryUncheckedCreateNestedManyWithoutUserInput;
-  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput;
-  loginAttempts?: Prisma.LoginAttemptUncheckedCreateNestedManyWithoutUserInput;
-  userRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput;
-  userConsents?: Prisma.UserConsentUncheckedCreateNestedManyWithoutUserInput;
-  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutUserInput;
-  consentVersionsCreated?: Prisma.ConsentVersionUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  companiesCreated?: Prisma.CompanyUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  locationsCreated?: Prisma.LocationUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  departmentsCreated?: Prisma.DepartmentUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  levelsCreated?: Prisma.LevelUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  positionsCreated?: Prisma.PositionUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  teamsCreated?: Prisma.TeamUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  workAreasCreated?: Prisma.WorkAreaUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  workSubAreasCreated?: Prisma.WorkSubAreaUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  rolesGranted?: Prisma.RolePermissionUncheckedCreateNestedManyWithoutGrantedByUserInput;
-  userRolesAssigned?: Prisma.UserRoleUncheckedCreateNestedManyWithoutAssignedByUserInput;
-  rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
-  systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
-  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
-  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
-  emailTemplatesUpdated?: Prisma.EmailTemplateUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-};
-
-export type UserCreateOrConnectWithoutTaskAssignmentsInput = {
-  where: Prisma.UserWhereUniqueInput;
-  create: Prisma.XOR<
-    Prisma.UserCreateWithoutTaskAssignmentsInput,
-    Prisma.UserUncheckedCreateWithoutTaskAssignmentsInput
-  >;
-};
-
-export type UserUpsertWithoutTaskAssignmentsInput = {
-  update: Prisma.XOR<
-    Prisma.UserUpdateWithoutTaskAssignmentsInput,
-    Prisma.UserUncheckedUpdateWithoutTaskAssignmentsInput
-  >;
-  create: Prisma.XOR<
-    Prisma.UserCreateWithoutTaskAssignmentsInput,
-    Prisma.UserUncheckedCreateWithoutTaskAssignmentsInput
-  >;
-  where?: Prisma.UserWhereInput;
-};
-
-export type UserUpdateToOneWithWhereWithoutTaskAssignmentsInput = {
-  where?: Prisma.UserWhereInput;
-  data: Prisma.XOR<
-    Prisma.UserUpdateWithoutTaskAssignmentsInput,
-    Prisma.UserUncheckedUpdateWithoutTaskAssignmentsInput
-  >;
-};
-
-export type UserUpdateWithoutTaskAssignmentsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string;
-  sicilEncrypted?: Prisma.BytesFieldUpdateOperationsInput | runtime.Bytes;
-  sicilBlindIndex?: Prisma.StringFieldUpdateOperationsInput | string;
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string;
-  lastName?: Prisma.StringFieldUpdateOperationsInput | string;
-  emailEncrypted?: Prisma.BytesFieldUpdateOperationsInput | runtime.Bytes;
-  emailBlindIndex?: Prisma.StringFieldUpdateOperationsInput | string;
-  phoneEncrypted?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  phoneDek?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  employeeType?: Prisma.EnumEmployeeTypeFieldUpdateOperationsInput | $Enums.EmployeeType;
-  managerEmailEncrypted?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  managerEmailBlindIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  hireDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-  anonymizedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  anonymizationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  passwordChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  passwordExpiryWarningStage?: Prisma.IntFieldUpdateOperationsInput | number;
-  failedLoginCount?: Prisma.IntFieldUpdateOperationsInput | number;
-  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  externalSubject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  avatarKey?: Prisma.StringFieldUpdateOperationsInput | string;
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  company?: Prisma.CompanyUpdateOneRequiredWithoutUsersNestedInput;
-  location?: Prisma.LocationUpdateOneRequiredWithoutUsersNestedInput;
-  department?: Prisma.DepartmentUpdateOneRequiredWithoutUsersNestedInput;
-  position?: Prisma.PositionUpdateOneRequiredWithoutUsersNestedInput;
-  level?: Prisma.LevelUpdateOneRequiredWithoutUsersNestedInput;
-  team?: Prisma.TeamUpdateOneWithoutUsersNestedInput;
-  workArea?: Prisma.WorkAreaUpdateOneRequiredWithoutUsersNestedInput;
-  workSubArea?: Prisma.WorkSubAreaUpdateOneWithoutUsersNestedInput;
-  manager?: Prisma.UserUpdateOneWithoutDirectReportsNestedInput;
-  directReports?: Prisma.UserUpdateManyWithoutManagerNestedInput;
-  createdByUser?: Prisma.UserUpdateOneWithoutCreatedUsersNestedInput;
-  createdUsers?: Prisma.UserUpdateManyWithoutCreatedByUserNestedInput;
-  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput;
-  passwordHistories?: Prisma.PasswordHistoryUpdateManyWithoutUserNestedInput;
-  passwordResetTokens?: Prisma.PasswordResetTokenUpdateManyWithoutUserNestedInput;
-  loginAttempts?: Prisma.LoginAttemptUpdateManyWithoutUserNestedInput;
-  userRoles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput;
-  userConsents?: Prisma.UserConsentUpdateManyWithoutUserNestedInput;
-  auditLogs?: Prisma.AuditLogUpdateManyWithoutUserNestedInput;
-  consentVersionsCreated?: Prisma.ConsentVersionUpdateManyWithoutCreatedByUserNestedInput;
-  companiesCreated?: Prisma.CompanyUpdateManyWithoutCreatedByUserNestedInput;
-  locationsCreated?: Prisma.LocationUpdateManyWithoutCreatedByUserNestedInput;
-  departmentsCreated?: Prisma.DepartmentUpdateManyWithoutCreatedByUserNestedInput;
-  levelsCreated?: Prisma.LevelUpdateManyWithoutCreatedByUserNestedInput;
-  positionsCreated?: Prisma.PositionUpdateManyWithoutCreatedByUserNestedInput;
-  teamsCreated?: Prisma.TeamUpdateManyWithoutCreatedByUserNestedInput;
-  workAreasCreated?: Prisma.WorkAreaUpdateManyWithoutCreatedByUserNestedInput;
-  workSubAreasCreated?: Prisma.WorkSubAreaUpdateManyWithoutCreatedByUserNestedInput;
-  rolesGranted?: Prisma.RolePermissionUpdateManyWithoutGrantedByUserNestedInput;
-  userRolesAssigned?: Prisma.UserRoleUpdateManyWithoutAssignedByUserNestedInput;
-  rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
-  roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
-  systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
-  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
-  notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
-  emailTemplatesUpdated?: Prisma.EmailTemplateUpdateManyWithoutUpdatedByUserNestedInput;
-};
-
-export type UserUncheckedUpdateWithoutTaskAssignmentsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string;
-  sicilEncrypted?: Prisma.BytesFieldUpdateOperationsInput | runtime.Bytes;
-  sicilBlindIndex?: Prisma.StringFieldUpdateOperationsInput | string;
-  firstName?: Prisma.StringFieldUpdateOperationsInput | string;
-  lastName?: Prisma.StringFieldUpdateOperationsInput | string;
-  emailEncrypted?: Prisma.BytesFieldUpdateOperationsInput | runtime.Bytes;
-  emailBlindIndex?: Prisma.StringFieldUpdateOperationsInput | string;
-  phoneEncrypted?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  phoneDek?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  employeeType?: Prisma.EnumEmployeeTypeFieldUpdateOperationsInput | $Enums.EmployeeType;
-  companyId?: Prisma.StringFieldUpdateOperationsInput | string;
-  locationId?: Prisma.StringFieldUpdateOperationsInput | string;
-  departmentId?: Prisma.StringFieldUpdateOperationsInput | string;
-  positionId?: Prisma.StringFieldUpdateOperationsInput | string;
-  levelId?: Prisma.StringFieldUpdateOperationsInput | string;
-  teamId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  workAreaId?: Prisma.StringFieldUpdateOperationsInput | string;
-  workSubAreaId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  managerUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  managerEmailEncrypted?: Prisma.NullableBytesFieldUpdateOperationsInput | runtime.Bytes | null;
-  managerEmailBlindIndex?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  hireDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-  anonymizedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  anonymizationReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  passwordChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  passwordExpiryWarningStage?: Prisma.IntFieldUpdateOperationsInput | number;
-  failedLoginCount?: Prisma.IntFieldUpdateOperationsInput | number;
-  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-  externalSubject?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  avatarKey?: Prisma.StringFieldUpdateOperationsInput | string;
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  createdByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  directReports?: Prisma.UserUncheckedUpdateManyWithoutManagerNestedInput;
-  createdUsers?: Prisma.UserUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput;
-  passwordHistories?: Prisma.PasswordHistoryUncheckedUpdateManyWithoutUserNestedInput;
-  passwordResetTokens?: Prisma.PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput;
-  loginAttempts?: Prisma.LoginAttemptUncheckedUpdateManyWithoutUserNestedInput;
-  userRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput;
-  userConsents?: Prisma.UserConsentUncheckedUpdateManyWithoutUserNestedInput;
-  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutUserNestedInput;
-  consentVersionsCreated?: Prisma.ConsentVersionUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  companiesCreated?: Prisma.CompanyUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  locationsCreated?: Prisma.LocationUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  departmentsCreated?: Prisma.DepartmentUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  levelsCreated?: Prisma.LevelUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  positionsCreated?: Prisma.PositionUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  teamsCreated?: Prisma.TeamUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  workAreasCreated?: Prisma.WorkAreaUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  workSubAreasCreated?: Prisma.WorkSubAreaUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  rolesGranted?: Prisma.RolePermissionUncheckedUpdateManyWithoutGrantedByUserNestedInput;
-  userRolesAssigned?: Prisma.UserRoleUncheckedUpdateManyWithoutAssignedByUserNestedInput;
-  rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
-  systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -13560,11 +11287,6 @@ export type UserCreateWithoutDocumentsUploadedInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
   emailTemplatesUpdated?: Prisma.EmailTemplateCreateNestedManyWithoutUpdatedByUserInput;
@@ -13630,11 +11352,6 @@ export type UserUncheckedCreateWithoutDocumentsUploadedInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
   emailTemplatesUpdated?: Prisma.EmailTemplateUncheckedCreateNestedManyWithoutUpdatedByUserInput;
@@ -13728,11 +11445,6 @@ export type UserUpdateWithoutDocumentsUploadedInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
   emailTemplatesUpdated?: Prisma.EmailTemplateUpdateManyWithoutUpdatedByUserNestedInput;
@@ -13798,11 +11510,6 @@ export type UserUncheckedUpdateWithoutDocumentsUploadedInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
   emailTemplatesUpdated?: Prisma.EmailTemplateUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
@@ -13868,11 +11575,6 @@ export type UserCreateWithoutNotificationsInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
   emailTemplatesUpdated?: Prisma.EmailTemplateCreateNestedManyWithoutUpdatedByUserInput;
@@ -13938,11 +11640,6 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
   emailTemplatesUpdated?: Prisma.EmailTemplateUncheckedCreateNestedManyWithoutUpdatedByUserInput;
@@ -14036,11 +11733,6 @@ export type UserUpdateWithoutNotificationsInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
   emailTemplatesUpdated?: Prisma.EmailTemplateUpdateManyWithoutUpdatedByUserNestedInput;
@@ -14106,11 +11798,6 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
   emailTemplatesUpdated?: Prisma.EmailTemplateUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
@@ -14176,11 +11863,6 @@ export type UserCreateWithoutNotificationPreferencesInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   emailTemplatesUpdated?: Prisma.EmailTemplateCreateNestedManyWithoutUpdatedByUserInput;
@@ -14246,11 +11928,6 @@ export type UserUncheckedCreateWithoutNotificationPreferencesInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   emailTemplatesUpdated?: Prisma.EmailTemplateUncheckedCreateNestedManyWithoutUpdatedByUserInput;
@@ -14344,11 +12021,6 @@ export type UserUpdateWithoutNotificationPreferencesInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   emailTemplatesUpdated?: Prisma.EmailTemplateUpdateManyWithoutUpdatedByUserNestedInput;
@@ -14414,11 +12086,6 @@ export type UserUncheckedUpdateWithoutNotificationPreferencesInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   emailTemplatesUpdated?: Prisma.EmailTemplateUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
@@ -14484,11 +12151,6 @@ export type UserCreateWithoutEmailTemplatesUpdatedInput = {
   rolesCreated?: Prisma.RoleCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput;
@@ -14554,11 +12216,6 @@ export type UserUncheckedCreateWithoutEmailTemplatesUpdatedInput = {
   rolesCreated?: Prisma.RoleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedCreateNestedManyWithoutCreatedByUserInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedCreateNestedManyWithoutUpdatedByUserInput;
-  processesStarted?: Prisma.ProcessUncheckedCreateNestedManyWithoutStartedByInput;
-  processesCancelled?: Prisma.ProcessUncheckedCreateNestedManyWithoutCancelledByInput;
-  tasksCompleted?: Prisma.TaskUncheckedCreateNestedManyWithoutCompletedByInput;
-  tasksClaimed?: Prisma.TaskUncheckedCreateNestedManyWithoutClaimedByInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedCreateNestedManyWithoutUserInput;
   documentsUploaded?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput;
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput;
@@ -14652,11 +12309,6 @@ export type UserUpdateWithoutEmailTemplatesUpdatedInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -14722,11 +12374,6 @@ export type UserUncheckedUpdateWithoutEmailTemplatesUpdatedInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -14829,11 +12476,6 @@ export type UserUpdateWithoutCompanyInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -14899,11 +12541,6 @@ export type UserUncheckedUpdateWithoutCompanyInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -15045,11 +12682,6 @@ export type UserUpdateWithoutLocationInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -15115,11 +12747,6 @@ export type UserUncheckedUpdateWithoutLocationInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -15261,11 +12888,6 @@ export type UserUpdateWithoutDepartmentInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -15331,11 +12953,6 @@ export type UserUncheckedUpdateWithoutDepartmentInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -15477,11 +13094,6 @@ export type UserUpdateWithoutLevelInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -15547,11 +13159,6 @@ export type UserUncheckedUpdateWithoutLevelInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -15693,11 +13300,6 @@ export type UserUpdateWithoutPositionInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -15763,11 +13365,6 @@ export type UserUncheckedUpdateWithoutPositionInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -15909,11 +13506,6 @@ export type UserUpdateWithoutTeamInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -15979,11 +13571,6 @@ export type UserUncheckedUpdateWithoutTeamInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -16125,11 +13712,6 @@ export type UserUpdateWithoutWorkAreaInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -16195,11 +13777,6 @@ export type UserUncheckedUpdateWithoutWorkAreaInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -16341,11 +13918,6 @@ export type UserUpdateWithoutWorkSubAreaInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -16411,11 +13983,6 @@ export type UserUncheckedUpdateWithoutWorkSubAreaInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -16595,11 +14162,6 @@ export type UserUpdateWithoutManagerInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -16665,11 +14227,6 @@ export type UserUncheckedUpdateWithoutManagerInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -16773,11 +14330,6 @@ export type UserUpdateWithoutCreatedByUserInput = {
   rolesCreated?: Prisma.RoleUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput;
@@ -16843,11 +14395,6 @@ export type UserUncheckedUpdateWithoutCreatedByUserInput = {
   rolesCreated?: Prisma.RoleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   roleRulesCreated?: Prisma.RoleRuleUncheckedUpdateManyWithoutCreatedByUserNestedInput;
   systemSettingsUpdated?: Prisma.SystemSettingUncheckedUpdateManyWithoutUpdatedByUserNestedInput;
-  processesStarted?: Prisma.ProcessUncheckedUpdateManyWithoutStartedByNestedInput;
-  processesCancelled?: Prisma.ProcessUncheckedUpdateManyWithoutCancelledByNestedInput;
-  tasksCompleted?: Prisma.TaskUncheckedUpdateManyWithoutCompletedByNestedInput;
-  tasksClaimed?: Prisma.TaskUncheckedUpdateManyWithoutClaimedByNestedInput;
-  taskAssignments?: Prisma.TaskAssignmentUncheckedUpdateManyWithoutUserNestedInput;
   documentsUploaded?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput;
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput;
   notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput;
@@ -16920,11 +14467,6 @@ export type UserCountOutputType = {
   rolesCreated: number;
   roleRulesCreated: number;
   systemSettingsUpdated: number;
-  processesStarted: number;
-  processesCancelled: number;
-  tasksCompleted: number;
-  tasksClaimed: number;
-  taskAssignments: number;
   documentsUploaded: number;
   notifications: number;
   notificationPreferences: number;
@@ -16957,11 +14499,6 @@ export type UserCountOutputTypeSelect<
   rolesCreated?: boolean | UserCountOutputTypeCountRolesCreatedArgs;
   roleRulesCreated?: boolean | UserCountOutputTypeCountRoleRulesCreatedArgs;
   systemSettingsUpdated?: boolean | UserCountOutputTypeCountSystemSettingsUpdatedArgs;
-  processesStarted?: boolean | UserCountOutputTypeCountProcessesStartedArgs;
-  processesCancelled?: boolean | UserCountOutputTypeCountProcessesCancelledArgs;
-  tasksCompleted?: boolean | UserCountOutputTypeCountTasksCompletedArgs;
-  tasksClaimed?: boolean | UserCountOutputTypeCountTasksClaimedArgs;
-  taskAssignments?: boolean | UserCountOutputTypeCountTaskAssignmentsArgs;
   documentsUploaded?: boolean | UserCountOutputTypeCountDocumentsUploadedArgs;
   notifications?: boolean | UserCountOutputTypeCountNotificationsArgs;
   notificationPreferences?: boolean | UserCountOutputTypeCountNotificationPreferencesArgs;
@@ -17190,51 +14727,6 @@ export type UserCountOutputTypeCountSystemSettingsUpdatedArgs<
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountProcessesStartedArgs<
-  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
-> = {
-  where?: Prisma.ProcessWhereInput;
-};
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountProcessesCancelledArgs<
-  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
-> = {
-  where?: Prisma.ProcessWhereInput;
-};
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountTasksCompletedArgs<
-  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
-> = {
-  where?: Prisma.TaskWhereInput;
-};
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountTasksClaimedArgs<
-  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
-> = {
-  where?: Prisma.TaskWhereInput;
-};
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountTaskAssignmentsArgs<
-  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
-> = {
-  where?: Prisma.TaskAssignmentWhereInput;
-};
-
-/**
- * UserCountOutputType without action
- */
 export type UserCountOutputTypeCountDocumentsUploadedArgs<
   ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = {
@@ -17341,11 +14833,6 @@ export type UserSelect<
     rolesCreated?: boolean | Prisma.User$rolesCreatedArgs<ExtArgs>;
     roleRulesCreated?: boolean | Prisma.User$roleRulesCreatedArgs<ExtArgs>;
     systemSettingsUpdated?: boolean | Prisma.User$systemSettingsUpdatedArgs<ExtArgs>;
-    processesStarted?: boolean | Prisma.User$processesStartedArgs<ExtArgs>;
-    processesCancelled?: boolean | Prisma.User$processesCancelledArgs<ExtArgs>;
-    tasksCompleted?: boolean | Prisma.User$tasksCompletedArgs<ExtArgs>;
-    tasksClaimed?: boolean | Prisma.User$tasksClaimedArgs<ExtArgs>;
-    taskAssignments?: boolean | Prisma.User$taskAssignmentsArgs<ExtArgs>;
     documentsUploaded?: boolean | Prisma.User$documentsUploadedArgs<ExtArgs>;
     notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>;
     notificationPreferences?: boolean | Prisma.User$notificationPreferencesArgs<ExtArgs>;
@@ -17579,11 +15066,6 @@ export type UserInclude<
   rolesCreated?: boolean | Prisma.User$rolesCreatedArgs<ExtArgs>;
   roleRulesCreated?: boolean | Prisma.User$roleRulesCreatedArgs<ExtArgs>;
   systemSettingsUpdated?: boolean | Prisma.User$systemSettingsUpdatedArgs<ExtArgs>;
-  processesStarted?: boolean | Prisma.User$processesStartedArgs<ExtArgs>;
-  processesCancelled?: boolean | Prisma.User$processesCancelledArgs<ExtArgs>;
-  tasksCompleted?: boolean | Prisma.User$tasksCompletedArgs<ExtArgs>;
-  tasksClaimed?: boolean | Prisma.User$tasksClaimedArgs<ExtArgs>;
-  taskAssignments?: boolean | Prisma.User$taskAssignmentsArgs<ExtArgs>;
   documentsUploaded?: boolean | Prisma.User$documentsUploadedArgs<ExtArgs>;
   notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>;
   notificationPreferences?: boolean | Prisma.User$notificationPreferencesArgs<ExtArgs>;
@@ -17657,11 +15139,6 @@ export type $UserPayload<
     rolesCreated: Prisma.$RolePayload<ExtArgs>[];
     roleRulesCreated: Prisma.$RoleRulePayload<ExtArgs>[];
     systemSettingsUpdated: Prisma.$SystemSettingPayload<ExtArgs>[];
-    processesStarted: Prisma.$ProcessPayload<ExtArgs>[];
-    processesCancelled: Prisma.$ProcessPayload<ExtArgs>[];
-    tasksCompleted: Prisma.$TaskPayload<ExtArgs>[];
-    tasksClaimed: Prisma.$TaskPayload<ExtArgs>[];
-    taskAssignments: Prisma.$TaskAssignmentPayload<ExtArgs>[];
     documentsUploaded: Prisma.$DocumentPayload<ExtArgs>[];
     notifications: Prisma.$NotificationPayload<ExtArgs>[];
     notificationPreferences: Prisma.$NotificationPreferencePayload<ExtArgs>[];
@@ -18590,51 +16067,6 @@ export interface Prisma__UserClient<
   ): Prisma.PrismaPromise<
     | runtime.Types.Result.GetResult<
         Prisma.$SystemSettingPayload<ExtArgs>,
-        T,
-        'findMany',
-        GlobalOmitOptions
-      >
-    | Null
-  >;
-  processesStarted<T extends Prisma.User$processesStartedArgs<ExtArgs> = {}>(
-    args?: Prisma.Subset<T, Prisma.User$processesStartedArgs<ExtArgs>>,
-  ): Prisma.PrismaPromise<
-    | runtime.Types.Result.GetResult<
-        Prisma.$ProcessPayload<ExtArgs>,
-        T,
-        'findMany',
-        GlobalOmitOptions
-      >
-    | Null
-  >;
-  processesCancelled<T extends Prisma.User$processesCancelledArgs<ExtArgs> = {}>(
-    args?: Prisma.Subset<T, Prisma.User$processesCancelledArgs<ExtArgs>>,
-  ): Prisma.PrismaPromise<
-    | runtime.Types.Result.GetResult<
-        Prisma.$ProcessPayload<ExtArgs>,
-        T,
-        'findMany',
-        GlobalOmitOptions
-      >
-    | Null
-  >;
-  tasksCompleted<T extends Prisma.User$tasksCompletedArgs<ExtArgs> = {}>(
-    args?: Prisma.Subset<T, Prisma.User$tasksCompletedArgs<ExtArgs>>,
-  ): Prisma.PrismaPromise<
-    | runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions>
-    | Null
-  >;
-  tasksClaimed<T extends Prisma.User$tasksClaimedArgs<ExtArgs> = {}>(
-    args?: Prisma.Subset<T, Prisma.User$tasksClaimedArgs<ExtArgs>>,
-  ): Prisma.PrismaPromise<
-    | runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, 'findMany', GlobalOmitOptions>
-    | Null
-  >;
-  taskAssignments<T extends Prisma.User$taskAssignmentsArgs<ExtArgs> = {}>(
-    args?: Prisma.Subset<T, Prisma.User$taskAssignmentsArgs<ExtArgs>>,
-  ): Prisma.PrismaPromise<
-    | runtime.Types.Result.GetResult<
-        Prisma.$TaskAssignmentPayload<ExtArgs>,
         T,
         'findMany',
         GlobalOmitOptions
@@ -19875,138 +17307,6 @@ export type User$systemSettingsUpdatedArgs<
   take?: number;
   skip?: number;
   distinct?: Prisma.SystemSettingScalarFieldEnum | Prisma.SystemSettingScalarFieldEnum[];
-};
-
-/**
- * User.processesStarted
- */
-export type User$processesStartedArgs<
-  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
-> = {
-  /**
-   * Select specific fields to fetch from the Process
-   */
-  select?: Prisma.ProcessSelect<ExtArgs> | null;
-  /**
-   * Omit specific fields from the Process
-   */
-  omit?: Prisma.ProcessOmit<ExtArgs> | null;
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ProcessInclude<ExtArgs> | null;
-  where?: Prisma.ProcessWhereInput;
-  orderBy?: Prisma.ProcessOrderByWithRelationInput | Prisma.ProcessOrderByWithRelationInput[];
-  cursor?: Prisma.ProcessWhereUniqueInput;
-  take?: number;
-  skip?: number;
-  distinct?: Prisma.ProcessScalarFieldEnum | Prisma.ProcessScalarFieldEnum[];
-};
-
-/**
- * User.processesCancelled
- */
-export type User$processesCancelledArgs<
-  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
-> = {
-  /**
-   * Select specific fields to fetch from the Process
-   */
-  select?: Prisma.ProcessSelect<ExtArgs> | null;
-  /**
-   * Omit specific fields from the Process
-   */
-  omit?: Prisma.ProcessOmit<ExtArgs> | null;
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ProcessInclude<ExtArgs> | null;
-  where?: Prisma.ProcessWhereInput;
-  orderBy?: Prisma.ProcessOrderByWithRelationInput | Prisma.ProcessOrderByWithRelationInput[];
-  cursor?: Prisma.ProcessWhereUniqueInput;
-  take?: number;
-  skip?: number;
-  distinct?: Prisma.ProcessScalarFieldEnum | Prisma.ProcessScalarFieldEnum[];
-};
-
-/**
- * User.tasksCompleted
- */
-export type User$tasksCompletedArgs<
-  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
-> = {
-  /**
-   * Select specific fields to fetch from the Task
-   */
-  select?: Prisma.TaskSelect<ExtArgs> | null;
-  /**
-   * Omit specific fields from the Task
-   */
-  omit?: Prisma.TaskOmit<ExtArgs> | null;
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TaskInclude<ExtArgs> | null;
-  where?: Prisma.TaskWhereInput;
-  orderBy?: Prisma.TaskOrderByWithRelationInput | Prisma.TaskOrderByWithRelationInput[];
-  cursor?: Prisma.TaskWhereUniqueInput;
-  take?: number;
-  skip?: number;
-  distinct?: Prisma.TaskScalarFieldEnum | Prisma.TaskScalarFieldEnum[];
-};
-
-/**
- * User.tasksClaimed
- */
-export type User$tasksClaimedArgs<
-  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
-> = {
-  /**
-   * Select specific fields to fetch from the Task
-   */
-  select?: Prisma.TaskSelect<ExtArgs> | null;
-  /**
-   * Omit specific fields from the Task
-   */
-  omit?: Prisma.TaskOmit<ExtArgs> | null;
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TaskInclude<ExtArgs> | null;
-  where?: Prisma.TaskWhereInput;
-  orderBy?: Prisma.TaskOrderByWithRelationInput | Prisma.TaskOrderByWithRelationInput[];
-  cursor?: Prisma.TaskWhereUniqueInput;
-  take?: number;
-  skip?: number;
-  distinct?: Prisma.TaskScalarFieldEnum | Prisma.TaskScalarFieldEnum[];
-};
-
-/**
- * User.taskAssignments
- */
-export type User$taskAssignmentsArgs<
-  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
-> = {
-  /**
-   * Select specific fields to fetch from the TaskAssignment
-   */
-  select?: Prisma.TaskAssignmentSelect<ExtArgs> | null;
-  /**
-   * Omit specific fields from the TaskAssignment
-   */
-  omit?: Prisma.TaskAssignmentOmit<ExtArgs> | null;
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TaskAssignmentInclude<ExtArgs> | null;
-  where?: Prisma.TaskAssignmentWhereInput;
-  orderBy?:
-    | Prisma.TaskAssignmentOrderByWithRelationInput
-    | Prisma.TaskAssignmentOrderByWithRelationInput[];
-  cursor?: Prisma.TaskAssignmentWhereUniqueInput;
-  take?: number;
-  skip?: number;
-  distinct?: Prisma.TaskAssignmentScalarFieldEnum | Prisma.TaskAssignmentScalarFieldEnum[];
 };
 
 /**

@@ -72,9 +72,6 @@ export const ModelName = {
   AuditLog: 'AuditLog',
   SystemSetting: 'SystemSetting',
   AuditChainIntegrityCheck: 'AuditChainIntegrityCheck',
-  Process: 'Process',
-  Task: 'Task',
-  TaskAssignment: 'TaskAssignment',
   Document: 'Document',
   Notification: 'Notification',
   NotificationPreference: 'NotificationPreference',
@@ -449,66 +446,6 @@ export const AuditChainIntegrityCheckScalarFieldEnum = {
 export type AuditChainIntegrityCheckScalarFieldEnum =
   (typeof AuditChainIntegrityCheckScalarFieldEnum)[keyof typeof AuditChainIntegrityCheckScalarFieldEnum];
 
-export const ProcessScalarFieldEnum = {
-  id: 'id',
-  processNumber: 'processNumber',
-  processType: 'processType',
-  displayId: 'displayId',
-  startedByUserId: 'startedByUserId',
-  companyId: 'companyId',
-  status: 'status',
-  startedAt: 'startedAt',
-  completedAt: 'completedAt',
-  cancelledAt: 'cancelledAt',
-  cancelReason: 'cancelReason',
-  cancelledByUserId: 'cancelledByUserId',
-  rollbackHistory: 'rollbackHistory',
-  metadata: 'metadata',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-} as const;
-
-export type ProcessScalarFieldEnum =
-  (typeof ProcessScalarFieldEnum)[keyof typeof ProcessScalarFieldEnum];
-
-export const TaskScalarFieldEnum = {
-  id: 'id',
-  processId: 'processId',
-  stepKey: 'stepKey',
-  stepOrder: 'stepOrder',
-  assignmentMode: 'assignmentMode',
-  status: 'status',
-  completionAction: 'completionAction',
-  completionReason: 'completionReason',
-  formData: 'formData',
-  actionContext: 'actionContext',
-  slaDueAt: 'slaDueAt',
-  slaWarningSentAt: 'slaWarningSentAt',
-  slaBreachSentAt: 'slaBreachSentAt',
-  completedByUserId: 'completedByUserId',
-  completedAt: 'completedAt',
-  claimedByUserId: 'claimedByUserId',
-  isSlaOverdue: 'isSlaOverdue',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-} as const;
-
-export type TaskScalarFieldEnum = (typeof TaskScalarFieldEnum)[keyof typeof TaskScalarFieldEnum];
-
-export const TaskAssignmentScalarFieldEnum = {
-  id: 'id',
-  taskId: 'taskId',
-  userId: 'userId',
-  roleId: 'roleId',
-  status: 'status',
-  resolvedByRule: 'resolvedByRule',
-  completedAt: 'completedAt',
-  createdAt: 'createdAt',
-} as const;
-
-export type TaskAssignmentScalarFieldEnum =
-  (typeof TaskAssignmentScalarFieldEnum)[keyof typeof TaskAssignmentScalarFieldEnum];
-
 export const DocumentScalarFieldEnum = {
   id: 'id',
   uploadedByUserId: 'uploadedByUserId',
@@ -518,8 +455,6 @@ export const DocumentScalarFieldEnum = {
   contentType: 'contentType',
   scanStatus: 'scanStatus',
   scanResultDetail: 'scanResultDetail',
-  processId: 'processId',
-  taskId: 'taskId',
   uploadedAt: 'uploadedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',

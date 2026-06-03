@@ -46,7 +46,7 @@ export class MasterDataUnknownTypeException extends AppException {
   }
 }
 
-/** Liste: MASTER_DATA_MANAGE yok ve (tip companies değil veya PROCESS_KTI_START yok) */
+/** Liste: MASTER_DATA_MANAGE ve MASTER_DATA_VIEW yok */
 export class MasterDataListAccessDeniedException extends AppException {
   constructor() {
     super('PERMISSION_DENIED', 'Bu işlem için yetkiniz bulunmamaktadır.', 403, {

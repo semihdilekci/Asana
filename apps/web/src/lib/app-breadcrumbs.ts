@@ -10,13 +10,8 @@ export interface AppBreadcrumbItem {
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-const DISPLAY_ID_RE = /^KTI-\d+$/i;
-
 const TOP_SEGMENT_LABEL: Record<string, string> = {
   dashboard: 'Ana Sayfa',
-  processes: 'Süreçler',
-  tasks: 'Görevlerim',
-  'my-tasks': 'Görevlerim',
   users: 'Kullanıcılar',
   roles: 'Roller',
   'master-data': 'Master Data',
@@ -25,8 +20,6 @@ const TOP_SEGMENT_LABEL: Record<string, string> = {
   new: 'Yeni',
   edit: 'Düzenle',
   sessions: 'Oturumlar',
-  kti: 'KTİ',
-  start: 'Başlat',
 };
 
 const ROLE_SUB_LABEL: Record<string, string> = {
@@ -54,12 +47,8 @@ function labelForSegment(segments: string[], index: number): string {
   if (isMasterDataType(seg)) {
     return MASTER_DATA_TYPE_LABELS[seg];
   }
-  if (DISPLAY_ID_RE.test(seg)) {
-    return seg;
-  }
   if (isUuid(seg)) {
     if (prev === 'users') return 'Kullanıcı';
-    if (prev === 'tasks') return 'Görev';
     if (prev === 'roles') return 'Rol';
     if (prev === 'master-data' || (typeof prev === 'string' && isMasterDataType(prev))) {
       return 'Kayıt';
@@ -79,7 +68,7 @@ function labelForSegment(segments: string[], index: number): string {
 }
 
 /**
- * (app) rotaları için URL’den Türkçe breadcrumb üretir; admin `(admin)` grubunda değildir.
+ * (app) rotaları için URL'den Türkçe breadcrumb üretir; admin `(admin)` grubunda değildir.
  */
 export function getAppBreadcrumbs(pathname: string): AppBreadcrumbItem[] {
   const normalized = pathname.replace(/\/+$/, '') || '/';
@@ -102,12 +91,6 @@ export function getAppBreadcrumbs(pathname: string): AppBreadcrumbItem[] {
     if (tail.length >= 2 && tail[0] === 'profile' && tail[1] === 'change-password') {
       crumbs.push({ href: '/profile/change-password', label: 'Şifre değiştir' });
       i += 2;
-      continue;
-    }
-    if (tail.length >= 3 && tail[0] === 'processes' && tail[1] === 'kti' && tail[2] === 'start') {
-      crumbs.push({ href: '/processes', label: 'Süreçler' });
-      crumbs.push({ href: '/processes/kti/start', label: 'Yeni KTİ' });
-      i += 3;
       continue;
     }
 

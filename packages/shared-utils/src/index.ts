@@ -13,7 +13,6 @@ export {
   encryptAes256GcmProbabilistic,
   hmacBlindIndexHex,
 } from './pii-crypto.js';
-export { slaPctRemaining } from './sla-pct-remaining.js';
 export {
   auditLogCanonicalString,
   nextAuditChainHash,

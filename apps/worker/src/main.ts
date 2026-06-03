@@ -10,7 +10,6 @@ import { startInAppNotificationRetention } from './data-retention-cleanup.cron.j
 import { startDocumentScanWorker } from './document-scan.processor.js';
 import { startNotificationDigestAndCleanup } from './notification-digest-cleanup.js';
 import { startNotificationEmailWorker } from './notification-email.processor.js';
-import { startSlaMonitorWorker } from './sla-monitor.processor.js';
 
 async function bootstrap(): Promise<void> {
   const databaseUrl = process.env.DATABASE_URL;
@@ -24,7 +23,6 @@ async function bootstrap(): Promise<void> {
   const stopNotificationEmail = await startNotificationEmailWorker(prisma);
   const stopDigestCleanup = startNotificationDigestAndCleanup(prisma);
   const stopInAppRetention = startInAppNotificationRetention(prisma);
-  const stopSlaMonitor = await startSlaMonitorWorker(prisma);
   const stopAuditChainVerify = startAuditChainVerify(prisma);
 
   const shutdown = async (): Promise<void> => {
@@ -32,7 +30,6 @@ async function bootstrap(): Promise<void> {
     await stopNotificationEmail();
     await stopDigestCleanup();
     await stopInAppRetention();
-    await stopSlaMonitor();
     await stopAuditChainVerify();
     await prisma.$disconnect();
   };
@@ -53,8 +50,6 @@ async function bootstrap(): Promise<void> {
     'Bildirim e-posta worker:',
     process.env.NOTIFICATION_EMAIL_QUEUE_NAME ?? 'notification-email-outbound',
   );
-
-  console.log('SLA monitor:', process.env.SLA_MONITOR_QUEUE_NAME ?? 'sla-monitor');
 
   console.log(
     'Audit chain verify interval ms:',

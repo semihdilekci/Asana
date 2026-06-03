@@ -6,9 +6,9 @@
 
 ## Proje Tanıtımı
 
-Lean Management, fabrikalarda operasyonel mükemmellik (OpEx) ekiplerinin yürüttüğü yalın yönetim, Six Sigma ve Kaizen süreçlerini dijitalleştirmek için geliştirilen kurumsal bir web platformudur.
+Lean Management, holding bünyesindeki şirketlerin kullanımı için geliştirilen kurumsal proje ve görev yönetimi platformudur (ASANA benzeri).
 
-Ürün, **tek bir holding için** özel olarak geliştirilen bir iç kurumsal uygulamadır; multi-tenant (çok kiracılı) bir SaaS değildir. Tek platform, holding altındaki **birden fazla şirkete** hizmet verir — ancak her kullanıcı yalnızca tek bir şirkette çalışır ve kullanıcılar farklı şirketlere ve lokasyonlara dağılmış durumdadır. Platformun ayırt edici değer önerisi, süreçlerin, görevlerin, formların ve yetkilerin **şirkete özel ve esnek** tasarlanmasıdır — standart görev yönetimi araçları yerine kuruma özel akışlar sağlanır.
+Ürün, **tek bir holding için** özel olarak geliştirilen bir iç kurumsal uygulamadır; multi-tenant (çok kiracılı) bir SaaS değildir. Tek platform, holding altındaki **birden fazla şirkete** hizmet verir — ancak her kullanıcı yalnızca tek bir şirkette çalışır ve kullanıcılar farklı şirketlere ve lokasyonlara dağılmış durumdadır. Platformun ayırt edici değer önerisi, projelerin, görevlerin ve yetkilerin **kurumsal ihtiyaçlara göre esnek** tasarlanmasıdır.
 
 MVP bir web uygulaması olarak teslim edilir; mobil uygulama bu faz kapsamında değildir ancak seçilen teknoloji yığını ileride mobile genişlemeye izin verecek şekilde belirlenmiştir. Monetizasyon, ödeme ve abonelik kapsam dışındadır.
 
@@ -18,9 +18,9 @@ MVP bir web uygulaması olarak teslim edilir; mobil uygulama bu faz kapsamında 
 
 Platformun iki temel kullanıcı kategorisi vardır:
 
-**Sistem kullanıcıları (yönetim rolleri).** Platformun yönetimini yapan sınırlı sayıda kullanıcı. Superadmin tek kişidir ve env seviyesinde tanımlıdır; Rol ve Yetki Yöneticisi rol tanımlarını ve atamalarını yönetir; Kullanıcı Yöneticisi kullanıcıları ve master data'yı yönetir; Süreç Yöneticisi çalışan süreçleri izler, iptal ve rollback aksiyonlarını yürütür. Bu kullanıcıların platformdaki kullanım sıklığı görev bazlıdır ve operasyonel destek karakterindedir.
+**Sistem kullanıcıları (yönetim rolleri).** Platformun yönetimini yapan sınırlı sayıda kullanıcı. Superadmin tek kişidir ve env seviyesinde tanımlıdır; Rol ve Yetki Yöneticisi rol tanımlarını ve atamalarını yönetir; Kullanıcı Yöneticisi kullanıcıları ve master data'yı yönetir. Bu kullanıcıların platformdaki kullanım sıklığı görev bazlıdır ve operasyonel destek karakterindedir.
 
-**Kullanıcılar (çalışanlar).** Holding bünyesindeki şirketlerde çalışan ve yalın yönetim süreçlerine dokunan tüm personel — saha çalışanı, yönetici, OpEx danışmanı dahil herkes. Bu kullanıcılar platformu kendi iş akışlarının bir parçası olarak günlük ritimde kullanır (süreç başlatma, görev onaylama, doküman yükleme). Ürün geliştikçe yeni kullanıcı tipleri ortaya çıkabilir; bu dokümantasyon persona listesini tutmak yerine Rol ve Yetki sisteminin esnekliğine dayanır. Belirli rol tanımları ve yetki matrisleri ayrı dokümanlarda yaşar.
+**Kullanıcılar (çalışanlar).** Holding bünyesindeki şirketlerde çalışan tüm personel — saha çalışanı, yönetici dahil herkes. Bu kullanıcılar platformu kendi iş akışlarının bir parçası olarak günlük ritimde kullanır (platform özelliklerini kullanma, doküman yükleme). Ürün geliştikçe yeni kullanıcı tipleri ortaya çıkabilir; bu dokümantasyon persona listesini tutmak yerine Rol ve Yetki sisteminin esnekliğine dayanır. Belirli rol tanımları ve yetki matrisleri ayrı dokümanlarda yaşar.
 
 ---
 
@@ -32,13 +32,10 @@ Platformun iki temel kullanıcı kategorisi vardır:
 - **Kullanıcı yönetimi** — sicil tabanlı kullanıcı CRUD, 23 kullanıcı attribute'unun yönetimi (şirket, lokasyon, pozisyon, kademe, departman, ekip, çalışma alanı vb.).
 - **Master data yönetimi** — kullanıcı attribute değerlerinin (şirket listesi, lokasyon listesi, pozisyon listesi, kademe listesi, departman listesi, ekip listesi, çalışma alanı/alt alanı listesi) ayrı tablolar halinde yönetimi; kullanıcı tablosu bu tablolara foreign key ile bağlanır.
 - **RBAC + ABAC hibrit yetkilendirme** — dinamik rol tanımı; rollerin kullanıcılara doğrudan veya kullanıcı attribute'larına dayalı kurallarla (AND + OR koşul setleri) atanması; runtime yetki çözümleme ve Redis cache.
-- **Before & After Kaizen süreci** — MVP'de yer alan tek hard-coded süreç. Başlatma yetkisi rol bazlı; başlatıcı before/after fotoğraflarını yükler, kazanç tutarı ve açıklama girer; başlatanın yöneticisine 72 saat SLA'lı tek adımlı onaya gider; yönetici Onay / Red / Revize Talebi aksiyonlarından birini alır. Sürecin adım davranışı, form alanları ve özel kuralları ayrı süreç dokümanında yaşar.
-- **Merkezi görev yönetimi altyapısı** — süreçlerden doğan görevler, SLA takibi, claim ve all-required atama modları, başlatıcı/onaya bekleyen/tamamlanan sekmeleri.
-- **Doküman yönetimi** — S3 tabanlı depolama, CloudFront + 8 katmanlı defense-in-depth erişim kontrolü, asenkron ClamAV virüs taraması, in-app önizleme (PDF, Word, Excel, görsel), 10 MB dosya limiti.
-- **Süreç Yönetimi Paneli** — Superadmin ve Süreç Yöneticisi erişimli; başlatılmış süreçlerin listelenmesi, detayları, iptal ve rollback aksiyonları.
+- **Doküman yönetimi** — S3 tabanlı depolama, CloudFront + 8 katmanlı defense-in-depth erişim kontrolü, asenkron ClamAV virüs taraması, in-app önizleme (PDF, Word, Excel, görsel), 10 MB dosya limiti. Genel amaçlı dosya/attachment yönetim sistemi olarak çalışır.
 - **Audit log altyapısı** — tüm admin ve kullanıcı aksiyonlarının append-only, tamper-evident (chain hash) olarak kaydedilmesi; 1 yıl saklama.
 - **User impersonation** — `USER_IMPERSONATION` yetkisine sahip kullanıcılar, troubleshooting/denetim/test için hedef kullanıcı adına tam uygulama deneyimi (audit'te gerçek aktör görünür); go-live öncesi Faz 13.
-- **Bildirim sistemi** — in-app bildirim merkezi (çan ikonu, 30 saniye polling) ve kurumsal SMTP üzerinden email bildirimi; görev atama, SLA yaklaşma/aşım, süreç tamamlanma/iptal, güvenlik olayları için tanımlı tetikleyici olaylar.
+- **Bildirim sistemi** — in-app bildirim merkezi (çan ikonu, 30 saniye polling) ve kurumsal SMTP üzerinden email bildirimi; güvenlik olayları, rol atama, KVKK rıza güncellemesi, şifre süre sonu gibi platform tetikleyici olaylar.
 - **Sistem Ayarları ekranı** — Superadmin erişimli; email şablonları, KVKK rıza metni yönetimi, rate limit parametreleri.
 - **KVKK uyum katmanı** — açık rıza versiyonlama, kullanıcı profil ekranında "Verilerim" görüntüleme, IP hash + PII encryption + tamper-evident log + veri saklama matrisi.
 - **Güvenlik altyapısı** — OWASP ASVS Level 2 ve bankacılık düzeyinde defense-in-depth; field-level encryption (envelope pattern), CSP nonce-based, CORS strict allowlist, CSRF double-submit, rate limiting, dependency + SAST + DAST scanning.
@@ -50,12 +47,8 @@ Platformun iki temel kullanıcı kategorisi vardır:
 - **Çoklu dil** — MVP yalnızca Türkçe; çoklu dil altyapısı ileriki aşamada.
 - **MFA / 2FA** — sonraki iterasyonda TOTP olarak gelecek; Superadmin için zorunlu olarak planlı.
 - **Kurumsal SSO (tam genişletilmiş senaryo)** — çoklu harici IdP, SAML federation partnerleri; çekirdek OIDC akışı MVP ile uyumlu ilerletilir; detaylı enterprise federation backlog’ta değerlendirilir.
-- **Low-code süreç tasarımcısı** — süreçler hard-coded olarak geliştirilir; dinamik süreç tanımı reddedildi.
-- **Dinamik form motoru** — form alanları statik olarak kodlanır; dinamik form tasarımcısı kapsam dışı.
-- **Ad-hoc görev oluşturma** — görevler yalnızca süreçlerden doğar; serbest görev oluşturma yoktur.
-- **Görev yorumları, thread, @mention** — işbirliği özellikleri kapsam dışı; iletişim süreç formu alanları ve email bildirimleri ile kurulur.
 - **Bildirim digest / rollup** — her event ayrı bildirim üretir; günlük/haftalık özet formatı MVP sonrasında değerlendirilir.
-- **Kullanıcı bildirim tercihi (opt-out)** — platform kurumsal bir görev yönetimi aracıdır; tüm kullanıcılar tüm sistem bildirimlerini alır.
+- **Kullanıcı bildirim tercihi (opt-out)** — platform kurumsal bir proje yönetimi aracıdır; tüm kullanıcılar tüm sistem bildirimlerini alır.
 - **Excel / CSV toplu kullanıcı import** — SAP HR entegrasyonu ile karşılanacaktır; manuel toplu yükleme kapsam dışı.
 - **"Verilerimi indir" KVKK özelliği** — kullanıcı kendi verisini görüntüleyebilir (profil → "Verilerim"); export/indirme MVP kapsamında değildir.
 - **KVKK otomatik silme / anonimleştirme UI** — yasal talepler manuel operasyonel süreç ile Superadmin tarafından karşılanır.
@@ -73,7 +66,7 @@ Platformun iki temel kullanıcı kategorisi vardır:
 
 - **Toplam kullanıcı:** 20.000
 - **Eşzamanlı kullanıcı:** 1.000
-- **Kullanım yoğunluğu:** bir kullanıcı günde ortalama 10 süreç başlatabilir; her süreçte dosya yükleme ve görev onayları vardır
+- **Kullanım yoğunluğu:** bir kullanıcı günde ortalama 10 platform işlemi gerçekleştirebilir; dosya yükleme ve görev aksiyonları dahil
 - **Coğrafya:** kullanıcılar Türkiye'de bulunur
 - **Bildirim gerçek zamanlılığı:** near real-time yeterlidir; altyapı gelecekte real-time (WebSocket / SSE) geçişe izin verecek şekilde tasarlanır
 - **Uyumluluk:** KVKK (6698 sayılı kanun) zorunlu; OWASP ASVS Level 2 + OWASP Top 10 hedef standart; ISO 27001 prensipleri referans
@@ -84,24 +77,22 @@ Platformun iki temel kullanıcı kategorisi vardır:
 
 ## Başarı Kriterleri
 
-| Kriter                                     | Hedef                                   | Ölçüm yöntemi                                 |
-| ------------------------------------------ | --------------------------------------- | --------------------------------------------- |
-| API p95 latency                            | < 300 ms                                | CloudWatch custom metrics                     |
-| Frontend LCP (p75)                         | < 2.5 sn                                | Web Vitals + Sentry                           |
-| Frontend INP (p75)                         | < 200 ms                                | Web Vitals + Sentry                           |
-| Frontend CLS (p75)                         | < 0.1                                   | Web Vitals + Sentry                           |
-| Uptime                                     | %99                                     | CloudWatch dashboard                          |
-| Eşzamanlı kullanıcı load testi             | 1.000 kullanıcı başarılı oturum + işlem | k6 / Artillery staging load test              |
-| MVP'de dijitalleşen süreç sayısı           | 1 adet (Before & After Kaizen)          | Production deploy + ilk gerçek süreç başlatma |
-| Auth modülü test coverage                  | Line %90+, Branch %85+                  | Vitest `--coverage` CI raporu                 |
-| Encryption / Security modülü test coverage | Line %95+, Branch %90+                  | Vitest `--coverage` CI raporu                 |
-| Workflow engine test coverage              | Line %85+, Branch %80+                  | Vitest `--coverage` CI raporu                 |
-| Proje genel ortalama coverage              | Line %75-80                             | Vitest `--coverage` CI raporu                 |
-| KVKK uyum kontrol listesi tamamlanma       | %100                                    | Internal compliance review                    |
-| P1 güvenlik alarm response SLA             | ≤ 1 saat                                | Incident response log                         |
-| Audit log chain integrity kontrol          | %100 başarı (gecelik job)               | Tamper-evidence verification job raporu       |
-| Lighthouse Accessibility score             | ≥ 90                                    | CI pipeline Lighthouse report                 |
-| Dependency scan — high/critical bulgu      | 0 (build fail)                          | GitHub Dependabot + `npm audit`               |
+| Kriter                                     | Hedef                                   | Ölçüm yöntemi                           |
+| ------------------------------------------ | --------------------------------------- | --------------------------------------- |
+| API p95 latency                            | < 300 ms                                | CloudWatch custom metrics               |
+| Frontend LCP (p75)                         | < 2.5 sn                                | Web Vitals + Sentry                     |
+| Frontend INP (p75)                         | < 200 ms                                | Web Vitals + Sentry                     |
+| Frontend CLS (p75)                         | < 0.1                                   | Web Vitals + Sentry                     |
+| Uptime                                     | %99                                     | CloudWatch dashboard                    |
+| Eşzamanlı kullanıcı load testi             | 1.000 kullanıcı başarılı oturum + işlem | k6 / Artillery staging load test        |
+| Auth modülü test coverage                  | Line %90+, Branch %85+                  | Vitest `--coverage` CI raporu           |
+| Encryption / Security modülü test coverage | Line %95+, Branch %90+                  | Vitest `--coverage` CI raporu           |
+| Proje genel ortalama coverage              | Line %75-80                             | Vitest `--coverage` CI raporu           |
+| KVKK uyum kontrol listesi tamamlanma       | %100                                    | Internal compliance review              |
+| P1 güvenlik alarm response SLA             | ≤ 1 saat                                | Incident response log                   |
+| Audit log chain integrity kontrol          | %100 başarı (gecelik job)               | Tamper-evidence verification job raporu |
+| Lighthouse Accessibility score             | ≥ 90                                    | CI pipeline Lighthouse report           |
+| Dependency scan — high/critical bulgu      | 0 (build fail)                          | GitHub Dependabot + `npm audit`         |
 
 Her kriter ya ürünün çalıştığını ya da doğru yönü işaret eden ölçülebilir bir göstergedir; subjektif "memnuniyet yüksek" tarzı kriterler bilinçli olarak yoktur.
 
@@ -117,7 +108,6 @@ Her kriter ya ürünün çalıştığını ya da doğru yönü işaret eden öl�
 - **Deployment platformu — MVP baseline:** AWS EC2 varsayımı üzerinden geliştirme yürütülür; container-ready pattern'ler kullanılır. **Final deployment platformu kararı (EC2 / ECS Fargate / EKS / diğer) DevOps ekibi tarafından MVP sonunda verilecektir.** Bu süreçte geliştirme, platform-agnostic kalacak şekilde ilerletilir.
 - **Backup ve PITR parametreleri:** Aurora PITR aktif, minimum 7 gün retention baseline. Final backup retention ve PITR parametreleri DevOps ekibi tarafından MVP sonunda belirlenir.
 - **Bekleyen entegrasyonlar:** SAP MM, SAP HR, PowerBI — MVP sonrası operasyonel entegrasyon; mimari REST + tipli API ile hazırlanır. **Kimlik:** geliştirme Google OIDC, production Red Hat SSO (Keycloak) — ADR 0008.
-- **Süreç kapsamı:** MVP'de tek bir süreç hard-coded geliştirilir (Before & After Kaizen). Sürecin form alanları, atama kuralları, adım davranışları, SLA eşikleri ve reddetme akışı ayrı bir süreç dokümanında (`docs/processes/before-after-kaizen-process.md`) yaşar; bu süreç dokümanı bu dokümantasyon setinin parçası değildir ve süreç geliştirilmeye başlanırken doldurulur.
 - **Bütçe ve takvim kısıtı:** kurumsal iç proje; bütçe kurumsal IT kanalından fonlanır, dış müşteri timeline baskısı yoktur.
 
 ---

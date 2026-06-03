@@ -1925,6 +1925,8 @@ Kaynak: `packages/shared-types/src/permissions.ts` içindeki `PERMISSION_METADAT
 
 ### 9.5 Processes Modülü
 
+> **⛔ Kaldırıldı (Faz 14):** Bu endpoint'ler ASANA pivot ile kaldırılacak.
+
 #### `GET /api/v1/processes`
 
 **Purpose:** Süreç listesi. İki ana mod: `scope=my-started` (kullanıcının kendi başlattıkları) ve `scope=admin` (tüm süreçler — admin paneli).
@@ -2271,6 +2273,8 @@ Backend yan etkileri:
 
 ### 9.6 Tasks Modülü
 
+> **⛔ Kaldırıldı (Faz 14):** Bu endpoint'ler ASANA pivot ile kaldırılacak.
+
 #### `GET /api/v1/tasks`
 
 **Purpose:** Kullanıcının görev listesi — üç sekme modunda.
@@ -2484,6 +2488,8 @@ Backend yan etkileri (transaction):
 **Audit:** `COMPLETE_TASK` entity=`task`, entity_id=:id, metadata={stepKey, action, reason, processId, processNewStatus}. Süreç state değişirse `UPDATE_PROCESS_STATUS` ayrı audit kaydı.
 
 ### 9.7 Documents Modülü
+
+> **⚠️ Güncelleme (Faz 14):** Document modülü korunuyor ancak process_id/task_id bağlantıları kaldırılacak; generic attachment olarak çalışacak.
 
 #### `POST /api/v1/documents/upload-initiate`
 

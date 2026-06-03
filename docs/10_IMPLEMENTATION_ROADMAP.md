@@ -149,6 +149,8 @@ flowchart TD
 
 **Paralelleştirilebilir:** F7 (notification) F6'dan sonra ama F8'den bağımsız başlayabilir. F9 (dashboard) F3+F6+F7+F8 birlikte olduğunda başlar.
 
+> **Not (Haziran 2026):** Faz 5 (Process Engine) ve Faz 6 (Task Management) ASANA pivot kararı ile kaldırıldı. Faz 14 bu decommission'ı yürütür.
+
 Solo developer + agent olduğu için paralelleştirme avantajı sınırlı. Ancak düşük-bağımlılık fazları (örn. email template seed, master data seed) blocking task beklerken arada yapılabilir.
 
 ---
@@ -541,7 +543,9 @@ Session'lar:
 
 ### Faz 5 — Process Engine + KTİ Workflow
 
-> **Durum (repo ile hizalı):** KTİ başlatma, doküman upload→scan, süreç listesi/detay UI, iptal/rollback API ve `ProcessTypeRegistry` uygulaması mevcut. **Yönetici onayı / `REJECT` / `REQUEST_REVISION` tamamlama** `POST /tasks/.../complete` ile **Faz 6**'dadır. `03_API_CONTRACTS` içindeki `GET /processes/:displayId/history` ve ayrı `.../documents` uçları henüz yok; detay cevabı görev/doküman özetlerini taşır (backlog veya F6).
+> **⛔ Kaldırıldı (Faz 14):** Bu faz ASANA pivot sonrası decommission edildi. BPM/KTİ/süreç/görev altyapısı Faz 14 ile tamamen kaldırılacak.
+
+> **Durum (Faz 14 sonrası):** BPM/KTİ runtime kodu ve DB tabloları kaldırıldı. Aşağıdaki kapsam maddeleri yalnızca tarihsel referanstır.
 
 #### Kapsam
 
@@ -617,6 +621,8 @@ Session'lar:
 ---
 
 ### Faz 6 — Task Management + Document Upload Integration
+
+> **⛔ Kaldırıldı (Faz 14):** Bu faz ASANA pivot sonrası decommission edildi. BPM/KTİ/süreç/görev altyapısı Faz 14 ile tamamen kaldırılacak.
 
 #### Kapsam
 
@@ -1040,6 +1046,56 @@ Session'lar:
 
 ---
 
+### Faz 14 — BPM Decommission (ASANA Pivot Temizliği)
+
+#### Kapsam
+
+Lean Management BPM/KTİ/süreç/görev altyapısının tamamen kaldırılması ve kod tabanının ASANA klonu geliştirmeye hazır "clean core" durumuna getirilmesi.
+
+**Kaldırılacak:**
+
+- `apps/api/src/processes/**`, `apps/api/src/tasks/**` (backend modülleri)
+- `apps/web/src/app/(app)/processes/**`, `tasks/**`, `processadministration/**` (frontend route'ları)
+- `apps/web/src/components/processes/**`, `tasks/**` (frontend bileşenleri)
+- Worker: SLA monitor pipeline, document-scan (BPM bağlamı)
+- Shared: `processes.schemas`, `tasks.schemas`, SLA util, `PROCESS_*` permission'ları
+- DB: Process, Task, TaskAssignment tabloları + BPM enum'ları + per-type sequence
+- Document tablosundan `process_id` + `task_id` FK'leri düşürülür (generic attachment olur)
+- Notification event enum'undan TASK*\*/SLA*\_/PROCESS\_\_ kaldırılır
+- Shell-nav-config, admin-summary, breadcrumbs BPM referansları temizlenir
+- Cursor rules: 55-phase-05, 56-phase-06, 13-backend-processes + add-process-type skill
+
+**Korunan çekirdek:** Auth, users, master-data, roles, notifications (altyapı), admin, impersonation, profile, Document (generic), tüm UI/tech-stack.
+
+#### Agent Kick-off Materyali
+
+- `.cursor/rules/64-phase-14-bpm-decommission.mdc` (5 iterasyon)
+- Bu doküman (Faz 14 bölümü)
+
+#### Deliverable
+
+- `pnpm build` + `pnpm typecheck` + `pnpm lint` + `pnpm test` green
+- E2E smoke (login → dashboard → users → roles → admin → profile → logout) green
+- BPM ile ilgili hiçbir kod/UI/DB yapısı kalmamış
+- Document modülü generic (sadece uploaded_by_id)
+
+#### Human Gate
+
+- [x] Process/Task/TaskAssignment Prisma modelleri şemada yok (`20260603120000_remove_bpm_tables`)
+- [x] `PROCESS_*` permission enum'da yok (İter 4)
+- [x] Sidebar'da görev/süreç/processadmin girişi yok (İter 1)
+- [x] Notification event'lerinde task/process/SLA yok (İter 3 + migration)
+- [x] Seed script'te PROCESS_MANAGER rolü/kullanıcısı yok (İter 4)
+- [x] Admin summary'de process/task metrikleri yok (İter 3)
+- [x] `docs/02_DATABASE_SCHEMA.md` BPM kaldırma notları + generic `documents` (İter 5)
+- [x] E2E smoke `apps/web/e2e/core-smoke.e2e.spec.ts` (İter 5)
+
+#### Tahmini İterasyon
+
+5 iterasyon (FE temizlik → BE modül → notification/worker/document → shared/nav/rules → DB migration + doğrulama). **Faz 14 tamamlandı (Haziran 2026).**
+
+---
+
 ### Faz 12 — UAT + Go-Live
 
 #### Kapsam
@@ -1161,18 +1217,18 @@ Bu side-effect'ler MVP'de tolere edilir; post-MVP "hardening" fazında cleanup.
 
 ## 6. Post-MVP Vision
 
-### Faz 14+ — Gelecek Yol Haritası (Post-MVP)
+### Faz 15+ — Gelecek Yol Haritası (Post-MVP)
 
 > **Not:** MVP go-live öncesi **Faz 13 (User Impersonation)** tamamlanır. Aşağıdaki dalgalar production sonrası genişlemedir.
 
-| Dalgalar                                           | Süre   | Odak                                                                                                                      |
-| -------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------- |
-| **Wave 1 — Security Enhancements** (Q3-Q4 2026)    | 2-3 ay | MFA (TOTP), IP whitelist admin, HSM for JWT, SIEM integration                                                             |
-| **Wave 2 — Process Expansion** (Q4 2026 - Q1 2027) | 3-4 ay | 5S audit süreci, TPM (Total Productive Maintenance) süreci, Özel form fields generic                                      |
-| **Wave 3 — Analytics + Reporting** (Q2 2027)       | 2-3 ay | Dashboard analytics, executive reports, KPI tracking, CSV/PDF export, BI integration                                      |
-| **Wave 4 — Mobile Experience** (Q3 2027)           | 3-4 ay | Responsive improvements → native app (React Native), push notifications, offline capability                               |
-| **Wave 5 — Integration Ecosystem** (Q4 2027)       | 2-3 ay | Webhooks, REST API for third-party, ERP integration (SAP), çoklu IdP / SAML federation (OIDC çekirdeği MVP ile hizalanır) |
-| **Wave 6 — AI-Assisted Features** (2028+)          | —      | Auto-categorization, SLA prediction, anomaly detection in audit logs                                                      |
+| Dalgalar                                               | Süre       | Odak                                                                                                                      |
+| ------------------------------------------------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **Wave 1 — Security Enhancements** (Q3-Q4 2026)        | 2-3 ay     | MFA (TOTP), IP whitelist admin, HSM for JWT, SIEM integration                                                             |
+| **Wave 2 — ~~Process Expansion~~** (Q4 2026 - Q1 2027) | ~~3-4 ay~~ | ~~5S audit süreci, TPM süreci, Özel form fields generic~~ — **Proje pivot ile kapsam dışı**                               |
+| **Wave 3 — Analytics + Reporting** (Q2 2027)           | 2-3 ay     | Dashboard analytics, executive reports, KPI tracking, CSV/PDF export, BI integration                                      |
+| **Wave 4 — Mobile Experience** (Q3 2027)               | 3-4 ay     | Responsive improvements → native app (React Native), push notifications, offline capability                               |
+| **Wave 5 — Integration Ecosystem** (Q4 2027)           | 2-3 ay     | Webhooks, REST API for third-party, ERP integration (SAP), çoklu IdP / SAML federation (OIDC çekirdeği MVP ile hizalanır) |
+| **Wave 6 — AI-Assisted Features** (2028+)              | —          | Auto-categorization, SLA prediction, anomaly detection in audit logs                                                      |
 
 Her wave sonunda:
 

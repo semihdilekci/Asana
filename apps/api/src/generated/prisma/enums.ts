@@ -99,49 +99,6 @@ export const RoleRuleConditionOperator = {
 export type RoleRuleConditionOperator =
   (typeof RoleRuleConditionOperator)[keyof typeof RoleRuleConditionOperator];
 
-export const ProcessType = {
-  BEFORE_AFTER_KAIZEN: 'BEFORE_AFTER_KAIZEN',
-} as const;
-
-export type ProcessType = (typeof ProcessType)[keyof typeof ProcessType];
-
-export const ProcessStatus = {
-  INITIATED: 'INITIATED',
-  IN_PROGRESS: 'IN_PROGRESS',
-  COMPLETED: 'COMPLETED',
-  REJECTED: 'REJECTED',
-  CANCELLED: 'CANCELLED',
-} as const;
-
-export type ProcessStatus = (typeof ProcessStatus)[keyof typeof ProcessStatus];
-
-export const TaskStatus = {
-  PENDING: 'PENDING',
-  CLAIMED: 'CLAIMED',
-  IN_PROGRESS: 'IN_PROGRESS',
-  COMPLETED: 'COMPLETED',
-  SKIPPED_BY_PEER: 'SKIPPED_BY_PEER',
-  SKIPPED_BY_ROLLBACK: 'SKIPPED_BY_ROLLBACK',
-} as const;
-
-export type TaskStatus = (typeof TaskStatus)[keyof typeof TaskStatus];
-
-export const AssignmentMode = {
-  SINGLE: 'SINGLE',
-  CLAIM: 'CLAIM',
-  ALL_REQUIRED: 'ALL_REQUIRED',
-} as const;
-
-export type AssignmentMode = (typeof AssignmentMode)[keyof typeof AssignmentMode];
-
-export const TaskAssignmentStatus = {
-  PENDING: 'PENDING',
-  COMPLETED: 'COMPLETED',
-  SKIPPED: 'SKIPPED',
-} as const;
-
-export type TaskAssignmentStatus = (typeof TaskAssignmentStatus)[keyof typeof TaskAssignmentStatus];
-
 export const DocumentScanStatus = {
   PENDING_SCAN: 'PENDING_SCAN',
   SCANNING: 'SCANNING',
@@ -153,14 +110,6 @@ export const DocumentScanStatus = {
 export type DocumentScanStatus = (typeof DocumentScanStatus)[keyof typeof DocumentScanStatus];
 
 export const NotificationEventType = {
-  TASK_ASSIGNED: 'TASK_ASSIGNED',
-  TASK_CLAIMED_BY_PEER: 'TASK_CLAIMED_BY_PEER',
-  SLA_WARNING: 'SLA_WARNING',
-  SLA_BREACH: 'SLA_BREACH',
-  PROCESS_COMPLETED: 'PROCESS_COMPLETED',
-  PROCESS_REJECTED: 'PROCESS_REJECTED',
-  PROCESS_CANCELLED: 'PROCESS_CANCELLED',
-  ROLLBACK_PERFORMED: 'ROLLBACK_PERFORMED',
   DOCUMENT_INFECTED: 'DOCUMENT_INFECTED',
   ACCOUNT_LOCKED: 'ACCOUNT_LOCKED',
   PASSWORD_RESET_REQUESTED: 'PASSWORD_RESET_REQUESTED',

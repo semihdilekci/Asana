@@ -65,7 +65,7 @@ function ListRow({
         </span>
         <span className="shrink-0 pt-0.5" aria-hidden>
           <Icon
-            className={`h-5 w-5 ${item.eventType === 'SLA_BREACH' ? 'text-[var(--color-danger-600)]' : 'text-[var(--color-neutral-500)]'}`}
+            className={`h-5 w-5 ${item.eventType === 'DOCUMENT_INFECTED' || item.eventType === 'SECURITY_ANOMALY' ? 'text-[var(--color-danger-600)]' : 'text-[var(--color-neutral-500)]'}`}
           />
         </span>
         <span className="min-w-0 flex-1">

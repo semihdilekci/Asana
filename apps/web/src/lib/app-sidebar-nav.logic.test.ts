@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { isNavActive } from '@/lib/app-sidebar-nav';
+import { isNavActive } from './app-sidebar-nav';
 
 describe('isNavActive', () => {
-  it('dashboard ve kök için eşleşir', () => {
+  it('dashboard kök ve /dashboard için aktif', () => {
     expect(isNavActive('/dashboard', '/dashboard')).toBe(true);
     expect(isNavActive('/', '/dashboard')).toBe(true);
-    expect(isNavActive('/processes', '/dashboard')).toBe(false);
+    expect(isNavActive('/users', '/dashboard')).toBe(false);
   });
 
   it('admin özeti yalnızca tam /admin yolunda aktif', () => {
@@ -15,9 +15,8 @@ describe('isNavActive', () => {
     expect(isNavActive('/admin/audit-logs', '/admin/audit-logs')).toBe(true);
   });
 
-  it('tam eşleşme ve alt rota', () => {
-    expect(isNavActive('/processes', '/processes')).toBe(true);
-    expect(isNavActive('/processes/KTI-1', '/processes')).toBe(true);
-    expect(isNavActive('/process', '/processes')).toBe(false);
+  it('alt yol prefix ile eşleşir', () => {
+    expect(isNavActive('/users/abc-123', '/users')).toBe(true);
+    expect(isNavActive('/user', '/users')).toBe(false);
   });
 });

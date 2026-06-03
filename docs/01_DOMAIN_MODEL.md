@@ -6,19 +6,17 @@
 
 ## 1. Domain'e Genel Bakış
 
-Lean Management platformunun domain'i beş alt-domain'e gruplanır:
+Lean Management platformunun domain'i dört alt-domain'e gruplanır:
 
 **Identity & Organization.** Kullanıcıları ve onların bağlı olduğu organizasyonel referansları (şirket, lokasyon, pozisyon, kademe, departman, ekip, çalışma alanı) tutar. Kullanıcı attribute'ları kullanıcı üzerinde denormalized tutulmaz — ayrı master data tablolarına foreign key ile bağlanır; bu sayede listelerin tekilliği ve attribute-based yetki kurallarının çalışması garanti edilir.
 
 **Authorization.** Rol-yetki modelini, kullanıcıya rol atamasını (doğrudan veya attribute-based kurallarla) ve runtime yetki çözümlemesini taşır. RBAC ve ABAC birlikte çalışır: yetkiler enum olarak koda sabitlidir, roller DB'de dinamik tutulur, kullanıcıya rol atama iki yolla yapılır (doğrudan atama veya attribute koşul setleriyle otomatik eşleşme).
 
-**Workflow & Task.** Süreç (Process), süreç adımlarından doğan görev (Task), görev atamaları ve süreç tarihçesi. MVP'de yalnızca bir hard-coded süreç vardır — **KTİ (Before & After Kaizen)**. Altyapı birden fazla sürece genişlemeye hazırdır ancak her süreç ayrı bir backend modülü + kendi süreç dokümanı olarak kodlanır.
+**Document.** Kullanıcıların yüklediği dosyaları, yükleme meta verilerini ve virüs tarama durumlarını tutar. Dosyalar S3'te; meta veri DB'de. Erişim CloudFront üzerinden çok katmanlı koruma ile yapılır ancak bu güvenlik detayı domain'in konusu değildir.
 
-**Document.** Süreçlerle ilişkili dosyaları, yükleme meta verilerini ve virüs tarama durumlarını tutar. Dosyalar S3'te; meta veri DB'de. Erişim CloudFront üzerinden çok katmanlı koruma ile yapılır ancak bu güvenlik detayı domain'in konusu değildir.
+**Observability & Communication.** Denetim kayıtları (append-only, chain hash ile tamper-evident), bildirimler (in-app + email), email şablonları, sistem ayarları ve KVKK rıza yönetimi. Bu alt-domain diğer üç alt-domain'den gelen event'leri dinler; bağımsız yazmaz.
 
-**Observability & Communication.** Denetim kayıtları (append-only, chain hash ile tamper-evident), bildirimler (in-app + email), email şablonları, sistem ayarları ve KVKK rıza yönetimi. Bu alt-domain diğer dört alt-domain'den gelen event'leri dinler; bağımsız yazmaz.
-
-Alt-domain'ler arası temel akış: **Kullanıcı** bir **Rol** üzerinden bir **Yetki** kazanır → yetkili kullanıcı bir **Süreç** başlatır → süreç **Görevler** üretir → görevlerde **Doküman** yüklenir ve form doldurulur → her aksiyon **AuditLog**'a yazılır, ilgili kullanıcılara **Notification** gönderilir.
+Alt-domain'ler arası temel akış: **Kullanıcı** bir **Rol** üzerinden bir **Yetki** kazanır → yetkili kullanıcı platform aksiyonları gerçekleştirir → **Doküman** yüklenir → her aksiyon **AuditLog**'a yazılır, ilgili kullanıcılara **Notification** gönderilir.
 
 ---
 
@@ -50,8 +48,6 @@ Platformu kullanan fiziksel kişi. Tek bir şirkete, tek bir lokasyona ve tek bi
 - → User (N-1, self-reference): Yönetici
 - ← Role (N-N via direct role assignment) ve ← Role (attribute-based kurallarla dolaylı)
 - ← Session (1-N): aktif oturumlar (maksimum 3)
-- ← Process (1-N): başlatılan süreçler
-- ← Task (1-N): atanan görevler (doğrudan veya rol bazlı)
 - ← Document (1-N): yüklediği dokümanlar
 - ← AuditLog (1-N)
 - ← Notification (1-N)
@@ -64,7 +60,7 @@ Platformu kullanan fiziksel kişi. Tek bir şirkete, tek bir lokasyona ve tek bi
 - `sicil` bir kez atandıktan sonra asla değişmez; audit ve referans bütünlüğü buna bağlıdır.
 - Kullanıcı kendi attribute'larını değiştiremez (sicil, şirket, lokasyon, pozisyon vb.) — bu ancak Kullanıcı Yöneticisi veya Superadmin tarafından yapılır.
 - Bir kullanıcı kendi `manager`'ı olamaz (cycle yasaktır).
-- `PASSIVE` kullanıcı login yapamaz, yeni görev atanamaz ve attribute-based rol eşleşmelerinde değerlendirilmez.
+- `PASSIVE` kullanıcı login yapamaz ve attribute-based rol eşleşmelerinde değerlendirilmez.
 - `sicil`, `email`, `phone` ve `manager_email` C4 sınıfı hassas veridir; deterministic encryption ile saklanır (blind index + AES-256-GCM ciphertext) — bu detay `02_DATABASE_SCHEMA`'da açılır; domain açısından yalnız "bu alanlar hassas kabul edilir" kuralı geçerlidir.
 
 ### 2.2 Master Data Grubu
@@ -132,7 +128,6 @@ Bir veya birden fazla yetkiyi gruplayan ve kullanıcılara atanabilen soyut konu
 - Superadmin — platformun tek süper kullanıcısı; env'den seed edilir.
 - Rol ve Yetki Yöneticisi — rol tanımlarını yönetir, rollere yetki atar, kullanıcılara rol atar.
 - Kullanıcı Yöneticisi — kullanıcıları CRUD eder, attribute güncellemesi yapar, Master Data yönetir.
-- Süreç Yöneticisi — Süreç Yönetimi Paneli'ne erişir; süreç izleme, iptal ve rollback aksiyonlarını yapabilir.
 
 **Ana attribute'lar:**
 
@@ -302,118 +297,20 @@ KVKK açık rıza metninin sürümleri ve her kullanıcının hangi sürümü on
 - Kullanıcı geçerli en son versiyonu onaylamadan platformun hiçbir sayfasına erişemez.
 - İlk login'de veya rıza metni güncellendikten sonraki ilk login'de kullanıcı zorunlu olarak onay verir.
 
-### 2.9 Process (Süreç)
+### 2.9 Document (Doküman)
 
-Platformda yürütülen bir iş akışı örneği; süreç tanımına göre üretilmiş, başlatıcıya ve duruma sahip entity.
-
-**Sorumluluğu:**
-
-- Sürecin yaşam döngüsünü tutar (başlatıldı, ilerliyor, tamamlandı, reddedildi, iptal).
-- Başlatıcı kullanıcıyı, şirket bağlamını ve süreç tipini referans eder.
-- Sürecin adımlarını (Task) sahiplenir; task tarihçesi süreç altında toplanır.
-- Süreç tipi MVP'de tek değer: `BEFORE_AFTER_KAIZEN` (KTİ).
-
-**Ana attribute'lar:**
-
-- `id` (uygulama-genelinde incremental global processId; kullanıcıya numarayla gösterilir)
-- `process_type` (enum — MVP'de tek değer)
-- `started_by_user_id`
-- `company_id` (default: başlatanın şirketi; form içinde override edilebilir)
-- `status` (INITIATED / IN_PROGRESS / COMPLETED / REJECTED / CANCELLED — detay [5.1](#51-process-state-machine-jenerik))
-- `started_at`, `completed_at`, `cancelled_at`
-- `cancel_reason`, `rollback_history` (metadata)
-
-**İlişkiler:**
-
-- → User (N-1, started_by)
-- → Company (N-1)
-- ← Task (1-N)
-- ← Document (1-N, Task üzerinden)
-- ← AuditLog (1-N)
-
-**Değişmezler:**
-
-- Süreç silinemez — yalnız iptal edilebilir (soft, status değişikliği). Audit ve veri bütünlüğü için saklanır.
-- Süreç başlatan kullanıcı kendi başlattığı sürecin her adımını (kendisine atanmamış olsa bile) görüntüleyebilir; bu görünürlük süreç-özel `.md` dosyasında aksi belirtilmediği sürece varsayılandır.
-- Süreç başkası tarafından başlatılmış ve kullanıcının o süreçte atanmış bir task'ı yoksa, kullanıcı o süreci göremez.
-- İptal edilen süreç, kullanıcıların "Başlattığım Süreçler" ve "Onayda Bekleyen" listelerinden düşer; sadece Süreç Yönetimi Paneli'nde görünür kalır. İptal gerekçesi kullanıcılara gösterilmez — yalnız panel ve audit'te görünür.
-
-### 2.10 Task (Görev)
-
-Sürecin tek bir adımı; bir veya birden fazla kullanıcıya atanmış, tamamlanması beklenen aksiyon.
-
-**Sorumluluğu:**
-
-- Süreç tanımındaki adımın runtime karşılığıdır.
-- Atama modunu (claim veya all-required) taşır.
-- SLA başlangıç-bitiş saatini ve eşik tetikleyicilerini tutar.
-- Task'ı tamamlayan kullanıcının aksiyonunu (`completion_action`) ve gerekçesini saklar — bu alan süreç akışını belirler (özellikle KTİ'de yöneticinin Onay/Red/Revize seçimi).
-
-**Ana attribute'lar:**
-
-- `id`, `process_id`, `step_key` (süreç tanımındaki adım key'i — örn. `KTI_MANAGER_APPROVAL`)
-- `step_order` (sürecin kaçıncı adımı)
-- `assignment_mode` (SINGLE / CLAIM / ALL_REQUIRED)
-- `status` (PENDING / CLAIMED / IN_PROGRESS / COMPLETED / SKIPPED_BY_PEER / SKIPPED_BY_ROLLBACK — detay [5.3](#53-task-state-machine-jenerik))
-- `completion_action` (nullable enum — süreç-özel; KTİ'de APPROVE / REJECT / REQUEST_REVISION)
-- `completion_reason` (nullable; Red veya Revize için zorunlu)
-- `form_data` (JSONB — süreç-özel form içeriği)
-- `sla_due_at`, `sla_warning_sent_at`, `sla_breach_sent_at`
-- `completed_by_user_id`, `completed_at`
-
-**İlişkiler:**
-
-- → Process (N-1)
-- ← TaskAssignment (1-N): atama kayıtları (claim/all-required durumlarında çoklu)
-- ← Document (1-N): bu task'ta yüklenen dokümanlar
-
-**Değişmezler:**
-
-- Tamamlanmış bir task (`COMPLETED`) silinemez, düzenlenemez.
-- `completion_action` enum değeri süreç tanımının sabitlediği değerler dışında alamaz; her süreç kendi action enum'unu tanımlar (jenerik bir "reddet" davranışı yoktur).
-- Claim tipinde bir task'ın tamamlanması diğer adayların aynı task'ını `SKIPPED_BY_PEER` yapar; onların listesinden düşer.
-- All-required tipinde tüm atanmış kullanıcılar tamamlamadan task `COMPLETED` olmaz.
-
-### 2.11 TaskAssignment (Görev Ataması)
-
-Bir task'ın bir kullanıcıya (veya role) atanmış olduğu gerçeğini temsil eden ilişki kaydı.
-
-**Sorumluluğu:**
-
-- Claim veya all-required modunda aynı task'a birden fazla atama kaydı olabilir.
-- Her atamanın kendi tamamlanma durumu vardır (all-required için önemli).
-
-**Ana attribute'lar:**
-
-- `id`, `task_id`, `user_id` (nullable — rol ataması için null olabilir), `role_id` (nullable)
-- `status` (PENDING / COMPLETED / SKIPPED)
-- `completed_at`
-- `resolved_by_rule` (bool — dinamik atama mı, statik mi — örn. "başlatanın yöneticisi" dinamik)
-
-**İlişkiler:**
-
-- → Task (N-1)
-- → User (N-1, nullable)
-- → Role (N-1, nullable)
-
-**Değişmezler:**
-
-- Dinamik atama (örn. "başlatanın yöneticisi") task oluşturulduğunda resolve edilir ve user_id set edilir; sonradan değişmez (bu gözlem tutarlılığı için önemlidir — yönetici değişse bile aktif task atanan kişidedir).
-
-### 2.12 Document (Doküman)
-
-Süreç/task bağlamında yüklenmiş bir dosya.
+Platform üzerinden yüklenen dosya.
 
 **Sorumluluğu:**
 
 - S3'teki fiziksel dosyanın meta kaydını tutar; içeriği DB'de değil S3'te saklanır.
 - Virüs tarama sonucu alınana kadar kullanıcıya sunulmaz (scan_status state machine).
-- Süreç-seviyesi erişim kontrolü ile korunur — süreci görüntüleme yetkisi olan kullanıcı dokümanları da görebilir.
+- Yetki kontrolü ile korunur — erişim izni olan kullanıcı dokümanları görebilir.
 
 **Ana attribute'lar:**
 
-- `id`, `process_id`, `task_id`, `uploaded_by_user_id`
-- `s3_key` (format: `processes/{processId}/{taskId}/{documentId}-{filename}` — tarama temiz sonrası)
+- `id`, `uploaded_by_user_id`
+- `s3_key` (format: `documents/{documentId}-{filename}` — tarama temiz sonrası)
 - `filename`, `file_size`, `content_type`
 - `scan_status` (PENDING_SCAN / CLEAN / INFECTED / SCAN_FAILED — detay [5.4](#54-document-scan-state-machine))
 - `thumbnail_s3_key` (nullable; sadece görseller için)
@@ -421,8 +318,6 @@ Süreç/task bağlamında yüklenmiş bir dosya.
 
 **İlişkiler:**
 
-- → Process (N-1)
-- → Task (N-1)
 - → User (N-1, uploaded_by)
 
 **Değişmezler:**
@@ -438,13 +333,13 @@ Bir kullanıcıya bir kanal üzerinden gönderilmiş/gönderilecek bir bildirim.
 
 **Sorumluluğu:**
 
-- Her event (görev atandı, SLA yaklaştı, süreç tamamlandı vb.) için ilgili kullanıcıya kanal başına bir kayıt tutulur.
+- Her event (rol atandı, güvenlik olayı, rıza güncellemesi vb.) için ilgili kullanıcıya kanal başına bir kayıt tutulur.
 - In-app ve email aynı event için iki ayrı kayıt olarak oluşturulur; birisi başarısız olursa diğerini etkilemez.
 
 **Ana attribute'lar:**
 
 - `id`, `user_id`
-- `event_type` (enum — `TASK_ASSIGNED`, `SLA_WARNING`, `SLA_BREACH`, `PROCESS_COMPLETED`, `PROCESS_CANCELLED`, vb.)
+- `event_type` (enum — `ROLE_ASSIGNED`, `PASSWORD_EXPIRY_WARNING`, `CONSENT_VERSION_PUBLISHED`, vb.)
 - `channel` (IN_APP / EMAIL)
 - `title`, `body`, `link_url`, `metadata` (JSONB)
 - `read_at` (nullable; in-app için), `sent_at`
@@ -556,13 +451,6 @@ erDiagram
     ROLE_RULE_CONDITION_SET ||--o{ ROLE_RULE_CONDITION : AND_grouped
     WORK_AREA ||--o{ WORK_SUB_AREA : parent_of
     CONSENT_VERSION ||--o{ USER_CONSENT : referenced_by
-    USER ||--o{ PROCESS : started
-    PROCESS }o--|| COMPANY : scoped_to
-    PROCESS ||--o{ TASK : contains
-    TASK ||--o{ TASK_ASSIGNMENT : has
-    TASK_ASSIGNMENT }o--o| USER : assigned_to
-    TASK_ASSIGNMENT }o--o| ROLE : assigned_to
-    TASK ||--o{ DOCUMENT : attaches
     DOCUMENT }o--|| USER : uploaded_by
     USER ||--o{ NOTIFICATION : receives
     USER ||--o{ AUDIT_LOG : authored
@@ -598,25 +486,16 @@ Bu kurallar platform boyunca her zaman geçerlidir. Her kuralın **enforce nokta
 12. **Rol ve Yetki Yöneticisi kendi rolünü değiştiremez.** Self-lockout riskini önler; Superadmin her zaman kurtarıcı kalır. _Enforce: service layer (role assignment update'te kendi hedef değilse check)._
 13. **Attribute değişimi → yetki cache invalidate.** Bir kullanıcının attribute'u değişirse yetki cache'i invalidate edilir; sonraki request'te yeni yetki seti yeniden hesaplanır. _Enforce: service layer + event listener._
 
-### 4.4 Süreç ve görev kuralları
+### 4.4 Doküman kuralları
 
-14. **Süreç silme yoktur.** Süreç yalnızca iptal edilebilir (`CANCELLED`); veri korunur, audit bütünlüğü kalır. _Enforce: hiçbir delete endpoint'i bulunmaz._
-15. **Süreç başlatmamış kullanıcı başkasının sürecini göremez.** Görevi atanmamış veya süreç başlatmamış kullanıcı, diğer kullanıcıların süreçlerinin detayına erişemez. _Enforce: service layer filtering (ownership check)._
-16. **Süreç başlatan kendi sürecinin her adımını görür.** Başlatan kullanıcı, süreç `.md` dosyasında aksi belirtilmedikçe, kendi başlattığı sürecin her task'ındaki form ve dokümanları (kendisine atanmamış olsa bile) görüntüleyebilir. _Enforce: service layer (process.started_by == currentUser ise bypass)._
-17. **Claim → diğer adaylar düşer.** Claim tipi task bir kullanıcı tarafından tamamlandığında, aynı task'a aday diğer kullanıcıların atama kayıtları `SKIPPED_BY_PEER` olur ve "Onayda Bekleyen" listelerinden kaybolur. _Enforce: service layer (claim completion handler) + transactional update._
-18. **All-required → hepsi tamamlanmadan süreç ilerlemez.** All-required tipi task'ta her atanmış kullanıcı kendi onayını/aksiyonunu vermeden task `COMPLETED` olmaz, süreç bir sonraki adıma geçmez. _Enforce: service layer (completion handler count check)._
-19. **Jenerik red davranışı yoktur.** Her süreç kendi reddetme ve revize akışını kendi süreç tanımında (`docs/processes/{süreç}.md`) belirler; sistem seviyesinde "tüm süreçler için red = iptal" gibi jenerik davranış yoktur. _Enforce: her süreç kendi completion_action enum'unu ve handler'ını yazar._
+14. **Scan_status CLEAN olmadan download/preview yok.** Kullanıcıya CloudFront Signed URL ancak dosya `CLEAN` olarak işaretlendiğinde üretilir. _Enforce: URL üretim servisi._
+15. **Doküman versiyonlama yoktur.** Aynı dosya yeniden yüklenirse ayrı bir Document olarak kaydedilir; aynı `s3_key` altında üzerine yazma olmaz. _Enforce: service layer (her upload yeni documentId üretir)._
 
-### 4.5 Doküman kuralları
+### 4.5 Güvenlik ve denetim kuralları
 
-20. **Scan_status CLEAN olmadan download/preview yok.** Kullanıcıya CloudFront Signed URL ancak dosya `CLEAN` olarak işaretlendiğinde üretilir. _Enforce: URL üretim servisi._
-21. **Doküman versiyonlama yoktur.** Aynı dosya yeniden yüklenirse ayrı bir Document olarak kaydedilir; aynı `s3_key` altında üzerine yazma olmaz. _Enforce: service layer (her upload yeni documentId üretir)._
-
-### 4.6 Güvenlik ve denetim kuralları
-
-22. **Audit log append-only.** `audit_logs` tablosunda UPDATE ve DELETE DB trigger'ı ile exception fırlatır; retention job dışında hiçbir kod yolu silme yapamaz. _Enforce: PostgreSQL trigger + IAM policy._
-23. **Refresh token tek kullanımlık.** Aynı refresh token ikinci kez kullanılırsa session chain tümüyle revoke edilir. _Enforce: session service (refresh endpoint)._
-24. **Rıza onayı olmadan erişim yok.** Geçerli en son ConsentVersion'ı onaylamamış kullanıcı login olsa bile hiçbir sayfaya erişemez — zorunlu rıza onay ekranına yönlendirilir. _Enforce: frontend guard + backend middleware (API tarafı)._
+16. **Audit log append-only.** `audit_logs` tablosunda UPDATE ve DELETE DB trigger'ı ile exception fırlatır; retention job dışında hiçbir kod yolu silme yapamaz. _Enforce: PostgreSQL trigger + IAM policy._
+17. **Refresh token tek kullanımlık.** Aynı refresh token ikinci kez kullanılırsa session chain tümüyle revoke edilir. _Enforce: session service (refresh endpoint)._
+18. **Rıza onayı olmadan erişim yok.** Geçerli en son ConsentVersion'ı onaylamamış kullanıcı login olsa bile hiçbir sayfaya erişemez — zorunlu rıza onay ekranına yönlendirilir. _Enforce: frontend guard + backend middleware (API tarafı)._
 
 ---
 
@@ -624,220 +503,21 @@ Bu kurallar platform boyunca her zaman geçerlidir. Her kuralın **enforce nokta
 
 Bu bölüm state machine'i olan her entity için: (1) state listesi ve her state'in anlamı + backend etkisi + süreç/data etkisi + UI etkisi + amacı, (2) transition tablosu, (3) Mermaid diagram.
 
-### 5.1 Process state machine (jenerik)
-
-Tüm süreçler için geçerli jenerik durum modelidir. Süreç-özel aksiyonlar (KTİ için Onay/Red/Revize) Task seviyesinde tutulur; Process state'i bunlardan türetilir.
-
-#### State'ler
-
-**`INITIATED`** — Süreç başlatıldı, ilk task(lar) henüz oluşturulmadı veya atanmadı.
-
-- **Backend etkisi:** Process record insert edildi; başlatma event'i emit edildi; sıradaki adıma transition edilmek üzere. Bu state çok kısa ömürlüdür (milisaniye-saniye mertebesi).
-- **Süreç/Data etkisi:** `status = INITIATED`, `started_at = now`, ilk task henüz yok veya oluşturulmak üzere.
-- **UI etkisi:** Kullanıcı süreç başlatma formunu submit etti, loading spinner görüyor; transition tamamlanınca `IN_PROGRESS`'e geçer.
-- **Amaç:** Süreç kaydının yaratılması ile ilk task'ın atanması arasındaki atomik olmayan sürecin görünürlüğü. Transaction rollback gerekirse bu state'te temiz bir noktaya dönüş mümkündür.
-
-**`IN_PROGRESS`** — Süreç aktif olarak ilerliyor; en az bir task `PENDING`, `CLAIMED` veya `IN_PROGRESS` durumunda.
-
-- **Backend etkisi:** Task completion handler'ları bu state'te çalışır. SLA monitor job'u aktif task'ları tarar. Bildirim worker'ları bu sürece bağlı event'leri dinler.
-- **Süreç/Data etkisi:** Sürecin tüm task tarihçesi erişilebilir; aktif task değişebilir (bir adım bitince sonraki aktifleşir).
-- **UI etkisi:** Süreci başlatan kullanıcı "Başlattığım Süreçler"de süreci görür; aktif task'a atanmış kullanıcılar "Onayda Bekleyen"de görür. Kullanıcıya gösterilen etiket aktif task'ın adından türetilir — örn. KTİ'de aktif task "Yönetici Onay" ise kullanıcı ekranda **"Yönetici Onayında"** etiketini görür. Bu etiket dönüşümü tamamen UI katmanındadır; domain state'i `IN_PROGRESS` olarak kalır.
-- **Amaç:** Aktif operasyonel durumu tek bir state altında toplamak; UI'daki zengin etiket ihtiyacını state sayısını şişirmeden karşılamak.
-
-**`COMPLETED`** — Süreç başarılı olarak sonlandı; tüm task'lar tamamlandı, nihai onay alındı.
-
-- **Backend etkisi:** Süreç read-only olur; yeni task oluşturulmaz, mevcut task'lar düzenlenmez. `PROCESS_COMPLETED` bildirim event'i başlatıcıya gönderilir.
-- **Süreç/Data etkisi:** `completed_at = now`, `status = COMPLETED`. İlgili task'lar zaten `COMPLETED`.
-- **UI etkisi:** Süreç başlatıcının "Tamamlanan Süreçler" sekmesine taşınır; başka kullanıcıların "Onayda Bekleyen" listelerinden düşer (varsa). Etiket: **"Tamamlandı"**.
-- **Amaç:** Başarılı son; retention ve arşiv kuralları bu state'ten tetiklenir.
-
-**`REJECTED`** — Süreç onay sürecinde reddedildi ve kapandı. Onay otoritesinin (örn. KTİ'de yönetici) kesin red aksiyonuyla ulaşılır.
-
-- **Backend etkisi:** Süreç read-only. `PROCESS_REJECTED` bildirim event'i başlatıcıya gönderilir. Red gerekçesi ilgili Task kaydında (`completion_reason`) saklı.
-- **Süreç/Data etkisi:** `status = REJECTED`, `completed_at = now` (end-of-life tarihi). Reddeden task `COMPLETED` ve `completion_action = REJECT`.
-- **UI etkisi:** Başlatıcı ekranında "Tamamlanan Süreçler" sekmesinde **"Reddedildi"** etiketiyle görünür. Detay ekranında red gerekçesi (task'ın `completion_reason` alanı) başlatıcıya gösterilir — iptal aksiyonunun aksine, red gerekçesi başlatıcıya şeffaftır, çünkü aksiyon süreç akışının doğal parçasıdır.
-- **Amaç:** Süreç akışının normal (yönetici tarafından gerekçeli) sonlanışı ile idari iptal (Süreç Yönetimi Paneli'nden cancel) arasındaki domain ayrımını tutmak. `REJECTED` = iş akışı içindeki red; `CANCELLED` = iş akışı dışından idari müdahale.
-
-**`CANCELLED`** — Süreç Süreç Yönetimi Paneli'nden (Superadmin / Süreç Yöneticisi) idari olarak iptal edildi.
-
-- **Backend etkisi:** Aktif task'ların tümü `SKIPPED_BY_ROLLBACK` yapılır (mekanik olarak görev artık alınamaz). `PROCESS_CANCELLED` bildirim event'i başlatıcı + aktif task sahiplerine gönderilir.
-- **Süreç/Data etkisi:** `status = CANCELLED`, `cancelled_at = now`, `cancel_reason` alanı doldurulmuş (gerekçe zorunlu).
-- **UI etkisi:** Süreç başlatıcının "Başlattığım Süreçler" listesinden **düşer** (görünmez); Onayda Bekleyen'den aktif sahiplerin de düşer. Kullanıcıya iptal gerekçesi gösterilmez; yalnız Süreç Yönetimi Paneli ve audit log'ta görünür. Panel'de süreç "İptal" etiketiyle erişilebilir kalır.
-- **Amaç:** Süreç verisini koruyarak (audit + retention) süreci operasyonel akıştan çıkarmak. Kullanıcıya bilinçli olarak iptal gerekçesini gizlemek — idari kararın iç detayları kullanıcıyla paylaşılmaz.
-
-#### Transition tablosu
-
-| From        | To          | Trigger                                                                          | Koşul                                              |
-| ----------- | ----------- | -------------------------------------------------------------------------------- | -------------------------------------------------- |
-| (yok)       | INITIATED   | Kullanıcı "Süreç Başlat" butonuna tıkladı, form submit etti                      | Kullanıcının ilgili `PROCESS_*_START` yetkisi var  |
-| INITIATED   | IN_PROGRESS | İlk task başarıyla oluşturuldu ve atandı                                         | Task create transaction'ı commit oldu              |
-| INITIATED   | (rollback)  | Task oluşturulurken hata                                                         | Transaction rollback; Process kaydı da geri alınır |
-| IN_PROGRESS | COMPLETED   | Son task `COMPLETED` olup `completion_action` süreci tamamlıyor (KTİ'de APPROVE) | Süreç tanımındaki son adım                         |
-| IN_PROGRESS | REJECTED    | Onay otoritesinin kesin red aksiyonu (KTİ'de yönetici `REJECT`)                  | Süreç tanımı red aksiyonuna izin veriyor           |
-| IN_PROGRESS | CANCELLED   | Superadmin veya Süreç Yöneticisi panel'den iptal aksiyonu aldı                   | `PROCESS_CANCEL` yetkisi + gerekçe girildi         |
-| COMPLETED   | —           | Final state                                                                      | —                                                  |
-| REJECTED    | —           | Final state                                                                      | —                                                  |
-| CANCELLED   | —           | Final state                                                                      | —                                                  |
-
-#### Diagram
-
-```mermaid
-stateDiagram-v2
-    [*] --> INITIATED : Başlat
-    INITIATED --> IN_PROGRESS : İlk task oluştu
-    IN_PROGRESS --> COMPLETED : Son adım onaylandı
-    IN_PROGRESS --> REJECTED : Onay otoritesi reddetti
-    IN_PROGRESS --> CANCELLED : Panel'den iptal
-    COMPLETED --> [*]
-    REJECTED --> [*]
-    CANCELLED --> [*]
-```
-
-### 5.2 KTİ Süreci Task Akışı
-
-KTİ (Before & After Kaizen) sürecinin task akışı, Process state machine'ini nasıl örneklediğini gösterir. Bu bir state diyagramı değil **task-transition diyagramıdır** — her node bir task, her kenar bir task completion aksiyonudur.
-
-**Süreç özeti:**
-
-- **Adım 1 — Başlatma Task'ı (başlatana):** KTİ sürecini başlatma yetkisi olan kullanıcı formu doldurur (before fotoğrafları, after fotoğrafları, kazanç tutarı, açıklama). Submit ile task `COMPLETED` olur.
-- **Adım 2 — Yönetici Onay Task'ı (başlatanın yöneticisine):** Dinamik atama — başlatanın `manager_user_id` attribute'uyla resolve edilir. SLA: 72 saat. Yönetici üç aksiyondan birini alır: `APPROVE`, `REJECT`, `REQUEST_REVISION`.
-- **Adım 3 (yalnız REQUEST_REVISION durumunda) — Revize Task'ı (başlatana):** Başlatan revize notunu okur, formu günceller, yeniden submit eder. Submit sonrası Adım 2 yeniden açılır (yöneticiye tekrar düşer).
-
-**Task completion aksiyonlarının süreç state'ine etkisi:**
-
-| Adım                                          | Completion Action                        | Sonuç                                                                              |
-| --------------------------------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------- |
-| Adım 1 submit                                 | (implicit: FORM_SUBMITTED)               | Adım 2 açılır, Process `IN_PROGRESS`                                               |
-| Adım 2 — `APPROVE`                            | Task COMPLETED                           | Process → `COMPLETED`                                                              |
-| Adım 2 — `REJECT` (gerekçe zorunlu)           | Task COMPLETED, `completion_reason` dolu | Process → `REJECTED`; başlatıcıya bildirim + gerekçe detayda gösterilir            |
-| Adım 2 — `REQUEST_REVISION` (gerekçe zorunlu) | Task COMPLETED, `completion_reason` dolu | Adım 3 açılır; Process `IN_PROGRESS`'te kalır                                      |
-| Adım 3 submit                                 | (implicit: REVISED_AND_RESUBMITTED)      | Adım 2 yeniden açılır (yeni bir Task kaydı olarak); Process `IN_PROGRESS`'te kalır |
-
-**UI etiket dönüşümü:**
-
-- Process `IN_PROGRESS` + aktif task step_key = `KTI_INITIATION` → "Başlatılıyor" (çok kısa ömürlü)
-- Process `IN_PROGRESS` + aktif task step_key = `KTI_MANAGER_APPROVAL` → **"Yönetici Onayında"**
-- Process `IN_PROGRESS` + aktif task step_key = `KTI_REVISION` → **"Revizyonda (Başlatıcıda)"**
-- Process `COMPLETED` → **"Tamamlandı"**
-- Process `REJECTED` → **"Reddedildi"**
-- Process `CANCELLED` → **"İptal Edildi"** (yalnız panel'de görünür)
-
-**Diagram:**
-
-```mermaid
-stateDiagram-v2
-    [*] --> InitTask : Kullanıcı başlattı
-    InitTask --> ManagerApprovalTask : Form submit
-    ManagerApprovalTask --> ProcessCompleted : APPROVE
-    ManagerApprovalTask --> ProcessRejected : REJECT (gerekçe)
-    ManagerApprovalTask --> RevisionTask : REQUEST_REVISION (gerekçe)
-    RevisionTask --> ManagerApprovalTask : Revize submit
-    ProcessCompleted --> [*]
-    ProcessRejected --> [*]
-
-    state InitTask { [*] --> Pending : Başlatma formu }
-    state ManagerApprovalTask { [*] --> Pending : Yönetici onayı (SLA 72sa) }
-    state RevisionTask { [*] --> Pending : Başlatıcı revize }
-```
-
-**Süreç-özel implementasyon notu:**
-Bu akışın tam detayı (form alanları, validation kuralları, dosya tipi kısıtları, email şablonu içeriği, exact SLA tetikleme eşiği) `docs/processes/before-after-kaizen-process.md` süreç dokümanında yaşar — bu dokümantasyon setinin kapsamında değildir. Burada gösterilen yalnız domain-seviyesi task akışıdır.
-
-### 5.3 Task state machine (jenerik)
-
-Tüm görevler için ortak yaşam döngüsü.
-
-#### State'ler
-
-**`PENDING`** — Task oluşturuldu ve atandı, henüz kimse üzerinde çalışmaya başlamadı.
-
-- **Backend etkisi:** SLA timer başlatıldı. Atanmış kullanıcı(lara) `TASK_ASSIGNED` bildirimi gönderildi. Task endpoint'leri read + claim/start aksiyonlarına açık.
-- **Süreç/Data etkisi:** `status = PENDING`, `sla_due_at` set edildi. Bildirim kayıtları oluşturuldu.
-- **UI etkisi:** Atanmış kullanıcının "Onayda Bekleyen" sekmesinde görünür. Claim tipinde "Üstlen" butonu aktif; SINGLE veya ALL_REQUIRED'da direkt form açılır.
-- **Amaç:** Task'ın atanmış ama henüz başlamamış ilk durumu; SLA hesabının başlangıcı.
-
-**`CLAIMED`** — Claim tipi bir task bir kullanıcı tarafından üstlenildi; diğer adayların elinden gitti.
-
-- **Backend etkisi:** Claim eden kullanıcı `completed_by_user_id` alanına önceden yazılır; o kullanıcının atama kaydı aktif, diğer adayların kayıtları `SKIPPED_BY_PEER` yapılır. Diğer adaylara `TASK_CLAIMED_BY_PEER` bildirimi gönderilir.
-- **Süreç/Data etkisi:** `status = CLAIMED`, claim eden kullanıcının assignment kaydı `PENDING` kalır; diğerleri `SKIPPED`.
-- **UI etkisi:** Claim eden için task detay ekranı aktif (form doldurma moduna geçti). Diğer adayların "Onayda Bekleyen"inden bu task düşer; "Tamamlanan" yerine görünmez (hiç aktif olarak başlamadıkları için).
-- **Amaç:** Yarışlı atama (birden fazla aday) modelinde tek bir üstlenme noktası; race condition'ı net şekilde kapatır.
-
-**`IN_PROGRESS`** — All-required tipi task'ta bazı atanmış kullanıcılar kendi onayını verdi, bazıları henüz vermedi.
-
-- **Backend etkisi:** Tamamlayan her atanmış kullanıcı kendi TaskAssignment kaydını `COMPLETED` yapar; task ana `status` alanı tümü tamamlanana kadar `IN_PROGRESS` kalır.
-- **Süreç/Data etkisi:** En az bir TaskAssignment `COMPLETED`, en az bir `PENDING` durumunda.
-- **UI etkisi:** Henüz onay vermemiş atanmışlar için "Onayda Bekleyen"de görünür; onay vermişler için task kendi sekmelerinden "Onay verdim, diğerlerini bekliyor" gibi durumla görünür (opsiyonel — MVP'de basitçe kişi kendi onay verdi tarafta görünmez).
-- **Amaç:** Çoklu onaycı gerektiren adımlarda kısmi durumu temsil etmek.
-
-**`COMPLETED`** — Task tamamlandı; `completion_action` ve (varsa) `completion_reason` kaydedildi.
-
-- **Backend etkisi:** Task read-only oldu. Süreç akışı bu task'ın `completion_action`'ına göre ilerler (örn. KTİ Yönetici Onay'da APPROVE/REJECT/REQUEST_REVISION). `TaskCompleted` event'i emit edilir.
-- **Süreç/Data etkisi:** `status = COMPLETED`, `completed_at = now`, `completion_action` ve varsa `completion_reason` dolu.
-- **UI etkisi:** Task'ı tamamlayan kullanıcının "Tamamlanan Süreçler"de ilgili süreçte görüntülenir. Diğer atanmışların listesinden düşer (tümü tamamlandıysa).
-- **Amaç:** Task'ın happy-path sonlanışı; süreç tanımının bir sonraki adıma geçişini tetikler.
-
-**`SKIPPED_BY_PEER`** — Claim tipi task'ta başka bir aday claim edip tamamlamış olduğu için kullanıcının bu task atama kaydı aktif değil.
-
-- **Backend etkisi:** Bu kullanıcı için task üzerinde hiçbir aksiyon mümkün değil. Bildirim (`TASK_CLAIMED_BY_PEER`) gönderildi.
-- **Süreç/Data etkisi:** Kullanıcının TaskAssignment kaydı `SKIPPED`, task ana status'ü `CLAIMED` veya `COMPLETED`.
-- **UI etkisi:** Kullanıcının "Onayda Bekleyen"inde görünmez. Süreç detayına girerse (süreç görüntüleme yetkisi varsa) task adımı "başkası tarafından tamamlandı" olarak işaretli görünür.
-- **Amaç:** Claim yarışında kaybedenin deneyimini net ve ayrı ele almak; data tarafta kimin aday olduğunun tarihçesi kaybolmasın.
-
-**`SKIPPED_BY_ROLLBACK`** — Rollback aksiyonu veya süreç iptali nedeniyle task atlandı.
-
-- **Backend etkisi:** Task artık aksiyon alınabilir değil. İlgili bildirimler (`TASK_CANCELLED`) gönderilir.
-- **Süreç/Data etkisi:** `status = SKIPPED_BY_ROLLBACK`; task kaydı saklanır (audit için silinmez).
-- **UI etkisi:** Kullanıcının "Onayda Bekleyen"inden düşer. Süreç Yönetimi Paneli'nde tarihçede görünür; kullanıcı ekranında "eski akış" satırları gösterilmez.
-- **Amaç:** Rollback ve iptal gibi idari müdahalelerden kaynaklanan atlanmaları, claim-peer'den ayrı tutmak — tarihçede farklı anlam taşır.
-
-#### Transition tablosu
-
-| From        | To                  | Trigger                                                                                      |
-| ----------- | ------------------- | -------------------------------------------------------------------------------------------- |
-| (yok)       | PENDING             | Task oluşturuldu, atama yapıldı                                                              |
-| PENDING     | CLAIMED             | Claim tipinde bir aday task'ı üstlendi                                                       |
-| PENDING     | IN_PROGRESS         | All-required tipinde ilk atanmış onay verdi                                                  |
-| PENDING     | COMPLETED           | SINGLE tipinde atanmış task'ı tamamladı                                                      |
-| PENDING     | SKIPPED_BY_ROLLBACK | Süreç iptal veya rollback edildi                                                             |
-| CLAIMED     | COMPLETED           | Claim eden kullanıcı task'ı tamamladı                                                        |
-| CLAIMED     | SKIPPED_BY_ROLLBACK | Süreç iptal veya rollback                                                                    |
-| IN_PROGRESS | COMPLETED           | Tüm atanmışlar onay verdi                                                                    |
-| IN_PROGRESS | SKIPPED_BY_ROLLBACK | Süreç iptal veya rollback                                                                    |
-| PENDING     | SKIPPED_BY_PEER     | (bu transition kullanıcının TaskAssignment kaydında olur; task ana status'ü CLAIMED'e geçer) |
-
-#### Diagram
-
-```mermaid
-stateDiagram-v2
-    [*] --> PENDING
-    PENDING --> CLAIMED : Aday üstlendi (claim)
-    PENDING --> IN_PROGRESS : İlk onay (all-required)
-    PENDING --> COMPLETED : Tek atanmış tamamladı
-    CLAIMED --> COMPLETED : Claim eden tamamladı
-    IN_PROGRESS --> COMPLETED : Tüm onaylar geldi
-    PENDING --> SKIPPED_BY_ROLLBACK : Rollback/iptal
-    CLAIMED --> SKIPPED_BY_ROLLBACK : Rollback/iptal
-    IN_PROGRESS --> SKIPPED_BY_ROLLBACK : Rollback/iptal
-    COMPLETED --> [*]
-    SKIPPED_BY_ROLLBACK --> [*]
-```
-
-### 5.4 Document scan state machine
+### 5.1 Document scan state machine
 
 #### State'ler
 
 **`PENDING_SCAN`** — Dosya S3 staging'e yüklendi, ClamAV Lambda tarama kuyruğuna alındı.
 
-- **Backend etkisi:** Document kaydı DB'de oluşturuldu (`scan_status = PENDING_SCAN`); Scan Lambda EventBridge üzerinden tetiklendi. Dosya `staging/{processId}/{taskId}/{documentId}-{filename}` key'inde.
+- **Backend etkisi:** Document kaydı DB'de oluşturuldu (`scan_status = PENDING_SCAN`); Scan Lambda EventBridge üzerinden tetiklendi. Dosya `staging/{documentId}-{filename}` key'inde.
 - **Süreç/Data etkisi:** Document record aktif ama kullanıcıya kullanılır değil.
 - **UI etkisi:** Kullanıcı ekranında dosya "Taranıyor..." rozeti ile görünür. Download ve preview **blocked**; butonlar disabled. TanStack Query 5sn interval'de refetch ederek status'ü takip eder (max 60sn).
 - **Amaç:** Senkron taramanın yaratacağı UX gecikmesini önlemek; kullanıcıyı ara durumdan açıkça haberdar etmek.
 
-**`CLEAN`** — Tarama temiz, dosya `processes/{...}` kalıcı key'e taşındı, kullanıcıya açıldı.
+**`CLEAN`** — Tarama temiz, dosya `documents/{...}` kalıcı key'e taşındı, kullanıcıya açıldı.
 
-- **Backend etkisi:** Lambda dosyayı `processes/` prefix'ine taşıdı, DB `scan_status = CLEAN`. Thumbnail (görsellerse) oluşturuldu.
-- **Süreç/Data etkisi:** `s3_key` güncellendi (staging → processes yolu).
+- **Backend etkisi:** Lambda dosyayı `documents/` prefix'ine taşıdı, DB `scan_status = CLEAN`. Thumbnail (görsellerse) oluşturuldu.
+- **Data etkisi:** `s3_key` güncellendi (staging → documents yolu).
 - **UI etkisi:** Dosya listede normal ikonla görünür. Preview ve İndir butonları aktif; tıklamayla CloudFront Signed URL üretilir ve dosya açılır.
 - **Amaç:** Güvenli erişim için tek meşru gate; hiçbir dosya taranmadan kullanıcıya ulaşmaz.
 
@@ -877,11 +557,11 @@ stateDiagram-v2
     SCAN_FAILED --> [*]
 ```
 
-### 5.5 User lifecycle
+### 5.2 User lifecycle
 
 #### State'ler
 
-**`ACTIVE`** — Kullanıcı platformu kullanır durumda; login yapabilir, görev alabilir, süreç başlatabilir.
+**`ACTIVE`** — Kullanıcı platformu kullanır durumda; login yapabilir, platform özelliklerini kullanabilir.
 
 - **Backend etkisi:** Authentication servisine "aktif" olarak bilinir; yetki çözümleme servisi bu kullanıcı için rol ve yetki hesaplaması yapar.
 - **Süreç/Data etkisi:** `is_active = true`, `anonymized_at = null`. Master data kullanıcı sayımlarında bu kullanıcı sayılır.
@@ -890,7 +570,7 @@ stateDiagram-v2
 
 **`PASSIVE`** — Kullanıcı pasifleştirildi; platformu kullanamaz ancak verisi bütünüyle korunur.
 
-- **Backend etkisi:** Login denemesi 401 ile reddedilir ("hesap pasif"). Yetki çözümlemesi yapılmaz (boş yetki seti). Atanmış aktif task'lar bu kullanıcıdan düşer (süreç tanımına göre başkasına yeniden atanır veya rollback gerekir). Attribute-based rol eşleşmesinde hariç tutulur.
+- **Backend etkisi:** Login denemesi 401 ile reddedilir ("hesap pasif"). Yetki çözümlemesi yapılmaz (boş yetki seti). Attribute-based rol eşleşmesinde hariç tutulur.
 - **Süreç/Data etkisi:** `is_active = false`, `deactivated_at` set. Kullanıcının aktif session'ları tümden revoke edilir.
 - **UI etkisi:** Kullanıcı yönetim ekranında pasif rozetiyle görünür; dropdown'larda yeni görev/atama için görünmez. Kullanıcı login yapmaya kalkarsa "Hesabınız pasif durumdadır, sistem yöneticinize başvurun" mesajı alır.
 - **Amaç:** Kurumsal ayrılma, izin, hesap donduruma gibi durumları silme olmadan yönetmek. Reactive yapılabilir — kullanıcı geri dönerse `ACTIVE`'e alınır.
@@ -898,8 +578,8 @@ stateDiagram-v2
 **`ANONYMIZED`** — Kullanıcı KVKK talebi veya iç politika gereği anonimleştirildi; tek yönlü terminal durum.
 
 - **Backend etkisi:** Kullanıcı kaydı bütünüyle anonimleştirildi: `email = 'deleted_<uuid>@anonymized.local'`, `phone = null`, ad-soyad `'Silindi'`, `sicil = 'DEL' + random`. Password history tümü silindi. Session'lar revoke. Geri dönüş yok.
-- **Süreç/Data etkisi:** `is_active = false`, `anonymized_at = now`, `anonymization_reason` dolu. Geçmiş süreç/task kayıtları kullanıcıya bağlı kalır ama PII çözülemez.
-- **UI etkisi:** Kullanıcı listede "Silindi Silindi" olarak görünür (görüntü sebebiyle kaldırılmadı — referansiyel bütünlük için). Geçmiş süreçlerde "başlatan: Silindi Silindi" olarak görünür.
+- **Data etkisi:** `is_active = false`, `anonymized_at = now`, `anonymization_reason` dolu. Geçmiş kayıtlar kullanıcıya bağlı kalır ama PII çözülemez.
+- **UI etkisi:** Kullanıcı listede "Silindi Silindi" olarak görünür (görüntü sebebiyle kaldırılmadı — referansiyel bütünlük için).
 - **Amaç:** KVKK "silinme hakkı" ve audit bütünlüğü arasındaki dengeyi kurmak. Silme yerine anonimleştirme: geçmiş süreç/audit kayıtlarının referansı kırılmaz, ama kişisel veri dolaylı olarak da çözülemez.
 
 #### Transition tablosu
@@ -923,7 +603,7 @@ stateDiagram-v2
     ANONYMIZED --> [*]
 ```
 
-### 5.6 Session lifecycle
+### 5.3 Session lifecycle
 
 #### State'ler
 
@@ -978,7 +658,7 @@ stateDiagram-v2
     ROTATED --> [*]
 ```
 
-### 5.7 Master Data lifecycle
+### 5.4 Master Data lifecycle
 
 #### State'ler
 
@@ -1015,7 +695,7 @@ stateDiagram-v2
     ACTIVE --> [*] : (silme YOK — bu transition mevcut değil)
 ```
 
-### 5.8 ConsentVersion lifecycle
+### 5.5 ConsentVersion lifecycle
 
 #### State'ler
 
@@ -1056,40 +736,32 @@ stateDiagram-v2
 
 Hızlı referans — ilişki türleri ve önemli notlar.
 
-| Entity A             | Entity B             | İlişki                 | Not                                                        |
-| -------------------- | -------------------- | ---------------------- | ---------------------------------------------------------- |
-| User                 | Company              | N-1                    | Kullanıcı tek şirkete bağlı                                |
-| User                 | Location             | N-1                    | —                                                          |
-| User                 | Department           | N-1                    | —                                                          |
-| User                 | Position             | N-1                    | —                                                          |
-| User                 | Level                | N-1                    | —                                                          |
-| User                 | Team                 | N-1 (opsiyonel)        | —                                                          |
-| User                 | WorkArea             | N-1                    | —                                                          |
-| User                 | WorkSubArea          | N-1 (opsiyonel)        | WorkArea child'ı                                           |
-| User                 | User (manager)       | N-1 (self, opsiyonel)  | Cycle yasaktır                                             |
-| User                 | Session              | 1-N                    | Maksimum 3 aktif session                                   |
-| User                 | PasswordHistory      | 1-N                    | Son 5 kayıt tutulur                                        |
-| User                 | UserConsent          | 1-N                    | Her consent versiyonu için 1 kayıt                         |
-| User                 | Role                 | N-N (direct)           | User_Role junction table                                   |
-| User                 | Process              | 1-N                    | `started_by`                                               |
-| User                 | Task (assignment)    | N-N via TaskAssignment | Claim/all-required için çoklu                              |
-| User                 | Document             | 1-N                    | `uploaded_by`                                              |
-| User                 | Notification         | 1-N                    | —                                                          |
-| User                 | AuditLog             | 1-N                    | `user_id` nullable (sistem aksiyonu için null)             |
-| Role                 | Permission           | N-N                    | role_permissions junction table                            |
-| Role                 | RoleRule             | 1-N                    | Attribute-based atama kuralları                            |
-| RoleRule             | RoleRuleConditionSet | 1-N                    | OR ile bağlı setler                                        |
-| RoleRuleConditionSet | RoleRuleCondition    | 1-N                    | AND ile bağlı koşullar                                     |
-| WorkArea             | WorkSubArea          | 1-N                    | `parent_work_area_code` FK; cascade soft-disable           |
-| ConsentVersion       | UserConsent          | 1-N                    | Her kullanıcı için 1 kayıt (versiyon × kullanıcı)          |
-| Process              | Task                 | 1-N                    | Süreç adımları                                             |
-| Process              | Company              | N-1                    | Bağlam şirketi                                             |
-| Task                 | TaskAssignment       | 1-N                    | Çoklu aday için birden fazla kayıt                         |
-| Task                 | Document             | 1-N                    | Task'ta yüklenen dosyalar                                  |
-| TaskAssignment       | User                 | N-1 (opsiyonel)        | Doğrudan atama                                             |
-| TaskAssignment       | Role                 | N-1 (opsiyonel)        | Rol ataması (runtime'da kullanıcıya resolve olur)          |
-| SystemSetting        | ConsentVersion       | 1-1 (pointer)          | `ACTIVE_CONSENT_VERSION_ID` key'i aktif versiyonu gösterir |
-| EmailTemplate        | Notification         | 1-N                    | Şablon her bildirimde render edilir                        |
+| Entity A             | Entity B             | İlişki                | Not                                                        |
+| -------------------- | -------------------- | --------------------- | ---------------------------------------------------------- |
+| User                 | Company              | N-1                   | Kullanıcı tek şirkete bağlı                                |
+| User                 | Location             | N-1                   | —                                                          |
+| User                 | Department           | N-1                   | —                                                          |
+| User                 | Position             | N-1                   | —                                                          |
+| User                 | Level                | N-1                   | —                                                          |
+| User                 | Team                 | N-1 (opsiyonel)       | —                                                          |
+| User                 | WorkArea             | N-1                   | —                                                          |
+| User                 | WorkSubArea          | N-1 (opsiyonel)       | WorkArea child'ı                                           |
+| User                 | User (manager)       | N-1 (self, opsiyonel) | Cycle yasaktır                                             |
+| User                 | Session              | 1-N                   | Maksimum 3 aktif session                                   |
+| User                 | PasswordHistory      | 1-N                   | Son 5 kayıt tutulur                                        |
+| User                 | UserConsent          | 1-N                   | Her consent versiyonu için 1 kayıt                         |
+| User                 | Role                 | N-N (direct)          | User_Role junction table                                   |
+| User                 | Document             | 1-N                   | `uploaded_by`                                              |
+| User                 | Notification         | 1-N                   | —                                                          |
+| User                 | AuditLog             | 1-N                   | `user_id` nullable (sistem aksiyonu için null)             |
+| Role                 | Permission           | N-N                   | role_permissions junction table                            |
+| Role                 | RoleRule             | 1-N                   | Attribute-based atama kuralları                            |
+| RoleRule             | RoleRuleConditionSet | 1-N                   | OR ile bağlı setler                                        |
+| RoleRuleConditionSet | RoleRuleCondition    | 1-N                   | AND ile bağlı koşullar                                     |
+| WorkArea             | WorkSubArea          | 1-N                   | `parent_work_area_code` FK; cascade soft-disable           |
+| ConsentVersion       | UserConsent          | 1-N                   | Her kullanıcı için 1 kayıt (versiyon × kullanıcı)          |
+| SystemSetting        | ConsentVersion       | 1-1 (pointer)         | `ACTIVE_CONSENT_VERSION_ID` key'i aktif versiyonu gösterir |
+| EmailTemplate        | Notification         | 1-N                   | Şablon her bildirimde render edilir                        |
 
 ---
 

@@ -27,6 +27,7 @@
 - [16. Test Stratejisi](#16-test-stratejisi)
 - [17. Kod Organizasyonu ve Agent Kuralları](#17-kod-organizasyonu-ve-agent-kuralları)
 - [18. Açık Kararlar — Tamamlanması Gerekenler](#18-açık-kararlar--tamamlanması-gerekenler)
+- [19. ASANA Pivot — BPM Decommission Kararı](#19-asana-pivot--bpm-decommission-kararı)
 
 ---
 
@@ -2270,4 +2271,22 @@ Bu doküman **canlı bir dokümandır** — kararlar netleştikçe güncellenece
 
 `.md` ve `.mdc` dokümanları oluşturulurken bu dokümandaki karar ID'leri **referans** olarak kullanılır. Böylece hiçbir kural boşlukta kalmaz, her kural bir mimari karara bağlıdır.
 
-**Sonraki adım:** Kalan açık kararların kapatılması (özellikle 17.4 Güvenlik ve 17.6 Bildirim) → `before-after-kaizen-process.md` süreç dokümanının yazılması → `.mdc` Cursor rule dosyalarının üretilmesi.
+**Sonraki adım:** Kalan açık kararların kapatılması (özellikle 17.4 Güvenlik ve 17.6 Bildirim) → `.mdc` Cursor rule dosyalarının üretilmesi.
+
+---
+
+## 19. ASANA Pivot — BPM Decommission Kararı
+
+**Karar [A-011]:** Proje Lean Management platformundan ASANA benzeri kurumsal proje/görev yönetim platformuna dönüştürülüyor. Aşağıdaki yapılar Faz 14 ile tamamen kaldırılacak:
+
+- Before & After Kaizen (KTİ) süreci ve ilgili tüm kod/UI
+- ProcessTypeRegistry + merkezi BPM workflow engine
+- Görev yönetimi (Task/TaskAssignment) modülü ve SLA altyapısı
+- Süreç Yöneticisi admin ekranı (processadministration)
+- Process/Task/TaskAssignment DB tabloları ve BPM enum'ları
+
+**Korunan yapılar:** Auth (SSO + şifre), kullanıcı yönetimi, master data, RBAC+ABAC, bildirim altyapısı (BPM event'leri hariç), admin paneli (audit/settings/consent/email), impersonation, Document modülü (generic attachment olarak), profil, tüm UI/tech-stack.
+
+**Gerekçe:** Mevcut altyapı (auth, yetkilendirme, kullanıcı yönetimi, bildirim, admin) yeni proje için güçlü bir temel oluşturuyor. BPM katmanı ASANA'nın proje/görev modeline uymuyor; sıfırdan ASANA tarzı proje/görev/board modeli inşa edilecek (Faz 15+).
+
+**Tarih:** Haziran 2026

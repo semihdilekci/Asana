@@ -709,6 +709,8 @@ Detay: `docs/adr/0010-user-impersonation-jwt-audit-model.md`, `@63-phase-13-user
 
 #### S-DASH-HOME — Ana Sayfa
 
+> **⚠️ Güncelleme (Faz 14):** Dashboard widget'ları (görev/süreç/SLA) kaldırılacak; anasayfa olarak sadeleştirilecek.
+
 **Route:** `/dashboard`
 **Erişim:** Auth (tüm authenticated kullanıcılar)
 **Layout:** AppLayout
@@ -1723,6 +1725,8 @@ Bilinmeyen `type` → `/404` redirect.
 
 #### S-PROC-LIST-ADMIN — Süreç Yöneticisi
 
+> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırılacak.
+
 **Route:** `/processadministration`
 **Erişim:** `PROCESS_VIEW_ALL`
 **Layout:** AppLayout
@@ -1800,6 +1804,8 @@ Yok.
 ---
 
 #### S-PROC-DETAIL — Süreç Detayı
+
+> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırılacak.
 
 **Route:** `/processes/:displayId`
 **Erişim:** Süreç başlatıcısı **veya** task atanmış kullanıcı **veya** `PROCESS_VIEW_ALL`
@@ -1909,6 +1915,8 @@ Yok — detay sayfası. Aksiyon modal'larının form alanları ilgili ekran şab
 
 #### S-KTI-START — KTİ Başlatma Formu
 
+> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırılacak.
+
 **Route:** `/processes/kti/start`
 **Erişim:** `PROCESS_KTI_START`
 **Layout:** AppLayout
@@ -2015,6 +2023,8 @@ KTİ (Before & After Kaizen) sürecini başlatan zengin form. Doküman upload + 
 
 #### S-TASK-LIST — Görev Listesi
 
+> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırılacak.
+
 **Route:** `/tasks?tab=pending` (default) / `/tasks?tab=started` / `/tasks?tab=completed`
 **Erişim:** Auth (her kullanıcı kendi görevlerini görür)
 **Layout:** AppLayout
@@ -2092,6 +2102,8 @@ Yok.
 ---
 
 #### S-TASK-DETAIL — Görev Detayı ve Aksiyon
+
+> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırılacak.
 
 **Route:** `/tasks/:id`
 **Erişim:** Task'a atanmış kullanıcı **veya** sürecin başlatıcısı **veya** `PROCESS_VIEW_ALL`
@@ -3052,6 +3064,8 @@ Bir master data kaydına bağlı kullanıcıların listesi — örn. "Istanbul L
 
 ### S-PROC-HISTORY — Süreç Tarihçesi
 
+> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırılacak.
+
 **Route:** `/processes/:displayId/history` | **Erişim:** `PROCESS_VIEW_ALL` | **Layout:** AppLayout
 
 Bir sürece ait tüm audit log kayıtlarının kronolojik görünümü. S-PROC-DETAIL sayfasının "Tarihçe" butonundan erişilir. Zaman sıralı timeline: her entry tarih + aksiyon rozeti + kullanıcı + detay (expand). S-ADMIN-AUDIT'in bu süreç için filtrelenmiş alt görünümü. Rollback zincirleri, cancel, her task completion, doküman upload'ları görünür. Non-audit "task zinciri" S-PROC-DETAIL'de zaten görünüyor; bu sayfa daha granüler denetim amaçlı (who-did-what-when).
@@ -3062,6 +3076,8 @@ Bir sürece ait tüm audit log kayıtlarının kronolojik görünümü. S-PROC-D
 
 ### S-PROC-CANCEL — Süreç İptal Onay Modal'ı
 
+> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırılacak.
+
 **Route:** (modal on detail) | **Erişim:** `PROCESS_CANCEL` | **Layout:** Modal
 
 S-PROC-DETAIL ve S-PROC-LIST-ADMIN'den tetiklenen destructive confirmation modal. Başlık "Süreci İptal Et"; açıklama "Bu süreç iptal edilecek, tüm aktif task'lar SKIPPED olarak işaretlenecek. Bu aksiyon geri alınamaz." Zorunlu reason textarea (min 10 karakter). "ONAYLIYORUM" yazma gereksinimi (destructive extended pattern). Submit → `POST /api/v1/processes/:displayId/cancel` body: `{ reason }`. Success → toast + modal kapanır + S-PROC-DETAIL refetch (durum CANCELLED olur).
@@ -3071,6 +3087,8 @@ S-PROC-DETAIL ve S-PROC-LIST-ADMIN'den tetiklenen destructive confirmation modal
 ---
 
 ### S-PROC-ROLLBACK — Süreç Geri Alma Modal'ı
+
+> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırılacak.
 
 **Route:** (modal on detail) | **Erişim:** `PROCESS_ROLLBACK` | **Layout:** Modal
 

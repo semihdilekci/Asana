@@ -146,12 +146,9 @@ export class MasterDataService {
     assertValidType(type);
     const permissions = await this.permissionResolver.getUserPermissions(actor.id);
     const hasManage = permissions.has(Permission.MASTER_DATA_MANAGE);
-    if (!hasManage) {
-      const canListOwnCompany =
-        type === 'companies' && permissions.has(Permission.PROCESS_KTI_START);
-      if (!canListOwnCompany) {
-        throw new MasterDataListAccessDeniedException();
-      }
+    const hasView = permissions.has(Permission.MASTER_DATA_VIEW);
+    if (!hasManage && !hasView) {
+      throw new MasterDataListAccessDeniedException();
     }
 
     const model = this.getModel(type);
@@ -165,17 +162,6 @@ export class MasterDataService {
         { code: { contains: query.search, mode: 'insensitive' } },
         { name: { contains: query.search, mode: 'insensitive' } },
       ];
-    }
-
-    if (!hasManage && type === 'companies') {
-      const userRow = await this.prisma.user.findUnique({
-        where: { id: actor.id },
-        select: { companyId: true },
-      });
-      if (!userRow?.companyId) {
-        return [];
-      }
-      where['id'] = userRow.companyId;
     }
 
     const items = (await model.findMany({ where, orderBy: { name: 'asc' } })) as Record<

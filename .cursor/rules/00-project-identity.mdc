@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Lean Management Platformu — Proje Kimliği
 
-Holding geneli **iç kurumsal lean yönetim platformu**. Kaizen, 5S ve sürekli iyileştirme süreçleri için. Target kullanıcı: 20.000+ holding çalışanı. Dil: Türkçe UI + İngilizce code identifiers.
+Holding geneli **iç kurumsal iş yönetim platformu** (ASANA pivot sonrası: proje, görev, board çekirdeği Faz 15+). Target kullanıcı: 20.000+ holding çalışanı. Dil: Türkçe UI + İngilizce code identifiers.
 
 ## Tech Stack (Pin'li)
 
@@ -51,16 +51,13 @@ Yeni kod **her zaman** doğru konumda olur: cross-app util → `packages/shared-
 
 Bu terimler proje-özel — Türkçe veya İngilizce default anlamıyla karıştırma:
 
-- **KTİ** — "Kaizen Tamamlama İyileştirme" — MVP'nin birincil iş süreci tipi
 - **Sicil** — 8 haneli personel numarası; birincil kurumsal kimlik
-- **Process** — çok adımlı iş akışı instance'ı (display_id: `KTI-000042`)
-- **Task** — süreç içindeki bireysel adım, kullanıcı(lar)a atanır
-- **displayId** — insan okunabilir süreç kimliği (format: `<TYPE>-<NNNNNN>`)
-- **Assignee** — task'tan sorumlu kullanıcı(lar)
-- **Claim mode** — birden fazla aday assignee; ilk claim eden sorumlu olur (peer eviction)
 - **Attribute rule** — kullanıcıya otomatik rol atayan kural (ABAC)
 - **Superadmin** — tüm permission'lara sahip sistem rolü
 - **KVKK** — Türk GDPR eşdeğeri; compliance zorunluluğu
+- **Proje / görev / board** — ASANA çekirdek modeli (Faz 15+; henüz implementasyon yok)
+
+Eski BPM/KTİ süreç motoru terimleri (Process, Task, displayId, claim mode) Faz 14 ile kaldırıldı — dokümanlarda geçmiş referans olabilir.
 
 ## Kimlik doğrulama (ortam profili)
 
@@ -75,7 +72,6 @@ Bu terimler proje-özel — Türkçe veya İngilizce default anlamıyla karışt
 - **Audit log append-only** — UPDATE/DELETE trigger tarafından reddedilir; chain hash doğrular
 - **PII encryption at rest** — email (deterministic — lookup için), phone (probabilistic)
 - **Soft delete only** — `is_active=false` set edilir; hard delete `users`/domain entity'lerde yasak (anonymization yapılır)
-- **State machine strict** — sadece izin verilen transition'lar; invalid → 409 throw
 - **Permission cache** — Redis 5 dk TTL; role/attribute değişiminde invalidate
 
 ## MVP Kapsamı Dışı (Önemli!)
@@ -89,7 +85,6 @@ Agent'ın eklemeye meyilli olabileceği ama **MVP'de YAPILMAYACAK** şeyler:
 - **Kendi çok kiracılı IdP / genel SAML broker ürünü** — holding dışına SaaS kimlik ürünü MVP dışı. **Kurumsal IdP entegrasyonu** (dev: Google OIDC, prod: Red Hat SSO) mimari kapsamdadır; uygulama `@52.1-phase-02-GoogleSSOAuth` + `docs/adr/0008-dev-google-oidc-prod-redhat-sso.md`.
 - Advanced analytics dashboard
 - A/B testing framework
-- 5S, TPM gibi ek süreç tipleri (sadece KTİ)
 
 Talep gelirse belirt: "Bu MVP kapsamı dışı — roadmap Wave X'te".
 

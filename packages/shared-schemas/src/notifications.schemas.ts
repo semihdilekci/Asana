@@ -1,15 +1,7 @@
 import { z } from 'zod';
 
-/** docs/02_DATABASE_SCHEMA.md §6.6 — notification_event_type */
+/** docs/02_DATABASE_SCHEMA.md §6.6 — notification_event_type (BPM tipleri Faz 14 İter 3'te kaldırıldı) */
 export const NOTIFICATION_EVENT_TYPES = [
-  'TASK_ASSIGNED',
-  'TASK_CLAIMED_BY_PEER',
-  'SLA_WARNING',
-  'SLA_BREACH',
-  'PROCESS_COMPLETED',
-  'PROCESS_REJECTED',
-  'PROCESS_CANCELLED',
-  'ROLLBACK_PERFORMED',
   'DOCUMENT_INFECTED',
   'ACCOUNT_LOCKED',
   'PASSWORD_RESET_REQUESTED',

@@ -1,0 +1,304 @@
+---
+description: '[Faz 14] BPM/KTİ/task decommission — 5 iterasyon/chat (FE temizlik → BE modül kaldırma → notification+worker+document refactor → shared paket+nav+rules → DB migration+docs+doğrulama). Mesajda "Faz 14 — İterasyon N" belirt.'
+---
+
+# Faz 14: BPM Decommission (ASANA Pivot Temizliği)
+
+## Goal
+
+Lean Management platformunun BPM/KTİ/süreç/görev altyapısını tamamen kaldırıp, kod tabanını ASANA klonu geliştirmeye hazır **clean core** durumuna getirmek. Faz sonunda Process/Task/TaskAssignment tabloları, ilgili backend modülleri, frontend route/bileşenleri, worker cron'ları ve shared paket export'ları silinmiş; Document modülü generic attachment olarak (sadece `uploaded_by_id`) çalışır; navigation/notification/admin-summary sadeleşmiş olacak.
+
+## Bu fazın çalışma modeli (iterasyonlar)
+
+Tek sohbette tamamlanmaz. Her iterasyonda `@64-phase-14-bpm-decommission` invoke et ve mesaja **"Faz 14 — İterasyon N"** yaz. Her iterasyon bağımsız merge edilebilir bir PR üretir.
+
+---
+
+### İterasyon 1 — Frontend Temizlik
+
+**Hedef:** BPM ile ilgili tüm frontend route, component, query ve navigation girişlerinin kaldırılması; web uygulamasının hatasız derlenmesi.
+
+**Yapılacaklar:**
+
+1. Sil: `apps/web/src/app/(app)/processes/**` (tüm route dizini)
+2. Sil: `apps/web/src/app/(app)/tasks/**` ve `apps/web/src/app/(app)/my-tasks/**`
+3. Sil: `apps/web/src/app/(app)/processadministration/**`
+4. Sil: `apps/web/src/components/processes/**` (tüm bileşen dizini)
+5. Sil: `apps/web/src/components/tasks/**`
+6. Sil: `apps/web/src/components/documents/DocumentUpload.tsx` (KTİ foto — scan processor kalıyor)
+7. Sil: `apps/web/src/lib/queries/processes.ts`, `apps/web/src/lib/queries/tasks.ts`
+8. Sil: `apps/web/src/lib/process-workflow-ui.ts`, `sla-badge-logic.ts`, `step-labels.ts`, `task-form-schema.ts` ve ilgili `.test.ts` dosyaları
+9. Güncelle: `apps/web/src/components/application/shell-nav-config.ts` — "Görevlerim", "KTİ Başlat", "Süreç Yöneticisi" girişlerini kaldır
+10. Güncelle: `apps/web/src/components/application/AppSidebarNav.tsx` — `useActiveTaskCountQuery` import ve badge kaldır
+11. Güncelle: `apps/web/src/lib/app-breadcrumbs.ts` — process/task/kti segment'lerini kaldır
+12. Güncelle: `apps/web/src/lib/auth-protected-paths.ts` — `/processes`, `/tasks` prefix kaldır
+13. Güncelle: `apps/web/src/lib/query-keys.ts` — `processes.*`, `tasks.*` kaldır
+14. Güncelle: `apps/web/src/app/(app)/dashboard/page.tsx` — BPM widget/içerik kaldır, boş anasayfa bırak
+15. Sil: BPM ile ilgili E2E testleri (`kti-start`, `task-manager-approve-kti`, `processes-list-detail` vb.)
+16. Güncelle: `apps/web/e2e/app-navigation.e2e.spec.ts` — task/process assert'leri kaldır
+
+**Minimum bağlam:**
+- `docs/06_SCREEN_CATALOG.md` — kaldırılan S-* ekranları listesi
+- `apps/web/src/components/application/shell-nav-config.ts` — nav yapısı
+
+**Bu iterasyonda yok:** Backend kodu, shared paketler, DB şeması, notification.
+
+**Stop:** [ ] `pnpm typecheck` green; [ ] `pnpm lint` green; [ ] `pnpm dev` (web) hatasız kalkar; [ ] kaldırılan route'lara 404 döner. PR/onay → İterasyon 2.
+
+---
+
+### İterasyon 2 — Backend Modül Kaldırma
+
+**Hedef:** `apps/api/src/processes/**` ve `apps/api/src/tasks/**` modüllerinin tamamen silinmesi; `AppModule`'den import kaldırılması; ilgili shared-schema export'larının temizlenmesi.
+
+**Yapılacaklar:**
+
+1. Sil: `apps/api/src/processes/` (tüm dizin — controller, service, exceptions, workflows, registry, testler)
+2. Sil: `apps/api/src/tasks/` (tüm dizin — controller, service, exceptions, kti-task-step)
+3. Güncelle: `apps/api/src/app.module.ts` — `ProcessesModule`, `TasksModule` import kaldır
+4. Sil: `packages/shared-schemas/src/processes.schemas.ts` + `.test.ts`
+5. Sil: `packages/shared-schemas/src/tasks.schemas.ts` + `.test.ts`
+6. Güncelle: `packages/shared-schemas/src/index.ts` — processes/tasks re-export'ları kaldır
+7. Güncelle: `packages/shared-schemas/src/documents.schemas.ts` — `PROCESS_START`, `TASK_ATTACHMENT` contextType değerlerini kaldır
+8. Sil: `packages/shared-utils/src/sla-pct-remaining.ts` + `.test.ts`
+9. Güncelle: `packages/shared-utils/src/index.ts` — `slaPctRemaining` re-export kaldır
+10. Sil: BPM integration testleri (`processes.integration.test.ts`, `tasks.integration.test.ts`, `documents-kti.integration.test.ts`, `process-impersonation-audit.integration.test.ts`)
+11. Güncelle: `apps/api/src/common/workflow/action-performer.ts` — process/task context fonksiyonlarını temizle (impersonation genel altyapısı kalır)
+
+**Minimum bağlam:**
+- `docs/03_API_CONTRACTS.md` §9.5, §9.6 — kaldırılan endpoint'ler
+- `docs/04_BACKEND_SPEC.md` §10 — ProcessTypeRegistry pattern
+
+**Bu iterasyonda yok:** Notification event handler'ları, worker pipeline'ları, Document modülü refactor, DB migration, permission enum.
+
+**Stop:** [ ] `pnpm typecheck` green (monorepo); [ ] `pnpm lint` green; [ ] `pnpm test:unit` green (kalan testler). PR/onay → İterasyon 3.
+
+---
+
+### İterasyon 3 — Notification + Worker + Document Refactoring
+
+**Hedef:** Bildirim sistemi, worker pipeline ve Document modülünden BPM bağımlılıklarının temizlenmesi; bu modüllerin bağımsız çalışır duruma gelmesi.
+
+**Yapılacaklar:**
+
+1. Güncelle: `apps/api/src/notifications/notification-generator.service.ts` — task/process event handler'larını kaldır (TASK_ASSIGNED, TASK_CLAIMED_BY_PEER, PROCESS_COMPLETED, PROCESS_REJECTED, PROCESS_CANCELLED, SLA_WARNING, SLA_BREACH, ROLLBACK_PERFORMED)
+2. Güncelle: `apps/api/src/notifications/notification-domain.events.ts` — BPM event tanımlarını kaldır
+3. Güncelle: `packages/shared-schemas/src/notifications.schemas.ts` — `NotificationEventType` enum'undan TASK_*/SLA_*/PROCESS_*/ROLLBACK_* kaldır
+4. Sil: `apps/worker/src/sla-monitor.processor.ts` + `sla-monitor.pipeline.ts` + testleri
+5. Güncelle: `apps/worker/src/main.ts` — SLA monitor kuyruk başlatma kaldır
+6. Document modülü refactor:
+   - `apps/api/src/documents/documents.service.ts` — `assertKtiPhotoDocumentsCleanAndOwned()` kaldır; process/task erişim kontrolü kaldır; sadece `uploaded_by_id` bazlı erişim bırak
+   - document-scan processor: BPM context referanslarını kaldır (scan altyapısı aynen kalır)
+7. Güncelle: admin-summary endpoint/UI — `openProcessCount`, `overdueTaskCount` metrikleri kaldır
+8. Güncelle: `apps/web/src/lib/notification-ui.ts` — task/process ikon ve etiketlerini kaldır
+9. Güncelle: `apps/web/src/components/notifications/NotificationPreferencesForm.tsx` — BPM event type seçeneklerini kaldır
+
+**Minimum bağlam:**
+- `docs/07_SECURITY_IMPLEMENTATION.md` — bildirim tetikleyicileri
+- `apps/api/src/notifications/` — mevcut yapı
+- `apps/worker/src/` — worker pipeline'lar
+
+**Bu iterasyonda yok:** Permission enum temizliği, seed data, cursor rules, DB migration.
+
+**Stop:** [ ] `pnpm typecheck` green; [ ] notification unit testleri güncellendi ve green; [ ] worker build başarılı; [ ] admin-summary endpoint 200 döner (process/task metrikleri yok). PR/onay → İterasyon 4.
+
+---
+
+### İterasyon 4 — Shared Paket + Navigation + Cursor Rules Temizliği
+
+**Hedef:** Permission enum'undan BPM yetkilerinin kaldırılması; seed data temizliği; gereksiz cursor rules ve skill'lerin silinmesi; proje genelinde tutarlılık.
+
+**Yapılacaklar:**
+
+1. Güncelle: `packages/shared-types/src/permission.ts` — `PROCESS_KTI_START`, `PROCESS_CANCEL`, `PROCESS_ROLLBACK`, `PROCESS_VIEW_ALL`, `DOCUMENT_UPLOAD` (BPM bağlamı) kaldır + `PERMISSION_METADATA` güncelle
+2. Güncelle: `apps/api/prisma/seed.ts`:
+   - PROCESS_MANAGER rolü ve permission atamaları kaldır
+   - `integration_process@leanmgmt.local` test kullanıcısı kaldır
+   - BPM email şablonları (TASK_ASSIGNED, SLA_WARNING, SLA_BREACH, PROCESS_COMPLETED, PROCESS_REJECTED, PROCESS_CANCELLED) kaldır
+3. Sil: `.cursor/rules/55-phase-05-process-engine.mdc`
+4. Sil: `.cursor/rules/56-phase-06-task-management.mdc`
+5. Sil: `.cursor/rules/13-backend-processes.mdc` (varsa)
+6. Sil: `.cursor/skills/add-process-type/` (tüm dizin)
+7. Güncelle: `.cursor/rules/00-project-identity.mdc` — Domain Terminolojisi'nden KTİ, Process, Task, displayId, Claim mode tanımlarını kaldır/güncelle; MVP Kapsamı Dışı listesinden BPM maddelerini kaldır
+8. Güncelle: `apps/web/src/lib/morph-pill-config.ts` — process/task ile ilgili config varsa temizle
+9. Güncelle: `apps/web/src/stores/auth-store.ts` — process/task cache invalidation kaldır (varsa)
+10. Monorepo çapında `rg` ile kalan process/task/kti/BPM referansları tara; orphan import/referans kalmadığını doğrula
+
+**Minimum bağlam:**
+- `packages/shared-types/src/permission.ts` — mevcut enum
+- `apps/api/prisma/seed.ts` — BPM seed data
+- `.cursor/rules/00-project-identity.mdc` — proje kimliği
+
+**Bu iterasyonda yok:** DB migration (tablo/kolon/enum drop). Bu iterasyon runtime kodunu temizler; DB şeması İterasyon 5'te.
+
+**Stop:** [ ] `pnpm typecheck` + `pnpm lint` green (monorepo); [ ] seed script hatasız çalışır (`prisma db seed`); [ ] `rg "PROCESS_KTI_START|ProcessTypeRegistry|KtiWorkflow|TasksModule|ProcessesModule" apps/ packages/` → 0 sonuç. PR/onay → İterasyon 5.
+
+---
+
+### İterasyon 5 — DB Migration + Docs Finalizasyon + E2E Doğrulama
+
+**Hedef:** Prisma şemasından BPM modelleri/enum'ların tamamen kaldırılması; Document tablosunun generic'leştirilmesi; tüm testlerin ve E2E smoke'un green olması.
+
+**Yapılacaklar:**
+
+1. Güncelle: `apps/api/prisma/schema.prisma`:
+   - `Process`, `Task`, `TaskAssignment` modellerini tamamen sil
+   - `ProcessType`, `ProcessStatus`, `TaskStatus`, `AssignmentMode`, `TaskAssignmentStatus` enum'larını sil
+   - `Document` modelinden `processId`/`process` ve `taskId`/`task` FK alanlarını sil
+   - `User` modelinden `processesStarted`, `processesCancelled`, `tasksCompleted`, `tasksClaimed`, `taskAssignments` relation'larını sil
+   - `Company` modelinden `processes` relation'ını sil
+   - `NotificationEventType` enum'undan BPM event'lerini kaldır (İterasyon 3'te code tarafı yapıldı; şema enum hizalanır)
+2. Yeni migration üret: `npx prisma migrate dev --name remove_bpm_tables`
+3. `npx prisma generate` → generated client güncellenir
+4. Eski BPM migration dosyaları: olduğu gibi bırak (geçmiş migration'lar silinmez)
+5. `docs/02_DATABASE_SCHEMA.md` güncelle: Process/Task/TaskAssignment tablo bölümlerini kaldır veya "kaldırıldı" notu ekle; Document tablosu generic olarak güncelle
+6. E2E smoke test yaz/güncelle: login → dashboard → users → roles → admin (audit-logs, settings) → profile → logout
+7. Tüm test suite çalıştır: `pnpm test`, `pnpm test:integration`, `pnpm build`
+8. Son tutarlılık kontrolü: `rg "Process|Task" apps/api/prisma/schema.prisma` → yalnızca kalan meşru referanslar (NotificationEventType temiz, Document FK yok)
+
+**Minimum bağlam:**
+- `docs/02_DATABASE_SCHEMA.md` — mevcut şema dokümanı
+- `apps/api/prisma/schema.prisma` — mevcut Prisma şeması
+- `docs/10_IMPLEMENTATION_ROADMAP.md` Faz 14 — Done Definition
+
+**Bu iterasyonda yok:** Yeni ASANA feature kodu. Bu iterasyon sadece temizlik finalizasyonu.
+
+**Stop:** [ ] `npx prisma migrate dev` başarılı; [ ] `pnpm build` green; [ ] `pnpm typecheck` + `pnpm lint` green; [ ] `pnpm test` + `pnpm test:integration` green; [ ] E2E smoke green; [ ] `docs/02` güncellendi. Faz 14 Done Definition; roadmap işareti.
+
+---
+
+## Required Context
+
+- `docs/10_IMPLEMENTATION_ROADMAP.md` Faz 14 bölümü — kapsam, deliverable, human gate
+- `docs/00_PROJECT_OVERVIEW.md` — güncel proje tanımı (ASANA pivot sonrası)
+- `docs/01_DOMAIN_MODEL.md` — güncel entity listesi (BPM entity'leri kaldırılmış)
+- `docs/03_API_CONTRACTS.md` §9.5–9.7 — kaldırılacak/güncellecek endpoint'ler
+- `docs/mimari-kararlar.md` §19 [A-011] — pivot karar gerekçesi
+- Auto-attached: `00-project-identity.mdc`, `01-coding-philosophy.mdc`, `03-security-baseline.mdc`
+
+## Scope
+
+### Silinecek backend dizinler
+
+```
+apps/api/src/processes/
+apps/api/src/tasks/
+```
+
+### Silinecek frontend dizinler
+
+```
+apps/web/src/app/(app)/processes/
+apps/web/src/app/(app)/tasks/
+apps/web/src/app/(app)/my-tasks/
+apps/web/src/app/(app)/processadministration/
+apps/web/src/components/processes/
+apps/web/src/components/tasks/
+```
+
+### Silinecek shared paket dosyaları
+
+```
+packages/shared-schemas/src/processes.schemas.ts
+packages/shared-schemas/src/tasks.schemas.ts
+packages/shared-utils/src/sla-pct-remaining.ts
+```
+
+### Silinecek worker dosyaları
+
+```
+apps/worker/src/sla-monitor.processor.ts
+apps/worker/src/sla-monitor.pipeline.ts
+```
+
+### Silinecek cursor rules + skill
+
+```
+.cursor/rules/55-phase-05-process-engine.mdc
+.cursor/rules/56-phase-06-task-management.mdc
+.cursor/rules/13-backend-processes.mdc
+.cursor/skills/add-process-type/
+```
+
+### Güncellenen ama silinmeyen dosyalar (refactor)
+
+- `apps/api/src/notifications/` — BPM event handler'ları kaldır
+- `apps/api/src/documents/` — process/task bağımlılığı kaldır
+- `apps/worker/src/main.ts` — SLA kuyruk kaldır
+- `packages/shared-types/src/permission.ts` — PROCESS_* kaldır
+- `apps/web/src/components/application/` — nav, breadcrumbs, sidebar
+- `apps/api/prisma/schema.prisma` — BPM model/enum drop
+- `apps/api/prisma/seed.ts` — BPM seed temizle
+
+### Dokunulmayan dosyalar
+
+- `apps/api/src/users/`, `roles/`, `master-data/`, `auth/`, `audit-logs/`, `system-settings/`, `email-templates/`
+- `apps/web/src/components/users/`, `roles/`, `admin/`, `auth/`, `profile/`, `application/AppShell.tsx`
+- `infrastructure/terraform/`
+- `docs/lean-design-system/`
+
+## Constraints
+
+### Use
+
+- Silme işlemlerinde `rm -rf` veya dosya silme araçları — geri dönüşümsüz
+- Prisma migration `--name remove_bpm_tables` — expand-contract değil, clean drop
+- `rg` ile orphan referans taraması her iterasyon sonunda
+
+### Avoid
+
+- Yeni feature kodu ekleme (ASANA özellikleri Faz 15+)
+- Document modülü için yeni FK/context ekleme (generic bırak)
+- Notification event tipi ekleme (sadece kaldır)
+- DB migration'da `DROP TABLE IF EXISTS` — direkt `DROP TABLE` (tablolar mevcuttur)
+
+## Done Definition
+
+### Backend
+
+- [ ] `apps/api/src/processes/` ve `apps/api/src/tasks/` dizinleri yok
+- [ ] `AppModule`'de `ProcessesModule` / `TasksModule` import yok
+- [ ] Prisma şemasında Process/Task/TaskAssignment modeli yok
+- [ ] BPM enum'ları (ProcessType, ProcessStatus, TaskStatus, AssignmentMode, TaskAssignmentStatus) yok
+- [ ] Document modeli `process_id` / `task_id` FK içermiyor
+- [ ] Permission enum'da `PROCESS_*` yok
+- [ ] Notification event enum'da TASK_*/SLA_*/PROCESS_* yok
+- [ ] Worker'da SLA monitor pipeline yok
+- [ ] Seed'de PROCESS_MANAGER rolü ve BPM email template'leri yok
+- [ ] `pnpm build` + `pnpm typecheck` + `pnpm lint` + `pnpm test` green
+
+### Frontend
+
+- [ ] `/processes`, `/tasks`, `/processadministration` route'ları yok
+- [ ] Sidebar'da görev/süreç/KTİ/processadmin nav girişi yok
+- [ ] Dashboard'da BPM widget/içerik yok (boş anasayfa)
+- [ ] Breadcrumbs'ta process/task/kti segment yok
+- [ ] `pnpm dev` (web) hatasız kalkar
+
+### Integration / E2E
+
+- [ ] E2E smoke (login → dashboard → users → roles → admin → profile → logout) green
+- [ ] Integration test suite green (BPM testleri silinmiş)
+
+## Explicit Don'ts
+
+- ASANA proje/görev/board modeli ekleme — Faz 15+
+- Document modülüne yeni bağlantı tipi ekleme — generic kalacak
+- Yeni notification event tipi ekleme
+- Auth/users/roles/master-data modüllerinde yapısal değişiklik
+- Dashboard'a yeni widget ekleme — boş anasayfa bırak
+- `docs/02_DATABASE_SCHEMA.md`'yi İterasyon 5 öncesi güncelleme
+
+## Related ADRs
+
+- `docs/mimari-kararlar.md` §19 [A-011] — ASANA Pivot kararı
+
+## Sonraki fazlarla ilişki
+
+- **Faz 15+:** ASANA çekirdek özellik tasarımı (proje, görev, board, timeline modeli)
+- Document modülü Faz 15+'ta ASANA projeleri/görevleri ile yeniden ilişkilendirilecek
+- Dashboard Faz 15+'ta ASANA widget'ları ile doldurulacak
+
+---
+
+Phase done → `docs/10_IMPLEMENTATION_ROADMAP.md` Faz 14 check mark.

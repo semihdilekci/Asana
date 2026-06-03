@@ -40,7 +40,7 @@ function NotificationRow({
       >
         <span className="mt-0.5 shrink-0" aria-hidden>
           <Icon
-            className={`h-4 w-4 ${item.eventType === 'SLA_BREACH' ? 'text-[var(--color-danger-600)]' : 'text-[var(--color-neutral-500)]'}`}
+            className={`h-4 w-4 ${item.eventType === 'DOCUMENT_INFECTED' || item.eventType === 'SECURITY_ANOMALY' ? 'text-[var(--color-danger-600)]' : 'text-[var(--color-neutral-500)]'}`}
           />
         </span>
         <span className="min-w-0 flex-1">

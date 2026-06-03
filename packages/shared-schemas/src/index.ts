@@ -99,24 +99,6 @@ export {
 } from './roles.schemas.js';
 
 export {
-  ProcessCancelBodySchema,
-  ProcessListQuerySchema,
-  ProcessRollbackBodySchema,
-  KtiStartBodySchema,
-  type ProcessCancelInput,
-  type ProcessListQuery,
-  type ProcessRollbackInput,
-  type KtiStartInput,
-} from './processes.schemas.js';
-
-export {
-  TaskCompleteBodySchema,
-  TaskListQuerySchema,
-  type TaskCompleteBodyInput,
-  type TaskListQuery,
-} from './tasks.schemas.js';
-
-export {
   DOCUMENT_ALLOWED_CONTENT_TYPES,
   DocumentCreateBodySchema,
   DocumentIdParamSchema,

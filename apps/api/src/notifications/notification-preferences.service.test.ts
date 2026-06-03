@@ -25,8 +25,9 @@ describe('NotificationPreferencesService', () => {
     const svc = new NotificationPreferencesService(prisma);
     const r = await svc.getResolvedForUser('user-1');
     expect(r.preferences.length).toBeGreaterThan(10);
-    const ta = r.preferences.find((p) => p.eventType === 'TASK_ASSIGNED');
-    expect(ta?.inAppEnabled).toBe(true);
-    expect(ta?.emailEnabled).toBe(true);
+    const roleAssigned = r.preferences.find((p) => p.eventType === 'ROLE_ASSIGNED');
+    expect(roleAssigned?.inAppEnabled).toBe(true);
+    expect(roleAssigned?.emailEnabled).toBe(true);
+    expect(r.preferences.some((p) => p.eventType === 'TASK_ASSIGNED')).toBe(false);
   });
 });

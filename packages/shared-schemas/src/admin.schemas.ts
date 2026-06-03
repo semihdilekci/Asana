@@ -129,8 +129,6 @@ export type AuditChainIntegrityVerifyBody = z.infer<typeof AuditChainIntegrityVe
 export const AdminOrganizationSummaryResponseSchema = z
   .object({
     activeUserCount: z.number().int().min(0),
-    openProcessCount: z.number().int().min(0),
-    overdueTaskCount: z.number().int().min(0),
   })
   .strict();
 

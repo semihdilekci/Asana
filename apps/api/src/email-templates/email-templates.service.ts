@@ -108,16 +108,15 @@ function unresolvedVariables(
 /** send-test önizlemesi için varsayılan Handlebars değişkenleri */
 const DEFAULT_TEST_TEMPLATE_VARS: Record<string, string> = {
   firstName: 'Test',
-  displayId: 'KTI-000001',
-  taskTitle: 'Örnek görev adımı',
-  processId: '00000000-0000-4000-8000-000000000001',
-  taskId: '00000000-0000-4000-8000-000000000002',
   resetLink: 'https://example.com/sifre-sifirla?token=demo',
   loginUrl: 'https://example.com/login',
   digestDate: '2026-04-25',
   digestBodyHtml: '<p>Örnek günlük özet içeriği</p>',
   digestBodyText: 'Örnek günlük özet içeriği',
   userName: 'Test Kullanıcı',
+  roleName: 'Örnek Rol',
+  roleCode: 'EXAMPLE_ROLE',
+  version: '1.0',
 };
 
 @Injectable()

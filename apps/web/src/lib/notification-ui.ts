@@ -2,10 +2,9 @@ import {
   AlertTriangle,
   Bell01,
   CheckCircle,
-  CheckSquare,
   File06,
   Key01,
-  UserX01,
+  User01,
   XCircle,
 } from '@untitledui/icons';
 import type { FC, SVGProps } from 'react';
@@ -15,36 +14,26 @@ export type NotificationIcon = FC<SVGProps<SVGSVGElement>>;
 /** Ekran kataloğu S-NOTIF-LIST ile uyumlu ikon eşlemesi */
 export function notificationEventIcon(eventType: string): NotificationIcon {
   switch (eventType) {
-    case 'TASK_ASSIGNED':
-      return CheckSquare;
-    case 'TASK_CLAIMED_BY_PEER':
-      return UserX01;
-    case 'PROCESS_COMPLETED':
-      return CheckCircle;
-    case 'PROCESS_REJECTED':
-      return XCircle;
-    case 'SLA_WARNING':
-      return Bell01;
-    case 'SLA_BREACH':
-      return AlertTriangle;
+    case 'ROLE_ASSIGNED':
+      return User01;
     case 'PASSWORD_EXPIRY_WARNING':
       return Key01;
     case 'CONSENT_VERSION_PUBLISHED':
       return File06;
+    case 'DOCUMENT_INFECTED':
+    case 'SECURITY_ANOMALY':
+    case 'AUDIT_CHAIN_BROKEN':
+      return AlertTriangle;
+    case 'ACCOUNT_LOCKED':
+      return XCircle;
+    case 'PASSWORD_CHANGED':
+      return CheckCircle;
     default:
       return Bell01;
   }
 }
 
 const EVENT_LABELS: Record<string, string> = {
-  TASK_ASSIGNED: 'Görev atandı',
-  TASK_CLAIMED_BY_PEER: 'Görev başkası tarafından üstlenildi',
-  SLA_WARNING: 'SLA uyarısı',
-  SLA_BREACH: 'SLA aşımı',
-  PROCESS_COMPLETED: 'Süreç tamamlandı',
-  PROCESS_REJECTED: 'Süreç reddedildi',
-  PROCESS_CANCELLED: 'Süreç iptal edildi',
-  ROLLBACK_PERFORMED: 'Geri alma',
   DOCUMENT_INFECTED: 'Doküman taraması',
   ACCOUNT_LOCKED: 'Hesap kilitlendi',
   PASSWORD_RESET_REQUESTED: 'Şifre sıfırlama talebi',
@@ -56,6 +45,8 @@ const EVENT_LABELS: Record<string, string> = {
   AUDIT_CHAIN_BROKEN: 'Denetim zinciri',
   USER_LOGIN_WELCOME: 'Hoş geldiniz',
   DAILY_DIGEST: 'Günlük özet',
+  CONSENT_VERSION_PUBLISHED: 'Rıza metni güncellendi',
+  ROLE_ASSIGNED: 'Rol atandı',
 };
 
 export function notificationEventLabel(eventType: string): string {

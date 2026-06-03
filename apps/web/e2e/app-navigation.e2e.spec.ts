@@ -17,18 +17,6 @@ async function loginAsSuperadmin(page: import('@playwright/test').Page) {
   await expect(page).toHaveURL(/\/dashboard/);
 }
 
-test('sidebar: görevler sayfasına geçiş', async ({ page }) => {
-  await loginAsSuperadmin(page);
-  await page
-    .getByRole('navigation', { name: 'Ana menü' })
-    .getByRole('link', { name: 'Görevlerim' })
-    .click();
-  await expect(page).toHaveURL(/\/tasks/);
-  await expect(
-    page.getByRole('navigation', { name: 'Ana menü' }).getByRole('link', { name: 'Görevlerim' }),
-  ).toHaveClass(/bg-brand-600/);
-});
-
 test('sidebar: kullanıcılar listesi', async ({ page }) => {
   await loginAsSuperadmin(page);
   await page
@@ -41,4 +29,12 @@ test('sidebar: kullanıcılar listesi', async ({ page }) => {
 test('oturumsuz /dashboard login yönlendirmesi', async ({ page }) => {
   await page.goto('/dashboard');
   await expect(page).toHaveURL(/\/login/);
+});
+
+test('kaldırılan BPM rotaları 404 döner', async ({ page }) => {
+  await loginAsSuperadmin(page);
+  for (const path of ['/processes', '/tasks', '/processadministration']) {
+    const res = await page.goto(path);
+    expect(res?.status()).toBe(404);
+  }
 });

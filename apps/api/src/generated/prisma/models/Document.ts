@@ -42,8 +42,6 @@ export type DocumentMinAggregateOutputType = {
   contentType: string | null;
   scanStatus: $Enums.DocumentScanStatus | null;
   scanResultDetail: string | null;
-  processId: string | null;
-  taskId: string | null;
   uploadedAt: Date | null;
   createdAt: Date | null;
   updatedAt: Date | null;
@@ -58,8 +56,6 @@ export type DocumentMaxAggregateOutputType = {
   contentType: string | null;
   scanStatus: $Enums.DocumentScanStatus | null;
   scanResultDetail: string | null;
-  processId: string | null;
-  taskId: string | null;
   uploadedAt: Date | null;
   createdAt: Date | null;
   updatedAt: Date | null;
@@ -74,8 +70,6 @@ export type DocumentCountAggregateOutputType = {
   contentType: number;
   scanStatus: number;
   scanResultDetail: number;
-  processId: number;
-  taskId: number;
   uploadedAt: number;
   createdAt: number;
   updatedAt: number;
@@ -99,8 +93,6 @@ export type DocumentMinAggregateInputType = {
   contentType?: true;
   scanStatus?: true;
   scanResultDetail?: true;
-  processId?: true;
-  taskId?: true;
   uploadedAt?: true;
   createdAt?: true;
   updatedAt?: true;
@@ -115,8 +107,6 @@ export type DocumentMaxAggregateInputType = {
   contentType?: true;
   scanStatus?: true;
   scanResultDetail?: true;
-  processId?: true;
-  taskId?: true;
   uploadedAt?: true;
   createdAt?: true;
   updatedAt?: true;
@@ -131,8 +121,6 @@ export type DocumentCountAggregateInputType = {
   contentType?: true;
   scanStatus?: true;
   scanResultDetail?: true;
-  processId?: true;
-  taskId?: true;
   uploadedAt?: true;
   createdAt?: true;
   updatedAt?: true;
@@ -237,8 +225,6 @@ export type DocumentGroupByOutputType = {
   contentType: string;
   scanStatus: $Enums.DocumentScanStatus;
   scanResultDetail: string | null;
-  processId: string | null;
-  taskId: string | null;
   uploadedAt: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -273,14 +259,10 @@ export type DocumentWhereInput = {
   contentType?: Prisma.StringFilter<'Document'> | string;
   scanStatus?: Prisma.EnumDocumentScanStatusFilter<'Document'> | $Enums.DocumentScanStatus;
   scanResultDetail?: Prisma.StringNullableFilter<'Document'> | string | null;
-  processId?: Prisma.StringNullableFilter<'Document'> | string | null;
-  taskId?: Prisma.StringNullableFilter<'Document'> | string | null;
   uploadedAt?: Prisma.DateTimeFilter<'Document'> | Date | string;
   createdAt?: Prisma.DateTimeFilter<'Document'> | Date | string;
   updatedAt?: Prisma.DateTimeFilter<'Document'> | Date | string;
   uploadedBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>;
-  process?: Prisma.XOR<Prisma.ProcessNullableScalarRelationFilter, Prisma.ProcessWhereInput> | null;
-  task?: Prisma.XOR<Prisma.TaskNullableScalarRelationFilter, Prisma.TaskWhereInput> | null;
 };
 
 export type DocumentOrderByWithRelationInput = {
@@ -292,14 +274,10 @@ export type DocumentOrderByWithRelationInput = {
   contentType?: Prisma.SortOrder;
   scanStatus?: Prisma.SortOrder;
   scanResultDetail?: Prisma.SortOrderInput | Prisma.SortOrder;
-  processId?: Prisma.SortOrderInput | Prisma.SortOrder;
-  taskId?: Prisma.SortOrderInput | Prisma.SortOrder;
   uploadedAt?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
   uploadedBy?: Prisma.UserOrderByWithRelationInput;
-  process?: Prisma.ProcessOrderByWithRelationInput;
-  task?: Prisma.TaskOrderByWithRelationInput;
 };
 
 export type DocumentWhereUniqueInput = Prisma.AtLeast<
@@ -315,17 +293,10 @@ export type DocumentWhereUniqueInput = Prisma.AtLeast<
     contentType?: Prisma.StringFilter<'Document'> | string;
     scanStatus?: Prisma.EnumDocumentScanStatusFilter<'Document'> | $Enums.DocumentScanStatus;
     scanResultDetail?: Prisma.StringNullableFilter<'Document'> | string | null;
-    processId?: Prisma.StringNullableFilter<'Document'> | string | null;
-    taskId?: Prisma.StringNullableFilter<'Document'> | string | null;
     uploadedAt?: Prisma.DateTimeFilter<'Document'> | Date | string;
     createdAt?: Prisma.DateTimeFilter<'Document'> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<'Document'> | Date | string;
     uploadedBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>;
-    process?: Prisma.XOR<
-      Prisma.ProcessNullableScalarRelationFilter,
-      Prisma.ProcessWhereInput
-    > | null;
-    task?: Prisma.XOR<Prisma.TaskNullableScalarRelationFilter, Prisma.TaskWhereInput> | null;
   },
   'id'
 >;
@@ -339,8 +310,6 @@ export type DocumentOrderByWithAggregationInput = {
   contentType?: Prisma.SortOrder;
   scanStatus?: Prisma.SortOrder;
   scanResultDetail?: Prisma.SortOrderInput | Prisma.SortOrder;
-  processId?: Prisma.SortOrderInput | Prisma.SortOrder;
-  taskId?: Prisma.SortOrderInput | Prisma.SortOrder;
   uploadedAt?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
@@ -369,8 +338,6 @@ export type DocumentScalarWhereWithAggregatesInput = {
     | Prisma.EnumDocumentScanStatusWithAggregatesFilter<'Document'>
     | $Enums.DocumentScanStatus;
   scanResultDetail?: Prisma.StringNullableWithAggregatesFilter<'Document'> | string | null;
-  processId?: Prisma.StringNullableWithAggregatesFilter<'Document'> | string | null;
-  taskId?: Prisma.StringNullableWithAggregatesFilter<'Document'> | string | null;
   uploadedAt?: Prisma.DateTimeWithAggregatesFilter<'Document'> | Date | string;
   createdAt?: Prisma.DateTimeWithAggregatesFilter<'Document'> | Date | string;
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<'Document'> | Date | string;
@@ -388,8 +355,6 @@ export type DocumentCreateInput = {
   createdAt?: Date | string;
   updatedAt?: Date | string;
   uploadedBy: Prisma.UserCreateNestedOneWithoutDocumentsUploadedInput;
-  process?: Prisma.ProcessCreateNestedOneWithoutDocumentsInput;
-  task?: Prisma.TaskCreateNestedOneWithoutDocumentsInput;
 };
 
 export type DocumentUncheckedCreateInput = {
@@ -401,8 +366,6 @@ export type DocumentUncheckedCreateInput = {
   contentType: string;
   scanStatus?: $Enums.DocumentScanStatus;
   scanResultDetail?: string | null;
-  processId?: string | null;
-  taskId?: string | null;
   uploadedAt?: Date | string;
   createdAt?: Date | string;
   updatedAt?: Date | string;
@@ -420,8 +383,6 @@ export type DocumentUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   uploadedBy?: Prisma.UserUpdateOneRequiredWithoutDocumentsUploadedNestedInput;
-  process?: Prisma.ProcessUpdateOneWithoutDocumentsNestedInput;
-  task?: Prisma.TaskUpdateOneWithoutDocumentsNestedInput;
 };
 
 export type DocumentUncheckedUpdateInput = {
@@ -433,8 +394,6 @@ export type DocumentUncheckedUpdateInput = {
   contentType?: Prisma.StringFieldUpdateOperationsInput | string;
   scanStatus?: Prisma.EnumDocumentScanStatusFieldUpdateOperationsInput | $Enums.DocumentScanStatus;
   scanResultDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  processId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   uploadedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -449,8 +408,6 @@ export type DocumentCreateManyInput = {
   contentType: string;
   scanStatus?: $Enums.DocumentScanStatus;
   scanResultDetail?: string | null;
-  processId?: string | null;
-  taskId?: string | null;
   uploadedAt?: Date | string;
   createdAt?: Date | string;
   updatedAt?: Date | string;
@@ -478,8 +435,6 @@ export type DocumentUncheckedUpdateManyInput = {
   contentType?: Prisma.StringFieldUpdateOperationsInput | string;
   scanStatus?: Prisma.EnumDocumentScanStatusFieldUpdateOperationsInput | $Enums.DocumentScanStatus;
   scanResultDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  processId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   uploadedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -504,8 +459,6 @@ export type DocumentCountOrderByAggregateInput = {
   contentType?: Prisma.SortOrder;
   scanStatus?: Prisma.SortOrder;
   scanResultDetail?: Prisma.SortOrder;
-  processId?: Prisma.SortOrder;
-  taskId?: Prisma.SortOrder;
   uploadedAt?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
@@ -524,8 +477,6 @@ export type DocumentMaxOrderByAggregateInput = {
   contentType?: Prisma.SortOrder;
   scanStatus?: Prisma.SortOrder;
   scanResultDetail?: Prisma.SortOrder;
-  processId?: Prisma.SortOrder;
-  taskId?: Prisma.SortOrder;
   uploadedAt?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
@@ -540,8 +491,6 @@ export type DocumentMinOrderByAggregateInput = {
   contentType?: Prisma.SortOrder;
   scanStatus?: Prisma.SortOrder;
   scanResultDetail?: Prisma.SortOrder;
-  processId?: Prisma.SortOrder;
-  taskId?: Prisma.SortOrder;
   uploadedAt?: Prisma.SortOrder;
   createdAt?: Prisma.SortOrder;
   updatedAt?: Prisma.SortOrder;
@@ -637,176 +586,12 @@ export type DocumentUncheckedUpdateManyWithoutUploadedByNestedInput = {
   deleteMany?: Prisma.DocumentScalarWhereInput | Prisma.DocumentScalarWhereInput[];
 };
 
-export type DocumentCreateNestedManyWithoutProcessInput = {
-  create?:
-    | Prisma.XOR<
-        Prisma.DocumentCreateWithoutProcessInput,
-        Prisma.DocumentUncheckedCreateWithoutProcessInput
-      >
-    | Prisma.DocumentCreateWithoutProcessInput[]
-    | Prisma.DocumentUncheckedCreateWithoutProcessInput[];
-  connectOrCreate?:
-    | Prisma.DocumentCreateOrConnectWithoutProcessInput
-    | Prisma.DocumentCreateOrConnectWithoutProcessInput[];
-  createMany?: Prisma.DocumentCreateManyProcessInputEnvelope;
-  connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[];
-};
-
-export type DocumentUncheckedCreateNestedManyWithoutProcessInput = {
-  create?:
-    | Prisma.XOR<
-        Prisma.DocumentCreateWithoutProcessInput,
-        Prisma.DocumentUncheckedCreateWithoutProcessInput
-      >
-    | Prisma.DocumentCreateWithoutProcessInput[]
-    | Prisma.DocumentUncheckedCreateWithoutProcessInput[];
-  connectOrCreate?:
-    | Prisma.DocumentCreateOrConnectWithoutProcessInput
-    | Prisma.DocumentCreateOrConnectWithoutProcessInput[];
-  createMany?: Prisma.DocumentCreateManyProcessInputEnvelope;
-  connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[];
-};
-
-export type DocumentUpdateManyWithoutProcessNestedInput = {
-  create?:
-    | Prisma.XOR<
-        Prisma.DocumentCreateWithoutProcessInput,
-        Prisma.DocumentUncheckedCreateWithoutProcessInput
-      >
-    | Prisma.DocumentCreateWithoutProcessInput[]
-    | Prisma.DocumentUncheckedCreateWithoutProcessInput[];
-  connectOrCreate?:
-    | Prisma.DocumentCreateOrConnectWithoutProcessInput
-    | Prisma.DocumentCreateOrConnectWithoutProcessInput[];
-  upsert?:
-    | Prisma.DocumentUpsertWithWhereUniqueWithoutProcessInput
-    | Prisma.DocumentUpsertWithWhereUniqueWithoutProcessInput[];
-  createMany?: Prisma.DocumentCreateManyProcessInputEnvelope;
-  set?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[];
-  disconnect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[];
-  delete?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[];
-  connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[];
-  update?:
-    | Prisma.DocumentUpdateWithWhereUniqueWithoutProcessInput
-    | Prisma.DocumentUpdateWithWhereUniqueWithoutProcessInput[];
-  updateMany?:
-    | Prisma.DocumentUpdateManyWithWhereWithoutProcessInput
-    | Prisma.DocumentUpdateManyWithWhereWithoutProcessInput[];
-  deleteMany?: Prisma.DocumentScalarWhereInput | Prisma.DocumentScalarWhereInput[];
-};
-
-export type DocumentUncheckedUpdateManyWithoutProcessNestedInput = {
-  create?:
-    | Prisma.XOR<
-        Prisma.DocumentCreateWithoutProcessInput,
-        Prisma.DocumentUncheckedCreateWithoutProcessInput
-      >
-    | Prisma.DocumentCreateWithoutProcessInput[]
-    | Prisma.DocumentUncheckedCreateWithoutProcessInput[];
-  connectOrCreate?:
-    | Prisma.DocumentCreateOrConnectWithoutProcessInput
-    | Prisma.DocumentCreateOrConnectWithoutProcessInput[];
-  upsert?:
-    | Prisma.DocumentUpsertWithWhereUniqueWithoutProcessInput
-    | Prisma.DocumentUpsertWithWhereUniqueWithoutProcessInput[];
-  createMany?: Prisma.DocumentCreateManyProcessInputEnvelope;
-  set?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[];
-  disconnect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[];
-  delete?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[];
-  connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[];
-  update?:
-    | Prisma.DocumentUpdateWithWhereUniqueWithoutProcessInput
-    | Prisma.DocumentUpdateWithWhereUniqueWithoutProcessInput[];
-  updateMany?:
-    | Prisma.DocumentUpdateManyWithWhereWithoutProcessInput
-    | Prisma.DocumentUpdateManyWithWhereWithoutProcessInput[];
-  deleteMany?: Prisma.DocumentScalarWhereInput | Prisma.DocumentScalarWhereInput[];
-};
-
-export type DocumentCreateNestedManyWithoutTaskInput = {
-  create?:
-    | Prisma.XOR<
-        Prisma.DocumentCreateWithoutTaskInput,
-        Prisma.DocumentUncheckedCreateWithoutTaskInput
-      >
-    | Prisma.DocumentCreateWithoutTaskInput[]
-    | Prisma.DocumentUncheckedCreateWithoutTaskInput[];
-  connectOrCreate?:
-    | Prisma.DocumentCreateOrConnectWithoutTaskInput
-    | Prisma.DocumentCreateOrConnectWithoutTaskInput[];
-  createMany?: Prisma.DocumentCreateManyTaskInputEnvelope;
-  connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[];
-};
-
-export type DocumentUncheckedCreateNestedManyWithoutTaskInput = {
-  create?:
-    | Prisma.XOR<
-        Prisma.DocumentCreateWithoutTaskInput,
-        Prisma.DocumentUncheckedCreateWithoutTaskInput
-      >
-    | Prisma.DocumentCreateWithoutTaskInput[]
-    | Prisma.DocumentUncheckedCreateWithoutTaskInput[];
-  connectOrCreate?:
-    | Prisma.DocumentCreateOrConnectWithoutTaskInput
-    | Prisma.DocumentCreateOrConnectWithoutTaskInput[];
-  createMany?: Prisma.DocumentCreateManyTaskInputEnvelope;
-  connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[];
-};
-
-export type DocumentUpdateManyWithoutTaskNestedInput = {
-  create?:
-    | Prisma.XOR<
-        Prisma.DocumentCreateWithoutTaskInput,
-        Prisma.DocumentUncheckedCreateWithoutTaskInput
-      >
-    | Prisma.DocumentCreateWithoutTaskInput[]
-    | Prisma.DocumentUncheckedCreateWithoutTaskInput[];
-  connectOrCreate?:
-    | Prisma.DocumentCreateOrConnectWithoutTaskInput
-    | Prisma.DocumentCreateOrConnectWithoutTaskInput[];
-  upsert?:
-    | Prisma.DocumentUpsertWithWhereUniqueWithoutTaskInput
-    | Prisma.DocumentUpsertWithWhereUniqueWithoutTaskInput[];
-  createMany?: Prisma.DocumentCreateManyTaskInputEnvelope;
-  set?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[];
-  disconnect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[];
-  delete?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[];
-  connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[];
-  update?:
-    | Prisma.DocumentUpdateWithWhereUniqueWithoutTaskInput
-    | Prisma.DocumentUpdateWithWhereUniqueWithoutTaskInput[];
-  updateMany?:
-    | Prisma.DocumentUpdateManyWithWhereWithoutTaskInput
-    | Prisma.DocumentUpdateManyWithWhereWithoutTaskInput[];
-  deleteMany?: Prisma.DocumentScalarWhereInput | Prisma.DocumentScalarWhereInput[];
-};
-
-export type DocumentUncheckedUpdateManyWithoutTaskNestedInput = {
-  create?:
-    | Prisma.XOR<
-        Prisma.DocumentCreateWithoutTaskInput,
-        Prisma.DocumentUncheckedCreateWithoutTaskInput
-      >
-    | Prisma.DocumentCreateWithoutTaskInput[]
-    | Prisma.DocumentUncheckedCreateWithoutTaskInput[];
-  connectOrCreate?:
-    | Prisma.DocumentCreateOrConnectWithoutTaskInput
-    | Prisma.DocumentCreateOrConnectWithoutTaskInput[];
-  upsert?:
-    | Prisma.DocumentUpsertWithWhereUniqueWithoutTaskInput
-    | Prisma.DocumentUpsertWithWhereUniqueWithoutTaskInput[];
-  createMany?: Prisma.DocumentCreateManyTaskInputEnvelope;
-  set?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[];
-  disconnect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[];
-  delete?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[];
-  connect?: Prisma.DocumentWhereUniqueInput | Prisma.DocumentWhereUniqueInput[];
-  update?:
-    | Prisma.DocumentUpdateWithWhereUniqueWithoutTaskInput
-    | Prisma.DocumentUpdateWithWhereUniqueWithoutTaskInput[];
-  updateMany?:
-    | Prisma.DocumentUpdateManyWithWhereWithoutTaskInput
-    | Prisma.DocumentUpdateManyWithWhereWithoutTaskInput[];
-  deleteMany?: Prisma.DocumentScalarWhereInput | Prisma.DocumentScalarWhereInput[];
+export type BigIntFieldUpdateOperationsInput = {
+  set?: bigint | number;
+  increment?: bigint | number;
+  decrement?: bigint | number;
+  multiply?: bigint | number;
+  divide?: bigint | number;
 };
 
 export type EnumDocumentScanStatusFieldUpdateOperationsInput = {
@@ -824,8 +609,6 @@ export type DocumentCreateWithoutUploadedByInput = {
   uploadedAt?: Date | string;
   createdAt?: Date | string;
   updatedAt?: Date | string;
-  process?: Prisma.ProcessCreateNestedOneWithoutDocumentsInput;
-  task?: Prisma.TaskCreateNestedOneWithoutDocumentsInput;
 };
 
 export type DocumentUncheckedCreateWithoutUploadedByInput = {
@@ -836,8 +619,6 @@ export type DocumentUncheckedCreateWithoutUploadedByInput = {
   contentType: string;
   scanStatus?: $Enums.DocumentScanStatus;
   scanResultDetail?: string | null;
-  processId?: string | null;
-  taskId?: string | null;
   uploadedAt?: Date | string;
   createdAt?: Date | string;
   updatedAt?: Date | string;
@@ -896,153 +677,9 @@ export type DocumentScalarWhereInput = {
   contentType?: Prisma.StringFilter<'Document'> | string;
   scanStatus?: Prisma.EnumDocumentScanStatusFilter<'Document'> | $Enums.DocumentScanStatus;
   scanResultDetail?: Prisma.StringNullableFilter<'Document'> | string | null;
-  processId?: Prisma.StringNullableFilter<'Document'> | string | null;
-  taskId?: Prisma.StringNullableFilter<'Document'> | string | null;
   uploadedAt?: Prisma.DateTimeFilter<'Document'> | Date | string;
   createdAt?: Prisma.DateTimeFilter<'Document'> | Date | string;
   updatedAt?: Prisma.DateTimeFilter<'Document'> | Date | string;
-};
-
-export type DocumentCreateWithoutProcessInput = {
-  id?: string;
-  s3Key: string;
-  originalFilename: string;
-  fileSizeBytes: bigint | number;
-  contentType: string;
-  scanStatus?: $Enums.DocumentScanStatus;
-  scanResultDetail?: string | null;
-  uploadedAt?: Date | string;
-  createdAt?: Date | string;
-  updatedAt?: Date | string;
-  uploadedBy: Prisma.UserCreateNestedOneWithoutDocumentsUploadedInput;
-  task?: Prisma.TaskCreateNestedOneWithoutDocumentsInput;
-};
-
-export type DocumentUncheckedCreateWithoutProcessInput = {
-  id?: string;
-  uploadedByUserId: string;
-  s3Key: string;
-  originalFilename: string;
-  fileSizeBytes: bigint | number;
-  contentType: string;
-  scanStatus?: $Enums.DocumentScanStatus;
-  scanResultDetail?: string | null;
-  taskId?: string | null;
-  uploadedAt?: Date | string;
-  createdAt?: Date | string;
-  updatedAt?: Date | string;
-};
-
-export type DocumentCreateOrConnectWithoutProcessInput = {
-  where: Prisma.DocumentWhereUniqueInput;
-  create: Prisma.XOR<
-    Prisma.DocumentCreateWithoutProcessInput,
-    Prisma.DocumentUncheckedCreateWithoutProcessInput
-  >;
-};
-
-export type DocumentCreateManyProcessInputEnvelope = {
-  data: Prisma.DocumentCreateManyProcessInput | Prisma.DocumentCreateManyProcessInput[];
-  skipDuplicates?: boolean;
-};
-
-export type DocumentUpsertWithWhereUniqueWithoutProcessInput = {
-  where: Prisma.DocumentWhereUniqueInput;
-  update: Prisma.XOR<
-    Prisma.DocumentUpdateWithoutProcessInput,
-    Prisma.DocumentUncheckedUpdateWithoutProcessInput
-  >;
-  create: Prisma.XOR<
-    Prisma.DocumentCreateWithoutProcessInput,
-    Prisma.DocumentUncheckedCreateWithoutProcessInput
-  >;
-};
-
-export type DocumentUpdateWithWhereUniqueWithoutProcessInput = {
-  where: Prisma.DocumentWhereUniqueInput;
-  data: Prisma.XOR<
-    Prisma.DocumentUpdateWithoutProcessInput,
-    Prisma.DocumentUncheckedUpdateWithoutProcessInput
-  >;
-};
-
-export type DocumentUpdateManyWithWhereWithoutProcessInput = {
-  where: Prisma.DocumentScalarWhereInput;
-  data: Prisma.XOR<
-    Prisma.DocumentUpdateManyMutationInput,
-    Prisma.DocumentUncheckedUpdateManyWithoutProcessInput
-  >;
-};
-
-export type DocumentCreateWithoutTaskInput = {
-  id?: string;
-  s3Key: string;
-  originalFilename: string;
-  fileSizeBytes: bigint | number;
-  contentType: string;
-  scanStatus?: $Enums.DocumentScanStatus;
-  scanResultDetail?: string | null;
-  uploadedAt?: Date | string;
-  createdAt?: Date | string;
-  updatedAt?: Date | string;
-  uploadedBy: Prisma.UserCreateNestedOneWithoutDocumentsUploadedInput;
-  process?: Prisma.ProcessCreateNestedOneWithoutDocumentsInput;
-};
-
-export type DocumentUncheckedCreateWithoutTaskInput = {
-  id?: string;
-  uploadedByUserId: string;
-  s3Key: string;
-  originalFilename: string;
-  fileSizeBytes: bigint | number;
-  contentType: string;
-  scanStatus?: $Enums.DocumentScanStatus;
-  scanResultDetail?: string | null;
-  processId?: string | null;
-  uploadedAt?: Date | string;
-  createdAt?: Date | string;
-  updatedAt?: Date | string;
-};
-
-export type DocumentCreateOrConnectWithoutTaskInput = {
-  where: Prisma.DocumentWhereUniqueInput;
-  create: Prisma.XOR<
-    Prisma.DocumentCreateWithoutTaskInput,
-    Prisma.DocumentUncheckedCreateWithoutTaskInput
-  >;
-};
-
-export type DocumentCreateManyTaskInputEnvelope = {
-  data: Prisma.DocumentCreateManyTaskInput | Prisma.DocumentCreateManyTaskInput[];
-  skipDuplicates?: boolean;
-};
-
-export type DocumentUpsertWithWhereUniqueWithoutTaskInput = {
-  where: Prisma.DocumentWhereUniqueInput;
-  update: Prisma.XOR<
-    Prisma.DocumentUpdateWithoutTaskInput,
-    Prisma.DocumentUncheckedUpdateWithoutTaskInput
-  >;
-  create: Prisma.XOR<
-    Prisma.DocumentCreateWithoutTaskInput,
-    Prisma.DocumentUncheckedCreateWithoutTaskInput
-  >;
-};
-
-export type DocumentUpdateWithWhereUniqueWithoutTaskInput = {
-  where: Prisma.DocumentWhereUniqueInput;
-  data: Prisma.XOR<
-    Prisma.DocumentUpdateWithoutTaskInput,
-    Prisma.DocumentUncheckedUpdateWithoutTaskInput
-  >;
-};
-
-export type DocumentUpdateManyWithWhereWithoutTaskInput = {
-  where: Prisma.DocumentScalarWhereInput;
-  data: Prisma.XOR<
-    Prisma.DocumentUpdateManyMutationInput,
-    Prisma.DocumentUncheckedUpdateManyWithoutTaskInput
-  >;
 };
 
 export type DocumentCreateManyUploadedByInput = {
@@ -1053,8 +690,6 @@ export type DocumentCreateManyUploadedByInput = {
   contentType: string;
   scanStatus?: $Enums.DocumentScanStatus;
   scanResultDetail?: string | null;
-  processId?: string | null;
-  taskId?: string | null;
   uploadedAt?: Date | string;
   createdAt?: Date | string;
   updatedAt?: Date | string;
@@ -1071,8 +706,6 @@ export type DocumentUpdateWithoutUploadedByInput = {
   uploadedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  process?: Prisma.ProcessUpdateOneWithoutDocumentsNestedInput;
-  task?: Prisma.TaskUpdateOneWithoutDocumentsNestedInput;
 };
 
 export type DocumentUncheckedUpdateWithoutUploadedByInput = {
@@ -1083,8 +716,6 @@ export type DocumentUncheckedUpdateWithoutUploadedByInput = {
   contentType?: Prisma.StringFieldUpdateOperationsInput | string;
   scanStatus?: Prisma.EnumDocumentScanStatusFieldUpdateOperationsInput | $Enums.DocumentScanStatus;
   scanResultDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  processId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   uploadedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1098,128 +729,6 @@ export type DocumentUncheckedUpdateManyWithoutUploadedByInput = {
   contentType?: Prisma.StringFieldUpdateOperationsInput | string;
   scanStatus?: Prisma.EnumDocumentScanStatusFieldUpdateOperationsInput | $Enums.DocumentScanStatus;
   scanResultDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  processId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  uploadedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-};
-
-export type DocumentCreateManyProcessInput = {
-  id?: string;
-  uploadedByUserId: string;
-  s3Key: string;
-  originalFilename: string;
-  fileSizeBytes: bigint | number;
-  contentType: string;
-  scanStatus?: $Enums.DocumentScanStatus;
-  scanResultDetail?: string | null;
-  taskId?: string | null;
-  uploadedAt?: Date | string;
-  createdAt?: Date | string;
-  updatedAt?: Date | string;
-};
-
-export type DocumentUpdateWithoutProcessInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string;
-  s3Key?: Prisma.StringFieldUpdateOperationsInput | string;
-  originalFilename?: Prisma.StringFieldUpdateOperationsInput | string;
-  fileSizeBytes?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number;
-  contentType?: Prisma.StringFieldUpdateOperationsInput | string;
-  scanStatus?: Prisma.EnumDocumentScanStatusFieldUpdateOperationsInput | $Enums.DocumentScanStatus;
-  scanResultDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  uploadedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  uploadedBy?: Prisma.UserUpdateOneRequiredWithoutDocumentsUploadedNestedInput;
-  task?: Prisma.TaskUpdateOneWithoutDocumentsNestedInput;
-};
-
-export type DocumentUncheckedUpdateWithoutProcessInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string;
-  uploadedByUserId?: Prisma.StringFieldUpdateOperationsInput | string;
-  s3Key?: Prisma.StringFieldUpdateOperationsInput | string;
-  originalFilename?: Prisma.StringFieldUpdateOperationsInput | string;
-  fileSizeBytes?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number;
-  contentType?: Prisma.StringFieldUpdateOperationsInput | string;
-  scanStatus?: Prisma.EnumDocumentScanStatusFieldUpdateOperationsInput | $Enums.DocumentScanStatus;
-  scanResultDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  uploadedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-};
-
-export type DocumentUncheckedUpdateManyWithoutProcessInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string;
-  uploadedByUserId?: Prisma.StringFieldUpdateOperationsInput | string;
-  s3Key?: Prisma.StringFieldUpdateOperationsInput | string;
-  originalFilename?: Prisma.StringFieldUpdateOperationsInput | string;
-  fileSizeBytes?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number;
-  contentType?: Prisma.StringFieldUpdateOperationsInput | string;
-  scanStatus?: Prisma.EnumDocumentScanStatusFieldUpdateOperationsInput | $Enums.DocumentScanStatus;
-  scanResultDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  taskId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  uploadedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-};
-
-export type DocumentCreateManyTaskInput = {
-  id?: string;
-  uploadedByUserId: string;
-  s3Key: string;
-  originalFilename: string;
-  fileSizeBytes: bigint | number;
-  contentType: string;
-  scanStatus?: $Enums.DocumentScanStatus;
-  scanResultDetail?: string | null;
-  processId?: string | null;
-  uploadedAt?: Date | string;
-  createdAt?: Date | string;
-  updatedAt?: Date | string;
-};
-
-export type DocumentUpdateWithoutTaskInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string;
-  s3Key?: Prisma.StringFieldUpdateOperationsInput | string;
-  originalFilename?: Prisma.StringFieldUpdateOperationsInput | string;
-  fileSizeBytes?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number;
-  contentType?: Prisma.StringFieldUpdateOperationsInput | string;
-  scanStatus?: Prisma.EnumDocumentScanStatusFieldUpdateOperationsInput | $Enums.DocumentScanStatus;
-  scanResultDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  uploadedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  uploadedBy?: Prisma.UserUpdateOneRequiredWithoutDocumentsUploadedNestedInput;
-  process?: Prisma.ProcessUpdateOneWithoutDocumentsNestedInput;
-};
-
-export type DocumentUncheckedUpdateWithoutTaskInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string;
-  uploadedByUserId?: Prisma.StringFieldUpdateOperationsInput | string;
-  s3Key?: Prisma.StringFieldUpdateOperationsInput | string;
-  originalFilename?: Prisma.StringFieldUpdateOperationsInput | string;
-  fileSizeBytes?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number;
-  contentType?: Prisma.StringFieldUpdateOperationsInput | string;
-  scanStatus?: Prisma.EnumDocumentScanStatusFieldUpdateOperationsInput | $Enums.DocumentScanStatus;
-  scanResultDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  processId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  uploadedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-};
-
-export type DocumentUncheckedUpdateManyWithoutTaskInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string;
-  uploadedByUserId?: Prisma.StringFieldUpdateOperationsInput | string;
-  s3Key?: Prisma.StringFieldUpdateOperationsInput | string;
-  originalFilename?: Prisma.StringFieldUpdateOperationsInput | string;
-  fileSizeBytes?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number;
-  contentType?: Prisma.StringFieldUpdateOperationsInput | string;
-  scanStatus?: Prisma.EnumDocumentScanStatusFieldUpdateOperationsInput | $Enums.DocumentScanStatus;
-  scanResultDetail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  processId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   uploadedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -1237,14 +746,10 @@ export type DocumentSelect<
     contentType?: boolean;
     scanStatus?: boolean;
     scanResultDetail?: boolean;
-    processId?: boolean;
-    taskId?: boolean;
     uploadedAt?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
     uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
-    process?: boolean | Prisma.Document$processArgs<ExtArgs>;
-    task?: boolean | Prisma.Document$taskArgs<ExtArgs>;
   },
   ExtArgs['result']['document']
 >;
@@ -1261,14 +766,10 @@ export type DocumentSelectCreateManyAndReturn<
     contentType?: boolean;
     scanStatus?: boolean;
     scanResultDetail?: boolean;
-    processId?: boolean;
-    taskId?: boolean;
     uploadedAt?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
     uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
-    process?: boolean | Prisma.Document$processArgs<ExtArgs>;
-    task?: boolean | Prisma.Document$taskArgs<ExtArgs>;
   },
   ExtArgs['result']['document']
 >;
@@ -1285,14 +786,10 @@ export type DocumentSelectUpdateManyAndReturn<
     contentType?: boolean;
     scanStatus?: boolean;
     scanResultDetail?: boolean;
-    processId?: boolean;
-    taskId?: boolean;
     uploadedAt?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
     uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
-    process?: boolean | Prisma.Document$processArgs<ExtArgs>;
-    task?: boolean | Prisma.Document$taskArgs<ExtArgs>;
   },
   ExtArgs['result']['document']
 >;
@@ -1306,8 +803,6 @@ export type DocumentSelectScalar = {
   contentType?: boolean;
   scanStatus?: boolean;
   scanResultDetail?: boolean;
-  processId?: boolean;
-  taskId?: boolean;
   uploadedAt?: boolean;
   createdAt?: boolean;
   updatedAt?: boolean;
@@ -1324,8 +819,6 @@ export type DocumentOmit<
   | 'contentType'
   | 'scanStatus'
   | 'scanResultDetail'
-  | 'processId'
-  | 'taskId'
   | 'uploadedAt'
   | 'createdAt'
   | 'updatedAt',
@@ -1335,22 +828,16 @@ export type DocumentInclude<
   ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = {
   uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
-  process?: boolean | Prisma.Document$processArgs<ExtArgs>;
-  task?: boolean | Prisma.Document$taskArgs<ExtArgs>;
 };
 export type DocumentIncludeCreateManyAndReturn<
   ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = {
   uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
-  process?: boolean | Prisma.Document$processArgs<ExtArgs>;
-  task?: boolean | Prisma.Document$taskArgs<ExtArgs>;
 };
 export type DocumentIncludeUpdateManyAndReturn<
   ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = {
   uploadedBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>;
-  process?: boolean | Prisma.Document$processArgs<ExtArgs>;
-  task?: boolean | Prisma.Document$taskArgs<ExtArgs>;
 };
 
 export type $DocumentPayload<
@@ -1359,8 +846,6 @@ export type $DocumentPayload<
   name: 'Document';
   objects: {
     uploadedBy: Prisma.$UserPayload<ExtArgs>;
-    process: Prisma.$ProcessPayload<ExtArgs> | null;
-    task: Prisma.$TaskPayload<ExtArgs> | null;
   };
   scalars: runtime.Types.Extensions.GetPayloadResult<
     {
@@ -1372,8 +857,6 @@ export type $DocumentPayload<
       contentType: string;
       scanStatus: $Enums.DocumentScanStatus;
       scanResultDetail: string | null;
-      processId: string | null;
-      taskId: string | null;
       uploadedAt: Date;
       createdAt: Date;
       updatedAt: Date;
@@ -1926,32 +1409,6 @@ export interface Prisma__DocumentClient<
     ExtArgs,
     GlobalOmitOptions
   >;
-  process<T extends Prisma.Document$processArgs<ExtArgs> = {}>(
-    args?: Prisma.Subset<T, Prisma.Document$processArgs<ExtArgs>>,
-  ): Prisma.Prisma__ProcessClient<
-    runtime.Types.Result.GetResult<
-      Prisma.$ProcessPayload<ExtArgs>,
-      T,
-      'findUniqueOrThrow',
-      GlobalOmitOptions
-    > | null,
-    null,
-    ExtArgs,
-    GlobalOmitOptions
-  >;
-  task<T extends Prisma.Document$taskArgs<ExtArgs> = {}>(
-    args?: Prisma.Subset<T, Prisma.Document$taskArgs<ExtArgs>>,
-  ): Prisma.Prisma__TaskClient<
-    runtime.Types.Result.GetResult<
-      Prisma.$TaskPayload<ExtArgs>,
-      T,
-      'findUniqueOrThrow',
-      GlobalOmitOptions
-    > | null,
-    null,
-    ExtArgs,
-    GlobalOmitOptions
-  >;
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1991,8 +1448,6 @@ export interface DocumentFieldRefs {
   readonly contentType: Prisma.FieldRef<'Document', 'String'>;
   readonly scanStatus: Prisma.FieldRef<'Document', 'DocumentScanStatus'>;
   readonly scanResultDetail: Prisma.FieldRef<'Document', 'String'>;
-  readonly processId: Prisma.FieldRef<'Document', 'String'>;
-  readonly taskId: Prisma.FieldRef<'Document', 'String'>;
   readonly uploadedAt: Prisma.FieldRef<'Document', 'DateTime'>;
   readonly createdAt: Prisma.FieldRef<'Document', 'DateTime'>;
   readonly updatedAt: Prisma.FieldRef<'Document', 'DateTime'>;
@@ -2421,48 +1876,6 @@ export type DocumentDeleteManyArgs<
    * Limit how many Documents to delete.
    */
   limit?: number;
-};
-
-/**
- * Document.process
- */
-export type Document$processArgs<
-  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
-> = {
-  /**
-   * Select specific fields to fetch from the Process
-   */
-  select?: Prisma.ProcessSelect<ExtArgs> | null;
-  /**
-   * Omit specific fields from the Process
-   */
-  omit?: Prisma.ProcessOmit<ExtArgs> | null;
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ProcessInclude<ExtArgs> | null;
-  where?: Prisma.ProcessWhereInput;
-};
-
-/**
- * Document.task
- */
-export type Document$taskArgs<
-  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
-> = {
-  /**
-   * Select specific fields to fetch from the Task
-   */
-  select?: Prisma.TaskSelect<ExtArgs> | null;
-  /**
-   * Omit specific fields from the Task
-   */
-  omit?: Prisma.TaskOmit<ExtArgs> | null;
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TaskInclude<ExtArgs> | null;
-  where?: Prisma.TaskWhereInput;
 };
 
 /**

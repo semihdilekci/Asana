@@ -23,7 +23,7 @@ describe('NotificationPreferencesPutSchema', () => {
     const v = NotificationPreferencesPutSchema.parse({
       preferences: [
         {
-          eventType: 'TASK_ASSIGNED',
+          eventType: 'ROLE_ASSIGNED',
           inAppEnabled: true,
           emailEnabled: false,
           digestEnabled: false,

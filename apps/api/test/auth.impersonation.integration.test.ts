@@ -135,8 +135,8 @@ describe('Auth impersonation integration', () => {
 
     const { accessToken, csrfToken, cookieHeader } = await login(
       srv,
-      'integration_process@leanmgmt.local',
-      'OnlyProc123!@#',
+      'integration_limited@leanmgmt.local',
+      'OnlyLim123!@#',
     );
 
     const res = await srv.inject({

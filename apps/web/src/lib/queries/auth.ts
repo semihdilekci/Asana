@@ -57,8 +57,6 @@ function impersonationErrorMessage(err: unknown): string {
 export function invalidateAuthBoundQueries(queryClient: ReturnType<typeof useQueryClient>): void {
   void queryClient.invalidateQueries({ queryKey: queryKeys.auth.me() });
   void queryClient.invalidateQueries({ queryKey: queryKeys.notifications.all() });
-  void queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all() });
-  void queryClient.invalidateQueries({ queryKey: queryKeys.processes.all() });
   void queryClient.invalidateQueries({ queryKey: queryKeys.users.all() });
   void queryClient.invalidateQueries({ queryKey: queryKeys.roles.all() });
   void queryClient.invalidateQueries({ queryKey: queryKeys.masterData.all() });

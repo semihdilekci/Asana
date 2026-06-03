@@ -399,9 +399,6 @@ export const ModelName = {
   AuditLog: 'AuditLog',
   SystemSetting: 'SystemSetting',
   AuditChainIntegrityCheck: 'AuditChainIntegrityCheck',
-  Process: 'Process',
-  Task: 'Task',
-  TaskAssignment: 'TaskAssignment',
   Document: 'Document',
   Notification: 'Notification',
   NotificationPreference: 'NotificationPreference',
@@ -450,9 +447,6 @@ export type TypeMap<
       | 'auditLog'
       | 'systemSetting'
       | 'auditChainIntegrityCheck'
-      | 'process'
-      | 'task'
-      | 'taskAssignment'
       | 'document'
       | 'notification'
       | 'notificationPreference'
@@ -2254,230 +2248,6 @@ export type TypeMap<
         };
       };
     };
-    Process: {
-      payload: Prisma.$ProcessPayload<ExtArgs>;
-      fields: Prisma.ProcessFieldRefs;
-      operations: {
-        findUnique: {
-          args: Prisma.ProcessFindUniqueArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProcessPayload> | null;
-        };
-        findUniqueOrThrow: {
-          args: Prisma.ProcessFindUniqueOrThrowArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProcessPayload>;
-        };
-        findFirst: {
-          args: Prisma.ProcessFindFirstArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProcessPayload> | null;
-        };
-        findFirstOrThrow: {
-          args: Prisma.ProcessFindFirstOrThrowArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProcessPayload>;
-        };
-        findMany: {
-          args: Prisma.ProcessFindManyArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProcessPayload>[];
-        };
-        create: {
-          args: Prisma.ProcessCreateArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProcessPayload>;
-        };
-        createMany: {
-          args: Prisma.ProcessCreateManyArgs<ExtArgs>;
-          result: BatchPayload;
-        };
-        createManyAndReturn: {
-          args: Prisma.ProcessCreateManyAndReturnArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProcessPayload>[];
-        };
-        delete: {
-          args: Prisma.ProcessDeleteArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProcessPayload>;
-        };
-        update: {
-          args: Prisma.ProcessUpdateArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProcessPayload>;
-        };
-        deleteMany: {
-          args: Prisma.ProcessDeleteManyArgs<ExtArgs>;
-          result: BatchPayload;
-        };
-        updateMany: {
-          args: Prisma.ProcessUpdateManyArgs<ExtArgs>;
-          result: BatchPayload;
-        };
-        updateManyAndReturn: {
-          args: Prisma.ProcessUpdateManyAndReturnArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProcessPayload>[];
-        };
-        upsert: {
-          args: Prisma.ProcessUpsertArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProcessPayload>;
-        };
-        aggregate: {
-          args: Prisma.ProcessAggregateArgs<ExtArgs>;
-          result: runtime.Types.Utils.Optional<Prisma.AggregateProcess>;
-        };
-        groupBy: {
-          args: Prisma.ProcessGroupByArgs<ExtArgs>;
-          result: runtime.Types.Utils.Optional<Prisma.ProcessGroupByOutputType>[];
-        };
-        count: {
-          args: Prisma.ProcessCountArgs<ExtArgs>;
-          result: runtime.Types.Utils.Optional<Prisma.ProcessCountAggregateOutputType> | number;
-        };
-      };
-    };
-    Task: {
-      payload: Prisma.$TaskPayload<ExtArgs>;
-      fields: Prisma.TaskFieldRefs;
-      operations: {
-        findUnique: {
-          args: Prisma.TaskFindUniqueArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskPayload> | null;
-        };
-        findUniqueOrThrow: {
-          args: Prisma.TaskFindUniqueOrThrowArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskPayload>;
-        };
-        findFirst: {
-          args: Prisma.TaskFindFirstArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskPayload> | null;
-        };
-        findFirstOrThrow: {
-          args: Prisma.TaskFindFirstOrThrowArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskPayload>;
-        };
-        findMany: {
-          args: Prisma.TaskFindManyArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskPayload>[];
-        };
-        create: {
-          args: Prisma.TaskCreateArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskPayload>;
-        };
-        createMany: {
-          args: Prisma.TaskCreateManyArgs<ExtArgs>;
-          result: BatchPayload;
-        };
-        createManyAndReturn: {
-          args: Prisma.TaskCreateManyAndReturnArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskPayload>[];
-        };
-        delete: {
-          args: Prisma.TaskDeleteArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskPayload>;
-        };
-        update: {
-          args: Prisma.TaskUpdateArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskPayload>;
-        };
-        deleteMany: {
-          args: Prisma.TaskDeleteManyArgs<ExtArgs>;
-          result: BatchPayload;
-        };
-        updateMany: {
-          args: Prisma.TaskUpdateManyArgs<ExtArgs>;
-          result: BatchPayload;
-        };
-        updateManyAndReturn: {
-          args: Prisma.TaskUpdateManyAndReturnArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskPayload>[];
-        };
-        upsert: {
-          args: Prisma.TaskUpsertArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskPayload>;
-        };
-        aggregate: {
-          args: Prisma.TaskAggregateArgs<ExtArgs>;
-          result: runtime.Types.Utils.Optional<Prisma.AggregateTask>;
-        };
-        groupBy: {
-          args: Prisma.TaskGroupByArgs<ExtArgs>;
-          result: runtime.Types.Utils.Optional<Prisma.TaskGroupByOutputType>[];
-        };
-        count: {
-          args: Prisma.TaskCountArgs<ExtArgs>;
-          result: runtime.Types.Utils.Optional<Prisma.TaskCountAggregateOutputType> | number;
-        };
-      };
-    };
-    TaskAssignment: {
-      payload: Prisma.$TaskAssignmentPayload<ExtArgs>;
-      fields: Prisma.TaskAssignmentFieldRefs;
-      operations: {
-        findUnique: {
-          args: Prisma.TaskAssignmentFindUniqueArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskAssignmentPayload> | null;
-        };
-        findUniqueOrThrow: {
-          args: Prisma.TaskAssignmentFindUniqueOrThrowArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskAssignmentPayload>;
-        };
-        findFirst: {
-          args: Prisma.TaskAssignmentFindFirstArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskAssignmentPayload> | null;
-        };
-        findFirstOrThrow: {
-          args: Prisma.TaskAssignmentFindFirstOrThrowArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskAssignmentPayload>;
-        };
-        findMany: {
-          args: Prisma.TaskAssignmentFindManyArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskAssignmentPayload>[];
-        };
-        create: {
-          args: Prisma.TaskAssignmentCreateArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskAssignmentPayload>;
-        };
-        createMany: {
-          args: Prisma.TaskAssignmentCreateManyArgs<ExtArgs>;
-          result: BatchPayload;
-        };
-        createManyAndReturn: {
-          args: Prisma.TaskAssignmentCreateManyAndReturnArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskAssignmentPayload>[];
-        };
-        delete: {
-          args: Prisma.TaskAssignmentDeleteArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskAssignmentPayload>;
-        };
-        update: {
-          args: Prisma.TaskAssignmentUpdateArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskAssignmentPayload>;
-        };
-        deleteMany: {
-          args: Prisma.TaskAssignmentDeleteManyArgs<ExtArgs>;
-          result: BatchPayload;
-        };
-        updateMany: {
-          args: Prisma.TaskAssignmentUpdateManyArgs<ExtArgs>;
-          result: BatchPayload;
-        };
-        updateManyAndReturn: {
-          args: Prisma.TaskAssignmentUpdateManyAndReturnArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskAssignmentPayload>[];
-        };
-        upsert: {
-          args: Prisma.TaskAssignmentUpsertArgs<ExtArgs>;
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$TaskAssignmentPayload>;
-        };
-        aggregate: {
-          args: Prisma.TaskAssignmentAggregateArgs<ExtArgs>;
-          result: runtime.Types.Utils.Optional<Prisma.AggregateTaskAssignment>;
-        };
-        groupBy: {
-          args: Prisma.TaskAssignmentGroupByArgs<ExtArgs>;
-          result: runtime.Types.Utils.Optional<Prisma.TaskAssignmentGroupByOutputType>[];
-        };
-        count: {
-          args: Prisma.TaskAssignmentCountArgs<ExtArgs>;
-          result:
-            | runtime.Types.Utils.Optional<Prisma.TaskAssignmentCountAggregateOutputType>
-            | number;
-        };
-      };
-    };
     Document: {
       payload: Prisma.$DocumentPayload<ExtArgs>;
       fields: Prisma.DocumentFieldRefs;
@@ -3171,66 +2941,6 @@ export const AuditChainIntegrityCheckScalarFieldEnum = {
 export type AuditChainIntegrityCheckScalarFieldEnum =
   (typeof AuditChainIntegrityCheckScalarFieldEnum)[keyof typeof AuditChainIntegrityCheckScalarFieldEnum];
 
-export const ProcessScalarFieldEnum = {
-  id: 'id',
-  processNumber: 'processNumber',
-  processType: 'processType',
-  displayId: 'displayId',
-  startedByUserId: 'startedByUserId',
-  companyId: 'companyId',
-  status: 'status',
-  startedAt: 'startedAt',
-  completedAt: 'completedAt',
-  cancelledAt: 'cancelledAt',
-  cancelReason: 'cancelReason',
-  cancelledByUserId: 'cancelledByUserId',
-  rollbackHistory: 'rollbackHistory',
-  metadata: 'metadata',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-} as const;
-
-export type ProcessScalarFieldEnum =
-  (typeof ProcessScalarFieldEnum)[keyof typeof ProcessScalarFieldEnum];
-
-export const TaskScalarFieldEnum = {
-  id: 'id',
-  processId: 'processId',
-  stepKey: 'stepKey',
-  stepOrder: 'stepOrder',
-  assignmentMode: 'assignmentMode',
-  status: 'status',
-  completionAction: 'completionAction',
-  completionReason: 'completionReason',
-  formData: 'formData',
-  actionContext: 'actionContext',
-  slaDueAt: 'slaDueAt',
-  slaWarningSentAt: 'slaWarningSentAt',
-  slaBreachSentAt: 'slaBreachSentAt',
-  completedByUserId: 'completedByUserId',
-  completedAt: 'completedAt',
-  claimedByUserId: 'claimedByUserId',
-  isSlaOverdue: 'isSlaOverdue',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-} as const;
-
-export type TaskScalarFieldEnum = (typeof TaskScalarFieldEnum)[keyof typeof TaskScalarFieldEnum];
-
-export const TaskAssignmentScalarFieldEnum = {
-  id: 'id',
-  taskId: 'taskId',
-  userId: 'userId',
-  roleId: 'roleId',
-  status: 'status',
-  resolvedByRule: 'resolvedByRule',
-  completedAt: 'completedAt',
-  createdAt: 'createdAt',
-} as const;
-
-export type TaskAssignmentScalarFieldEnum =
-  (typeof TaskAssignmentScalarFieldEnum)[keyof typeof TaskAssignmentScalarFieldEnum];
-
 export const DocumentScalarFieldEnum = {
   id: 'id',
   uploadedByUserId: 'uploadedByUserId',
@@ -3240,8 +2950,6 @@ export const DocumentScalarFieldEnum = {
   contentType: 'contentType',
   scanStatus: 'scanStatus',
   scanResultDetail: 'scanResultDetail',
-  processId: 'processId',
-  taskId: 'taskId',
   uploadedAt: 'uploadedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -3555,86 +3263,6 @@ export type BigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 
 export type ListBigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt[]'>;
 
 /**
- * Reference to a field of type 'ProcessType'
- */
-export type EnumProcessTypeFieldRefInput<$PrismaModel> = FieldRefInputType<
-  $PrismaModel,
-  'ProcessType'
->;
-
-/**
- * Reference to a field of type 'ProcessType[]'
- */
-export type ListEnumProcessTypeFieldRefInput<$PrismaModel> = FieldRefInputType<
-  $PrismaModel,
-  'ProcessType[]'
->;
-
-/**
- * Reference to a field of type 'ProcessStatus'
- */
-export type EnumProcessStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
-  $PrismaModel,
-  'ProcessStatus'
->;
-
-/**
- * Reference to a field of type 'ProcessStatus[]'
- */
-export type ListEnumProcessStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
-  $PrismaModel,
-  'ProcessStatus[]'
->;
-
-/**
- * Reference to a field of type 'AssignmentMode'
- */
-export type EnumAssignmentModeFieldRefInput<$PrismaModel> = FieldRefInputType<
-  $PrismaModel,
-  'AssignmentMode'
->;
-
-/**
- * Reference to a field of type 'AssignmentMode[]'
- */
-export type ListEnumAssignmentModeFieldRefInput<$PrismaModel> = FieldRefInputType<
-  $PrismaModel,
-  'AssignmentMode[]'
->;
-
-/**
- * Reference to a field of type 'TaskStatus'
- */
-export type EnumTaskStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
-  $PrismaModel,
-  'TaskStatus'
->;
-
-/**
- * Reference to a field of type 'TaskStatus[]'
- */
-export type ListEnumTaskStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
-  $PrismaModel,
-  'TaskStatus[]'
->;
-
-/**
- * Reference to a field of type 'TaskAssignmentStatus'
- */
-export type EnumTaskAssignmentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
-  $PrismaModel,
-  'TaskAssignmentStatus'
->;
-
-/**
- * Reference to a field of type 'TaskAssignmentStatus[]'
- */
-export type ListEnumTaskAssignmentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
-  $PrismaModel,
-  'TaskAssignmentStatus[]'
->;
-
-/**
  * Reference to a field of type 'DocumentScanStatus'
  */
 export type EnumDocumentScanStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
@@ -3850,9 +3478,6 @@ export type GlobalOmitConfig = {
   auditLog?: Prisma.AuditLogOmit;
   systemSetting?: Prisma.SystemSettingOmit;
   auditChainIntegrityCheck?: Prisma.AuditChainIntegrityCheckOmit;
-  process?: Prisma.ProcessOmit;
-  task?: Prisma.TaskOmit;
-  taskAssignment?: Prisma.TaskAssignmentOmit;
   document?: Prisma.DocumentOmit;
   notification?: Prisma.NotificationOmit;
   notificationPreference?: Prisma.NotificationPreferenceOmit;

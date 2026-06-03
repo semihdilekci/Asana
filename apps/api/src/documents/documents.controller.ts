@@ -10,8 +10,6 @@ import {
   Post,
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
-import { Permission } from '@leanmgmt/shared-types';
-
 import {
   type DocumentCreateInput,
   type DocumentUploadInitiateInput,
@@ -24,7 +22,6 @@ import {
   CurrentUser,
   type AuthenticatedUser,
 } from '../common/decorators/current-user.decorator.js';
-import { RequirePermission } from '../common/decorators/require-permission.decorator.js';
 import { createZodValidationPipe } from '../common/pipes/zod-validation.pipe.js';
 
 import { DocumentsService } from './documents.service.js';
@@ -35,7 +32,6 @@ export class DocumentsController {
 
   @Post('upload-initiate')
   @HttpCode(HttpStatus.OK)
-  @RequirePermission(Permission.DOCUMENT_UPLOAD)
   @Throttle({ default: { limit: 20, ttl: 60_000 } })
   async uploadInitiate(
     @Body(createZodValidationPipe(DocumentUploadInitiateBodySchema))
@@ -47,7 +43,6 @@ export class DocumentsController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @RequirePermission(Permission.DOCUMENT_UPLOAD)
   @Throttle({ default: { limit: 30, ttl: 60_000 } })
   @Audit('UPLOAD_DOCUMENT', 'document')
   async createDocument(

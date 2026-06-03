@@ -197,7 +197,6 @@ export type CompanyWhereInput = {
   createdByUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null;
   users?: Prisma.UserListRelationFilter;
   locations?: Prisma.LocationListRelationFilter;
-  processes?: Prisma.ProcessListRelationFilter;
 };
 
 export type CompanyOrderByWithRelationInput = {
@@ -211,7 +210,6 @@ export type CompanyOrderByWithRelationInput = {
   createdByUser?: Prisma.UserOrderByWithRelationInput;
   users?: Prisma.UserOrderByRelationAggregateInput;
   locations?: Prisma.LocationOrderByRelationAggregateInput;
-  processes?: Prisma.ProcessOrderByRelationAggregateInput;
 };
 
 export type CompanyWhereUniqueInput = Prisma.AtLeast<
@@ -232,7 +230,6 @@ export type CompanyWhereUniqueInput = Prisma.AtLeast<
     > | null;
     users?: Prisma.UserListRelationFilter;
     locations?: Prisma.LocationListRelationFilter;
-    processes?: Prisma.ProcessListRelationFilter;
   },
   'id' | 'code'
 >;
@@ -277,7 +274,6 @@ export type CompanyCreateInput = {
   createdByUser?: Prisma.UserCreateNestedOneWithoutCompaniesCreatedInput;
   users?: Prisma.UserCreateNestedManyWithoutCompanyInput;
   locations?: Prisma.LocationCreateNestedManyWithoutCompanyInput;
-  processes?: Prisma.ProcessCreateNestedManyWithoutCompanyInput;
 };
 
 export type CompanyUncheckedCreateInput = {
@@ -290,7 +286,6 @@ export type CompanyUncheckedCreateInput = {
   createdByUserId?: string | null;
   users?: Prisma.UserUncheckedCreateNestedManyWithoutCompanyInput;
   locations?: Prisma.LocationUncheckedCreateNestedManyWithoutCompanyInput;
-  processes?: Prisma.ProcessUncheckedCreateNestedManyWithoutCompanyInput;
 };
 
 export type CompanyUpdateInput = {
@@ -303,7 +298,6 @@ export type CompanyUpdateInput = {
   createdByUser?: Prisma.UserUpdateOneWithoutCompaniesCreatedNestedInput;
   users?: Prisma.UserUpdateManyWithoutCompanyNestedInput;
   locations?: Prisma.LocationUpdateManyWithoutCompanyNestedInput;
-  processes?: Prisma.ProcessUpdateManyWithoutCompanyNestedInput;
 };
 
 export type CompanyUncheckedUpdateInput = {
@@ -316,7 +310,6 @@ export type CompanyUncheckedUpdateInput = {
   createdByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   users?: Prisma.UserUncheckedUpdateManyWithoutCompanyNestedInput;
   locations?: Prisma.LocationUncheckedUpdateManyWithoutCompanyNestedInput;
-  processes?: Prisma.ProcessUncheckedUpdateManyWithoutCompanyNestedInput;
 };
 
 export type CompanyCreateManyInput = {
@@ -547,32 +540,6 @@ export type CompanyUncheckedUpdateManyWithoutCreatedByUserNestedInput = {
   deleteMany?: Prisma.CompanyScalarWhereInput | Prisma.CompanyScalarWhereInput[];
 };
 
-export type CompanyCreateNestedOneWithoutProcessesInput = {
-  create?: Prisma.XOR<
-    Prisma.CompanyCreateWithoutProcessesInput,
-    Prisma.CompanyUncheckedCreateWithoutProcessesInput
-  >;
-  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutProcessesInput;
-  connect?: Prisma.CompanyWhereUniqueInput;
-};
-
-export type CompanyUpdateOneRequiredWithoutProcessesNestedInput = {
-  create?: Prisma.XOR<
-    Prisma.CompanyCreateWithoutProcessesInput,
-    Prisma.CompanyUncheckedCreateWithoutProcessesInput
-  >;
-  connectOrCreate?: Prisma.CompanyCreateOrConnectWithoutProcessesInput;
-  upsert?: Prisma.CompanyUpsertWithoutProcessesInput;
-  connect?: Prisma.CompanyWhereUniqueInput;
-  update?: Prisma.XOR<
-    Prisma.XOR<
-      Prisma.CompanyUpdateToOneWithWhereWithoutProcessesInput,
-      Prisma.CompanyUpdateWithoutProcessesInput
-    >,
-    Prisma.CompanyUncheckedUpdateWithoutProcessesInput
-  >;
-};
-
 export type CompanyCreateWithoutLocationsInput = {
   id?: string;
   code: string;
@@ -582,7 +549,6 @@ export type CompanyCreateWithoutLocationsInput = {
   updatedAt?: Date | string;
   createdByUser?: Prisma.UserCreateNestedOneWithoutCompaniesCreatedInput;
   users?: Prisma.UserCreateNestedManyWithoutCompanyInput;
-  processes?: Prisma.ProcessCreateNestedManyWithoutCompanyInput;
 };
 
 export type CompanyUncheckedCreateWithoutLocationsInput = {
@@ -594,7 +560,6 @@ export type CompanyUncheckedCreateWithoutLocationsInput = {
   updatedAt?: Date | string;
   createdByUserId?: string | null;
   users?: Prisma.UserUncheckedCreateNestedManyWithoutCompanyInput;
-  processes?: Prisma.ProcessUncheckedCreateNestedManyWithoutCompanyInput;
 };
 
 export type CompanyCreateOrConnectWithoutLocationsInput = {
@@ -634,7 +599,6 @@ export type CompanyUpdateWithoutLocationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   createdByUser?: Prisma.UserUpdateOneWithoutCompaniesCreatedNestedInput;
   users?: Prisma.UserUpdateManyWithoutCompanyNestedInput;
-  processes?: Prisma.ProcessUpdateManyWithoutCompanyNestedInput;
 };
 
 export type CompanyUncheckedUpdateWithoutLocationsInput = {
@@ -646,7 +610,6 @@ export type CompanyUncheckedUpdateWithoutLocationsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   createdByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   users?: Prisma.UserUncheckedUpdateManyWithoutCompanyNestedInput;
-  processes?: Prisma.ProcessUncheckedUpdateManyWithoutCompanyNestedInput;
 };
 
 export type CompanyCreateWithoutUsersInput = {
@@ -658,7 +621,6 @@ export type CompanyCreateWithoutUsersInput = {
   updatedAt?: Date | string;
   createdByUser?: Prisma.UserCreateNestedOneWithoutCompaniesCreatedInput;
   locations?: Prisma.LocationCreateNestedManyWithoutCompanyInput;
-  processes?: Prisma.ProcessCreateNestedManyWithoutCompanyInput;
 };
 
 export type CompanyUncheckedCreateWithoutUsersInput = {
@@ -670,7 +632,6 @@ export type CompanyUncheckedCreateWithoutUsersInput = {
   updatedAt?: Date | string;
   createdByUserId?: string | null;
   locations?: Prisma.LocationUncheckedCreateNestedManyWithoutCompanyInput;
-  processes?: Prisma.ProcessUncheckedCreateNestedManyWithoutCompanyInput;
 };
 
 export type CompanyCreateOrConnectWithoutUsersInput = {
@@ -690,7 +651,6 @@ export type CompanyCreateWithoutCreatedByUserInput = {
   updatedAt?: Date | string;
   users?: Prisma.UserCreateNestedManyWithoutCompanyInput;
   locations?: Prisma.LocationCreateNestedManyWithoutCompanyInput;
-  processes?: Prisma.ProcessCreateNestedManyWithoutCompanyInput;
 };
 
 export type CompanyUncheckedCreateWithoutCreatedByUserInput = {
@@ -702,7 +662,6 @@ export type CompanyUncheckedCreateWithoutCreatedByUserInput = {
   updatedAt?: Date | string;
   users?: Prisma.UserUncheckedCreateNestedManyWithoutCompanyInput;
   locations?: Prisma.LocationUncheckedCreateNestedManyWithoutCompanyInput;
-  processes?: Prisma.ProcessUncheckedCreateNestedManyWithoutCompanyInput;
 };
 
 export type CompanyCreateOrConnectWithoutCreatedByUserInput = {
@@ -747,7 +706,6 @@ export type CompanyUpdateWithoutUsersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   createdByUser?: Prisma.UserUpdateOneWithoutCompaniesCreatedNestedInput;
   locations?: Prisma.LocationUpdateManyWithoutCompanyNestedInput;
-  processes?: Prisma.ProcessUpdateManyWithoutCompanyNestedInput;
 };
 
 export type CompanyUncheckedUpdateWithoutUsersInput = {
@@ -759,7 +717,6 @@ export type CompanyUncheckedUpdateWithoutUsersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   createdByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
   locations?: Prisma.LocationUncheckedUpdateManyWithoutCompanyNestedInput;
-  processes?: Prisma.ProcessUncheckedUpdateManyWithoutCompanyNestedInput;
 };
 
 export type CompanyUpsertWithWhereUniqueWithoutCreatedByUserInput = {
@@ -803,82 +760,6 @@ export type CompanyScalarWhereInput = {
   createdByUserId?: Prisma.StringNullableFilter<'Company'> | string | null;
 };
 
-export type CompanyCreateWithoutProcessesInput = {
-  id?: string;
-  code: string;
-  name: string;
-  isActive?: boolean;
-  createdAt?: Date | string;
-  updatedAt?: Date | string;
-  createdByUser?: Prisma.UserCreateNestedOneWithoutCompaniesCreatedInput;
-  users?: Prisma.UserCreateNestedManyWithoutCompanyInput;
-  locations?: Prisma.LocationCreateNestedManyWithoutCompanyInput;
-};
-
-export type CompanyUncheckedCreateWithoutProcessesInput = {
-  id?: string;
-  code: string;
-  name: string;
-  isActive?: boolean;
-  createdAt?: Date | string;
-  updatedAt?: Date | string;
-  createdByUserId?: string | null;
-  users?: Prisma.UserUncheckedCreateNestedManyWithoutCompanyInput;
-  locations?: Prisma.LocationUncheckedCreateNestedManyWithoutCompanyInput;
-};
-
-export type CompanyCreateOrConnectWithoutProcessesInput = {
-  where: Prisma.CompanyWhereUniqueInput;
-  create: Prisma.XOR<
-    Prisma.CompanyCreateWithoutProcessesInput,
-    Prisma.CompanyUncheckedCreateWithoutProcessesInput
-  >;
-};
-
-export type CompanyUpsertWithoutProcessesInput = {
-  update: Prisma.XOR<
-    Prisma.CompanyUpdateWithoutProcessesInput,
-    Prisma.CompanyUncheckedUpdateWithoutProcessesInput
-  >;
-  create: Prisma.XOR<
-    Prisma.CompanyCreateWithoutProcessesInput,
-    Prisma.CompanyUncheckedCreateWithoutProcessesInput
-  >;
-  where?: Prisma.CompanyWhereInput;
-};
-
-export type CompanyUpdateToOneWithWhereWithoutProcessesInput = {
-  where?: Prisma.CompanyWhereInput;
-  data: Prisma.XOR<
-    Prisma.CompanyUpdateWithoutProcessesInput,
-    Prisma.CompanyUncheckedUpdateWithoutProcessesInput
-  >;
-};
-
-export type CompanyUpdateWithoutProcessesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string;
-  code?: Prisma.StringFieldUpdateOperationsInput | string;
-  name?: Prisma.StringFieldUpdateOperationsInput | string;
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  createdByUser?: Prisma.UserUpdateOneWithoutCompaniesCreatedNestedInput;
-  users?: Prisma.UserUpdateManyWithoutCompanyNestedInput;
-  locations?: Prisma.LocationUpdateManyWithoutCompanyNestedInput;
-};
-
-export type CompanyUncheckedUpdateWithoutProcessesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string;
-  code?: Prisma.StringFieldUpdateOperationsInput | string;
-  name?: Prisma.StringFieldUpdateOperationsInput | string;
-  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-  createdByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-  users?: Prisma.UserUncheckedUpdateManyWithoutCompanyNestedInput;
-  locations?: Prisma.LocationUncheckedUpdateManyWithoutCompanyNestedInput;
-};
-
 export type CompanyCreateManyCreatedByUserInput = {
   id?: string;
   code: string;
@@ -897,7 +778,6 @@ export type CompanyUpdateWithoutCreatedByUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   users?: Prisma.UserUpdateManyWithoutCompanyNestedInput;
   locations?: Prisma.LocationUpdateManyWithoutCompanyNestedInput;
-  processes?: Prisma.ProcessUpdateManyWithoutCompanyNestedInput;
 };
 
 export type CompanyUncheckedUpdateWithoutCreatedByUserInput = {
@@ -909,7 +789,6 @@ export type CompanyUncheckedUpdateWithoutCreatedByUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
   users?: Prisma.UserUncheckedUpdateManyWithoutCompanyNestedInput;
   locations?: Prisma.LocationUncheckedUpdateManyWithoutCompanyNestedInput;
-  processes?: Prisma.ProcessUncheckedUpdateManyWithoutCompanyNestedInput;
 };
 
 export type CompanyUncheckedUpdateManyWithoutCreatedByUserInput = {
@@ -928,7 +807,6 @@ export type CompanyUncheckedUpdateManyWithoutCreatedByUserInput = {
 export type CompanyCountOutputType = {
   users: number;
   locations: number;
-  processes: number;
 };
 
 export type CompanyCountOutputTypeSelect<
@@ -936,7 +814,6 @@ export type CompanyCountOutputTypeSelect<
 > = {
   users?: boolean | CompanyCountOutputTypeCountUsersArgs;
   locations?: boolean | CompanyCountOutputTypeCountLocationsArgs;
-  processes?: boolean | CompanyCountOutputTypeCountProcessesArgs;
 };
 
 /**
@@ -969,15 +846,6 @@ export type CompanyCountOutputTypeCountLocationsArgs<
   where?: Prisma.LocationWhereInput;
 };
 
-/**
- * CompanyCountOutputType without action
- */
-export type CompanyCountOutputTypeCountProcessesArgs<
-  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
-> = {
-  where?: Prisma.ProcessWhereInput;
-};
-
 export type CompanySelect<
   ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
 > = runtime.Types.Extensions.GetSelect<
@@ -992,7 +860,6 @@ export type CompanySelect<
     createdByUser?: boolean | Prisma.Company$createdByUserArgs<ExtArgs>;
     users?: boolean | Prisma.Company$usersArgs<ExtArgs>;
     locations?: boolean | Prisma.Company$locationsArgs<ExtArgs>;
-    processes?: boolean | Prisma.Company$processesArgs<ExtArgs>;
     _count?: boolean | Prisma.CompanyCountOutputTypeDefaultArgs<ExtArgs>;
   },
   ExtArgs['result']['company']
@@ -1052,7 +919,6 @@ export type CompanyInclude<
   createdByUser?: boolean | Prisma.Company$createdByUserArgs<ExtArgs>;
   users?: boolean | Prisma.Company$usersArgs<ExtArgs>;
   locations?: boolean | Prisma.Company$locationsArgs<ExtArgs>;
-  processes?: boolean | Prisma.Company$processesArgs<ExtArgs>;
   _count?: boolean | Prisma.CompanyCountOutputTypeDefaultArgs<ExtArgs>;
 };
 export type CompanyIncludeCreateManyAndReturn<
@@ -1074,7 +940,6 @@ export type $CompanyPayload<
     createdByUser: Prisma.$UserPayload<ExtArgs> | null;
     users: Prisma.$UserPayload<ExtArgs>[];
     locations: Prisma.$LocationPayload<ExtArgs>[];
-    processes: Prisma.$ProcessPayload<ExtArgs>[];
   };
   scalars: runtime.Types.Extensions.GetPayloadResult<
     {
@@ -1630,17 +1495,6 @@ export interface Prisma__CompanyClient<
       >
     | Null
   >;
-  processes<T extends Prisma.Company$processesArgs<ExtArgs> = {}>(
-    args?: Prisma.Subset<T, Prisma.Company$processesArgs<ExtArgs>>,
-  ): Prisma.PrismaPromise<
-    | runtime.Types.Result.GetResult<
-        Prisma.$ProcessPayload<ExtArgs>,
-        T,
-        'findMany',
-        GlobalOmitOptions
-      >
-    | Null
-  >;
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2177,32 +2031,6 @@ export type Company$locationsArgs<
   take?: number;
   skip?: number;
   distinct?: Prisma.LocationScalarFieldEnum | Prisma.LocationScalarFieldEnum[];
-};
-
-/**
- * Company.processes
- */
-export type Company$processesArgs<
-  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
-> = {
-  /**
-   * Select specific fields to fetch from the Process
-   */
-  select?: Prisma.ProcessSelect<ExtArgs> | null;
-  /**
-   * Omit specific fields from the Process
-   */
-  omit?: Prisma.ProcessOmit<ExtArgs> | null;
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ProcessInclude<ExtArgs> | null;
-  where?: Prisma.ProcessWhereInput;
-  orderBy?: Prisma.ProcessOrderByWithRelationInput | Prisma.ProcessOrderByWithRelationInput[];
-  cursor?: Prisma.ProcessWhereUniqueInput;
-  take?: number;
-  skip?: number;
-  distinct?: Prisma.ProcessScalarFieldEnum | Prisma.ProcessScalarFieldEnum[];
 };
 
 /**

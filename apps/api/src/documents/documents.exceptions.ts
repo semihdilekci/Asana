@@ -53,9 +53,3 @@ export class DocumentInitiateExpiredException extends AppException {
     super('VALIDATION_FAILED', 'Yükleme oturumu geçersiz veya süresi dolmuş.', 400);
   }
 }
-
-export class ProcessAccessDeniedException extends AppException {
-  constructor() {
-    super('PROCESS_ACCESS_DENIED', 'Bu dokümana erişim yetkiniz yok.', 403);
-  }
-}

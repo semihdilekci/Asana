@@ -2,9 +2,6 @@ import { Permission } from '@leanmgmt/shared-types';
 
 export type NavIconKey =
   | 'home'
-  | 'tasks'
-  | 'processes'
-  | 'processAdmin'
   | 'users'
   | 'masterData'
   | 'roles'
@@ -42,27 +39,6 @@ export type AppNavEntry =
 
 export const APP_NAV_ENTRIES: AppNavEntry[] = [
   { href: '/dashboard', label: 'Ana Sayfa', icon: 'home' },
-  { href: '/tasks', label: 'Görevlerim', icon: 'tasks' },
-  { type: 'divider' },
-  {
-    type: 'accordion',
-    label: 'Süreçler',
-    icon: 'processes',
-    anyOf: [Permission.PROCESS_KTI_START],
-    children: [
-      {
-        href: '/processes/kti/start',
-        label: 'KTİ Başlat',
-        permission: Permission.PROCESS_KTI_START,
-      },
-    ],
-  },
-  {
-    href: '/processadministration',
-    label: 'Süreç Yöneticisi',
-    icon: 'processAdmin',
-    permission: Permission.PROCESS_VIEW_ALL,
-  },
   { type: 'divider' },
   { href: '/users', label: 'Kullanıcılar', icon: 'users', permission: Permission.USER_LIST_VIEW },
   {

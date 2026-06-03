@@ -1,6 +1,6 @@
 /**
  * Oturum gerektiren uygulama yolları — `middleware.ts` ve `AuthHydrator` ile senkron tutulur.
- * Tam sayfa yüklemede refresh + `/auth/me` yalnızca bu prefix’lerde çalışır.
+ * Tam sayfa yüklemede refresh + `/auth/me` yalnızca bu prefix'lerde çalışır.
  */
 export const AUTH_PROTECTED_APP_PREFIXES = [
   '/dashboard',
@@ -8,8 +8,6 @@ export const AUTH_PROTECTED_APP_PREFIXES = [
   '/notifications',
   '/settings',
   '/admin',
-  '/processes',
-  '/tasks',
   '/users',
   '/roles',
   '/master-data',

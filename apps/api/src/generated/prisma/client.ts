@@ -163,21 +163,6 @@ export type SystemSetting = Prisma.SystemSettingModel;
  */
 export type AuditChainIntegrityCheck = Prisma.AuditChainIntegrityCheckModel;
 /**
- * Model Process
- *
- */
-export type Process = Prisma.ProcessModel;
-/**
- * Model Task
- *
- */
-export type Task = Prisma.TaskModel;
-/**
- * Model TaskAssignment
- *
- */
-export type TaskAssignment = Prisma.TaskAssignmentModel;
-/**
  * Model Document
  *
  */

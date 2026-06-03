@@ -92,14 +92,14 @@ export const baseConfig = defineConfig({
 
 ### 2.2 Nerede Unit Test Yazılır
 
-| Katman                 | Örnek dosya                                       | Test dosyası                       |
-| ---------------------- | ------------------------------------------------- | ---------------------------------- |
-| Backend service        | `apps/api/src/users/users.service.ts`             | `users.service.test.ts` (yan yana) |
-| Backend util           | `apps/api/src/common/utils/encryption.ts`         | `encryption.test.ts`               |
-| Zod schema             | `packages/shared-schemas/src/users.ts`            | `users.schema.test.ts`             |
-| React hook             | `apps/web/src/hooks/usePermissions.ts`            | `usePermissions.test.ts`           |
-| React component (pure) | `apps/web/src/components/shared/SlaBadge.tsx`     | `SlaBadge.test.tsx`                |
-| Workflow state machine | `apps/api/src/processes/workflow/kti.workflow.ts` | `kti.workflow.test.ts`             |
+| Katman                 | Örnek dosya                                       | Test dosyası                                     |
+| ---------------------- | ------------------------------------------------- | ------------------------------------------------ |
+| Backend service        | `apps/api/src/users/users.service.ts`             | `users.service.test.ts` (yan yana)               |
+| Backend util           | `apps/api/src/common/utils/encryption.ts`         | `encryption.test.ts`                             |
+| Zod schema             | `packages/shared-schemas/src/users.ts`            | `users.schema.test.ts`                           |
+| React hook             | `apps/web/src/hooks/usePermissions.ts`            | `usePermissions.test.ts`                         |
+| React component (pure) | `apps/web/src/components/shared/SlaBadge.tsx`     | `SlaBadge.test.tsx` (Faz 14 ile kaldırılacak)    |
+| Workflow state machine | `apps/api/src/processes/workflow/kti.workflow.ts` | `kti.workflow.test.ts` (Faz 14 ile kaldırılacak) |
 
 Test dosyaları **source dosyasının yanında** durur (co-location). `__tests__/` alt dizini kullanılmaz — refactor sırasında dosya taşıma + test taşıma aynı anda yapılır.
 
@@ -353,7 +353,7 @@ pnpm test:integration  # Docker up gerekli
 pnpm test:all      # İkisi birlikte (CI)
 ```
 
-### 3.3 Integration Test Örneği — KTİ Full Flow
+### 3.3 Integration Test Örneği — KTİ Full Flow (Faz 14 ile kaldırılacak)
 
 ```typescript
 // apps/api/test/kti.integration.test.ts
@@ -617,8 +617,8 @@ export default defineConfig({
 E2E her ekran için değil, **platform'un çalıştığını kanıtlayan** akışlarda:
 
 1. **Auth full cycle** — Login → consent onay (ilk girişte) → dashboard → logout
-2. **KTİ happy path** — Login → KTİ başlat → task atanması e-mail (mock) → manager login → task approve → process COMPLETED
-3. **KTİ revision loop** — Manager REQUEST_REVISION → başlatıcı resubmit → manager APPROVE
+2. **KTİ happy path** — Login → KTİ başlat → task atanması e-mail (mock) → manager login → task approve → process COMPLETED **(Faz 14 ile kaldırılacak)**
+3. **KTİ revision loop** — Manager REQUEST_REVISION → başlatıcı resubmit → manager APPROVE **(Faz 14 ile kaldırılacak)**
 4. **Role management** — Superadmin login → rol oluştur → permission ata → user'a assign → user bu permission ile endpoint'e erişebiliyor mu
 5. **Admin audit search + export** — Superadmin login → audit-logs sayfası → filter uygula → CSV export → dosya indiriliyor mu
 6. **Password reset flow** — Forgot password → email link (mock intercept) → reset page → new password → login yeni şifre ile
@@ -626,7 +626,7 @@ E2E her ekran için değil, **platform'un çalıştığını kanıtlayan** akı�
 
 Her journey 1-3 test case ile temsil edilir — 14-20 e2e test total MVP için yeterli (impersonation +1 journey).
 
-### 4.3 E2E Test Örneği — KTİ Happy Path
+### 4.3 E2E Test Örneği — KTİ Happy Path (Faz 14 ile kaldırılacak)
 
 ```typescript
 // apps/web/e2e/kti-happy-path.spec.ts
@@ -1064,7 +1064,7 @@ Bu playbook `docs/runbooks/prod-subset-to-staging.md`'de; MVP'de nadir kullanıl
 - Password in history → 400 PASSWORD_REUSED
 - Success → sessions revoked, password_history appended
 
-### 7.2 KTİ Workflow
+### 7.2 KTİ Workflow (Faz 14 ile kaldırılacak)
 
 **Başlatma:**
 
@@ -1434,18 +1434,18 @@ Staging seed'in platform test'leme kapsamı:
 
 **Ekran × scenario test matrix:**
 
-| Ekran                       | Test senaryosu                        | Beklenen data    |
-| --------------------------- | ------------------------------------- | ---------------- |
-| S-USER-LIST                 | Filtre: companyId=ACME, isActive=true | ~15 kullanıcı    |
-| S-USER-LIST                 | Arama: "ali"                          | 3-5 sonuç        |
-| S-PROC-LIST-MY              | Happy — aktif user için               | 2-5 süreç        |
-| S-PROC-LIST-ADMIN           | CANCELLED toggle on                   | +5 süreç         |
-| S-TASK-LIST (pending tab)   | Manager user için                     | 1-3 bekleyen     |
-| S-TASK-LIST (completed tab) | Çeşitli completion action'lar         | 10+              |
-| S-PROC-DETAIL               | Full chain — 4 adım complete          | Her task görünür |
-| S-ROLE-USERS                | Direct + rule mix                     | 20+ user         |
-| S-ADMIN-AUDIT               | Son 24 saat filter                    | 200+ kayıt       |
-| S-NOTIF-LIST                | Mix read/unread                       | 15+ bildirim     |
+| Ekran                       | Test senaryosu                        | Beklenen data                              |
+| --------------------------- | ------------------------------------- | ------------------------------------------ |
+| S-USER-LIST                 | Filtre: companyId=ACME, isActive=true | ~15 kullanıcı                              |
+| S-USER-LIST                 | Arama: "ali"                          | 3-5 sonuç                                  |
+| S-PROC-LIST-MY              | Happy — aktif user için               | 2-5 süreç (Faz 14 ile kaldırılacak)        |
+| S-PROC-LIST-ADMIN           | CANCELLED toggle on                   | +5 süreç (Faz 14 ile kaldırılacak)         |
+| S-TASK-LIST (pending tab)   | Manager user için                     | 1-3 bekleyen (Faz 14 ile kaldırılacak)     |
+| S-TASK-LIST (completed tab) | Çeşitli completion action'lar         | 10+ (Faz 14 ile kaldırılacak)              |
+| S-PROC-DETAIL               | Full chain — 4 adım complete          | Her task görünür (Faz 14 ile kaldırılacak) |
+| S-ROLE-USERS                | Direct + rule mix                     | 20+ user                                   |
+| S-ADMIN-AUDIT               | Son 24 saat filter                    | 200+ kayıt                                 |
+| S-NOTIF-LIST                | Mix read/unread                       | 15+ bildirim                               |
 
 Seed sonrası manuel QA checklist oluşturulur (QA team + Notion/Confluence doc).
 
@@ -1550,13 +1550,13 @@ API_URL=https://staging.lean-mgmt.holding.com k6 run --out cloudwatch loadtest/l
 
 ### 11.4 Senaryolar
 
-| Script                       | Target                                                      | Sıklık |
-| ---------------------------- | ----------------------------------------------------------- | ------ |
-| `login-storm.js`             | Login endpoint 500 VU                                       | Aylık  |
-| `process-list-pagination.js` | Büyük liste pagination                                      | Aylık  |
-| `kti-start-burst.js`         | 50 eşzamanlı KTİ başlatma                                   | Aylık  |
-| `dashboard-mixed.js`         | Tipik kullanıcı akışı — dashboard + task + process carousel | Çeyrek |
-| `sustained-2h.js`            | 2 saat steady 100 req/sec — memory leak tespiti             | Çeyrek |
+| Script                       | Target                                                                                 | Sıklık |
+| ---------------------------- | -------------------------------------------------------------------------------------- | ------ |
+| `login-storm.js`             | Login endpoint 500 VU                                                                  | Aylık  |
+| `process-list-pagination.js` | Büyük liste pagination (Faz 14 ile kaldırılacak)                                       | Aylık  |
+| `kti-start-burst.js`         | 50 eşzamanlı KTİ başlatma (Faz 14 ile kaldırılacak)                                    | Aylık  |
+| `dashboard-mixed.js`         | Tipik kullanıcı akışı — dashboard + task + process carousel (Faz 14 ile güncellenecek) | Çeyrek |
+| `sustained-2h.js`            | 2 saat steady 100 req/sec — memory leak tespiti                                        | Çeyrek |
 
 ### 11.5 Capacity Planning
 
