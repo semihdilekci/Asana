@@ -84,17 +84,6 @@ apps/web/
 │   │   │   ├── layout.tsx               # AppLayout — sidebar + topbar + main
 │   │   │   ├── dashboard/
 │   │   │   │   └── page.tsx
-│   │   │   ├── processes/
-│   │   │   │   ├── page.tsx             # Liste
-│   │   │   │   ├── [displayId]/
-│   │   │   │   │   └── page.tsx         # Detay
-│   │   │   │   └── kti/
-│   │   │   │       └── start/
-│   │   │   │           └── page.tsx     # KTİ başlatma formu
-│   │   │   ├── tasks/
-│   │   │   │   ├── page.tsx             # Liste (tabs: started/pending/completed)
-│   │   │   │   └── [id]/
-│   │   │   │       └── page.tsx         # Görev detayı + form
 │   │   │   ├── users/
 │   │   │   │   ├── page.tsx
 │   │   │   │   ├── new/page.tsx
@@ -233,11 +222,11 @@ apps/web/
 
 Next.js App Router'ın parantezli gruplama özelliği ile URL yapısını bozmadan farklı layout'lar uygulanır:
 
-| Grup      | Layout                                    | Erişim            | Örnek route                          |
-| --------- | ----------------------------------------- | ----------------- | ------------------------------------ |
-| `(auth)`  | AuthLayout — ortada logo + card           | Unauth            | `/login`, `/forgot-password`         |
-| `(app)`   | AppLayout — sidebar + topbar              | Auth              | `/dashboard`, `/processes`, `/tasks` |
-| `(admin)` | AdminLayout — AppLayout + kısıtlı sidebar | Auth + Superadmin | `/admin/audit-logs`                  |
+| Grup      | Layout                                    | Erişim            | Örnek route                              |
+| --------- | ----------------------------------------- | ----------------- | ---------------------------------------- |
+| `(auth)`  | AuthLayout — ortada logo + card           | Unauth            | `/login`, `/forgot-password`             |
+| `(app)`   | AppLayout — sidebar + topbar              | Auth              | `/dashboard`, `/users`, `/notifications` |
+| `(admin)` | AdminLayout — AppLayout + kısıtlı sidebar | Auth + Superadmin | `/admin/audit-logs`                      |
 
 URL'de grup adı görünmez (parantezli segmentler Next tarafından URL'den çıkarılır): `/admin/audit-logs` gerçek route, `(admin)/admin/` sadece dosya yapısı.
 
@@ -388,7 +377,7 @@ Frontend'de dört farklı state türü vardır. Her biri tek bir tool'la yöneti
 | **Server state (API cache)** | TanStack Query          | User list, process detail, notifications         | Zustand'a yazma; kendi cache'ini tutma                                                                       |
 | **UI transient**             | Zustand                 | Sidebar collapsed, modal open, drawer state      | API data buraya koyma; URL state buraya koyma                                                                |
 | **Shareable (URL)**          | `useSearchParams`       | Liste filtreleri, pagination cursor, aktif tab   | Zustand'a çift yazma; stale olma riski                                                                       |
-| **Form draft**               | React Hook Form (local) | Kullanıcı düzenleme formu, KTİ başlatma          | Zustand'a kaydırma (dirty state kontrolü için ayrıca global store var — [5.3](#53-unsaved-changes-tracking)) |
+| **Form draft**               | React Hook Form (local) | Kullanıcı düzenleme formları                     | Zustand'a kaydırma (dirty state kontrolü için ayrıca global store var — [5.3](#53-unsaved-changes-tracking)) |
 | **Auth state (istisna)**     | Zustand                 | currentUser, permissions, csrfToken, accessToken | TanStack Query'ye kaydırma — aşağıda açıklanıyor                                                             |
 
 ### 4.1 Auth State İstisnası
@@ -1578,7 +1567,7 @@ export function useUpdateRolePermissionsMutation(roleId: string) {
    - Description'un 100 karakteri aşan kısmı tooltip'te gösterilir
 4. **Alt bölüm — Diff özeti:**
    - "Kaydedilmemiş değişiklikler: 3 yetki eklenecek, 1 yetki kaldırılacak" uyarı kartı
-   - Değişen permission'lar açıkça listelenir (+USER_DELETE, +PROCESS_ROLLBACK, -AUDIT_LOG_VIEW)
+   - Değişen permission'lar açıkça listelenir (+USER_DELETE, -AUDIT_LOG_VIEW)
 5. **Kaydet butonu:** Disabled if no changes; confirmation dialog açar.
 
 ### 13.3 Confirmation Dialog İçeriği
@@ -1588,7 +1577,6 @@ Başlık: "Rol Yetkilerini Güncelle"
 Açıklama:
   - "<Rol Adı>" rolü için aşağıdaki değişiklikleri onaylıyor musunuz?
   - [+] USER_DELETE — Kullanıcı silme yetkisi
-  - [+] PROCESS_ROLLBACK — Süreç geri alma yetkisi
   - [-] AUDIT_LOG_VIEW — Denetim kayıtları görüntüleme yetkisi (HASSAS)
   - Bu değişiklik bu role atanmış tüm kullanıcıları etkileyecektir.
 Butonlar: "İptal" | "Güncellemeyi Kaydet"
@@ -1710,7 +1698,7 @@ Kullanım:
 </PermissionGate>
 
 // Alternatif gösterim fallback ile
-<PermissionGate requires={Permission.PROCESS_CANCEL} fallback={<span className="text-muted-foreground">Yetkiniz yok</span>}>
+<PermissionGate requires={Permission.USER_DEACTIVATE} fallback={<span className="text-muted-foreground">Yetkiniz yok</span>}>
   <Button variant="destructive" onClick={handleCancel}>İptal Et</Button>
 </PermissionGate>
 ```

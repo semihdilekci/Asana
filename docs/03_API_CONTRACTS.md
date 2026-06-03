@@ -2,8 +2,6 @@
 
 > Bu doküman frontend ile backend arasındaki tam kontratı tanımlar. Frontend agent'ı bu dokümanla her UI etkileşimini kurar; backend agent'ı her endpoint'i bu şartnameye göre implement eder.
 
-> **Faz 14 (2026-06):** `/api/v1/processes` ve `/api/v1/tasks` endpoint'leri koddan kaldırıldı. Dokümanda kalan §9.5–§9.6 içerikleri yalnızca geçmiş referans (arşiv) içindir; yeni geliştirmede kullanılmaz.
-
 ---
 
 ## 1. Genel Prensipler
@@ -74,9 +72,7 @@ Tüm JSON response'lar üç formattan birindedir:
 ```json
 {
   "data": [
-    { "id": "...", "displayId": "KTI-000001" },
-    { "id": "...", "displayId": "KTI-000002" }
-  ],
+    { "id": "...",     { "id": "...",   ],
   "pagination": {
     "nextCursor": "eyJpZCI6ImNseDFhMmIzYzRkNWU2ZjcifQ==",
     "hasMore": true,
@@ -160,22 +156,6 @@ Tüm JSON response'lar üç formattan birindedir:
 | `MASTER_DATA_CODE_IMMUTABLE`          | 403  | `code` değiştirme girişimi                                                       | "Kod değiştirilemez."                                                              |
 | `MASTER_DATA_IN_USE`                  | 422  | Aktif kullanıcısı olan master data'yı pasifleştirme                              | "Bu kayıt aktif kullanıcılar tarafından kullanılıyor, önce kullanıcıları taşıyın." |
 | `MASTER_DATA_PARENT_INACTIVE`         | 422  | Pasif parent altına child ekleme                                                 | "Üst kayıt pasif durumda, önce aktifleştirin."                                     |
-| **PROCESS**                           |      |                                                                                  |                                                                                    |
-| `PROCESS_NOT_FOUND`                   | 404  | Süreç bulunamadı                                                                 | "Süreç bulunamadı."                                                                |
-| `PROCESS_ACCESS_DENIED`               | 403  | Süreç kullanıcının değil + yetki yok                                             | "Bu sürece erişim yetkiniz bulunmuyor."                                            |
-| `PROCESS_INVALID_STATE`               | 409  | Geçersiz state transition (örn. tamamlanmış süreci iptal)                        | "Bu işlem mevcut süreç durumunda yapılamaz."                                       |
-| `PROCESS_CANCEL_REASON_REQUIRED`      | 400  | İptal gerekçesi eksik                                                            | "İptal gerekçesi zorunludur."                                                      |
-| `PROCESS_ROLLBACK_INVALID_TARGET`     | 422  | Geçersiz rollback hedef adımı                                                    | "Bu adıma geri dönüş mümkün değil."                                                |
-| `PROCESS_TYPE_UNKNOWN`                | 400  | Bilinmeyen süreç tipi                                                            | "Bu süreç tipi desteklenmiyor."                                                    |
-| `PROCESS_START_FORBIDDEN`             | 403  | Başlatma yetkisi yok                                                             | "Bu süreci başlatma yetkiniz bulunmuyor."                                          |
-| **TASK**                              |      |                                                                                  |                                                                                    |
-| `TASK_NOT_FOUND`                      | 404  | Görev bulunamadı                                                                 | "Görev bulunamadı."                                                                |
-| `TASK_ACCESS_DENIED`                  | 403  | Görev kullanıcıya atanmamış                                                      | "Bu göreve erişim yetkiniz bulunmuyor."                                            |
-| `TASK_ALREADY_COMPLETED`              | 409  | Tamamlanmış görevde aksiyon                                                      | "Bu görev zaten tamamlanmış."                                                      |
-| `TASK_CLAIM_LOST`                     | 409  | Başka bir aday claim etti                                                        | "Bu görev başka bir kullanıcı tarafından üstlenildi."                              |
-| `TASK_COMPLETION_ACTION_INVALID`      | 422  | Süreç tanımının izin vermediği action                                            | "Bu aksiyon bu adım için geçersiz."                                                |
-| `TASK_REASON_REQUIRED`                | 400  | Red veya Revize için gerekçe eksik                                               | "Gerekçe alanı zorunludur."                                                        |
-| `TASK_NOT_CLAIMABLE`                  | 422  | SINGLE veya ALL_REQUIRED mode'da claim girişimi                                  | "Bu görev üstlenme modunda değil."                                                 |
 | **DOCUMENT**                          |      |                                                                                  |                                                                                    |
 | `DOCUMENT_NOT_FOUND`                  | 404  | Doküman bulunamadı                                                               | "Doküman bulunamadı."                                                              |
 | `DOCUMENT_SCAN_PENDING`               | 409  | Tarama devam ediyor, erişilemez                                                  | "Doküman hâlâ güvenlik taramasından geçiyor."                                      |
@@ -183,7 +163,7 @@ Tüm JSON response'lar üç formattan birindedir:
 | `DOCUMENT_SIZE_EXCEEDED`              | 413  | Dosya boyutu limiti aşıldı                                                       | "Dosya boyutu 10 MB'ı aşamaz."                                                     |
 | `DOCUMENT_CONTENT_TYPE_INVALID`       | 415  | İzin verilmeyen format                                                           | "Bu dosya formatı desteklenmiyor."                                                 |
 | `DOCUMENT_URL_EXPIRED`                | 410  | Signed URL süresi doldu                                                          | "Erişim bağlantısının süresi doldu, yeniden yükleyin."                             |
-| `DOCUMENT_UPLOAD_FORBIDDEN`           | 403  | Upload yetkisi yok (sürece bağlı değil)                                          | "Dosya yükleme yetkiniz bulunmuyor."                                               |
+| `DOCUMENT_UPLOAD_FORBIDDEN`           | 403  | Upload yetkisi yok                                                               | "Dosya yükleme yetkiniz bulunmuyor."                                               |
 | **CONSENT**                           |      |                                                                                  |                                                                                    |
 | `CONSENT_VERSION_NOT_FOUND`           | 404  | Rıza versiyonu yok                                                               | "Rıza versiyonu bulunamadı."                                                       |
 | `CONSENT_ALREADY_PUBLISHED`           | 409  | PUBLISHED versiyon düzenleme                                                     | "Yayınlanmış rıza metni düzenlenemez."                                             |
@@ -294,7 +274,7 @@ Content-Type: application/json
 **Örnek:**
 
 ```http
-GET /api/v1/processes?limit=50&cursor=eyJpZCI6ImNseDFhMmIzIn0%3D
+
 ```
 
 ```json
@@ -387,7 +367,7 @@ Set-Cookie: csrf_token=<random>; Secure; SameSite=Strict; Path=/
       "firstName": "Ali",
       "lastName": "Yılmaz",
       "email": "ali.yilmaz@holding.com",
-      "permissions": ["USER_CREATE", "PROCESS_KTI_START", "..."],
+      "permissions": ["USER_CREATE", "USER_LIST_VIEW", "..."],
       "activeConsentVersionId": "clx...",
       "consentAccepted": true
     }
@@ -546,7 +526,7 @@ Bu bölüm platformdaki tüm endpoint'leri modül bazlı gruplayarak detaylandı
       "firstName": "Ali",
       "lastName": "Yılmaz",
       "email": "ali.yilmaz@holding.com",
-      "permissions": ["USER_CREATE", "PROCESS_KTI_START"],
+      "permissions": ["USER_CREATE", "USER_LIST_VIEW"],
       "activeConsentVersionId": "clx...",
       "consentAccepted": true,
       "passwordExpiresAt": "2026-10-23T00:00:00.000Z"
@@ -774,9 +754,9 @@ Enumeration önlemi — email var veya yok her ikisinde aynı 200 + aynı mesaj.
     "manager": { "id": "...", "sicil": "87654321", "firstName": "Ayşe", "lastName": "Kaya" },
     "roles": [
       { "id": "...", "code": "USER_MANAGER", "name": "Kullanıcı Yöneticisi", "source": "DIRECT" },
-      { "id": "...", "code": "KTI_INITIATOR", "name": "KTİ Başlatıcı", "source": "ATTRIBUTE_RULE" }
+      { "id": "...", "code": "EXAMPLE_ROLE", "name": "Örnek Rol", "source": "ATTRIBUTE_RULE" }
     ],
-    "permissions": ["USER_CREATE", "USER_UPDATE_ATTRIBUTE", "PROCESS_KTI_START", "..."],
+    "permissions": ["USER_CREATE", "USER_UPDATE_ATTRIBUTE", "USER_LIST_VIEW", "..."],
     "activeConsentVersionId": "clx...",
     "consentAccepted": true,
     "passwordExpiresAt": "2026-10-23T00:00:00.000Z",
@@ -1130,7 +1110,7 @@ Impersonation aktifken `impersonation.active: true` ve `impersonation.impersonat
 | `USER_ALREADY_PASSIVE` | 409 | Zaten pasif |
 | `USER_SELF_EDIT_FORBIDDEN` | 403 | Kendini pasifleştirme |
 
-**Audit:** `DEACTIVATE_USER` entity=`user`, entity_id=:id, metadata={reason}. Yan etkiler: tüm ACTIVE session'lar REVOKED; aktif task_assignments → süreç tanımına göre re-assign veya rollback (service-layer handler).
+**Audit:** `DEACTIVATE_USER` entity=`user`, entity_id=:id, metadata={reason}. Yan etkiler: tüm ACTIVE session'lar REVOKED.
 
 ---
 
@@ -1175,13 +1155,7 @@ Impersonation aktifken `impersonation.active: true` ve `impersonation.impersonat
     "sessionHistory": [
       { "createdAt": "...", "lastActiveAt": "...", "ipCity": "...", "userAgent": "..." }
     ],
-    "consentHistory": [{ "consentVersionId": "...", "version": 2, "acceptedAt": "..." }],
-    "processCounts": {
-      "initiated": 12,
-      "pendingApproval": 3,
-      "completed": 8,
-      "cancelled": 1
-    }
+    "consentHistory": [{ "consentVersionId": "...", "version": 2, "acceptedAt": "..." }]
   }
 }
 ```
@@ -1214,8 +1188,8 @@ Kullanıcıya kendi verilerini şeffaf olarak sunar. Export/indirme özelliği M
     },
     {
       "id": "clx...",
-      "code": "KTI_INITIATOR",
-      "name": "KTİ Başlatıcı",
+      "code": "EXAMPLE_ROLE",
+      "name": "Örnek Rol",
       "source": "ATTRIBUTE_RULE",
       "matchedRuleId": "clx-rule",
       "matchedConditionSet": { "conditions": [ ... ] }
@@ -1495,8 +1469,8 @@ Yan etki: `work-areas` pasifleştirilirse altındaki aktif `work-sub-areas` casc
 
 ```json
 {
-  "code": "KTI_INITIATOR",
-  "name": "KTİ Başlatıcı",
+  "code": "EXAMPLE_ROLE",
+  "name": "Örnek Rol",
   "description": "Before & After Kaizen süreci başlatma yetkisi"
 }
 ```
@@ -1512,8 +1486,8 @@ Yan etki: `work-areas` pasifleştirilirse altındaki aktif `work-sub-areas` casc
 {
   "data": {
     "id": "clx...",
-    "code": "KTI_INITIATOR",
-    "name": "KTİ Başlatıcı",
+    "code": "EXAMPLE_ROLE",
+    "name": "Örnek Rol",
     "description": "...",
     "isSystem": false,
     "isActive": true,
@@ -1554,7 +1528,7 @@ Yan etki: `work-areas` pasifleştirilirse altındaki aktif `work-sub-areas` casc
 
 ```json
 {
-  "name": "KTİ Başlatıcı (Güncel)",
+  "name": "Örnek Rol (Güncel)",
   "description": "Güncellenmiş açıklama"
 }
 ```
@@ -1925,604 +1899,22 @@ Kaynak: `packages/shared-types/src/permissions.ts` içindeki `PERMISSION_METADAT
 
 **Audit:** Yok.
 
-### 9.5 Processes Modülü
-
-> **⛔ Kaldırıldı (Faz 14):** Bu endpoint'ler ASANA pivot ile kaldırıldı.
-
-#### `GET /api/v1/processes`
-
-**Purpose:** Süreç listesi. İki ana mod: `scope=my-started` (kullanıcının kendi başlattıkları) ve `scope=admin` (tüm süreçler — admin paneli).
-**Auth:**
-
-- `scope=my-started` — access token yeterli
-- `scope=admin` — `PROCESS_VIEW_ALL` yetkisi (Superadmin, Süreç Yöneticisi)
-
-**Query params:**
-
-- `scope` — `my-started` (default) / `admin`
-- `status` — filtre: `INITIATED` / `IN_PROGRESS` / `COMPLETED` / `REJECTED` / `CANCELLED` / `all` (default `all`)
-- `processType` — filtre (MVP'de sadece `BEFORE_AFTER_KAIZEN`)
-- `displayId` — `KTI-000042` ile tekil arama
-- `startedAtFrom`, `startedAtTo` — ISO 8601 UTC tarih aralığı
-- `startedByUserId` — (yalnız admin scope'ta) belirli kullanıcının başlattıkları
-- `companyId` — (yalnız admin scope'ta)
-- `limit`, `cursor` (pagination)
-- `sort` — `started_at_desc` (default) / `started_at_asc`
-
-**Response 200:**
-
-```json
-{
-  "data": [
-    {
-      "id": "clx...",
-      "displayId": "KTI-000042",
-      "processType": "BEFORE_AFTER_KAIZEN",
-      "status": "IN_PROGRESS",
-      "startedBy": { "id": "...", "sicil": "12345678", "firstName": "Ali", "lastName": "Yılmaz" },
-      "company": { "id": "...", "code": "ABC", "name": "ABC Şirketi" },
-      "activeTaskLabel": "Yönetici Onayında",
-      "startedAt": "2026-04-23T10:00:00.000Z",
-      "completedAt": null,
-      "cancelledAt": null
-    }
-  ],
-  "pagination": { "nextCursor": "...", "hasMore": true }
-}
-```
-
-`activeTaskLabel` — Process `IN_PROGRESS` durumunda aktif Task'ın `step_key`'inden UI etiketi türetilir (backend çözer): "Yönetici Onayında" / "Revizyonda (Başlatıcıda)" gibi. Process terminal durumlarda: "Tamamlandı" / "Reddedildi" / "İptal Edildi". `CANCELLED` süreçler yalnız admin scope'ta döner.
-
----
-
-#### `POST /api/v1/processes/kti/start`
-
-**Purpose:** KTİ (Before & After Kaizen) süreci başlatma.
-**Auth:** `PROCESS_KTI_START` yetkisi.
-**Rate limit:** 10 / dakika / kullanıcı.
-
-**Request body:**
-
-```json
-{
-  "companyId": "clx-abc",
-  "beforePhotoDocumentIds": ["clx-doc-1", "clx-doc-2"],
-  "afterPhotoDocumentIds": ["clx-doc-3", "clx-doc-4"],
-  "savingAmount": 15000,
-  "description": "Montaj hattı 3'te Poka-Yoke uygulaması ile fire oranı düşürüldü."
-}
-```
-
-**Field kuralları:**
-
-- `companyId`: kullanıcının şirketi veya form tanımının izin verdiği şirket listesi içinde
-- `beforePhotoDocumentIds`, `afterPhotoDocumentIds`: en az 1'er tane; Document'ler `scan_status='CLEAN'` olmalı, `content_type` image/\*, upload eden kullanıcı === currentUser
-- `savingAmount`: number, ≥ 0, TL birimi (uygulama tarafında integer TL cent'e çevirebilir; MVP'de düz integer)
-- `description`: 10-5000 karakter
-
-**Response 201:**
-
-```json
-{
-  "data": {
-    "id": "clx...",
-    "displayId": "KTI-000043",
-    "processType": "BEFORE_AFTER_KAIZEN",
-    "status": "IN_PROGRESS",
-    "firstTaskId": "clx-task-1",
-    "startedAt": "2026-04-23T14:32:00.000Z"
-  }
-}
-```
-
-Backend transaction: Process INSERT → Task (Yönetici Onay) INSERT (atanan: currentUser.manager_user_id, dinamik resolve) → TaskAssignment INSERT → Bildirim event emit (`TASK_ASSIGNED` → manager). Tek atomik commit.
-
-**Errors:**
-| Code | HTTP | Koşul |
-|---|---|---|
-| `VALIDATION_FAILED` | 400 | Form validation |
-| `PROCESS_START_FORBIDDEN` | 403 | `PROCESS_KTI_START` yok |
-| `DOCUMENT_NOT_FOUND` | 404 | Referans verilen döküman yok |
-| `DOCUMENT_SCAN_PENDING` | 409 | Döküman hâlâ taramada |
-| `DOCUMENT_INFECTED` | 403 | Döküman zararlı |
-| `USER_NOT_FOUND` | 422 | Kullanıcının manager'ı yok (manager_user_id null) — KTİ sürecinde manager şart |
-
-**Audit:** `START_PROCESS` entity=`process`, entity_id=process.id, metadata={processType: `BEFORE_AFTER_KAIZEN`, displayId, companyId, savingAmount, documentCount}. Opens `CREATE_TASK` audit for the first task.
-
----
-
-#### `GET /api/v1/processes/:displayId`
-
-**Purpose:** Süreç detayı — tüm task'lar, form verileri, dokümanlar.
-**Auth:** Görünürlük kuralı:
-
-- Kullanıcı sürecin başlatıcısı ise — tüm detaylar
-- Kullanıcı bu sürecin herhangi bir task'ına atanmış ise — atandığı task'ın detayları + önceki tamamlanmış task'ların özet bilgileri
-- `PROCESS_VIEW_ALL` yetkisi varsa — tüm detaylar
-- Aksi halde → `PROCESS_ACCESS_DENIED`
-
-**Path param:** `:displayId` — örn. `KTI-000042`.
-
-**Response 200:**
-
-```json
-{
-  "data": {
-    "id": "clx...",
-    "displayId": "KTI-000042",
-    "processType": "BEFORE_AFTER_KAIZEN",
-    "status": "IN_PROGRESS",
-    "activeTaskLabel": "Yönetici Onayında",
-    "startedBy": { "id": "...", "sicil": "...", "firstName": "...", "lastName": "..." },
-    "company": { "...": "..." },
-    "startedAt": "...",
-    "completedAt": null,
-    "cancelledAt": null,
-    "cancelReason": null,
-    "tasks": [
-      {
-        "id": "clx-task-1",
-        "stepKey": "KTI_INITIATION",
-        "stepOrder": 1,
-        "status": "COMPLETED",
-        "createdAt": "2026-04-20T08:00:00.000Z",
-        "completedBy": { "...": "..." },
-        "completedAt": "...",
-        "completionAction": null,
-        "formData": {
-          "beforePhotoDocumentIds": ["..."],
-          "afterPhotoDocumentIds": ["..."],
-          "savingAmount": 15000,
-          "description": "..."
-        }
-      },
-      {
-        "id": "clx-task-2",
-        "stepKey": "KTI_MANAGER_APPROVAL",
-        "stepOrder": 2,
-        "status": "PENDING",
-        "createdAt": "2026-04-20T09:15:00.000Z",
-        "assignedTo": { "id": "...", "firstName": "Ayşe", "lastName": "Kaya" },
-        "slaDueAt": "2026-04-26T10:00:00.000Z"
-      }
-    ],
-    "documents": [{ "id": "...", "filename": "...", "scanStatus": "CLEAN", "thumbnailUrl": "..." }]
-  }
-}
-```
-
-Görünürlük kısıtı atanmış task'ları olan ama başlatıcı olmayan kullanıcılar için uygulanır: kendi atandığı task'ın full detayı + diğer tamamlanmış task'ların yalnızca özet bilgileri (`stepKey`, `status`, `completedAt`, `createdAt` — form_data ve dokümanlar gizli).
-
-**`tasks` sırası:** Her zaman `created_at` artan (kronolojik); aynı adım numarası tekrarlandığında (ör. ikinci yönetici onayı) zincir yine oluşturulma zamanına göre listelenir.
-
-**Errors:**
-| Code | HTTP | Koşul |
-|---|---|---|
-| `PROCESS_NOT_FOUND` | 404 | |
-| `PROCESS_ACCESS_DENIED` | 403 | |
-
----
-
-#### `POST /api/v1/processes/:displayId/cancel`
-
-**Purpose:** Süreci iptal etme (idari aksiyon).
-**Auth:** `PROCESS_CANCEL` (Superadmin, Süreç Yöneticisi).
-
-**Request body:**
-
-```json
-{
-  "reason": "Yanlış süreç tipi başlatıldı, doğru süreç açılacak."
-}
-```
-
-**Field kuralları:**
-
-- `reason`: 10-1000 karakter, zorunlu
-
-**Response 204:** No content.
-
-Backend yan etkileri:
-
-- Process `status = CANCELLED`, `cancelled_at = now`, `cancel_reason` dolu, `cancelled_by_user_id = currentUser.id`
-- Tüm aktif task'lar `status = SKIPPED_BY_ROLLBACK`
-- Bildirim: başlatıcı + aktif task sahiplerine `PROCESS_CANCELLED` (kullanıcıya **gerekçe gösterilmez**)
-
-**Errors:**
-| Code | HTTP | Koşul |
-|---|---|---|
-| `PROCESS_NOT_FOUND` | 404 | |
-| `PROCESS_INVALID_STATE` | 409 | Zaten terminal durumda (COMPLETED / REJECTED / CANCELLED) |
-| `PROCESS_CANCEL_REASON_REQUIRED` | 400 | Boş reason |
-
-**Audit:** `CANCEL_PROCESS` entity=`process`, entity_id=process.id, metadata={reason, affectedTaskIds: [...], notifiedUserIds: [...]}.
-
----
-
-#### `POST /api/v1/processes/:displayId/rollback`
-
-**Purpose:** Süreci önceki bir adıma geri götürme.
-**Auth:** `PROCESS_ROLLBACK` (Superadmin, Süreç Yöneticisi).
-
-**Request body:**
-
-```json
-{
-  "targetStepOrder": 1,
-  "reason": "Başlatma formunda eksik doküman tespit edildi."
-}
-```
-
-**Field kuralları:**
-
-- `targetStepOrder`: mevcut adımdan küçük bir pozitif integer (geri gitmek — ileri atlatma yasak)
-- `reason`: 10-1000 karakter, zorunlu
-
-**Response 200:**
-
-```json
-{
-  "data": {
-    "newActiveTaskId": "clx...",
-    "newActiveTaskStepKey": "KTI_INITIATION",
-    "rolledBackFromStepOrder": 2
-  }
-}
-```
-
-Backend yan etkileri:
-
-- Mevcut aktif task(lar) `SKIPPED_BY_ROLLBACK`
-- Hedef adım task'ı yeniden oluşturulur (süreç tanımının atama kuralı uygulanır — eski sahibine otomatik dönmez)
-- `process.rollback_history` JSONB'sine kayıt eklenir
-- Bildirim: başlatıcı + yeni task sahipleri
-
-**Errors:**
-| Code | HTTP | Koşul |
-|---|---|---|
-| `PROCESS_NOT_FOUND` | 404 | |
-| `PROCESS_INVALID_STATE` | 409 | Terminal durumdaki süreç |
-| `PROCESS_ROLLBACK_INVALID_TARGET` | 422 | Geçersiz hedef adım (>= mevcut veya negatif) |
-| `VALIDATION_FAILED` | 400 | |
-
-**Audit:** `ROLLBACK_PROCESS` entity=`process`, entity_id=process.id, metadata={fromStepOrder, toStepOrder, reason, newTaskId}.
-
----
-
-#### `GET /api/v1/processes/:displayId/history`
-
-**Purpose:** Sürecin tam tarihçesi (rollback dahil eski adımlar, task completion history).
-**Auth:** `PROCESS_VIEW_ALL` (yalnız Superadmin, Süreç Yöneticisi). Başlatıcıya bile açık değil — idari detay.
-
-**Response 200:**
-
-```json
-{
-  "data": {
-    "processId": "clx...",
-    "displayId": "KTI-000042",
-    "timeline": [
-      { "type": "PROCESS_STARTED", "at": "...", "userId": "...", "metadata": {} },
-      {
-        "type": "TASK_CREATED",
-        "at": "...",
-        "taskId": "...",
-        "stepKey": "KTI_INITIATION",
-        "assignedTo": []
-      },
-      {
-        "type": "TASK_COMPLETED",
-        "at": "...",
-        "taskId": "...",
-        "stepKey": "KTI_INITIATION",
-        "completedBy": "...",
-        "action": null
-      },
-      {
-        "type": "ROLLBACK",
-        "at": "...",
-        "byUserId": "...",
-        "fromStepOrder": 2,
-        "toStepOrder": 1,
-        "reason": "..."
-      },
-      {
-        "type": "TASK_COMPLETED",
-        "at": "...",
-        "taskId": "...",
-        "stepKey": "KTI_MANAGER_APPROVAL",
-        "action": "REJECT",
-        "reason": "..."
-      }
-    ]
-  }
-}
-```
-
-**Errors:** `PROCESS_NOT_FOUND` (404), `PERMISSION_DENIED` (403).
-
----
-
-#### `GET /api/v1/processes/:displayId/documents`
-
-**Purpose:** Sürecin tüm dokümanları (task'lardan birleşik liste).
-**Auth:** Süreç detayı ile aynı görünürlük kuralı (başlatıcı / atanmış / admin).
-
-**Response 200:**
-
-```json
-{
-  "data": [
-    {
-      "id": "clx-doc",
-      "taskId": "clx-task",
-      "taskStepKey": "KTI_INITIATION",
-      "filename": "before-foto-1.jpg",
-      "fileSizeBytes": 524288,
-      "contentType": "image/jpeg",
-      "scanStatus": "CLEAN",
-      "uploadedBy": { "id": "...", "firstName": "...", "lastName": "..." },
-      "uploadedAt": "...",
-      "thumbnailUrl": null
-    }
-  ]
-}
-```
-
-`thumbnailUrl` görseller için CloudFront Signed URL (5dk TTL). Dosyanın kendisine erişim için ayrı `/download-url` çağrısı.
-
-**Errors:** `PROCESS_NOT_FOUND` (404), `PROCESS_ACCESS_DENIED` (403).
-
-### 9.6 Tasks Modülü
-
-> **⛔ Kaldırıldı (Faz 14):** Bu endpoint'ler ASANA pivot ile kaldırıldı.
-
-#### `GET /api/v1/tasks`
-
-**Purpose:** Kullanıcının görev listesi — üç sekme modunda.
-**Auth:** Access token.
-
-**Query params:**
-
-- `tab` — `started` / `pending` / `completed` (default `pending`)
-  - `started` → kullanıcının başlattığı süreçlerdeki **aktif** task'lar (aslında süreç bazlı; döndüğü şey "Başlattığım Süreçler" listesi için aktif task özetleri)
-  - `pending` → kullanıcıya atanmış PENDING / CLAIMED / IN_PROGRESS durumundaki task'lar (bkz. "Onayda Bekleyen")
-  - `completed` → kullanıcının tamamladığı task'lar (bkz. "Tamamlanan Süreçler")
-- `processType` — filtre
-- `startedAtFrom`, `startedAtTo` — süreç başlangıç tarih aralığı
-- `search` — `displayId` substring
-- `limit`, `cursor`
-
-**Response 200:**
-
-```json
-{
-  "data": [
-    {
-      "taskId": "clx-task",
-      "stepKey": "KTI_MANAGER_APPROVAL",
-      "stepLabel": "Yönetici Onay",
-      "status": "PENDING",
-      "slaDueAt": "2026-04-26T10:00:00.000Z",
-      "assignmentMode": "SINGLE",
-      "process": {
-        "id": "clx-process",
-        "displayId": "KTI-000042",
-        "processType": "BEFORE_AFTER_KAIZEN",
-        "status": "IN_PROGRESS",
-        "startedBy": { "id": "...", "firstName": "Ali", "lastName": "Yılmaz" },
-        "startedAt": "..."
-      }
-    }
-  ],
-  "pagination": { "nextCursor": "...", "hasMore": true }
-}
-```
-
-`stepLabel` süreç modülünden türetilir (her süreç kendi step_key → label map'ini tanımlar; endpoint bunu resolve eder).
-
-**Errors:** Standart auth.
-
----
-
-#### `GET /api/v1/tasks/:id`
-
-**Purpose:** Görev detayı — form data + süreç bağlamı + sürecin önceki task'larından görünür bilgileri.
-**Auth:** Görev'e atanmış kullanıcı **veya** sürecin başlatıcısı **veya** `PROCESS_VIEW_ALL`.
-
-**Response 200:**
-
-```json
-{
-  "data": {
-    "id": "clx-task",
-    "stepKey": "KTI_MANAGER_APPROVAL",
-    "stepLabel": "Yönetici Onay",
-    "status": "PENDING",
-    "assignmentMode": "SINGLE",
-    "slaDueAt": "2026-04-26T10:00:00.000Z",
-    "allowedActions": ["APPROVE", "REJECT", "REQUEST_REVISION"],
-    "reasonRequiredFor": ["REJECT", "REQUEST_REVISION"],
-    "process": {
-      "id": "clx-process",
-      "displayId": "KTI-000042",
-      "processType": "BEFORE_AFTER_KAIZEN",
-      "status": "IN_PROGRESS",
-      "startedBy": { "...": "..." },
-      "company": { "...": "..." }
-    },
-    "previousTasks": [
-      {
-        "stepKey": "KTI_INITIATION",
-        "stepLabel": "Başlatma",
-        "completedBy": { "...": "..." },
-        "completedAt": "...",
-        "formData": { "beforePhotoDocumentIds": [...], "afterPhotoDocumentIds": [...], "savingAmount": 15000, "description": "..." }
-      }
-    ],
-    "documents": [ { "id": "...", "filename": "...", "scanStatus": "CLEAN" } ],
-    "formSchema": {
-      "fields": [
-        { "name": "comment", "type": "textarea", "label": "Notunuz (opsiyonel)", "maxLength": 1000, "required": false }
-      ]
-    }
-  }
-}
-```
-
-`allowedActions` task'ın `step_key`'ine bağlı; her süreç modülü kendi action listesini definer (KTİ Yönetici Onay için 3 aksiyon).
-`formSchema` süreç modülünün sağladığı dinamik form tanımı — frontend bunu render eder.
-
-**Errors:** `TASK_NOT_FOUND` (404), `TASK_ACCESS_DENIED` (403).
-
----
-
-#### `POST /api/v1/tasks/:id/claim`
-
-**Purpose:** Claim tipi bir görevi üstlenme.
-**Auth:** Kullanıcı task'a aday olmalı (TaskAssignment kaydı PENDING).
-
-**Request:** Body yok.
-
-**Response 200:**
-
-```json
-{
-  "data": {
-    "taskId": "clx-task",
-    "claimedAt": "2026-04-23T14:32:00.000Z"
-  }
-}
-```
-
-Backend yan etkileri (transaction):
-
-- Task `status = CLAIMED`; `completed_by_user_id` önceden atanır (completion'da aynı kullanıcı olmalı)
-- Claim eden kullanıcının TaskAssignment kaydı aktif kalır
-- Diğer adayların TaskAssignment kayıtları `status = SKIPPED`
-- Diğer adaylara `TASK_CLAIMED_BY_PEER` bildirimi
-
-**Errors:**
-| Code | HTTP | Koşul |
-|---|---|---|
-| `TASK_NOT_FOUND` | 404 | |
-| `TASK_ACCESS_DENIED` | 403 | Kullanıcı aday değil |
-| `TASK_NOT_CLAIMABLE` | 422 | `assignment_mode != CLAIM` |
-| `TASK_CLAIM_LOST` | 409 | Başkası daha önce claim etti (race condition) |
-| `TASK_ALREADY_COMPLETED` | 409 | Task zaten tamamlanmış |
-
-**Audit:** `CLAIM_TASK` entity=`task`, entity_id=:id, metadata={claimedByUserId, skippedUserIds: [...]}.
-
----
-
-#### `POST /api/v1/tasks/:id/complete`
-
-**Purpose:** Task tamamlama — form data submit + completion action.
-**Auth:** Task'a atanmış kullanıcı (claim tipinde: claim eden; all-required tipinde: atanmış kullanıcılardan biri; single: atanmış kullanıcı).
-
-**Request body (KTİ_MANAGER_APPROVAL örnek):**
-
-```json
-{
-  "action": "REJECT",
-  "reason": "Kazanç tutarı hesaplaması belge ile desteklenmemiş; maliyet analizi eklenmeli.",
-  "formData": {
-    "comment": "Opsiyonel not"
-  }
-}
-```
-
-**Request body (KTİ_INITIATION örnek — action'sız):**
-
-```json
-{
-  "formData": {
-    "companyId": "clx-abc",
-    "beforePhotoDocumentIds": ["..."],
-    "afterPhotoDocumentIds": ["..."],
-    "savingAmount": 15000,
-    "description": "..."
-  }
-}
-```
-
-**Field kuralları:**
-
-- `action`: süreç tanımının izin verdiği enum içinde (`allowedActions` — önceki detay endpoint'inden alınır). Null ise adım "submit-only" (action'sız, Başlatma ve Revize gibi).
-- `reason`: süreç tanımı bu action için `reasonRequiredFor` listesinde ise zorunlu (KTİ: REJECT + REQUEST_REVISION → reason zorunlu, min 10 karakter)
-- `formData`: süreç modülünün Zod şemasına uymalı
-
-**Response 200:**
-
-```json
-{
-  "data": {
-    "taskId": "clx-task",
-    "status": "COMPLETED",
-    "completedAt": "2026-04-23T14:32:00.000Z",
-    "nextTaskId": "clx-next-task",
-    "processStatus": "IN_PROGRESS"
-  }
-}
-```
-
-`nextTaskId` null ise süreç terminal duruma geçti (COMPLETED / REJECTED). `processStatus` güncel süreç durumunu verir.
-
-**KTİ özel davranışlar (action bazlı):**
-
-- `APPROVE` → Process COMPLETED, `nextTaskId: null`
-- `REJECT` → Process REJECTED, `nextTaskId: null`
-- `REQUEST_REVISION` → Başlatıcıya yeni "Revize Task" açılır, `nextTaskId` o task'ın id'si, Process IN_PROGRESS kalır
-
-**Errors:**
-| Code | HTTP | Koşul |
-|---|---|---|
-| `TASK_NOT_FOUND` | 404 | |
-| `TASK_ACCESS_DENIED` | 403 | Atanmış değil |
-| `TASK_ALREADY_COMPLETED` | 409 | Zaten tamamlanmış |
-| `TASK_COMPLETION_ACTION_INVALID` | 422 | Action izin verilmeyen değer |
-| `TASK_REASON_REQUIRED` | 400 | Reason zorunluyken boş |
-| `VALIDATION_FAILED` | 400 | formData schema |
-| `DOCUMENT_NOT_FOUND` | 404 | FormData'daki document ID geçersiz |
-| `DOCUMENT_SCAN_PENDING` | 409 | |
-| `DOCUMENT_INFECTED` | 403 | |
-
-**Audit:** `COMPLETE_TASK` entity=`task`, entity_id=:id, metadata={stepKey, action, reason, processId, processNewStatus}. Süreç state değişirse `UPDATE_PROCESS_STATUS` ayrı audit kaydı.
-
-### 9.7 Documents Modülü
-
-> **Güncelleme (Faz 14):** Document modülü korunuyor; `process_id` / `task_id` bağlantıları kaldırıldı — generic attachment (`uploaded_by_user_id`) modeli geçerlidir.
+### 9.5 Documents Modülü
 
 #### `POST /api/v1/documents/upload-initiate`
 
 **Purpose:** Upload için CloudFront Signed URL üretme — client bu URL'e dosyayı direkt PUT eder.
-**Auth:** Kullanıcı sürece doküman yükleyebilen bir bağlamda olmalı (süreç başlatma formu veya kendi atandığı task). `DOCUMENT_UPLOAD` yetkisi + context check.
+**Auth:** `DOCUMENT_UPLOAD` yetkisi; dosya yükleyen kullanıcı oturum açmış olmalı.
 
 **Request body:**
 
 ```json
 {
-  "filename": "before-foto-1.jpg",
+  "filename": "profile-photo.jpg",
   "contentType": "image/jpeg",
   "fileSizeBytes": 524288,
-  "contextType": "PROCESS_START",
-  "contextData": {
-    "processType": "BEFORE_AFTER_KAIZEN"
-  }
-}
-```
-
-veya mevcut task'a ek:
-
-```json
-{
-  "filename": "revised.pdf",
-  "contentType": "application/pdf",
-  "fileSizeBytes": 1048576,
-  "contextType": "TASK_ATTACHMENT",
-  "contextData": {
-    "taskId": "clx-task"
-  }
+  "contextType": "USER_PROFILE",
+  "contextData": {}
 }
 ```
 
@@ -2531,7 +1923,7 @@ veya mevcut task'a ek:
 - `filename`: 1-255 karakter; path traversal karakterleri reddedilir (`/`, `\`, `..`, null byte)
 - `contentType`: whitelist — `image/jpeg`, `image/png`, `image/webp`, `application/pdf`, `application/vnd.openxmlformats-officedocument.wordprocessingml.document`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`
 - `fileSizeBytes`: ≤ 10_485_760 (10 MB)
-- `contextType`: `PROCESS_START` / `TASK_ATTACHMENT`
+- `contextType`: jenerik bağlam (ör. kullanıcı profil eki)
 
 **Response 200:**
 
@@ -2539,7 +1931,7 @@ veya mevcut task'a ek:
 {
   "data": {
     "documentId": "clx-doc",
-    "uploadUrl": "https://cdn.leanmgmt.<domain>/staging/<processId-pending>/<taskId-null>/clx-doc-<filename>?Policy=...&Signature=...&Key-Pair-Id=...",
+    "uploadUrl": "https://cdn.leanmgmt.<domain>/staging/{userId}/clx-doc-{filename}?Policy=...&Signature=...&Key-Pair-Id=...",
     "uploadMethod": "PUT",
     "uploadHeaders": {
       "Content-Type": "image/jpeg"
@@ -2577,10 +1969,8 @@ veya mevcut task'a ek:
   "filename": "before-foto-1.jpg",
   "contentType": "image/jpeg",
   "fileSizeBytes": 524288,
-  "contextType": "PROCESS_START",
-  "contextData": {
-    "processType": "BEFORE_AFTER_KAIZEN"
-  }
+  "contextType": "USER_PROFILE",
+  "contextData": {}
 }
 ```
 
@@ -2590,7 +1980,7 @@ Backend adımları:
 
 - S3'te `staging/{documentId}-<filename>` key'inin varlığını doğrular (HEAD object)
 - File size ve content type reported vs actual uyumu kontrolü
-- `documents` INSERT — `scan_status = PENDING_SCAN`, `process_id` null (context=PROCESS_START için — process henüz yok; context=TASK_ATTACHMENT için task'ın process_id'si)
+- `documents` INSERT — `scan_status = PENDING_SCAN`, yalnızca `uploaded_by_user_id` ile ilişkilendirilir
 - EventBridge → Scan Lambda tetiklenir
 
 **Response 201:**
@@ -2614,14 +2004,14 @@ Backend adımları:
 | `DOCUMENT_NOT_FOUND` | 404 | S3 staging'de yok |
 | `VALIDATION_FAILED` | 400 | Meta ile S3 object uyuşmazlığı |
 
-**Audit:** `UPLOAD_DOCUMENT` entity=`document`, entity_id=documentId, metadata={filename, fileSizeBytes, contentType, contextType, processId?, taskId?}.
+**Audit:** `UPLOAD_DOCUMENT` entity=`document`, entity_id=documentId, metadata={filename, fileSizeBytes, contentType, contextType}.
 
 ---
 
 #### `GET /api/v1/documents/:id`
 
 **Purpose:** Doküman meta bilgisi (indirme URL'i ayrı endpoint).
-**Auth:** Dokümanın ilişkili olduğu süreç/görev'e erişim yetkisi (sürecin başlatıcısı, task atanmışı, veya `PROCESS_VIEW_ALL`).
+**Auth:** Yükleyen kullanıcı veya `DOCUMENT_VIEW` yetkisi (gelecekte genişletilebilir).
 
 **Response 200:**
 
@@ -2629,9 +2019,8 @@ Backend adımları:
 {
   "data": {
     "id": "clx-doc",
-    "processId": "clx-process",
-    "taskId": "clx-task",
-    "filename": "before-foto-1.jpg",
+    "uploadedByUserId": "clx-user",
+    "filename": "profile-photo.jpg",
     "contentType": "image/jpeg",
     "fileSizeBytes": 524288,
     "scanStatus": "CLEAN",
@@ -2643,7 +2032,7 @@ Backend adımları:
 }
 ```
 
-**Errors:** `DOCUMENT_NOT_FOUND` (404), `PROCESS_ACCESS_DENIED` (403).
+**Errors:** `DOCUMENT_NOT_FOUND` (404), `PERMISSION_DENIED` (403).
 
 ---
 
@@ -2656,15 +2045,15 @@ Backend adımları:
 **Response 200:**
 
 ```http
-Set-Cookie: CloudFront-Policy=...; HttpOnly; Secure; SameSite=Strict; Path=/processes
-Set-Cookie: CloudFront-Signature=...; HttpOnly; Secure; SameSite=Strict; Path=/processes
-Set-Cookie: CloudFront-Key-Pair-Id=...; HttpOnly; Secure; SameSite=Strict; Path=/processes
+Set-Cookie: CloudFront-Policy=...; HttpOnly; Secure; SameSite=Strict; Path=/documents
+Set-Cookie: CloudFront-Signature=...; HttpOnly; Secure; SameSite=Strict; Path=/documents
+Set-Cookie: CloudFront-Key-Pair-Id=...; HttpOnly; Secure; SameSite=Strict; Path=/documents
 ```
 
 ```json
 {
   "data": {
-    "downloadUrl": "https://cdn.leanmgmt.<domain>/processes/clx-process/clx-task/clx-doc-before-foto-1.jpg?Policy=...&Signature=...&Key-Pair-Id=...",
+    "downloadUrl": "https://cdn.leanmgmt.<domain>/documents/{userId}/clx-doc-before-foto-1.jpg?Policy=...&Signature=...&Key-Pair-Id=...",
     "expiresAt": "2026-04-23T14:37:00.000Z"
   }
 }
@@ -2678,7 +2067,6 @@ URL IP-bound, 5dk TTL. Signed Cookie parallel doğrulama katmanı — tam URL ba
 | `DOCUMENT_NOT_FOUND` | 404 | |
 | `DOCUMENT_SCAN_PENDING` | 409 | `scan_status != CLEAN` |
 | `DOCUMENT_INFECTED` | 403 | |
-| `PROCESS_ACCESS_DENIED` | 403 | |
 
 **Audit:** Yok (yüksek frekans — CloudFront access log'ları zaten var).
 
@@ -2718,7 +2106,7 @@ veya:
 
 **Audit:** Yok.
 
-### 9.8 Notifications Modülü
+### 9.6 Notifications Modülü
 
 #### `GET /api/v1/notifications`
 
@@ -2739,12 +2127,6 @@ veya:
   "data": [
     {
       "id": "clx-notif",
-      "eventType": "TASK_ASSIGNED",
-      "channel": "IN_APP",
-      "title": "Yeni görev atandı",
-      "body": "Size [KTI-000042] sürecinde [Yönetici Onay] görevi atandı.",
-      "linkUrl": "/tasks/clx-task",
-      "metadata": { "processId": "...", "taskId": "..." },
       "readAt": null,
       "sentAt": "2026-04-23T10:00:00.000Z",
       "deliveryStatus": "SENT"
@@ -2824,13 +2206,7 @@ Yalnız `channel=IN_APP AND read_at IS NULL` sayımı. Email için bu endpoint a
   "data": {
     "preferences": [
       {
-        "eventType": "TASK_ASSIGNED",
-        "inAppEnabled": true,
-        "emailEnabled": true,
-        "digestEnabled": false
-      }
-    ]
-  }
+          }
 }
 ```
 
@@ -2860,7 +2236,7 @@ Yalnız `channel=IN_APP AND read_at IS NULL` sayımı. Email için bu endpoint a
 
 **Audit:** Yok (yüksek frekanslı kullanıcı ayarı).
 
-### 9.9 Admin — Audit Log Modülü
+### 9.7 Admin — Audit Log Modülü
 
 Bu modül yalnız Superadmin'e açıktır (`AUDIT_LOG_VIEW` yetkisi sistem rolü `SUPERADMIN`'e bağlı; diğer sistem rolleri dahil hiç kimsede bulunmaz).
 
@@ -2875,7 +2251,7 @@ Bu modül yalnız Superadmin'e açıktır (`AUDIT_LOG_VIEW` yetkisi sistem rolü
 
 - `userId` — belirli kullanıcının aksiyonları
 - `action` — enum filter (örn. `CREATE_USER`, `DELETE_ROLE`)
-- `entity` — enum filter (`user`, `role`, `process`, vb.)
+- `entity` — enum filter (`user`, `role`, `document`, vb.)
 - `entityId` — belirli varlık üzerindeki tüm aksiyonlar
 - `timestampFrom`, `timestampTo` — ISO 8601 UTC tarih aralığı
 - `ipHash` — IP bazlı arama (kullanıcı plain IP bilmez; forensics için ip_hash doğrudan arama)
@@ -3007,16 +2383,12 @@ Chain break tespit edildiğinde otomatik P1 alarm tetiklenir (Slack + email + SM
 ```json
 {
   "data": {
-    "activeUserCount": 42,
-    "openProcessCount": 7,
-    "overdueTaskCount": 3
+    "activeUserCount": 42
   }
 }
 ```
 
 - `activeUserCount` — `users.is_active = true` ve `anonymized_at` boş
-- `openProcessCount` — `processes.status` ∈ `INITIATED`, `IN_PROGRESS`
-- `overdueTaskCount` — `tasks.is_sla_overdue = true` ve `status` ∈ `PENDING`, `CLAIMED`, `IN_PROGRESS`
 
 **Errors:** `PERMISSION_DENIED` (403) — yukarıdaki izinlerin hiçbiri yok.
 
@@ -3024,7 +2396,7 @@ Chain break tespit edildiğinde otomatik P1 alarm tetiklenir (Slack + email + SM
 
 **Rate limit:** global default (600/dk/kullanıcı).
 
-### 9.10 Admin — System Modülü
+### 9.8 Admin — System Modülü
 
 Sistem Ayarları, Email Şablonları ve Rıza Metni Versiyonları. Yalnız Superadmin erişimli.
 
@@ -3109,13 +2481,7 @@ Sistem Ayarları, Email Şablonları ve Rıza Metni Versiyonları. Yalnız Super
   "data": [
     {
       "id": "clx-tpl",
-      "eventType": "TASK_ASSIGNED",
-      "subjectTemplate": "Size yeni bir görev atandı: {{taskName}}",
-      "updatedAt": "...",
-      "updatedByUserId": "..."
-    }
-  ]
-}
+      }
 ```
 
 Body kısaltılmış döner; full template için `GET /:eventType`.
@@ -3133,12 +2499,6 @@ Body kısaltılmış döner; full template için `GET /:eventType`.
 {
   "data": {
     "id": "clx-tpl",
-    "eventType": "TASK_ASSIGNED",
-    "subjectTemplate": "Size yeni bir görev atandı: {{taskName}}",
-    "htmlBodyTemplate": "<html>...</html>",
-    "textBodyTemplate": "Plain text fallback ...",
-    "requiredVariables": ["taskName", "processId", "userName"],
-    "updatedAt": "...",
     "updatedByUserId": "..."
   }
 }
@@ -3180,13 +2540,12 @@ Body kısaltılmış döner; full template için `GET /:eventType`.
 
 ```json
 {
-  "subjectTemplate": "Size yeni bir görev atandı: {{taskName}}",
+  "subjectTemplate": "Şifreniz yakında sona erecek",
   "htmlBodyTemplate": "<html>...</html>",
   "textBodyTemplate": "...",
   "variables": {
-    "taskName": "Yönetici Onay",
-    "processId": "KTI-000042",
-    "userName": "Ali Yılmaz"
+    "userName": "Ali Yılmaz",
+    "daysRemaining": "7"
   }
 }
 ```
@@ -3198,7 +2557,7 @@ Request body'de henüz kaydedilmemiş taslak template de gönderilebilir (previe
 ```json
 {
   "data": {
-    "subjectRendered": "Size yeni bir görev atandı: Yönetici Onay",
+    "subjectRendered": "Şifreniz yakında sona erecek",
     "htmlBodyRendered": "<html>... Ali Yılmaz ...</html>",
     "textBodyRendered": "... Ali Yılmaz ...",
     "unresolvedVariables": []
@@ -3356,7 +2715,7 @@ Yan etki: `SystemSetting.ACTIVE_CONSENT_VERSION_ID = :id` olarak güncellenir (t
 
 **Audit:** `PUBLISH_CONSENT_VERSION` entity=`consent_version`, entity_id=id, metadata={version, effectiveFrom, previousActiveVersionId}.
 
-### 9.11 CSP Report + Health Modülü
+### 9.9 CSP Report + Health Modülü
 
 #### `POST /api/v1/csp-report`
 

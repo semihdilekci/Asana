@@ -14,8 +14,6 @@
 - [3. Kimlik Doğrulama ve Kullanıcı Yapısı](#3-kimlik-doğrulama-ve-kullanıcı-yapısı)
 - [4. Yetkilendirme Mimarisi (RBAC + ABAC Hibrit)](#4-yetkilendirme-mimarisi-rbac--abac-hibrit)
 - [5. Roller ve Yetki Yönetimi](#5-roller-ve-yetki-yönetimi)
-- [6. Süreç (Workflow) Mimarisi](#6-süreç-workflow-mimarisi)
-- [7. Görev Yönetimi](#7-görev-yönetimi)
 - [8. Doküman Yönetimi](#8-doküman-yönetimi)
 - [9. Admin Panelleri](#9-admin-panelleri)
 - [10. Güvenlik ve KVKK](#10-güvenlik-ve-kvkk)
@@ -27,7 +25,6 @@
 - [16. Test Stratejisi](#16-test-stratejisi)
 - [17. Kod Organizasyonu ve Agent Kuralları](#17-kod-organizasyonu-ve-agent-kuralları)
 - [18. Açık Kararlar — Tamamlanması Gerekenler](#18-açık-kararlar--tamamlanması-gerekenler)
-- [19. ASANA Pivot — BPM Decommission Kararı](#19-asana-pivot--bpm-decommission-kararı)
 
 ---
 
@@ -378,120 +375,11 @@ function userMatchesRole(user, role): boolean {
 
 ---
 
-## 6. Süreç (Workflow) Mimarisi
-
-### 6.1. Süreç Tanım Stratejisi
-
-**Karar [W-001]:** Süreçler **hard-coded** olarak geliştirilir. Low-code süreç tasarımcısı **kapsam dışıdır**.
-
-### 6.2. MVP Süreci
-
-**Karar [W-002]:** MVP'de sadece tek bir süreç yer alır: **Before & After Kaizen**.
-
-### 6.3. Süreçlerin Dokümantasyonu
-
-**Karar [W-003]:** Her süreç için ayrı bir `.md` dokümantasyon dosyası oluşturulur. Süreç ilk geliştirilmeye başlamadan önce bu dosya doldurulur: adımlar, onay akışı, form alanları, atama kuralları vb.
-
-> **⚠️ Açık Karar [W-OPEN-01]:** `before-after-kaizen-process.md` dosyası oluşturulacak ancak içerik boş bırakılacak. Süreç geliştirilmeye başlandığında detaylar doldurulacak. (Bkz. [Bölüm 18](#18-açık-kararlar--tamamlanması-gerekenler))
-
-### 6.4. Form Motoru
-
-**Karar [W-004]:** Form alanları **statik** olarak kodlanır. Dinamik form tasarımcısı kapsam dışıdır.
-
-### 6.5. Görev Atama Kuralları
-
-**Karar [W-005]:** Süreç adımlarındaki görev atamaları hem **statik** (örn: "bu adımda fabrika müdürü onaylar") hem **dinamik** (örn: "başlatanın yöneticisi onaylar") olabilir. Her süreç kendi atama kurallarını belirler.
-
-### 6.6. Süreç-Şirket İlişkisi
-
-**Karar [W-006]:** Süreçler şirket bilgisini şöyle taşır:
-
-- Varsayılan olarak **süreci başlatan kullanıcının şirket bilgisi** kullanılır
-- Süreçte çoklu şirket seçimi gerekiyorsa kullanıcıya form içinde seçenek sunulur
-- Seçilebilecek seçenekler form tanımında kısıtlanır
-
-### 6.7. Onay Akışı Desenleri
-
-**Karar [W-007]:** Sistem şu akış desenlerini destekleyecek altyapıya sahip olmalıdır (her süreç kendi ihtiyacı kadarını kullanır):
-
-- Sıralı onay
-- Paralel onay
-- Koşullu dallanma
-- Delegasyon
-- Geri gönderme / revizyon isteme
-- Otomatik onay (timeout)
-
-> **⚠️ Açık Karar [W-OPEN-02]:** Görev reddedildiğinde süreç davranışı — bir önceki adıma dönme, alternatif akış, başlatana bildirim — süreç başına ayrı tanımlanacak olan .md dosyasında tariflenecektir.
-
----
-
-## 7. Görev Yönetimi
-
-### 7.1. Görev Kaynağı
-
-**Karar [T-001]:** Görevler **sadece süreçlerden** doğar. Serbest (ad-hoc) görev oluşturma kapsam dışıdır.
-
-### 7.2. Görev Bağımlılıkları
-
-**Karar [T-002]:** Süreç tanımına göre görevler **sıralı** (bir silsile içinde) veya **paralel** olabilir.
-
-### 7.3. Görev Atama Kapsamı
-
-**Karar [T-003]:** Bir görev şu hedeflere atanabilir:
-
-- Kişi veya kişier
-- Rol
-- Kombinasyonlar mümkün
-
-**Karar [T-004]:** Görev atama davranış modları desteklenmelidir:
-
-- **Claim (kapma):** Birden fazla aday vardır, ilk claim eden üstlenir
-- **All-required:** Atanan herkesin onayı / tamamlaması gerekir
-  **Not** - Zaten görev bir kişiye atanıyorsa bu davranışlara gerek yoktur. Bir kişi görevi tamamlar ve sıradaki adıma geçer.
-
-### 7.4. Görev SLA ve Gecikme
-
-**Karar [T-005]:** Görevlerin deadline / SLA takibi yapılır. Gecikme hatırlatma bildirimleri üretilir. Mail bildirim yapılacaktır. Sistem ayarları sayfası üzerinde mail şablonu da olmalıdır.
-
-### 7.5. Kullanıcı Görev Ekranı
-
-**Karar [T-006]:** Kullanıcının görev ekranları şu sekmelere sahiptir:
-
-- Başlattığım Süreçler
-- Onayda Bekleyen
-- Tamamlanan Süreçler
-  \*\* Not: Görev ekranlarında tarih ve süreç filtresi olmalıdır. Liste halinde süreçleri id, başlatan, başlangıç+bitiş tarihi, statü, aktif görev bilgileri görünebilmelidir. Listeden seçildiğinde sürecin farklı görev adımlarındaki formalarına ve detay bilgilerine ulaşabilmelidir görüntüleyebilmelidir.
-
-### 7.6. Claim Sonrası Davranış
-
-**Karar [T-007]:** Çoklu adaylı (claim tipi) bir görev bir kullanıcı tarafından claim edildiğinde:
-
-- Görev tamamlandığında **diğer adayların "Onayda Bekleyen" listesinden düşer**.
-- Diğer adaylar sürecin detayını (izleme amaçlı) — sadece o süreç için görüntüleme yetkileri varsa — normal süreç görüntüleme ekranı üzerinden görebilir; ancak o görev adımı artık "başkası tarafından tamamlandı" şeklinde işaretlidir ve kendileri için aksiyon alınabilir bir görev değildir.
-
-### 7.7. All-Required Modu ve Reddetme Davranışı
-
-**Karar [T-008]:** **All-required modundaki kısmi onay davranışı**, **görev reddi sonrası akış**, **başkasına delegasyon / atama** ve **escalation davranışları** her süreç için ayrı tanımlanır ve her sürecin kendi `.md` dokümantasyon dosyasında (`docs/processes/{process-name}.md`) anlatılır. Bu davranışlar ilgili süreç geliştirilirken **hardcoded** olarak implemente edilir. Sistem genelinde jenerik bir "reddet" veya "escalate" davranışı **yoktur** — davranış süreç başına belirlidir.
-
-### 7.8. Süreç Başlatanın Görünürlüğü
-
-**Karar [T-009]:** Süreci başlatan kullanıcı, **kendi başlattığı süreçlerin** tüm adımlarındaki form ve doküman detaylarını (kendisine atanmamış olsalar bile) görüntüleyebilir. Bu varsayılandır — bir sürecin `.md` dosyasında aksi açıkça belirtilmediği sürece geçerlidir. Bir kullanıcı, **kendisinin başlatmadığı** süreçleri (kendisine atanmış bir görev yoksa) göremez.
-
-### 7.9. Görev Yorumları
-
-**Karar [T-010]:** Görev yorumları, thread, @mention gibi işbirliği özellikleri **MVP kapsamı dışındadır**. Bildirim ve değerlendirme iletişimi süreç formu içindeki alanlar ve email bildirimleri üzerinden kurulur.
-
-### 7.10. SLA ve Gecikme Bildirim Konumu
-
-**Karar [T-011]:** Her sürecin adımlarına ait **SLA süreleri** ve **gecikme bildirim tetikleme eşikleri** (örn: %80 eşik hatırlatma, %100 eşik gecikme bildirimi) ilgili sürecin `.md` dokümantasyon dosyasında tanımlanır. Sistem, süreç tanımından okuduğu bu konfigürasyona göre zamanlama ve bildirimleri üretir. Genel (global) bir varsayılan SLA yoktur.
-
----
-
 ## 8. Doküman Yönetimi
 
 ### 8.1. Depolama Altyapısı
 
-**Karar [D-001]:** Dokümanlar **Amazon S3** üzerinde depolanır. Meta veri (dosya adı, boyutu, yükleyici, yüklenme zamanı, ilişkili süreç/görev vb.) DB'de tutulur.
+**Karar [D-001]:** Dokümanlar **Amazon S3** üzerinde depolanır. Meta veri (dosya adı, boyutu, yükleyici, yüklenme zamanı vb.) DB'de tutulur; dosya `uploaded_by_user_id` ile ilişkilidir.
 
 ### 8.2. Yükleme Kısıtları
 
@@ -506,12 +394,12 @@ function userMatchesRole(user, role): boolean {
 **Karar [D-003]:** S3'te dosya key formatı:
 
 ```
-processes/{processId}/{taskId}/{documentId}-{filename}
+documents/{userId}/{documentId}-{filename}
 ```
 
 ### 8.4. Erişim Kontrolü
 
-**Karar [D-004]:** Doküman erişim modeli **süreç seviyesi**dir. Yani süreci görüntüleme yetkisi olan kullanıcı, o sürecin dokümanlarını da görebilir.
+**Karar [D-004]:** Doküman erişim modeli **yükleyen kullanıcı + yetki** bazlıdır: dosyayı yükleyen veya uygun admin/yetkili kullanıcı erişebilir.
 
 ### 8.5. Thumbnail Üretimi
 
@@ -550,7 +438,7 @@ Kullanıcı → CloudFront (WAF + GeoIP + Rate Limit + Bot Control + CAPTCHA + C
   ```json
   {
     "Statement": [{
-      "Resource": "https://cdn.app/processes/42/task/7/doc.pdf",
+      "Resource": "https://cdn.app/documents/{userId}/doc.pdf",
       "Condition": {
         "DateLessThan": { "AWS:EpochTime": <now+300> },
         "IpAddress":    { "AWS:SourceIp": "<user_ip>/32" }
@@ -569,7 +457,7 @@ Kullanıcı → CloudFront (WAF + GeoIP + Rate Limit + Bot Control + CAPTCHA + C
   - `HttpOnly` — JavaScript okuyamaz (XSS korumalı)
   - `Secure` — sadece HTTPS
   - `SameSite=Strict` — cross-site iliştirilmez (CSRF korumalı)
-  - `Path=/processes/*` — sadece doküman yollarında etkili
+  - `Path=/documents/*` — sadece doküman yollarında etkili
   - Süre: access token süresi ile eşleşir (15dk; refresh'le yenilenir — bkz. [TS-009])
 - Her doküman isteğinde Signed Cookie otomatik iliştirilir; ek bir URL parametresi gerekmez.
 - Etki: Tam URL kopyalansa dahi başka browser'da cookie olmadığı için çalışmaz. URL + Cookie iki ayrı kanaldan doğrulama yapar (Katman 2 ile birleştirilince).
@@ -585,7 +473,7 @@ Kullanıcı → CloudFront (WAF + GeoIP + Rate Limit + Bot Control + CAPTCHA + C
 
 **Katman 5 — Referer Whitelist (İkincil Savunma)**
 
-- WAF kuralı: `request.path` `/processes/*` veya `/staging/*` pattern'inde ise, `Referer` header'ı uygulamanın resmi domain'ini içermelidir. Yoksa 403.
+- WAF kuralı: `request.path` `/documents/*` veya `/staging/*` pattern'inde ise, `Referer` header'ı uygulamanın resmi domain'ini içermelidir. Yoksa 403.
 - Not: Referer spoof edilebilir — bu **ana güvenlik katmanı değil**, casual saldırıları (embed, hotlink, naive scripting) filtreler. Defense-in-depth'in bir sapkasıdır.
 
 **Katman 6 — CloudFront Functions (Edge Validation)**
@@ -677,7 +565,7 @@ Kullanıcı → CloudFront (WAF + GeoIP + Rate Limit + Bot Control + CAPTCHA + C
 **Teknik Notlar:**
 
 - CloudFront distribution: tek distribution, origin = private S3 bucket (OAC ile).
-- CloudFront cache behavior: `/processes/*` ve `/staging/*` path'leri için cache TTL=0, min TTL=0.
+- CloudFront cache behavior: `/documents/*` ve `/staging/*` path'leri için cache TTL=0, min TTL=0.
 - CAPTCHA challenge frontend'de shadcn/ui Dialog içinde AWS CAPTCHA JS SDK ile gösterilir.
 - Frontend, 5dk içinde kullanıcı dosyayı açamazsa yeni URL+Cookie talep eder (re-fetch). React Query staleTime=4dk.
 - IP değişirse (mobile WiFi geçişi) kullanıcı bir sonraki istek'te yeni URL alır; kesintisiz UX.
@@ -690,11 +578,11 @@ Kullanıcı → CloudFront (WAF + GeoIP + Rate Limit + Bot Control + CAPTCHA + C
 
 **Mimari akış:**
 
-1. Kullanıcı dosyayı **CloudFront Signed URL** ile (bkz. [D-007]) `staging/` prefix'ine yükler; key: `staging/{processId}/{taskId}/{documentId}-{filename}`. `staging/` prefix'i de CloudFront OAC arkasındadır; doğrudan S3 PUT mümkün değildir.
+1. Kullanıcı dosyayı **CloudFront Signed URL** ile (bkz. [D-007]) `staging/` prefix'ine yükler; key: `staging/{userId}/{documentId}-{filename}`. `staging/` prefix'i de CloudFront OAC arkasındadır; doğrudan S3 PUT mümkün değildir.
 2. DB'de `document` kaydı oluşur; `scan_status = PENDING_SCAN`.
 3. S3 `ObjectCreated` event → EventBridge → **Scan Lambda** (ClamAV image) tetiklenir.
 4. Lambda dosyayı tarar:
-   - **Temiz:** Dosya `staging/` → `processes/{processId}/{taskId}/{documentId}-{filename}` key'ine taşınır; DB `scan_status = CLEAN`.
+   - **Temiz:** Dosya `staging/` → `documents/{userId}/{documentId}-{filename}` key'ine taşınır; DB `scan_status = CLEAN`.
    - **Enfekte:** Dosya S3'ten silinir; DB `scan_status = INFECTED`; yükleyen kullanıcıya bildirim gönderilir; audit log yazılır.
    - **Hata / timeout:** `scan_status = SCAN_FAILED`; DLQ (SQS) üzerinden manuel inceleme kuyruğuna düşer.
 5. Frontend, `scan_status = CLEAN` olmadıkça dosya için download/önizleme **CloudFront Signed URL** üretmez (bkz. [D-007]). Upload sonrası kullanıcı ekranında "Dosya taranıyor…" rozeti görünür; status TanStack Query refetch (5 sn interval, max 60 sn) ile güncellenir.
@@ -705,7 +593,7 @@ Kullanıcı → CloudFront (WAF + GeoIP + Rate Limit + Bot Control + CAPTCHA + C
 - Lambda memory: 2048 MB (ClamAV bellek-yoğun).
 - Lambda timeout: 5 dakika (10 MB dosya limiti ile bolca yeterli).
 - S3 bucket event: `s3:ObjectCreated:*` + prefix filter `staging/`.
-- IAM: Lambda'nın `staging/*` üzerinde `s3:GetObject` + `s3:DeleteObject`; `processes/*` üzerinde `s3:PutObject` yetkisi vardır.
+- IAM: Lambda'nın `staging/*` üzerinde `s3:GetObject` + `s3:DeleteObject`; `documents/*` üzerinde `s3:PutObject` yetkisi vardır.
 - DLQ: SQS — tarama başarısız dosyalar için manuel süperadmin incelemesi.
 - Definition güncelleme: Lambda cold start'ta `freshclam`; sıcak instance'larda tekrar tetiklemek için CloudWatch scheduled event (günde 1×).
 - MVP sonrası opsiyon: ClamAV yerine AWS Marketplace'ten **Trend Micro / Sophos** gibi yönetilen tarama servisine geçiş (tek satırlık Lambda image değişikliği).
@@ -731,10 +619,10 @@ Kullanıcı → CloudFront (WAF + GeoIP + Rate Limit + Bot Control + CAPTCHA + C
 **Karar [D-010]:** Doküman **upload** aksiyonları audit log'a yazılır:
 
 - Aksiyon: `DOCUMENT_UPLOAD`
-- Alanlar: kullanıcı, processId, taskId, documentId, dosya adı, dosya boyutu, `scan_status` (nihai)
+- Alanlar: kullanıcı, documentId, dosya adı, dosya boyutu, `scan_status` (nihai)
 - Tarama sonucu (CLEAN / INFECTED) nihai olduğunda ayrı bir audit kaydı da üretilir (`DOCUMENT_SCAN_RESULT`).
 
-Doküman **download** / **önizleme** aksiyonları **audit log'a yazılmaz**. (Her CloudFront Signed URL üretimi ayrı bir kayıt doğursa audit tablosu hızla şişerdi; erişim kontrolü süreç-seviyesinde [D-004] zaten sağlanıyor, ayrıca CloudFront access log'ları [D-007] CloudWatch'ta ayrıca tutuluyor.)
+Doküman **download** / **önizleme** aksiyonları **audit log'a yazılmaz**. (Her CloudFront Signed URL üretimi ayrı bir kayıt doğursa audit tablosu hızla şişerdi; erişim kontrolü [D-004] zaten sağlanıyor, ayrıca CloudFront access log'ları [D-007] CloudWatch'ta ayrıca tutuluyor.)
 
 ### 8.11. KVKK Silme ve Anonimleştirme
 
@@ -743,49 +631,6 @@ Doküman **download** / **önizleme** aksiyonları **audit log'a yazılmaz**. (H
 ---
 
 ## 9. Admin Panelleri
-
-### 9.1. Süreç Yönetimi Paneli (Superadmin)
-
-**Karar [AP-001]:** Süreç Yönetimi Paneli oluşturulur. Bu panelde:
-
-- Başlatılmış tüm süreçler **processId** ile listelenir. processId uygulama genelinde global'dir ve +1 şeklinde artar.
-- Süreçler listesinde görünür: processId, talep sahibi, başlangıç ve bitiş zamanı, statü
-- Süreç detayında görünür: processId, talep sahibi, başlangıç ve bitiş zamanı, statü, tüm süreç tarihçesi (görev geçmişi).
-- Görev Geçmişindeki herhangi bir göreve tıklandığında: Göreve ait form detayları, varsa dokümanlar.
-
-**Karar [AP-002]:** Panel üzerinden alınabilecek aksiyonlar:
-
-- **Süreç İptal** (ProcessCancel)
-- **Rollback** — herhangi bir önceki adıma geri götürme
-
-**Karar [AP-003]:** **Süreç silme özelliği YOKTUR.** İptal (cancel) yeterlidir. Veri kaybı riskini önler, audit için veri korunur.
-
-**Karar [AP-007]:** Süreç Yönetimi Paneli'ne yalnızca iki rol erişebilir: **Superadmin** ve **Süreç Yöneticisi** (bkz. [R-001]). Diğer hiçbir rol, kullanıcılar kendi başlattıkları süreçler dışında başkasının süreçlerini göremez.
-
-### 9.2. İptal ve Rollback Detayları
-
-**Karar [AP-004]:** Süreç İptal ve Rollback işlemleri için **gerekçe (reason) alanı zorunludur**. Gerekçe audit log'a yazılır.
-
-**Karar [AP-005]:** Rollback davranışı:
-
-- Süreç herhangi bir önceki adıma geri götürülebilir.
-- Rollback tetiklendiğinde, geri dönülen adımdan itibaren **görev atamaları süreç tanımına göre yeniden hesaplanır** (orijinal görev sahiplerine eski görev geri düşmez; o an geçerli atama kuralı neyse ona göre atanır).
-- Rollback öncesi tamamlanmış olan adımlar ve bu adımlara ait formlar / dokümanlar **kalıcı olarak DB'de ve S3'te saklanır** (görünürlük ve denetim için silinmez).
-- Kullanıcıya gösterilen süreç tarihçesinde bu "eski" adımlar **gösterilmez**; kullanıcıya o an geçerli temiz akış görünür.
-- Süreç Yönetimi Paneli'nde ve audit'te tüm tarihçe görünür.
-
-**Karar [AP-008]:** Süreç İptal sonrası görünüm:
-
-- İptal edilen bir süreç, başlatan kullanıcının "Başlattığım Süreçler" listesinde **görünmez**.
-- İptal edilen sürecin dahil olduğu diğer kullanıcıların "Onayda Bekleyen" listesinden düşer.
-- Süreç verisi DB'de saklanmaya devam eder (denetim ve audit için); sadece kullanıcı ekranlarından görünmez hale gelir.
-- Süreç Yönetimi Paneli'nde "İptal" statüsü ile görünür ve erişilebilir kalır.
-
-**Karar [AP-009]:** İptal gerekçesi kullanıcılara **görünmez**. Yalnızca audit log ve Süreç Yönetimi Paneli'nde (Superadmin / Süreç Yöneticisi) görüntülenebilir. Kullanıcıya süreç iptal edildiğinde ekranda gerekçe gösterilmez; sadece "süreç iptal edildi" bilgisi ya da süreci hiç listede göstermeme davranışı uygulanır.
-
-### 9.3. Panel Arama Özelliği
-
-**Karar [AP-006]:** Süreç Yönetimi Panelinde süreç numarası ile süreç tipi ile (MVP'de bir adet süreç var, Before After Kaizen), tarih aralığı (başlatılma tarihi) ile filtreleme yapılabilir.
 
 ### 9.4. Audit Log Görüntüleme Ekranı
 
@@ -852,14 +697,8 @@ Doküman **download** / **önizleme** aksiyonları **audit log'a yazılmaz**. (H
 **Bölüm A — Email ve Bildirim Şablonları:**
 
 - Mail gönderim ayarları (SMTP host, port, from adresi vb. env'den gelir; ekran sadece görüntüler — değiştirilemez).
-- **Bildirim mail şablonları** — her event tipi için düzenlenebilir template:
-  - Görev atama bildirimi
-  - SLA yaklaşma (gecikme yaklaşıyor) hatırlatması
-  - SLA aşım (gecikme) bildirimi
-  - Süreç tamamlandı bildirimi
-  - Süreç iptal bildirimi
-  - Virüs taraması enfekte dosya bildirimi
-- Her şablon için: konu (subject) + body (HTML + text fallback). Dinamik değerler `{{processId}}`, `{{taskName}}`, `{{userName}}` gibi değişkenlerle eklenir. Önizleme butonu ile render edilmiş hali test edilir.
+- **Bildirim mail şablonları** — her event tipi için düzenlenebilir template (ör. şifre süresi uyarısı, rıza yayını, virüs taraması enfekte dosya).
+- Her şablon için: konu (subject) + body (HTML + text fallback). Dinamik değerler `{{userName}}`, `{{daysRemaining}}` gibi değişkenlerle eklenir. Önizleme butonu ile render edilmiş hali test edilir.
 
 **Bölüm B — KVKK Metni:**
 
@@ -1481,7 +1320,7 @@ Bu iterasyonda kapsam dışı bırakılan ancak planlı güvenlik geliştirmeler
 | `user_id`         | UUID (nullable)    | Aksiyonu yapan kullanıcı; sistem aksiyonları için null                         |
 | `timestamp`       | TIMESTAMPTZ        | ISO 8601 UTC                                                                   |
 | `action`          | VARCHAR            | Enum değer (örn: `CREATE_USER`, `APPROVE_TASK`, `DOCUMENT_UPLOAD`)             |
-| `entity`          | VARCHAR            | Enum değer (örn: `user`, `role`, `process`, `document`)                        |
+| `entity`          | VARCHAR            | Enum değer (örn: `user`, `role`, `document`)                                   |
 | `entity_id`       | VARCHAR (nullable) | İlgili varlık ID'si                                                            |
 | `old_value`       | JSONB (encrypted)  | Değişiklik öncesi değer (C3/C4 PII içerirse [SEC-051] ile AES-256-GCM şifreli) |
 | `new_value`       | JSONB (encrypted)  | Değişiklik sonrası değer                                                       |
@@ -1623,12 +1462,12 @@ Domain event (örn: TaskAssigned)
 
 - `id` (UUID, PK)
 - `user_id` (FK → users)
-- `event_type` (enum — `TASK_ASSIGNED`, `SLA_WARNING`, vb.)
+- `event_type` (enum — `PASSWORD_EXPIRY_WARNING`, `CONSENT_VERSION_PUBLISHED`, vb.)
 - `channel` (enum — `IN_APP`, `EMAIL`)
 - `title` (VARCHAR)
 - `body` (TEXT)
 - `link_url` (VARCHAR, nullable — ilgili süreç/görev için)
-- `metadata` (JSONB — processId, taskId vb.)
+- `metadata` (JSONB — domain’e özel ek alanlar)
 - `read_at` (TIMESTAMPTZ, nullable)
 - `sent_at` (TIMESTAMPTZ — in-app için created_at'e eşit; email için gerçek gönderim zamanı)
 - `delivery_status` (enum — `PENDING`, `SENT`, `FAILED`, `BOUNCED`)
@@ -1725,7 +1564,7 @@ packages/
 
 - NestJS'te `@nestjs/swagger` decorator'larından otomatik OpenAPI spec üretilir (`/api/docs`).
 - Frontend tipli API client: **orval** veya **openapi-typescript** ile OpenAPI spec'inden otomatik üretilir.
-- Endpoint naming: `kebab-case`, resource-based (örn: `POST /api/v1/processes/{id}/tasks/{taskId}/approve`).
+- Endpoint naming: `kebab-case`, resource-based (örn: `POST /api/v1/users`, `PATCH /api/v1/users/:id`).
 - Versiyonlama: URL path üzerinden (`/api/v1/...`), gelecekte major değişiklik için `/api/v2/`.
 - tRPC ve GraphQL **kullanılmaz** (SAP, mobile, PowerBI entegrasyonlarında REST daha uyumlu).
 
@@ -2080,9 +1919,6 @@ apps/api/src/
     roles/
     permissions/
     master-data/
-    processes/
-      kaizen-before-after/
-    tasks/
     documents/
     notifications/
     audit/
@@ -2108,12 +1944,9 @@ apps/web/
     (auth)/          # login, şifre sıfırlama route group
     (app)/           # login-gated route group
       dashboard/
-      processes/
-      tasks/
       users/
       roles/
       admin/
-        process-monitor/
         master-data/
         audit-log/
       layout.tsx
@@ -2125,8 +1958,6 @@ apps/web/
   features/          # feature-based organizasyon
     auth/
     users/
-    processes/
-    tasks/
   lib/
     api-client/      # openapi-typescript ürettiği tipli client
     query-client/    # TanStack Query setup
@@ -2161,7 +1992,7 @@ modules/<feature>/
 - Constant / Enum: `UPPER_SNAKE_CASE`
 - DB tablo adı: `snake_case` çoğul (örn: `users`, `role_permissions`)
 - DB kolon: `snake_case` (Prisma tarafında `camelCase` → `@map` ile `snake_case`'e bağlanır)
-- API endpoint: `kebab-case` (örn: `/api/v1/process-instances`)
+- API endpoint: `kebab-case` (örn: `/api/v1/users`, `/api/v1/master-data/companies`)
 - Git branch: `feat/<short-name>`, `fix/<short-name>`, `chore/<short-name>`
 
 ### 17.4. Commit Standardı
@@ -2225,8 +2056,6 @@ Aşağıdaki kararlar henüz alınmamıştır. Bu kararlar tamamlanmadan ilgili 
 
 **Öncelik: 🟠 Yüksek**
 
-- [ ] **[W-OPEN-1]** `before-after-kaizen-process.md` dosyasının içeriği (adımlar, atamalar, SLA, reddetme akışı, all-required/claim modları)
-
 ### 18.3. Güvenlik — İleri İterasyon Maddeleri
 
 **Öncelik: 🟢 Düşük (MVP sonrası)**
@@ -2272,21 +2101,3 @@ Bu doküman **canlı bir dokümandır** — kararlar netleştikçe güncellenece
 `.md` ve `.mdc` dokümanları oluşturulurken bu dokümandaki karar ID'leri **referans** olarak kullanılır. Böylece hiçbir kural boşlukta kalmaz, her kural bir mimari karara bağlıdır.
 
 **Sonraki adım:** Kalan açık kararların kapatılması (özellikle 17.4 Güvenlik ve 17.6 Bildirim) → `.mdc` Cursor rule dosyalarının üretilmesi.
-
----
-
-## 19. ASANA Pivot — BPM Decommission Kararı
-
-**Karar [A-011]:** Proje Lean Management platformundan ASANA benzeri kurumsal proje/görev yönetim platformuna dönüştürülüyor. Aşağıdaki yapılar Faz 14 ile tamamen kaldırıldı:
-
-- Before & After Kaizen (KTİ) süreci ve ilgili tüm kod/UI
-- ProcessTypeRegistry + merkezi BPM workflow engine
-- Görev yönetimi (Task/TaskAssignment) modülü ve SLA altyapısı
-- Süreç Yöneticisi admin ekranı (processadministration)
-- Process/Task/TaskAssignment DB tabloları ve BPM enum'ları
-
-**Korunan yapılar:** Auth (SSO + şifre), kullanıcı yönetimi, master data, RBAC+ABAC, bildirim altyapısı (BPM event'leri hariç), admin paneli (audit/settings/consent/email), impersonation, Document modülü (generic attachment olarak), profil, tüm UI/tech-stack.
-
-**Gerekçe:** Mevcut altyapı (auth, yetkilendirme, kullanıcı yönetimi, bildirim, admin) yeni proje için güçlü bir temel oluşturuyor. BPM katmanı ASANA'nın proje/görev modeline uymuyor; sıfırdan ASANA tarzı proje/görev/board modeli inşa edilecek (Faz 15+).
-
-**Tarih:** Haziran 2026

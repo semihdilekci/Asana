@@ -533,76 +533,51 @@ export class PermissionGuard implements CanActivate {
 
 #### Katman 3 — Resource Ownership
 
-Permission'a sahip olmak bir kaynağa ait olmaktan farklı. Örneğin kullanıcı `PROCESS_VIEW` permission'ı ile başkasının sürecini görmez — yalnız kendi başlattığı veya atanmış olduğu. Bu query seviyesinde enforce edilir:
+Permission'a sahip olmak bir kaynağa ait olmaktan farklı. Örneğin `USER_LIST_VIEW` yetkisi olan kullanıcı yine de yalnızca yetkili olduğu şirket/lokasyon kapsamındaki kullanıcıları listeler — bu query seviyesinde enforce edilir:
 
 ```typescript
-// ProcessService
-async findByDisplayId(displayId: string, currentUser: AuthenticatedUser): Promise<Process> {
-  const process = await this.prisma.processes.findUnique({
-    where: { display_id: displayId },
-    include: { tasks: { include: { assignees: true } } },
-  });
+// UsersService
+async findById(id: string, actor: AuthenticatedUser): Promise<User> {
+  const user = await this.usersRepository.findById(id);
+  if (!user) throw new UserNotFoundException();
 
-  if (!process) throw new ProcessNotFoundException();
+  const isSelf = user.id === actor.id;
+  const canList = await this.permissionResolver.hasPermission(actor.id, Permission.USER_LIST_VIEW);
 
-  // Resource ownership check
-  const isOwner = process.started_by_user_id === currentUser.id;
-  const isAssignee = process.tasks.some((t) => t.assignees.some((a) => a.user_id === currentUser.id));
-  const hasViewAll = await this.permissionResolver.hasPermission(currentUser.id, Permission.PROCESS_VIEW_ALL);
-
-  if (!isOwner && !isAssignee && !hasViewAll) {
-    throw new ForbiddenException({ code: 'PROCESS_ACCESS_DENIED' });
+  if (!isSelf && !canList) {
+    throw new ForbiddenException({ code: 'PERMISSION_DENIED' });
   }
 
-  return process;
+  return this.applyOrgScopeFilter(user, actor);
 }
 ```
 
 Ownership kuralı her domain entity için farklı:
 
-| Entity       | Ownership kuralı                                                           |
-| ------------ | -------------------------------------------------------------------------- |
-| Process      | `started_by_user_id === userId` OR task assignee OR `PROCESS_VIEW_ALL`     |
-| Task         | Task'a atanmış OR parent process'in başlatıcısı OR `PROCESS_VIEW_ALL`      |
-| Document     | Upload eden OR parent task/process'in erişilebilirliği OR admin permission |
-| User (read)  | Self OR `USER_LIST_VIEW`                                                   |
-| User (edit)  | `USER_UPDATE_ATTRIBUTE` AND NOT self                                       |
-| Notification | `recipient_user_id === userId` (daima self)                                |
-| Audit log    | `AUDIT_LOG_VIEW` (Superadmin only)                                         |
+| Entity       | Ownership kuralı                                  |
+| ------------ | ------------------------------------------------- |
+| Document     | `uploaded_by_user_id === userId` OR admin yetkisi |
+| User (read)  | Self OR `USER_LIST_VIEW` (+ org scope)            |
+| User (edit)  | `USER_UPDATE_ATTRIBUTE` AND NOT self              |
+| Notification | `recipient_user_id === userId` (daima self)       |
+| Audit log    | `AUDIT_LOG_VIEW` (Superadmin only)                |
 
 #### Katman 4 — Field-Level Filter
 
-Bir entity'yi görebilmek tüm field'larını görmek değil. Örneğin task'a atanmış kullanıcı (başlatıcı değil) önceki task'ın form_data'sını ve dokümanlarını **görmez**. Response serializer field filter uygular:
+Bir entity'yi görebilmek tüm field'larını görmek değil. Örneğin kısıtlı listede görünen kullanıcı kaydında PII alanları rol/scope'a göre maskelenir. Response serializer field filter uygular:
 
 ```typescript
-// ProcessSerializer
-serializeForUser(process: Process, currentUser: AuthenticatedUser, userPermissions: Set<Permission>): SerializedProcess {
-  const isOwner = process.started_by_user_id === currentUser.id;
-  const hasViewAll = userPermissions.has(Permission.PROCESS_VIEW_ALL);
-  const isFullAccess = isOwner || hasViewAll;
+serializeUserForActor(user: User, actor: AuthenticatedUser, permissions: Set<Permission>): SerializedUser {
+  const isSelf = user.id === actor.id;
+  const canViewFull = isSelf || permissions.has(Permission.USER_LIST_VIEW);
 
   return {
-    id: process.id,
-    displayId: process.display_id,
-    status: process.status,
-    startedAt: process.started_at,
-    // ...
-    tasks: process.tasks.map((task) => {
-      const isAssignee = task.assignees.some((a) => a.user_id === currentUser.id);
-      const taskFullAccess = isFullAccess || isAssignee;
-
-      return {
-        id: task.id,
-        stepLabel: task.step_label,
-        status: task.status,
-        completedAt: task.completed_at,
-        completionAction: task.completion_action,
-        // Full access field'lar
-        formData: taskFullAccess ? task.form_data : null,
-        documents: taskFullAccess ? task.documents : [],
-        reason: taskFullAccess ? task.reason : null,
-      };
-    }),
+    id: user.id,
+    sicil: user.sicil,
+    firstName: user.first_name,
+    lastName: user.last_name,
+    email: canViewFull ? user.email : null,
+    phone: canViewFull ? user.phone : null,
   };
 }
 ```
@@ -615,7 +590,7 @@ Her request'te DB'den rol → permission resolve etmek pahalı. Redis cache:
 
 ```
 Key: user_permissions:{userId}
-Value: JSON array of permission keys — e.g. ["USER_CREATE", "USER_LIST_VIEW", "PROCESS_KTI_START", ...]
+Value: JSON array of permission keys — e.g. ["USER_CREATE", "USER_LIST_VIEW", "ROLE_ASSIGN", ...]
 TTL: 5 dakika
 ```
 
@@ -714,11 +689,6 @@ Sistem rolleri (seed data):
 - `ROLE_RULE_MANAGE` (hassas — attribute rule builder)
 - `ROLE_SELF_EDIT_FORBIDDEN`: Kendi rolünün permission'ını düşüremez
 
-**PROCESS_ADMIN** — Tüm süreçleri yönetir (Faz 14 ile kaldırıldı):
-
-- `PROCESS_VIEW_ALL`, `PROCESS_CANCEL`, `PROCESS_ROLLBACK` (Faz 14 ile kaldırıldı)
-- KTİ başlatabilir (`PROCESS_KTI_START`) (Faz 14 ile kaldırıldı)
-
 **BASIC_USER** — Her authenticated user default davranışı (role atanmasa bile):
 
 - Kendi profilini görme (`/profile`)
@@ -727,22 +697,19 @@ Sistem rolleri (seed data):
 
 MVP’de `Permission` enum’undaki tüm değerleri × 4 tablo satırı burada listemek yerine yalnız **hassas** veya **kritik karar noktası** permission'ları aşağıda verilir. Tam liste `packages/shared-types/src/permission.ts` metadata'sından ve database seed’inden (`prisma/seed.ts`) türetilir — tek doğruluk kaynağı kod.
 
-| Permission             | `isSensitive` | Superadmin | User Mgr | Role Mgr | Process Admin |
-| ---------------------- | ------------- | ---------- | -------- | -------- | ------------- | ----------------------- |
-| USER_CREATE            | ✓             | ✓          | ✓        | ✗        | ✗             |
-| USER_DEACTIVATE        | ✓             | ✓          | ✓        | ✗        | ✗             |
-| USER_SESSION_VIEW      | ✓             | ✓          | ✗        | ✗        | ✗             |
-| USER_IMPERSONATION     | ✓             | ○\*        | ✗        | ✗        | ✗             |
-| ROLE_PERMISSION_MANAGE | ✓             | ✓          | ✗        | ✓        | ✗             |
-| ROLE_RULE_MANAGE       | ✓             | ✓          | ✗        | ✓        | ✗             |
-| PROCESS_VIEW_ALL       | ✓             | ✓          | ✗        | ✗        | ✓             | (Faz 14 ile kaldırıldı) |
-| PROCESS_CANCEL         | ✓             | ✓          | ✗        | ✗        | ✓             | (Faz 14 ile kaldırıldı) |
-| PROCESS_ROLLBACK       | ✓             | ✓          | ✗        | ✗        | ✓             | (Faz 14 ile kaldırıldı) |
-| AUDIT_LOG_VIEW         | ✓             | ✓          | ✗        | ✗        | ✗             |
-| SYSTEM_SETTINGS_EDIT   | ✓             | ✓          | ✗        | ✗        | ✗             |
-| EMAIL_TEMPLATE_EDIT    | ✓             | ✓          | ✗        | ✗        | ✗             |
-| CONSENT_VERSION_EDIT   | ✓             | ✓          | ✗        | ✗        | ✗             |
-| MASTER_DATA_MANAGE     | —             | ✓          | ✓        | ✗        | ✗             |
+| Permission             | `isSensitive` | Superadmin | User Mgr | Role Mgr |
+| ---------------------- | ------------- | ---------- | -------- | -------- |
+| USER_CREATE            | ✓             | ✓          | ✓        | ✗        |
+| USER_DEACTIVATE        | ✓             | ✓          | ✓        | ✗        |
+| USER_SESSION_VIEW      | ✓             | ✓          | ✗        | ✗        |
+| USER_IMPERSONATION     | ✓             | ○\*        | ✗        | ✗        |
+| ROLE_PERMISSION_MANAGE | ✓             | ✓          | ✗        | ✓        |
+| ROLE_RULE_MANAGE       | ✓             | ✓          | ✗        | ✓        |
+| AUDIT_LOG_VIEW         | ✓             | ✓          | ✗        | ✗        |
+| SYSTEM_SETTINGS_EDIT   | ✓             | ✓          | ✗        | ✗        |
+| EMAIL_TEMPLATE_EDIT    | ✓             | ✓          | ✗        | ✗        |
+| CONSENT_VERSION_EDIT   | ✓             | ✓          | ✗        | ✗        |
+| MASTER_DATA_MANAGE     | —             | ✓          | ✓        | ✗        |
 
 `isSensitive: true` olan permission'lar rol-yetki tablosu UI'da kırmızı "Hassas" rozeti ile işaretlenir ve atama sırasında ek onay gerekir (`06_SCREEN_CATALOG` S-ROLE-PERMISSIONS).
 

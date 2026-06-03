@@ -22,12 +22,12 @@ Developer'ın **kod yazmadığı** varsayımı. Developer'ın zihinsel yükü: "
 Her bir geliştirme session'ı tek döngü:
 
 ```
-1. Developer: intent belirler (örn. "KTİ manager approval form'unu ekle")
+1. Developer: intent belirler (örn. "kullanıcı listesine şirket filtresi ekle")
 2. Developer: ilgili dokümanları agent context'ine koyar
-   - 01_DOMAIN_MODEL (KTİ state machine için)
+   - 01_DOMAIN_MODEL (domain kuralları için)
    - 03_API_CONTRACTS (endpoint referansı)
    - 05_FRONTEND_SPEC (form pattern)
-   - 06_SCREEN_CATALOG (S-TASK-DETAIL tam şablonu)
+   - 06_SCREEN_CATALOG
    - 08_TESTING_STRATEGY (test coverage hedefleri)
 3. Developer: prompt yazar — net hedef + constraint
 4. Agent: kod yazar (file create/modify)
@@ -99,8 +99,6 @@ flowchart TD
     F2[Faz 2: DB Schema + Auth Foundation]
     F3[Faz 3: Users + Master Data + Roles CRUD]
     F4[Faz 4: Permission System<br/>RBAC + ABAC]
-    F5[Faz 5: Process Engine + KTİ Workflow]
-    F6[Faz 6: Task Management + Document Upload]
     F7[Faz 7: Notification System]
     F8[Faz 8: Admin Panel]
     F9[Faz 9: Dashboard + Profile + Error Pages]
@@ -114,15 +112,11 @@ flowchart TD
     F1 --> F2
     F2 --> F3
     F3 --> F4
-    F4 --> F5
-    F5 --> F6
-    F6 --> F7
+    F4 --> F7
     F3 --> F7
     F3 --> F8
-    F6 --> F8
     F7 --> F8
     F3 --> F9
-    F6 --> F9
     F7 --> F9
     F8 --> F9
     F9 --> F10
@@ -137,19 +131,17 @@ flowchart TD
     classDef release fill:#e9d5ff,stroke:#9333ea
 
     class F0,F1,F2 foundation
-    class F3,F4,F5,F6 core
+    class F3,F4 core
     class F7,F8,F9 feature
     class F10,F11,F13 polish
     class F12 release
 ```
 
-**Kritik path:** F0 → F2 → F3 → F4 → F5 → F6 → F8 → F9 → F10 → F11 → F13 → F12.
+**Kritik path:** F0 → F2 → F3 → F4 → F7 → F8 → F9 → F10 → F11 → F13 → F12.
 
 **Not:** Faz 12 (Untitled UI migrasyonu) kod kuralı `@62-phase-12-UI-migration` ile tamamlandı; roadmap’teki **Faz 12** = UAT + Go-Live. **Faz 13** = user impersonation (go-live öncesi, pentest kapsamında).
 
 **Paralelleştirilebilir:** F7 (notification) F6'dan sonra ama F8'den bağımsız başlayabilir. F9 (dashboard) F3+F6+F7+F8 birlikte olduğunda başlar.
-
-> **Not (Haziran 2026):** Faz 5 (Process Engine) ve Faz 6 (Task Management) ASANA pivot kararı ile kaldırıldı. Faz 14 bu decommission'ı yürütür.
 
 Solo developer + agent olduğu için paralelleştirme avantajı sınırlı. Ancak düşük-bağımlılık fazları (örn. email template seed, master data seed) blocking task beklerken arada yapılabilir.
 
@@ -483,7 +475,7 @@ Session'lar:
 - Cache invalidation triggers (user role change, rule change, attribute change)
 - `/roles/:id/rules/test` endpoint — canlı matching user preview
 - Permission metadata endpoint (`GET /api/v1/permissions`)
-- Tüm diğer modüllerde `@RequirePermission` eklenir (users, master-data, roles, processes placeholder)
+- Tüm diğer modüllerde `@RequirePermission` eklenir (users, master-data, roles)
 
 **Frontend:**
 
@@ -541,160 +533,6 @@ Session'lar:
 
 ---
 
-### Faz 5 — Process Engine + KTİ Workflow
-
-> **⛔ Kaldırıldı (Faz 14):** Bu faz ASANA pivot sonrası decommission edildi. BPM/KTİ/süreç/görev altyapısı Faz 14 ile tamamen kaldırıldı.
-
-> **Durum (Faz 14 sonrası):** BPM/KTİ runtime kodu ve DB tabloları kaldırıldı. Aşağıdaki kapsam maddeleri yalnızca tarihsel referanstır.
-
-#### Kapsam
-
-**Backend:**
-
-- `processes` tablosu (display_id per-type sequence — örn. `process_seq_before_after_kaizen`)
-- `tasks` + `task_assignments` (Prisma isimleri repo ile aynı)
-- `**ProcessTypeRegistry` pattern\*\* — uygulama: `apps/api/src/processes/process-type-registry.service.ts` (`KtiWorkflow` onModuleInit'te register)
-- KTİ workflow tanımı: `BEFORE_AFTER_KAIZEN` (`kti.workflow.ts`)
-  - `startKti` transaction: başlatma adımı veritabanında `COMPLETED` (form verisi) + yönetici onay adımı `PENDING` (API yanıtındaki `firstTaskId` buna aittir)
-  - Adım 2: `KTI_MANAGER_APPROVAL` (SLA workflow meta içinde; onay/ret/revize **Faz 6 — task complete**)
-  - Adım 3 (koşullu): `KTI_REVISION` — **Faz 6**
-- `POST /processes/kti/start` — `POST /api/v1/processes/kti/start` (Zod, CLEAN gate, yönetici yok → 422 `USER_NOT_FOUND`)
-- `GET /api/v1/processes`, `GET /api/v1/processes/:displayId` — liste ve detay
-- `POST /api/v1/processes/:displayId/cancel` ve `POST /api/v1/processes/:displayId/rollback` — **Faz 5'te** (`PROCESS_CANCEL` / `PROCESS_ROLLBACK`)
-- **Documents modülü:** `POST /documents/upload-initiate` (S3 presigned PUT, TTL 5 dk) → client PUT → `POST /documents` (meta + kuyruk) → `GET /documents/:id` / `GET /documents/:id/scan-status` poll. **MVP’de S3 imzalı URL;** CloudFront viewer URL’si `07_SECURITY_IMPLEMENTATION` + üretimde.
-- **Worker:** `apps/worker` — `document-scan.processor` (BullMQ + ClamAV instream). Sözleşmede geçen EventBridge/Lambda alternatif bir dağıtım seçeneğidir.
-
-**Frontend:**
-
-- S-KTI-START — `apps/web/src/app/(app)/processes/kti/start/page.tsx`, `KtiStartForm` (çok adımlı, `ONAYLIYORUM` onayı)
-- `**DocumentUpload`\*\* — initiate → presigned PUT → `POST /documents` → tarama poll (~2 sn aralık, 60 sn timeout; unmount’ta interval temizlenir)
-- S-PROC-LIST-MY — `processes/page.tsx`; detay: `processes/[displayId]/page.tsx` + `ProcessDetail` / `ProcessTimeline`
-
-**Integration / E2E (mevcut):**
-
-- API integration: KTİ start + doküman edge — `test/documents-kti.integration.test.ts`, `test/processes.integration.test.ts`
-- Playwright: `kti-start` / `processes-list` — login + form/list smoke. **Uçtan uca upload+submit** ve **yönetici onay E2E** → Faz 6.
-
-#### Agent Kick-off Materyali
-
-- **Session 5.1 — Prisma schema: processes + tasks:** `02_DATABASE_SCHEMA`, `01_DOMAIN_MODEL` (state machines)
-- **Session 5.2 — ProcessTypeRegistry pattern:** `04_BACKEND_SPEC` (Bölüm ProcessTypeRegistry), `01_DOMAIN_MODEL`
-- **Session 5.3 — KTİ workflow tanımı:** `01_DOMAIN_MODEL` (KTİ state machine), `apps/api/src/processes/workflows/kti.workflow.ts`
-- **Session 5.4 — /processes/kti/start endpoint:** `03_API_CONTRACTS` (9.5 Processes)
-- **Session 5.5 — Documents modülü:** `03_API_CONTRACTS` (9.7 Documents), `07_SECURITY_IMPLEMENTATION` (üretim/edge/CloudFront; MVP S3)
-- **Session 5.6 — `DocumentUpload`:** `05_FRONTEND_SPEC` (Bölüm 7.8), `06_SCREEN_CATALOG` (S-KTI-START)
-- **Session 5.7 — S-KTI-START:** `06_SCREEN_CATALOG` (tam şablon)
-- **Session 5.8 — S-PROC-LIST / S-PROCESS-DETAIL:** `06_SCREEN_CATALOG`
-- **Session 5.9 — Testing:** `08_TESTING_STRATEGY` (KTİ workflow + doküman senaryoları)
-
-#### Deliverable
-
-- Kullanıcı `/processes/kti/start` sayfasında formu doldurur; fotoğraflar (CLEAN) → submit → `KTI-000001` formatında süreç oluşur
-- Yöneticiye PENDING task atanır; liste ve detay UI: `/processes`, `/processes/{displayId}`
-- Integration test: KTİ start + doküman edge senaryoları
-- **Faz 6’da:** task `complete` (onay/ret/revize), sözleşmedeki ayrı `GET .../history` / `.../documents` (veya sözleşme revizyonu), tam E2E critical journey
-
-#### Human Gate
-
-- `display_id` format `KTI-000001` (6 haneli padding, süreç tipi başına sequence)
-- `process` / `task` durumları Prisma + domain ile tutarlı; görev tamamlama geçişleri Faz 6
-- İptal, rollback, CLEAN olmayan start gibi kurallar typed hata; invalid task transitions Faz 6
-- ProcessTypeRegistry: `ProcessTypeRegistryService` + `KtiWorkflow` (ADR için kaynak kod)
-- Yönetici yok → 422 + `USER_NOT_FOUND` (KTİ için)
-- `DocumentUpload` tarama poll: ~2 sn aralık, 60 sn üst sınır (5 sn istersen sabit tek yerden)
-- Presigned URL 5 dk (300 s) TTL; MVP S3, CloudFront üretim
-- Integration: öncesi/sonrası 1–10 foto, CLEAN zorunluluğu
-
-#### Vibe Coding Risk Uyarıları
-
-- **Agent ProcessTypeRegistry pattern'i atlayabilir**, KTİ'yi hard-code yazabilir. Uzun vadede her yeni süreç tipi için tekrar yazım → pattern zorunlu.
-- **Agent state machine transition'ları enforce etmez** — herhangi bir state → herhangi bir state geçişi yapar. Explicit allowed-transitions matrisi.
-- **Agent display_id için sequence yerine UUID veya counter kullanır** — `02_DATABASE_SCHEMA`'daki per-type PostgreSQL sequence zorunlu.
-- **Agent document upload'ı tek endpoint olarak tasarlar** (client → backend → S3 relay) — scalability engeli. Pre-signed URL pattern zorunlu.
-- **Agent tarama yolunu yalnız mock bırakır** — dev için ok; worker + kuyruk tamamlanmalı. Altyapı Faz 1, worker Faz 5; Lambda sözleşme alternatifidir.
-- **Agent `DocumentUpload` poll'u unmount'ta temizlemez** — interval sızıntısı. Cleanup zorunlu.
-
-#### Tahmini İterasyon
-
-10-14 agent session.
-
----
-
-### Faz 6 — Task Management + Document Upload Integration
-
-> **⛔ Kaldırıldı (Faz 14):** Bu faz ASANA pivot sonrası decommission edildi. BPM/KTİ/süreç/görev altyapısı Faz 14 ile tamamen kaldırıldı.
-
-#### Kapsam
-
-**Backend:**
-
-- Task endpoints: list, detail, claim, complete
-- Claim mode handling (CLAIM tip task'larda peer eviction)
-- Complete action-based handler (completion_action + reason validation)
-- Task visibility (başlatıcı vs assignee vs PROCESS_VIEW_ALL)
-- **Process cancel + rollback** — uçlar Faz 5'te; Faz 6'da bildirimler, idari `GET /processes/:displayId/history` (sözleşme), UI eşlemesi
-- Integration with KTİ workflow (manager approval transitions)
-- SLA hesaplama (task.sla_due_at assignment-time)
-
-**Frontend:**
-
-- S-TASK-LIST (3 tab: pending/started/completed)
-- S-TASK-DETAIL (süreç bağlamı + önceki task'lar collapsible + action paneli)
-- S-PROC-DETAIL (task zinciri timeline + documents + cancel/rollback aksiyonları)
-- S-PROC-LIST-ADMIN (genişletilmiş filtre)
-- S-PROC-CANCEL + S-PROC-ROLLBACK modal'lar (destructive confirmation "ONAYLIYORUM" pattern)
-- `<SlaBadge>` component
-
-**Integration:**
-
-- E2E: KTİ full happy path (login → kti start → manager login → task detail → approve → process completed)
-- E2E: revision loop
-- E2E: cancel flow
-
-#### Agent Kick-off Materyali
-
-- **Session 6.1 — Task endpoints:** `03_API_CONTRACTS` (9.6 Tasks)
-- **Session 6.2 — Claim + complete action handler:** `01_DOMAIN_MODEL` (task semantics), `04_BACKEND_SPEC` (workflow engine)
-- **Session 6.3 — Visibility rules:** `07_SECURITY_IMPLEMENTATION` (Bölüm 4.1 Katman 3+4)
-- **Session 6.4 — Process cancel + rollback (UI + idari):** `03_API_CONTRACTS`, `01_DOMAIN_MODEL` (rollback semantics) — API varsa regresyon + modallar
-- **Session 6.5 — S-TASK-LIST:** `06_SCREEN_CATALOG`
-- **Session 6.6 — S-TASK-DETAIL (en kompleks ekran):** `06_SCREEN_CATALOG` (tam şablon)
-- **Session 6.7 — S-PROC-DETAIL:** `06_SCREEN_CATALOG`
-- **Session 6.8 — Cancel + rollback modals:** `06_SCREEN_CATALOG` (S-PROC-CANCEL, S-PROC-ROLLBACK)
-- **Session 6.9 — E2E test:** `08_TESTING_STRATEGY` (KTİ happy path Playwright)
-
-#### Deliverable
-
-- İlk KTİ full cycle: başlatıcı KTİ başlatır → manager task listesinde görür → detay açar → onaylar/reddeder/revize ister → başlatıcı revize eder → manager yeniden onaylar → süreç COMPLETED
-- Cancel: admin süreci iptal eder (reason + ONAYLIYORUM)
-- Rollback: admin önceki step'e döner
-- SLA badge task list'te doğru renkte
-
-#### Human Gate
-
-- Claim race condition: iki user eşzamanlı claim → biri success, diğeri 409 TASK_CLAIM_LOST (integration test)
-- Completion action + reason validation: REJECT/REQUEST_REVISION'da reason zorunlu, APPROVE'da opsiyonel
-- Task visibility: assignee önceki task'ın form_data'sını görmez (null), başlatıcı görür
-- S-TASK-DETAIL: action select değişimi → form field'lar dinamik güncellenir
-- S-PROC-DETAIL: task zinciri görsel (timeline) — rollback ile SKIPPED task'lar işaretli
-- Rollback: yeni task instance (eski task SKIPPED_BY_ROLLBACK)
-- E2E full cycle green
-
-#### Vibe Coding Risk Uyarıları
-
-- **Agent claim mode için optimistic update yapabilir** frontend'te — race condition'da kullanıcı hata görmez. Pessimistic (server response bekle) pattern zorunlu.
-- **Agent visibility rule'larını service içinde inline yapar** (if-else yığını) — response serializer pattern (`04_BACKEND_SPEC` User/ProcessSerializer) zorunlu.
-- **Agent task detail'ında form schema'yı hard-code yapar** — backend'ten `formSchema` gelmeli, frontend dynamic render.
-- **Agent "önceki task'ların form_data'sını göster" kısmını atlar** — S-TASK-DETAIL en yoğun ekran, collapse/expand + visibility rules karmaşık.
-- **Agent rollback'i "cancel + restart" şeklinde implementation yapar** — yanlış semantic. New task for previous step + old task SKIPPED pattern zorunlu.
-- **Agent destructive confirmation ONAYLIYORUM pattern'ini atlar** — cancel/rollback'te zorunlu.
-
-#### Tahmini İterasyon
-
-12-16 agent session.
-
----
-
 ### Faz 7 — Notification System
 
 #### Kapsam
@@ -737,7 +575,7 @@ Session'lar:
 
 #### Deliverable
 
-- KTİ başlatma → manager email alır (Mailpit UI'da görünür) + in-app notification
+- Örnek bildirim akışı (şifre süresi / rıza) → e-posta (Mailpit) + in-app
 - Task claim → peer adayları "başka kullanıcı üstlendi" notification
 - SLA warning → task detail'daki SLA badge sarıya döner + notification
 - Notification bell unread count live (polling)
@@ -758,7 +596,7 @@ Session'lar:
 - **Agent event trigger'ları service içinde inline atar** — decoupled event bus (EventEmitter2 veya NestJS events) pattern zorunlu. Test edilebilirlik + cross-cutting concern.
 - **Agent BullMQ retry config'ini default bırakır** — exponential backoff + max retry explicit. Failed jobs dead letter queue.
 - **Agent email template'leri hardcode'lar code içinde** — DB'de `email_templates` tablosundan gelir, runtime render. Seed data'da default template'ler.
-- **Agent cron job'ları Node.js setInterval ile yapar** — process restart'ta interval kaybı. MVP’de SLA için `@nestjs/schedule` + `TaskSlaCronService` (5 dk); ileride BullMQ repeatable job’a taşınabilir.
+- **Agent cron job'ları Node.js setInterval ile yapar** — process restart'ta interval kaybı. Zamanlanmış işler için `@nestjs/schedule` veya BullMQ repeatable job tercih edilir.
 - **Agent notification polling'ini 5 sn yapar** — 30 sn yeterli, 5 sn gereksiz API load.
 - **Agent mark-read optimistic'i eksik implement eder** (onError rollback atlar) — UX bozulur.
 
@@ -910,7 +748,7 @@ Session'lar:
 - Bundle size analysis + optimization (lazy import, route splitting)
 - Database query review (`EXPLAIN ANALYZE`, missing indexes)
 - Redis cache hit rate optimization
-- k6 load test senaryoları (login storm, dashboard, process list)
+- k6 load test senaryoları (login storm, dashboard, kullanıcı listesi)
 - Capacity planning: ECS task count, RDS instance class, Redis memory
 
 #### Agent Kick-off Materyali
@@ -1046,54 +884,6 @@ Session'lar:
 
 ---
 
-### Faz 14 — BPM Decommission (ASANA Pivot Temizliği)
-
-#### Kapsam
-
-Lean Management BPM/KTİ/süreç/görev altyapısının tamamen kaldırılması ve kod tabanının ASANA klonu geliştirmeye hazır "clean core" durumuna getirilmesi.
-
-**Kaldırılacak:**
-
-- `apps/api/src/processes/**`, `apps/api/src/tasks/**` (backend modülleri)
-- `apps/web/src/app/(app)/processes/**`, `tasks/**`, `processadministration/**` (frontend route'ları)
-- `apps/web/src/components/processes/**`, `tasks/**` (frontend bileşenleri)
-- Worker: SLA monitor pipeline, document-scan (BPM bağlamı)
-- Shared: `processes.schemas`, `tasks.schemas`, SLA util, `PROCESS_*` permission'ları
-- DB: Process, Task, TaskAssignment tabloları + BPM enum'ları + per-type sequence
-- Document tablosundan `process_id` + `task_id` FK'leri düşürülür (generic attachment olur)
-- Notification event enum'undan TASK*\*/SLA*\_/PROCESS\_\_ kaldırılır
-- Shell-nav-config, admin-summary, breadcrumbs BPM referansları temizlenir
-- Cursor rules: 55-phase-05, 56-phase-06, 13-backend-processes + add-process-type skill
-
-**Korunan çekirdek:** Auth, users, master-data, roles, notifications (altyapı), admin, impersonation, profile, Document (generic), tüm UI/tech-stack.
-
-#### Agent Kick-off Materyali
-
-- `.cursor/rules/64-phase-14-bpm-decommission.mdc` (5 iterasyon)
-- Bu doküman (Faz 14 bölümü)
-
-#### Deliverable
-
-- `pnpm build` + `pnpm typecheck` + `pnpm lint` + `pnpm test` green
-- E2E smoke (login → dashboard → users → roles → admin → profile → logout) green
-- BPM ile ilgili hiçbir kod/UI/DB yapısı kalmamış
-- Document modülü generic (sadece uploaded_by_id)
-
-#### Human Gate
-
-- [x] Process/Task/TaskAssignment Prisma modelleri şemada yok (`20260603120000_remove_bpm_tables`)
-- [x] `PROCESS_*` permission enum'da yok (İter 4)
-- [x] Sidebar'da görev/süreç/processadmin girişi yok (İter 1)
-- [x] Notification event'lerinde task/process/SLA yok (İter 3 + migration)
-- [x] Seed script'te PROCESS_MANAGER rolü/kullanıcısı yok (İter 4)
-- [x] Admin summary'de process/task metrikleri yok (İter 3)
-- [x] `docs/02_DATABASE_SCHEMA.md` BPM kaldırma notları + generic `documents` (İter 5)
-- [x] E2E smoke `apps/web/e2e/core-smoke.e2e.spec.ts` (İter 5)
-
-#### Tahmini İterasyon
-
-5 iterasyon (FE temizlik → BE modül → notification/worker/document → shared/nav/rules → DB migration + doğrulama). **Faz 14 tamamlandı (Haziran 2026).**
-
 ---
 
 ### Faz 12 — UAT + Go-Live
@@ -1121,7 +911,7 @@ Lean Management BPM/KTİ/süreç/görev altyapısının tamamen kaldırılması 
 
 - Production URL açık: `app.lean-mgmt.holding.com`
 - İlk Superadmin login
-- Pilot user grubu KTİ süreçleri başlatıyor
+- Pilot user grubu temel akışları doğrular
 - CloudWatch + Sentry monitoring aktif
 - On-call rotation başladı
 
@@ -1256,17 +1046,17 @@ Bu değişimler ADR ile dokümante edilir. Her biri major migration — expand-c
 
 ### 7.1 MVP Release Sonrası 3 Ay
 
-| Metric                      | Target                               |
-| --------------------------- | ------------------------------------ |
-| Aktif kullanıcı (monthly)   | 5,000+                               |
-| Tamamlanan KTİ süreç sayısı | 500+                                 |
-| P95 API response time       | < 500ms                              |
-| Error rate (5xx)            | < 0.1%                               |
-| Uptime                      | 99.5% (staging-measured before prod) |
-| Critical security incident  | 0                                    |
-| Data loss incident          | 0                                    |
-| SLA breach rate (task)      | < 5%                                 |
-| User NPS                    | > 50                                 |
+| Metric                     | Target                               |
+| -------------------------- | ------------------------------------ |
+| Aktif kullanıcı (monthly)  | 5,000+                               |
+| Aktif kullanıcı sayısı     | hedef KPI (ürün tanımına göre)       |
+| P95 API response time      | < 500ms                              |
+| Error rate (5xx)           | < 0.1%                               |
+| Uptime                     | 99.5% (staging-measured before prod) |
+| Critical security incident | 0                                    |
+| Data loss incident         | 0                                    |
+| SLA breach rate (task)     | < 5%                                 |
+| User NPS                   | > 50                                 |
 
 ### 7.2 Agent-Specific Metrics
 

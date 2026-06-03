@@ -30,7 +30,7 @@
 
 ## 2. Şemaya Genel Bakış
 
-Şema altı mantıksal gruba ayrılır; toplam **24 tablo** (Faz 14 BPM decommission sonrası). Gruplar domain alt-domain'lerine paraleldir. Aynı alt-domain içindeki tablolar aynı migration dosyalarında yönetilir; cross-grup migration'lar (örn. `user_consents` FK → `consent_versions`) açık olarak belgelenir.
+Şema altı mantıksal gruba ayrılır; toplam **24 tablo**. Gruplar domain alt-domain'lerine paraleldir. Aynı alt-domain içindeki tablolar aynı migration dosyalarında yönetilir; cross-grup migration'lar (örn. `user_consents` FK → `consent_versions`) açık olarak belgelenir.
 
 | Grup                              | Tablolar                                                                                                                |
 | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
@@ -40,8 +40,6 @@
 | **Documents**                     | `documents` (generic attachment; `uploaded_by_user_id` — süreç/görev FK yok)                                            |
 | **Notifications & Communication** | `notifications`, `notification_preferences`, `email_templates`                                                          |
 | **System & Audit**                | `system_settings`, `audit_logs`, `audit_chain_integrity_checks`                                                         |
-
-> **Faz 14 (ASANA pivot):** `processes`, `tasks`, `task_assignments` tabloları ve ilgili enum'lar migration `20260603120000_remove_bpm_tables` ile kaldırıldı. Geçmiş migration dosyaları tarihsel kayıt olarak kalır.
 
 Şema, tek PostgreSQL database içinde tek schema (`public`) altında yaşar. Schema-per-tenant yoktur — platform multi-tenant değildir ([10. Multi-tenancy / RLS](#10-multi-tenancy--rls)).
 
@@ -95,7 +93,7 @@ Hard delete neredeyse hiç yok. Silme ihtiyacı dört pattern ile karşılanır:
 
 **Pattern 3 — `status` enum (business-level terminal durumlar):**
 
-- Uygulandığı tablolar: `sessions` (REVOKED, EXPIRED, ROTATED terminal). _(Eski BPM `processes` / `tasks` tabloları Faz 14 ile kaldırıldı.)_
+- Uygulandığı tablolar: `sessions` (REVOKED, EXPIRED, ROTATED terminal).
 - Silme yerine status değişikliği. Kayıt veri olarak saklanır.
 
 **Pattern 4 — Retention job ile hard delete:**
@@ -511,17 +509,17 @@ Sistemdeki tüm rolleri tutar — hem sistem rolleri (built-in) hem dinamik roll
 
 **Kolonlar:**
 
-| Kolon              | Tip          | Null | Default | Kısıt                           | Açıklama                                                                                                                 |
-| ------------------ | ------------ | ---- | ------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| id                 | TEXT         | No   | cuid()  | PK                              |                                                                                                                          |
-| code               | VARCHAR(64)  | No   | —       | UNIQUE                          | Sistem rolü için enum (`SUPERADMIN`, `USER_MANAGER`, `ROLE_MANAGER`, `PROCESS_MANAGER`); dinamik rol için auto-generated |
-| name               | VARCHAR(200) | No   | —       | —                               | Görünen ad                                                                                                               |
-| description        | TEXT         | Yes  | —       | —                               | Rolün amacı                                                                                                              |
-| is_system          | BOOLEAN      | No   | false   | —                               | Sistem rolü mü — silinemez                                                                                               |
-| is_active          | BOOLEAN      | No   | true    | —                               |                                                                                                                          |
-| created_at         | TIMESTAMPTZ  | No   | now()   | —                               |                                                                                                                          |
-| updated_at         | TIMESTAMPTZ  | No   | now()   | —                               | Trigger                                                                                                                  |
-| created_by_user_id | TEXT         | Yes  | —       | FK users(id) ON DELETE SET NULL |                                                                                                                          |
+| Kolon              | Tip          | Null | Default | Kısıt                           | Açıklama                                                                                              |
+| ------------------ | ------------ | ---- | ------- | ------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| id                 | TEXT         | No   | cuid()  | PK                              |                                                                                                       |
+| code               | VARCHAR(64)  | No   | —       | UNIQUE                          | Sistem rolü için enum (`SUPERADMIN`, `USER_MANAGER`, `ROLE_MANAGER`); dinamik rol için auto-generated |
+| name               | VARCHAR(200) | No   | —       | —                               | Görünen ad                                                                                            |
+| description        | TEXT         | Yes  | —       | —                               | Rolün amacı                                                                                           |
+| is_system          | BOOLEAN      | No   | false   | —                               | Sistem rolü mü — silinemez                                                                            |
+| is_active          | BOOLEAN      | No   | true    | —                               |                                                                                                       |
+| created_at         | TIMESTAMPTZ  | No   | now()   | —                               |                                                                                                       |
+| updated_at         | TIMESTAMPTZ  | No   | now()   | —                               | Trigger                                                                                               |
+| created_by_user_id | TEXT         | Yes  | —       | FK users(id) ON DELETE SET NULL |                                                                                                       |
 
 **Index'ler:**
 
@@ -533,7 +531,7 @@ Sistemdeki tüm rolleri tutar — hem sistem rolleri (built-in) hem dinamik roll
 - Sistem rolü silinemez: service-layer — `is_system = true` ise delete yok.
 - Sistem rolü `code` değişmez: service-layer.
 
-**Seed ihtiyacı:** **Var (production).** Dört sistem rolü seed edilir: `SUPERADMIN`, `USER_MANAGER`, `ROLE_MANAGER`, `PROCESS_MANAGER`. Her birinin initial permission setleri `role_permissions` tablosuna yazılır.
+**Seed ihtiyacı:** **Var (production).** Üç sistem rolü seed edilir: `SUPERADMIN`, `USER_MANAGER`, `ROLE_MANAGER`. Her birinin initial permission setleri `role_permissions` tablosuna yazılır.
 
 ---
 
@@ -591,7 +589,6 @@ Rollerin sahip olduğu permission'lar. **Ayrı `permissions` tablosu bilinçli o
 - `SUPERADMIN` → tüm permission'lar (`*`)
 - `ROLE_MANAGER` → `ROLE_*`, `USER_ROLE_ASSIGN`
 - `USER_MANAGER` → `USER_*`, `MASTER_DATA_*`
-- `PROCESS_MANAGER` → `PROCESS_VIEW_ALL`, `PROCESS_CANCEL`, `PROCESS_ROLLBACK`, `AUDIT_LOG_VIEW` (kısmi)
 
 ---
 
@@ -606,8 +603,6 @@ export enum Permission {
   USER_CREATE = 'USER_CREATE',
   USER_UPDATE_ATTRIBUTE = 'USER_UPDATE_ATTRIBUTE',
   ROLE_CREATE = 'ROLE_CREATE',
-  PROCESS_KTI_START = 'PROCESS_KTI_START',
-  PROCESS_CANCEL = 'PROCESS_CANCEL',
   AUDIT_LOG_VIEW = 'AUDIT_LOG_VIEW',
   SYSTEM_SETTINGS_EDIT = 'SYSTEM_SETTINGS_EDIT',
   MASTER_DATA_MANAGE = 'MASTER_DATA_MANAGE',
@@ -724,162 +719,11 @@ Bir condition_set içindeki AND ile birbirine bağlı atom koşullar.
 
 ---
 
-### 6.4 Workflow — kaldırıldı (Faz 14)
-
-> **ASANA pivot (Faz 14):** `processes`, `tasks`, `task_assignments` tabloları ve `process_type`, `process_status`, `task_status`, `assignment_mode`, `task_assignment_status` enum'ları veritabanından düşürüldü. Yeni proje/görev/board modeli Faz 15+ ile eklenecek.
-
-Aşağıdaki bölüm **tarihsel referans** içindir; aktif şemada bu tablolar yoktur.
-
-<details>
-<summary>Eski `processes` tablosu (arşiv)</summary>
-
-#### `processes`
-
-Başlatılmış süreç örnekleri. Numara her process_type için ayrı sequence üzerinden üretilir.
-
-**Kolonlar:**
-
-| Kolon                | Tip         | Null | Default     | Kısıt                               | Açıklama                                                               |
-| -------------------- | ----------- | ---- | ----------- | ----------------------------------- | ---------------------------------------------------------------------- |
-| id                   | TEXT        | No   | cuid()      | PK                                  | Internal referans ID                                                   |
-| process_number       | BIGINT      | No   | —           | —                                   | Süreç tipi başına ayrı sequence'tan üretilir (bkz. aşağı)              |
-| process_type         | ENUM        | No   | —           | —                                   | `BEFORE_AFTER_KAIZEN` (MVP'de tek değer)                               |
-| display_id           | VARCHAR(32) | No   | —           | UNIQUE                              | Formatlı: `KTI-000001`, `KTI-000042`...                                |
-| started_by_user_id   | TEXT        | No   | —           | FK users(id) ON DELETE RESTRICT     |                                                                        |
-| company_id           | TEXT        | No   | —           | FK companies(id) ON DELETE RESTRICT | Süreç şirket bağlamı                                                   |
-| status               | ENUM        | No   | 'INITIATED' | —                                   | `INITIATED` / `IN_PROGRESS` / `COMPLETED` / `REJECTED` / `CANCELLED`   |
-| started_at           | TIMESTAMPTZ | No   | now()       | —                                   |                                                                        |
-| completed_at         | TIMESTAMPTZ | Yes  | —           | —                                   | COMPLETED veya REJECTED zamanı                                         |
-| cancelled_at         | TIMESTAMPTZ | Yes  | —           | —                                   | CANCELLED zamanı                                                       |
-| cancel_reason        | TEXT        | Yes  | —           | —                                   | İptal gerekçesi (zorunlu, CANCELLED durumunda)                         |
-| cancelled_by_user_id | TEXT        | Yes  | —           | FK users(id) ON DELETE SET NULL     | İptal eden                                                             |
-| rollback_history     | JSONB       | Yes  | —           | —                                   | Rollback olayları: [{from_step, to_step, reason, by_user_id, at}, ...] |
-| metadata             | JSONB       | Yes  | —           | —                                   | Süreç-özel ek alan                                                     |
-| created_at           | TIMESTAMPTZ | No   | now()       | —                                   |                                                                        |
-| updated_at           | TIMESTAMPTZ | No   | now()       | —                                   | Trigger                                                                |
-
-**Sequence'lar:** Her `process_type` için ayrı PostgreSQL sequence migration'da yaratılır:
-
-```sql
-CREATE SEQUENCE process_seq_before_after_kaizen START 1;
--- Gelecek süreç tipleri için: CREATE SEQUENCE process_seq_<type>
-```
-
-Uygulama `nextval('process_seq_before_after_kaizen')` ile `process_number`'ı atomik alır; `display_id`'yi compute edip insert eder.
-
-**`display_id` formatı:**
-
-- `{PREFIX}-{NUMBER_6_DIGIT_PADDED}`
-- Prefix `process_type` enum map'inden gelir: `BEFORE_AFTER_KAIZEN` → `KTI`
-- Örnekler: `KTI-000001`, `KTI-000042`, `KTI-123456`
-
-**Index'ler:**
-
-- `processes_display_id_key` UNIQUE btree (display_id)
-- `processes_type_number_key` UNIQUE btree (process_type, process_number)
-- `processes_started_by_status_idx` btree (started_by_user_id, status) — "Başlattığım Süreçler" sorgusu
-- `processes_company_status_started_idx` btree (company_id, status, started_at DESC) — şirket bazlı süreç listesi
-- `processes_status_started_idx` btree (status, started_at DESC) — Süreç Yönetimi Paneli listesi
-- `processes_started_at_idx` btree (started_at DESC) — tarih bazlı filtreleme
-
-**Business rule enforcement:**
-
-- `status='CANCELLED' ⇒ cancel_reason IS NOT NULL`: `CHECK`.
-- `status='CANCELLED' ⇒ cancelled_at IS NOT NULL AND cancelled_by_user_id IS NOT NULL`: `CHECK`.
-- `status IN ('COMPLETED','REJECTED') ⇒ completed_at IS NOT NULL`: `CHECK`.
-- Silme yasak — delete endpoint yok.
-
-**Seed ihtiyacı:**
-
-- **Dev + Staging:** 100 süreç farklı statülerde, farklı başlatıcılarla.
-- **Production:** Yok.
-
----
-
-#### `tasks`
-
-Süreç adımları. Her task bir sürecin bir adımıdır; atama modu ve completion aksiyonu burada tutulur.
-
-**Kolonlar:**
-
-| Kolon                | Tip         | Null | Default   | Kısıt                               | Açıklama                                                                                        |
-| -------------------- | ----------- | ---- | --------- | ----------------------------------- | ----------------------------------------------------------------------------------------------- |
-| id                   | TEXT        | No   | cuid()    | PK                                  |                                                                                                 |
-| process_id           | TEXT        | No   | —         | FK processes(id) ON DELETE RESTRICT |                                                                                                 |
-| step_key             | VARCHAR(64) | No   | —         | —                                   | Süreç tanımındaki adım key'i (örn. `KTI_INITIATION`, `KTI_MANAGER_APPROVAL`, `KTI_REVISION`)    |
-| step_order           | INTEGER     | No   | —         | —                                   | Süreç içindeki sıra (1, 2, 3...)                                                                |
-| assignment_mode      | ENUM        | No   | —         | —                                   | `SINGLE` / `CLAIM` / `ALL_REQUIRED`                                                             |
-| status               | ENUM        | No   | 'PENDING' | —                                   | `PENDING` / `CLAIMED` / `IN_PROGRESS` / `COMPLETED` / `SKIPPED_BY_PEER` / `SKIPPED_BY_ROLLBACK` |
-| completion_action    | VARCHAR(64) | Yes  | —         | —                                   | Süreç-özel enum (KTİ: `APPROVE` / `REJECT` / `REQUEST_REVISION`; diğer: kendi değerleri)        |
-| completion_reason    | TEXT        | Yes  | —         | —                                   | Red veya Revize için zorunlu gerekçe                                                            |
-| form_data            | JSONB       | Yes  | —         | —                                   | Süreç formu içeriği                                                                             |
-| sla_due_at           | TIMESTAMPTZ | Yes  | —         | —                                   | SLA bitiş zamanı                                                                                |
-| sla_warning_sent_at  | TIMESTAMPTZ | Yes  | —         | —                                   | %80 eşik bildirimi gönderildi                                                                   |
-| sla_breach_sent_at   | TIMESTAMPTZ | Yes  | —         | —                                   | %100 eşik bildirimi gönderildi                                                                  |
-| completed_by_user_id | TEXT        | Yes  | —         | FK users(id) ON DELETE SET NULL     |                                                                                                 |
-| completed_at         | TIMESTAMPTZ | Yes  | —         | —                                   |                                                                                                 |
-| created_at           | TIMESTAMPTZ | No   | now()     | —                                   |                                                                                                 |
-| updated_at           | TIMESTAMPTZ | No   | now()     | —                                   | Trigger                                                                                         |
-
-**Index'ler:**
-
-- `tasks_process_order_idx` btree (process_id, step_order) — sürecin task'ları sıralı çekme
-- `tasks_status_sla_idx` btree (status, sla_due_at) WHERE status IN ('PENDING', 'CLAIMED', 'IN_PROGRESS') — SLA monitor job
-- `tasks_completed_by_idx` btree (completed_by_user_id, completed_at DESC) — "Tamamlanan Süreçler" sorgusu
-
-**Business rule enforcement:**
-
-- `status='COMPLETED' ⇒ completed_by_user_id IS NOT NULL AND completed_at IS NOT NULL`: `CHECK`.
-- KTİ özel: `step_key='KTI_MANAGER_APPROVAL' AND completion_action IN ('REJECT','REQUEST_REVISION') ⇒ completion_reason IS NOT NULL`: service-layer.
-- `completion_action` değeri `step_key`'in süreç tanımında izin verdiği enum içinde olmalı: service-layer (her süreç modülü kendi allowed_actions set'ini tanımlar).
-
-**Seed ihtiyacı:**
-
-- **Dev + Staging:** 100 süreç × ortalama 2-3 task (~300 task) karışık statüde.
-- **Production:** Yok.
-
----
-
-#### `task_assignments`
-
-Bir task'ın bir veya birden fazla kullanıcıya/role atanmış olduğu ilişki kayıtları. Claim ve all-required modlarında aynı task için birden fazla kayıt.
-
-**Kolonlar:**
-
-| Kolon            | Tip         | Null | Default   | Kısıt                           | Açıklama                                          |
-| ---------------- | ----------- | ---- | --------- | ------------------------------- | ------------------------------------------------- |
-| id               | TEXT        | No   | cuid()    | PK                              |                                                   |
-| task_id          | TEXT        | No   | —         | FK tasks(id) ON DELETE CASCADE  |                                                   |
-| user_id          | TEXT        | Yes  | —         | FK users(id) ON DELETE SET NULL | Doğrudan kullanıcı ataması                        |
-| role_id          | TEXT        | Yes  | —         | FK roles(id) ON DELETE SET NULL | Rol ataması (runtime'da kullanıcıya resolve olur) |
-| status           | ENUM        | No   | 'PENDING' | —                               | `PENDING` / `COMPLETED` / `SKIPPED`               |
-| resolved_by_rule | BOOLEAN     | No   | false     | —                               | Dinamik atama mı ("başlatanın yöneticisi" gibi)   |
-| completed_at     | TIMESTAMPTZ | Yes  | —         | —                               |                                                   |
-| created_at       | TIMESTAMPTZ | No   | now()     | —                               |                                                   |
-
-**Index'ler:**
-
-- `task_assignments_task_status_idx` btree (task_id, status) — task bazlı completion tracking (all-required)
-- `task_assignments_user_status_idx` btree (user_id, status) WHERE status = 'PENDING' — "Onayda Bekleyen" sorgusu
-- `task_assignments_role_idx` btree (role_id) WHERE role_id IS NOT NULL — rol bazlı atamalar
-
-**Business rule enforcement:**
-
-- `user_id` veya `role_id` en az biri dolu: `CHECK (user_id IS NOT NULL OR role_id IS NOT NULL)`.
-- SINGLE mode'lu task'ta sadece bir assignment olur: service-layer.
-- CLAIM mode'lu task: bir assignment `status='COMPLETED'` olduğunda diğerleri `SKIPPED` yapılır (transaction içinde).
-
-**Seed ihtiyacı:** Task seed'iyle birlikte üretilir.
-
-</details>
-
----
-
-### 6.5 Documents
+### 6.4 Documents
 
 #### `documents`
 
-S3'te fiziksel dosyaların meta kaydı. **Faz 14 sonrası generic attachment:** yalnızca yükleyen kullanıcıya (`uploaded_by_user_id`) bağlı; süreç/görev FK yok.
+S3'te fiziksel dosyaların meta kaydı. Generic dosya eki: yalnızca yükleyen kullanıcıya (`uploaded_by_user_id`) bağlı.
 
 **Kolonlar:**
 
@@ -919,7 +763,7 @@ S3'te fiziksel dosyaların meta kaydı. **Faz 14 sonrası generic attachment:** 
 
 ---
 
-### 6.6 Notifications & Communication
+### 6.5 Notifications & Communication
 
 #### `notifications`
 
@@ -927,21 +771,21 @@ Kullanıcıya gönderilmiş/gönderilecek bildirim kayıtları. In-app ve email 
 
 **Kolonlar:**
 
-| Kolon                   | Tip          | Null | Default   | Kısıt                          | Açıklama                                                                                                                                                                                                                                                                                                                                                        |
-| ----------------------- | ------------ | ---- | --------- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| id                      | TEXT         | No   | cuid()    | PK                             |                                                                                                                                                                                                                                                                                                                                                                 |
-| user_id                 | TEXT         | No   | —         | FK users(id) ON DELETE CASCADE |                                                                                                                                                                                                                                                                                                                                                                 |
-| event_type              | ENUM         | No   | —         | —                              | Prisma `NotificationEventType`: `DOCUMENT_INFECTED`, `ACCOUNT_LOCKED`, `PASSWORD_RESET_REQUESTED`, `PASSWORD_CHANGED`, `PASSWORD_EXPIRY_WARNING`, `SUSPICIOUS_LOGIN`, `SUPERADMIN_LOGIN`, `SECURITY_ANOMALY`, `AUDIT_CHAIN_BROKEN`, `USER_LOGIN_WELCOME`, `DAILY_DIGEST`, `CONSENT_VERSION_PUBLISHED`, `ROLE_ASSIGNED` _(BPM event'leri Faz 14 ile kaldırıldı)_ |
-| channel                 | ENUM         | No   | —         | —                              | `IN_APP` / `EMAIL`                                                                                                                                                                                                                                                                                                                                              |
-| title                   | VARCHAR(200) | No   | —         | —                              |                                                                                                                                                                                                                                                                                                                                                                 |
-| body                    | TEXT         | No   | —         | —                              |                                                                                                                                                                                                                                                                                                                                                                 |
-| link_url                | VARCHAR(500) | Yes  | —         | —                              | İlgili uygulama URL'i                                                                                                                                                                                                                                                                                                                                           |
-| metadata                | JSONB        | Yes  | —         | —                              | Olaya özel bağlam (entity id vb.)                                                                                                                                                                                                                                                                                                                               |
-| read_at                 | TIMESTAMPTZ  | Yes  | —         | —                              | In-app için okundu anı                                                                                                                                                                                                                                                                                                                                          |
-| sent_at                 | TIMESTAMPTZ  | No   | now()     | —                              | In-app için created_at'e eşit; email için gönderim zamanı                                                                                                                                                                                                                                                                                                       |
-| delivery_status         | ENUM         | No   | 'PENDING' | —                              | `PENDING` / `SENT` / `FAILED` / `BOUNCED`                                                                                                                                                                                                                                                                                                                       |
-| delivery_failure_reason | TEXT         | Yes  | —         | —                              | FAILED/BOUNCED durumunda                                                                                                                                                                                                                                                                                                                                        |
-| created_at              | TIMESTAMPTZ  | No   | now()     | —                              |                                                                                                                                                                                                                                                                                                                                                                 |
+| Kolon                   | Tip          | Null | Default   | Kısıt                          | Açıklama                                                                                                                                                                                                                                                                                                               |
+| ----------------------- | ------------ | ---- | --------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| id                      | TEXT         | No   | cuid()    | PK                             |                                                                                                                                                                                                                                                                                                                        |
+| user_id                 | TEXT         | No   | —         | FK users(id) ON DELETE CASCADE |                                                                                                                                                                                                                                                                                                                        |
+| event_type              | ENUM         | No   | —         | —                              | Prisma `NotificationEventType`: `DOCUMENT_INFECTED`, `ACCOUNT_LOCKED`, `PASSWORD_RESET_REQUESTED`, `PASSWORD_CHANGED`, `PASSWORD_EXPIRY_WARNING`, `SUSPICIOUS_LOGIN`, `SUPERADMIN_LOGIN`, `SECURITY_ANOMALY`, `AUDIT_CHAIN_BROKEN`, `USER_LOGIN_WELCOME`, `DAILY_DIGEST`, `CONSENT_VERSION_PUBLISHED`, `ROLE_ASSIGNED` |
+| channel                 | ENUM         | No   | —         | —                              | `IN_APP` / `EMAIL`                                                                                                                                                                                                                                                                                                     |
+| title                   | VARCHAR(200) | No   | —         | —                              |                                                                                                                                                                                                                                                                                                                        |
+| body                    | TEXT         | No   | —         | —                              |                                                                                                                                                                                                                                                                                                                        |
+| link_url                | VARCHAR(500) | Yes  | —         | —                              | İlgili uygulama URL'i                                                                                                                                                                                                                                                                                                  |
+| metadata                | JSONB        | Yes  | —         | —                              | Olaya özel bağlam (entity id vb.)                                                                                                                                                                                                                                                                                      |
+| read_at                 | TIMESTAMPTZ  | Yes  | —         | —                              | In-app için okundu anı                                                                                                                                                                                                                                                                                                 |
+| sent_at                 | TIMESTAMPTZ  | No   | now()     | —                              | In-app için created_at'e eşit; email için gönderim zamanı                                                                                                                                                                                                                                                              |
+| delivery_status         | ENUM         | No   | 'PENDING' | —                              | `PENDING` / `SENT` / `FAILED` / `BOUNCED`                                                                                                                                                                                                                                                                              |
+| delivery_failure_reason | TEXT         | Yes  | —         | —                              | FAILED/BOUNCED durumunda                                                                                                                                                                                                                                                                                               |
+| created_at              | TIMESTAMPTZ  | No   | now()     | —                              |                                                                                                                                                                                                                                                                                                                        |
 
 **Index'ler:**
 
@@ -1017,7 +861,7 @@ Event tipi başına email şablonu. Sistem Ayarları ekranından Superadmin tara
 
 ---
 
-### 6.7 System & Audit
+### 6.6 System & Audit
 
 #### `system_settings`
 
@@ -1061,23 +905,23 @@ Append-only denetim kaydı. DB trigger ile UPDATE/DELETE yasak. Chain hash ile t
 
 **Kolonlar:**
 
-| Kolon               | Tip          | Null | Default | Kısıt                              | Açıklama                                                                                                                                                                                                                                                                                                                                                                                                     |
-| ------------------- | ------------ | ---- | ------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --- | ------------------ |
-| id                  | TEXT         | No   | cuid()  | PK                                 |                                                                                                                                                                                                                                                                                                                                                                                                              |
-| timestamp           | TIMESTAMPTZ  | No   | now()   | —                                  | ISO 8601 UTC                                                                                                                                                                                                                                                                                                                                                                                                 |
-| user_id             | TEXT         | Yes  | —       | FK users(id) ON DELETE SET NULL    | Sistem aksiyonu için null                                                                                                                                                                                                                                                                                                                                                                                    |
-| action              | VARCHAR(64)  | No   | —       | —                                  | Enum: `CREATE_USER`, `UPDATE_USER_ATTRIBUTE`, `ASSIGN_ROLE`, `REMOVE_ROLE`, `START_PROCESS`, `COMPLETE_TASK`, `CANCEL_PROCESS`, `ROLLBACK_PROCESS`, `UPLOAD_DOCUMENT`, `DOCUMENT_SCAN_RESULT`, `CREATE_MASTER_DATA`, `UPDATE_MASTER_DATA`, `DEACTIVATE_MASTER_DATA`, `MASTER_DATA_AUTO_CREATED`, `UPDATE_EMAIL_TEMPLATE`, `UPDATE_SYSTEM_SETTING`, `PUBLISH_CONSENT_VERSION`, `USER_ANONYMIZED` ve diğerleri |
-| entity              | VARCHAR(64)  | No   | —       | —                                  | `user` / `role` / `process` / `task` / `document` / `master_data` / `consent_version` / `system_setting` / `email_template`                                                                                                                                                                                                                                                                                  |
-| entity_id           | VARCHAR(64)  | Yes  | —       | —                                  | İlgili varlık ID'si                                                                                                                                                                                                                                                                                                                                                                                          |
-| old_value_encrypted | BYTEA        | Yes  | —       | —                                  | Probabilistic şifreli (PII içerir)                                                                                                                                                                                                                                                                                                                                                                           |
-| old_value_dek       | BYTEA        | Yes  | —       | —                                  | KMS-wrapped DEK                                                                                                                                                                                                                                                                                                                                                                                              |
-| new_value_encrypted | BYTEA        | Yes  | —       | —                                  |                                                                                                                                                                                                                                                                                                                                                                                                              |
-| new_value_dek       | BYTEA        | Yes  | —       | —                                  |                                                                                                                                                                                                                                                                                                                                                                                                              |
-| metadata            | JSONB        | Yes  | —       | —                                  | Iptal gerekçesi, rollback hedef adımı vb.                                                                                                                                                                                                                                                                                                                                                                    |
-| ip_hash             | VARCHAR(64)  | No   | —       | —                                  | SHA-256 hash                                                                                                                                                                                                                                                                                                                                                                                                 |
-| user_agent          | VARCHAR(512) | Yes  | —       | —                                  | Truncated                                                                                                                                                                                                                                                                                                                                                                                                    |
-| session_id          | TEXT         | Yes  | —       | FK sessions(id) ON DELETE SET NULL | Oturum izlenebilirliği                                                                                                                                                                                                                                                                                                                                                                                       |
-| chain_hash          | VARCHAR(64)  | No   | —       | UNIQUE                             | `SHA-256(prev_chain_hash                                                                                                                                                                                                                                                                                                                                                                                     |     | current_row_json)` |
+| Kolon               | Tip          | Null | Default | Kısıt                              | Açıklama                                                                                                                                                                                                                                                                                                                                                |
+| ------------------- | ------------ | ---- | ------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | ------------------ |
+| id                  | TEXT         | No   | cuid()  | PK                                 |                                                                                                                                                                                                                                                                                                                                                         |
+| timestamp           | TIMESTAMPTZ  | No   | now()   | —                                  | ISO 8601 UTC                                                                                                                                                                                                                                                                                                                                            |
+| user_id             | TEXT         | Yes  | —       | FK users(id) ON DELETE SET NULL    | Sistem aksiyonu için null                                                                                                                                                                                                                                                                                                                               |
+| action              | VARCHAR(64)  | No   | —       | —                                  | Enum: `CREATE_USER`, `UPDATE_USER_ATTRIBUTE`, `ASSIGN_ROLE`, `REMOVE_ROLE`, `UPLOAD_DOCUMENT`, `DOCUMENT_SCAN_RESULT`, `CREATE_MASTER_DATA`, `UPDATE_MASTER_DATA`, `DEACTIVATE_MASTER_DATA`, `MASTER_DATA_AUTO_CREATED`, `UPDATE_EMAIL_TEMPLATE`, `UPDATE_SYSTEM_SETTING`, `PUBLISH_CONSENT_VERSION`, `USER_ANONYMIZED`, `IMPERSONATION_*` ve diğerleri |
+| entity              | VARCHAR(64)  | No   | —       | —                                  | `user` / `role` / `document` / `master_data` / `consent_version` / `system_setting` / `email_template`                                                                                                                                                                                                                                                  |
+| entity_id           | VARCHAR(64)  | Yes  | —       | —                                  | İlgili varlık ID'si                                                                                                                                                                                                                                                                                                                                     |
+| old_value_encrypted | BYTEA        | Yes  | —       | —                                  | Probabilistic şifreli (PII içerir)                                                                                                                                                                                                                                                                                                                      |
+| old_value_dek       | BYTEA        | Yes  | —       | —                                  | KMS-wrapped DEK                                                                                                                                                                                                                                                                                                                                         |
+| new_value_encrypted | BYTEA        | Yes  | —       | —                                  |                                                                                                                                                                                                                                                                                                                                                         |
+| new_value_dek       | BYTEA        | Yes  | —       | —                                  |                                                                                                                                                                                                                                                                                                                                                         |
+| metadata            | JSONB        | Yes  | —       | —                                  | Iptal gerekçesi, rollback hedef adımı vb.                                                                                                                                                                                                                                                                                                               |
+| ip_hash             | VARCHAR(64)  | No   | —       | —                                  | SHA-256 hash                                                                                                                                                                                                                                                                                                                                            |
+| user_agent          | VARCHAR(512) | Yes  | —       | —                                  | Truncated                                                                                                                                                                                                                                                                                                                                               |
+| session_id          | TEXT         | Yes  | —       | FK sessions(id) ON DELETE SET NULL | Oturum izlenebilirliği                                                                                                                                                                                                                                                                                                                                  |
+| chain_hash          | VARCHAR(64)  | No   | —       | UNIQUE                             | `SHA-256(prev_chain_hash                                                                                                                                                                                                                                                                                                                                |     | current_row_json)` |
 
 **Index'ler:**
 
@@ -1308,8 +1152,8 @@ Sadece **zorunlu sistem seed'i**:
 **Platform multi-tenant değildir.** Tek tenant (tek holding) içinde birden fazla şirket barındırır. Şirket-bazlı veri izolasyonu **schema-per-tenant** veya **tenant_id column + RLS** ile değil, **service layer filtering** ile sağlanır:
 
 - Her repository metodunda `company_id` filter'ı zorunlu (kullanıcının şirket bağlamı veya erişebildiği şirket listesi).
-- Süreç Yönetimi Paneli ve cross-company sorgular yalnız uygun permission'a sahip kullanıcılar için açık (`PROCESS_VIEW_ALL` yetkisi).
-- Kullanıcı kendi şirketi dışındaki süreçleri görmez ([W-006] + service layer filter).
+- Cross-company kullanıcı listeleri yalnız uygun permission ve org-scope ile açılır (`USER_LIST_VIEW` + service filter).
+- Kullanıcı kendi şirketi dışındaki kullanıcı kayıtlarını görmez (service layer filter).
 
 **PostgreSQL Row-Level Security (RLS) MVP'de aktif değil.** RLS DB seviyesinde ek bir savunma katmanı olarak değerlendirilmiştir ancak MVP'de service layer filtering + test coverage %85+ yeterli bulunmuştur. RLS aktivasyonu MVP sonrası güvenlik iterasyonunda değerlendirilir — o zaman her tablodaki `company_id` kolonları üzerinde policy tanımlanır ve uygulama connection'ı `SET app.current_user_company_id = ?` ile her request başında context set eder.
 

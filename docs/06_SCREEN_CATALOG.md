@@ -6,63 +6,53 @@
 
 ## 1. Ekran Haritası
 
-Platformda toplam **44 ekran** vardır — 29 kritik, 15 ikincil.
+Platformda toplam **36 ekran** vardır — 24 kritik, 12 ikincil.
 
-| Ekran ID                                  | Route                                          | Layout            | Erişim                              | Seviye  |
-| ----------------------------------------- | ---------------------------------------------- | ----------------- | ----------------------------------- | ------- |
-| **Grup 1 — Auth**                         |                                                |                   |                                     |         |
-| S-AUTH-LOGIN                              | `/login`                                       | AuthLayout        | Public                              | Kritik  |
-| S-AUTH-FORGOT                             | `/forgot-password`                             | AuthLayout        | Public                              | Kritik  |
-| S-AUTH-RESET                              | `/reset-password?token=...`                    | AuthLayout        | Public                              | Kritik  |
-| S-AUTH-CONSENT                            | (blocking modal — route yok)                   | AppLayout overlay | Auth (consent onaysız)              | Kritik  |
-| S-AUTH-CHANGE-PWD                         | `/profile/change-password`                     | AppLayout         | Auth                                | Kritik  |
-| S-IMPERSONATION-MODAL                     | (AppHeader overlay — route yok)                | AppLayout overlay | USER_IMPERSONATION                  | İkincil |
-| **Grup 2 — Dashboard ve Error Sayfaları** |                                                |                   |                                     |         |
-| S-DASH-HOME                               | `/dashboard`                                   | AppLayout         | Auth                                | Kritik  |
-| S-ERROR-403                               | `/403`                                         | PublicLayout      | Any                                 | İkincil |
-| S-ERROR-404                               | `/404` (catch-all)                             | PublicLayout      | Any                                 | İkincil |
-| S-ERROR-500                               | `error.tsx` render-time                        | PublicLayout      | Any                                 | İkincil |
-| S-ERROR-MAINT                             | `/maintenance`                                 | PublicLayout      | Any                                 | İkincil |
-| **Grup 3 — Kullanıcı Yönetimi**           |                                                |                   |                                     |         |
-| S-USER-LIST                               | `/users`                                       | AppLayout         | USER_LIST_VIEW                      | Kritik  |
-| S-USER-NEW                                | `/users/new`                                   | AppLayout         | USER_CREATE                         | Kritik  |
-| S-USER-DETAIL                             | `/users/:id`                                   | AppLayout         | USER_LIST_VIEW veya kendisi         | Kritik  |
-| S-USER-EDIT                               | `/users/:id/edit`                              | AppLayout         | USER_UPDATE_ATTRIBUTE               | Kritik  |
-| S-USER-ROLES                              | `/users/:id/roles`                             | AppLayout         | USER_LIST_VIEW                      | Kritik  |
-| S-USER-SESSIONS                           | `/users/:id/sessions`                          | AppLayout         | USER_SESSION_VIEW                   | İkincil |
-| **Grup 4 — Rol ve Yetki Yönetimi**        |                                                |                   |                                     |         |
-| S-ROLE-LIST                               | `/roles`                                       | AppLayout         | ROLE_VIEW                           | Kritik  |
-| S-ROLE-NEW                                | `/roles/new`                                   | AppLayout         | ROLE_CREATE                         | İkincil |
-| S-ROLE-DETAIL                             | `/roles/:id`                                   | AppLayout         | ROLE_VIEW                           | Kritik  |
-| S-ROLE-PERMISSIONS                        | `/roles/:id/permissions`                       | AppLayout         | ROLE_PERMISSION_MANAGE              | Kritik  |
-| S-ROLE-RULES                              | `/roles/:id/rules`                             | AppLayout         | ROLE_RULE_MANAGE                    | Kritik  |
-| S-ROLE-USERS                              | `/roles/:id/users`                             | AppLayout         | ROLE_VIEW                           | Kritik  |
-| **Grup 5 — Master Data Yönetimi**         |                                                |                   |                                     |         |
-| S-MD-LIST                                 | `/master-data/:type`                           | AppLayout         | MASTER_DATA_MANAGE                  | Kritik  |
-| S-MD-DETAIL                               | `/master-data/:type/:id`                       | AppLayout         | MASTER_DATA_MANAGE                  | İkincil |
-| S-MD-USERS                                | `/master-data/:type/:id/users`                 | AppLayout         | MASTER_DATA_MANAGE                  | İkincil |
-| **Grup 6 — Süreç Yöneticisi ve KTİ**      |                                                |                   |                                     |         |
-| S-PROC-LIST-ADMIN                         | `/processadministration`                       | AppLayout         | PROCESS_VIEW_ALL                    | Kritik  |
-| S-PROC-DETAIL                             | `/processes/:displayId`                        | AppLayout         | Owner / Assignee / PROCESS_VIEW_ALL | Kritik  |
-| S-PROC-HISTORY                            | `/processes/:displayId/history`                | AppLayout         | PROCESS_VIEW_ALL                    | İkincil |
-| S-KTI-START                               | `/processes/kti/start`                         | AppLayout         | PROCESS_KTI_START                   | Kritik  |
-| S-PROC-CANCEL                             | (modal on detail)                              | Modal             | PROCESS_CANCEL                      | İkincil |
-| S-PROC-ROLLBACK                           | (modal on detail)                              | Modal             | PROCESS_ROLLBACK                    | İkincil |
-| **Grup 7 — Görevler**                     |                                                |                   |                                     |         |
-| S-TASK-LIST                               | `/tasks` (tabs: pending/started/completed)     | AppLayout         | Auth                                | Kritik  |
-| S-TASK-DETAIL                             | `/tasks/:id`                                   | AppLayout         | Assignee / Owner / PROCESS_VIEW_ALL | Kritik  |
-| **Grup 8 — Bildirimler ve Profil**        |                                                |                   |                                     |         |
-| S-NOTIF-LIST                              | `/notifications`                               | AppLayout         | Auth                                | Kritik  |
-| S-SETTINGS-NOTIFICATIONS                  | `/settings/notifications`                      | AppLayout         | NOTIFICATION_EDIT                   | İkincil |
-| S-PROFILE                                 | `/profile`                                     | AppLayout         | Auth                                | Kritik  |
-| **Grup 9 — Admin**                        |                                                |                   |                                     |         |
-| S-ADMIN-AUDIT                             | `/admin/audit-logs`                            | AdminLayout       | AUDIT_LOG_VIEW                      | Kritik  |
-| S-ADMIN-AUDIT-CHAIN                       | `/admin/audit-logs/chain-integrity`            | AdminLayout       | AUDIT_LOG_VIEW                      | İkincil |
-| S-ADMIN-SETTINGS                          | `/admin/system-settings`                       | AdminLayout       | SYSTEM_SETTINGS_EDIT                | Kritik  |
-| S-ADMIN-EMAIL-LIST                        | `/admin/email-templates`                       | AdminLayout       | EMAIL_TEMPLATE_VIEW                 | İkincil |
-| S-ADMIN-EMAIL-EDIT                        | `/admin/email-templates/:eventType/edit`       | AdminLayout       | EMAIL_TEMPLATE_EDIT                 | Kritik  |
-| S-ADMIN-CONSENT-LIST                      | `/admin/consent-versions`                      | AdminLayout       | CONSENT_VERSION_VIEW                | İkincil |
-| S-ADMIN-CONSENT-EDIT                      | `/admin/consent-versions/:id/edit` (ve `/new`) | AdminLayout       | CONSENT_VERSION_EDIT                | Kritik  |
+| Ekran ID                                  | Route                                          | Layout            | Erişim                      | Seviye  |
+| ----------------------------------------- | ---------------------------------------------- | ----------------- | --------------------------- | ------- |
+| **Grup 1 — Auth**                         |                                                |                   |                             |         |
+| S-AUTH-LOGIN                              | `/login`                                       | AuthLayout        | Public                      | Kritik  |
+| S-AUTH-FORGOT                             | `/forgot-password`                             | AuthLayout        | Public                      | Kritik  |
+| S-AUTH-RESET                              | `/reset-password?token=...`                    | AuthLayout        | Public                      | Kritik  |
+| S-AUTH-CONSENT                            | (blocking modal — route yok)                   | AppLayout overlay | Auth (consent onaysız)      | Kritik  |
+| S-AUTH-CHANGE-PWD                         | `/profile/change-password`                     | AppLayout         | Auth                        | Kritik  |
+| S-IMPERSONATION-MODAL                     | (AppHeader overlay — route yok)                | AppLayout overlay | USER_IMPERSONATION          | İkincil |
+| **Grup 2 — Dashboard ve Error Sayfaları** |                                                |                   |                             |         |
+| S-DASH-HOME                               | `/dashboard`                                   | AppLayout         | Auth                        | Kritik  |
+| S-ERROR-403                               | `/403`                                         | PublicLayout      | Any                         | İkincil |
+| S-ERROR-404                               | `/404` (catch-all)                             | PublicLayout      | Any                         | İkincil |
+| S-ERROR-500                               | `error.tsx` render-time                        | PublicLayout      | Any                         | İkincil |
+| S-ERROR-MAINT                             | `/maintenance`                                 | PublicLayout      | Any                         | İkincil |
+| **Grup 3 — Kullanıcı Yönetimi**           |                                                |                   |                             |         |
+| S-USER-LIST                               | `/users`                                       | AppLayout         | USER_LIST_VIEW              | Kritik  |
+| S-USER-NEW                                | `/users/new`                                   | AppLayout         | USER_CREATE                 | Kritik  |
+| S-USER-DETAIL                             | `/users/:id`                                   | AppLayout         | USER_LIST_VIEW veya kendisi | Kritik  |
+| S-USER-EDIT                               | `/users/:id/edit`                              | AppLayout         | USER_UPDATE_ATTRIBUTE       | Kritik  |
+| S-USER-ROLES                              | `/users/:id/roles`                             | AppLayout         | USER_LIST_VIEW              | Kritik  |
+| S-USER-SESSIONS                           | `/users/:id/sessions`                          | AppLayout         | USER_SESSION_VIEW           | İkincil |
+| **Grup 4 — Rol ve Yetki Yönetimi**        |                                                |                   |                             |         |
+| S-ROLE-LIST                               | `/roles`                                       | AppLayout         | ROLE_VIEW                   | Kritik  |
+| S-ROLE-NEW                                | `/roles/new`                                   | AppLayout         | ROLE_CREATE                 | İkincil |
+| S-ROLE-DETAIL                             | `/roles/:id`                                   | AppLayout         | ROLE_VIEW                   | Kritik  |
+| S-ROLE-PERMISSIONS                        | `/roles/:id/permissions`                       | AppLayout         | ROLE_PERMISSION_MANAGE      | Kritik  |
+| S-ROLE-RULES                              | `/roles/:id/rules`                             | AppLayout         | ROLE_RULE_MANAGE            | Kritik  |
+| S-ROLE-USERS                              | `/roles/:id/users`                             | AppLayout         | ROLE_VIEW                   | Kritik  |
+| **Grup 5 — Master Data Yönetimi**         |                                                |                   |                             |         |
+| S-MD-LIST                                 | `/master-data/:type`                           | AppLayout         | MASTER_DATA_MANAGE          | Kritik  |
+| S-MD-DETAIL                               | `/master-data/:type/:id`                       | AppLayout         | MASTER_DATA_MANAGE          | İkincil |
+| S-MD-USERS                                | `/master-data/:type/:id/users`                 | AppLayout         | MASTER_DATA_MANAGE          | İkincil |
+| **Grup 6 — Bildirimler ve Profil**        |                                                |                   |                             |         |
+| S-NOTIF-LIST                              | `/notifications`                               | AppLayout         | Auth                        | Kritik  |
+| S-SETTINGS-NOTIFICATIONS                  | `/settings/notifications`                      | AppLayout         | NOTIFICATION_EDIT           | İkincil |
+| S-PROFILE                                 | `/profile`                                     | AppLayout         | Auth                        | Kritik  |
+| **Grup 7 — Admin**                        |                                                |                   |                             |         |
+| S-ADMIN-AUDIT                             | `/admin/audit-logs`                            | AdminLayout       | AUDIT_LOG_VIEW              | Kritik  |
+| S-ADMIN-AUDIT-CHAIN                       | `/admin/audit-logs/chain-integrity`            | AdminLayout       | AUDIT_LOG_VIEW              | İkincil |
+| S-ADMIN-SETTINGS                          | `/admin/system-settings`                       | AdminLayout       | SYSTEM_SETTINGS_EDIT        | Kritik  |
+| S-ADMIN-EMAIL-LIST                        | `/admin/email-templates`                       | AdminLayout       | EMAIL_TEMPLATE_VIEW         | İkincil |
+| S-ADMIN-EMAIL-EDIT                        | `/admin/email-templates/:eventType/edit`       | AdminLayout       | EMAIL_TEMPLATE_EDIT         | Kritik  |
+| S-ADMIN-CONSENT-LIST                      | `/admin/consent-versions`                      | AdminLayout       | CONSENT_VERSION_VIEW        | İkincil |
+| S-ADMIN-CONSENT-EDIT                      | `/admin/consent-versions/:id/edit` (ve `/new`) | AdminLayout       | CONSENT_VERSION_EDIT        | Kritik  |
 
 ---
 
@@ -93,14 +83,6 @@ flowchart TD
 
     MDLIST[S-MD-LIST]
 
-    PROCADMIN[S-PROC-LIST-ADMIN]
-    PROCDETAIL[S-PROC-DETAIL]
-    KTISTART[S-KTI-START]
-    PROCCANCEL[S-PROC-CANCEL modal]
-    PROCROLLBACK[S-PROC-ROLLBACK modal]
-
-    TASKLIST[S-TASK-LIST]
-    TASKDETAIL[S-TASK-DETAIL]
 
     NOTIFLIST[S-NOTIF-LIST]
     PROFILE[S-PROFILE]
@@ -122,8 +104,6 @@ flowchart TD
 
     DASH --> USERLIST
     DASH --> ROLELIST
-    DASH --> PROCADMIN
-    DASH --> TASKLIST
     DASH --> NOTIFLIST
     DASH --> PROFILE
 
@@ -139,20 +119,6 @@ flowchart TD
     ROLEDETAIL -->|Kural sekmesi| ROLERULES
     ROLEDETAIL -->|Kullanıcı sekmesi| ROLEUSERS
 
-    PROCADMIN -->|Satır tıkla| PROCDETAIL
-    KTISTART -->|Gönder| PROCDETAIL
-    PROCDETAIL -->|İptal butonu| PROCCANCEL
-    PROCDETAIL -->|Rollback butonu| PROCROLLBACK
-    PROCCANCEL -->|Onay| PROCDETAIL
-    PROCROLLBACK -->|Onay| PROCDETAIL
-
-    TASKLIST -->|Satır tıkla| TASKDETAIL
-    TASKDETAIL -->|Tamamla / Onayla / Reddet| PROCDETAIL
-    TASKDETAIL -->|Claim| TASKDETAIL
-
-    NOTIFLIST -->|Bildirim tıkla| TASKDETAIL
-    NOTIFLIST -->|Bildirim tıkla| PROCDETAIL
-
     PROFILE -->|Şifre değiştir| CHGPWD
 
     DASH -.->|Superadmin| ADMINAUDIT
@@ -166,9 +132,8 @@ flowchart TD
     classDef modal fill:#f3f4f6,stroke:#6b7280,stroke-dasharray:4
 
     class LOGIN,FORGOT,RESET,CONSENT,CHGPWD auth
-    class DASH,USERLIST,USERNEW,USERDETAIL,USEREDIT,USERROLES,ROLELIST,ROLEDETAIL,ROLEPERMS,ROLERULES,ROLEUSERS,MDLIST,PROCMY,PROCADMIN,PROCDETAIL,KTISTART,TASKLIST,TASKDETAIL,NOTIFLIST,PROFILE app
+    class DASH,USERLIST,USERNEW,USERDETAIL,USEREDIT,USERROLES,ROLELIST,ROLEDETAIL,ROLEPERMS,ROLERULES,ROLEUSERS,MDLIST,NOTIFLIST,PROFILE app
     class ADMINAUDIT,ADMINSETTINGS,ADMINEMAIL,ADMINCONSENT admin
-    class PROCCANCEL,PROCROLLBACK modal
 ```
 
 ---
@@ -183,13 +148,6 @@ Solda sabit sidebar — AppLayout ve AdminLayout'ta kullanılır. Menü öğeler
 
 ```
 🏠 Dashboard                            (herkes)
-📋 Görevlerim                           (herkes)
-▶ Süreçler [Akordeon]                  (herhangi biri: PROCESS_KTI_START)
-   └─ KTİ Başlat                       (PROCESS_KTI_START) → /processes/kti/start
-      (gelecekte yeni süreç tipleri buraya eklenir)
-🔄 Süreç Yöneticisi                     (PROCESS_VIEW_ALL)
-👥 Kullanıcılar                         (USER_LIST_VIEW)
-🔐 Roller                               (ROLE_VIEW)
 🗂️ Master Data
    ├─ Şirketler                         (MASTER_DATA_MANAGE)
    ├─ Lokasyonlar
@@ -709,8 +667,6 @@ Detay: `docs/adr/0010-user-impersonation-jwt-audit-model.md`, `@63-phase-13-user
 
 #### S-DASH-HOME — Ana Sayfa
 
-> **⚠️ Güncelleme (Faz 14):** Dashboard widget'ları (görev/süreç/SLA) kaldırıldı; anasayfa olarak sadeleştirilecek.
-
 **Route:** `/dashboard`
 **Erişim:** Auth (tüm authenticated kullanıcılar)
 **Layout:** AppLayout
@@ -719,88 +675,23 @@ Detay: `docs/adr/0010-user-impersonation-jwt-audit-model.md`, `@63-phase-13-user
 ##### Görsel Yapı
 
 1. **Hoşgeldin başlığı** — "Günaydın/İyi günler/İyi akşamlar, {firstName}" (saat dilimine göre)
-2. **Widget grid** (Tailwind grid, 12 kolon, responsive — md:col-span-6, lg:col-span-4):
-   - **W1 — Bekleyen Görevlerim** (tüm kullanıcılar):
-     - Başlık + sayı rozeti ("5 bekleyen görev")
-     - İlk 3 task kart (displayId, stepLabel, SLA badge)
-     - "Tümünü Gör" → `/tasks?tab=pending` linki
-     - Boşsa: "Bekleyen göreviniz yok" + sessiz empty state
-   - **W2 — Başlattığım Aktif Süreçlerim** (tüm kullanıcılar):
-     - Başlık + sayı ("3 aktif süreç")
-     - İlk 3 süreç kart (displayId, activeTaskLabel, başlangıç tarihi)
-     - `<PermissionGate PROCESS_VIEW_ALL>` "Tümünü Gör" → `/processadministration` linki (yalnız yetkili kullanıcıda görünür)
-     - Boşsa: "Aktif süreciniz yok" + sessiz empty state
-   - **W3 — SLA Uyarıları** (pending görevi olanlar):
-     - Başlık + "kritik" rozeti
-     - SLA'sı %20'nin altında kalan veya aşılmış task listesi (max 5)
-     - Yoksa gösterilmez (hiç rozet yok, widget render edilmez)
-   - **W4 — Son Bildirimler** (tüm kullanıcılar):
-     - Başlık + okunmamış rozeti
-     - İlk 5 bildirim (okunmamış öncelikli)
-     - "Tümünü Gör" → `/notifications`
-   - **W5 — Organizasyon Özeti** (PROCESS_VIEW_ALL yetkisi olanlar — Superadmin, Süreç Yöneticisi):
-     - KPI kartları: aktif kullanıcı sayısı, aktif süreç sayısı, 30 günlük tamamlanan süreç, 30 günlük reddedilen süreç
-     - Statik sayılar; tıklanamaz (MVP'de drill-down yok)
-   - **W6 — Denetim Chain Sağlığı** (AUDIT_LOG_VIEW — yalnız Superadmin):
-     - "Son kontrol: 2026-04-23 03:00"
-     - Durum: ✓ Sağlam / ⚠ Bozuk (kırmızı)
-     - "Detay" → `/admin/audit-logs/chain-integrity`
-3. **Alt bar — Hızlı Aksiyonlar:**
-   - `<PermissionGate PROCESS_KTI_START>` "Yeni KTİ Başlat" butonu → `/processes/kti/start`
-   - `<PermissionGate USER_CREATE>` "Kullanıcı Ekle" butonu → `/users/new`
-   - `<PermissionGate AUDIT_LOG_VIEW>` "Denetim Kayıtları" butonu → `/admin/audit-logs`
+2. **Kısa karşılama metni** — platform tanıtımı / yönlendirme (statik veya admin özeti)
+3. **Widget grid** (opsiyonel, 12 kolon):
+   - **W1 — Son Bildirimler** (tüm kullanıcılar): ilk 5 bildirim, "Tümünü Gör" → `/notifications`
+   - **W2 — Denetim Chain Sağlığı** (`AUDIT_LOG_VIEW`): son doğrulama özeti → `/admin/audit-logs/chain-integrity`
+4. **Hızlı aksiyonlar:** `<PermissionGate USER_CREATE>` "Kullanıcı Ekle", `<PermissionGate AUDIT_LOG_VIEW>` "Denetim Kayıtları"
 
 ##### Veri Kaynağı
 
-- **API:**
-  - `GET /api/v1/tasks?tab=pending&limit=3` (W1)
-  - `GET /api/v1/processes?scope=my-started&status=IN_PROGRESS&limit=3` (W2)
-  - `GET /api/v1/tasks?tab=pending&sla=critical&limit=5` (W3 — backend ayrı query'de SLA filter)
-  - `GET /api/v1/notifications?limit=5` (W4)
-  - `GET /api/v1/admin/organization-summary` (W5 — custom endpoint, MVP'de basit aggregation)
-  - `GET /api/v1/admin/audit-logs/chain-integrity` (W6)
-- **Query key:**
-  - `queryKeys.tasks.list('pending', { limit: 3 })` vs
-  - `queryKeys.processes.list({ scope: 'my-started', status: 'IN_PROGRESS', limit: 3 })` vs
-  - `queryKeys.notifications.list({ limit: 5 })`
-  - `queryKeys.admin.auditChainIntegrity`
-- **Stale time:**
-  - W1, W2, W3: 15 sn
-  - W4: 30 sn
-  - W5: 5 dakika
-  - W6: 1 dakika
-- **Invalidation:** Mutation'lar kendi invalidation'larını tetikler; dashboard passive listener
-
-##### State Yönetimi
-
-- **Server state:** 6 ayrı query
-- **Local state:** Yok — tüm veri server-driven
-- **URL state:** Yok — sadece dashboard
-- **Form state:** Yok
+- `GET /api/v1/notifications?limit=5`
+- `GET /api/v1/admin/audit-logs/chain-integrity` (yetkili kullanıcılar)
+- `queryKeys.notifications.list`, `queryKeys.admin.auditChainIntegrity`
 
 ##### Durum Ekranları
 
-- **Loading:** Her widget kendi skeleton'ını gösterir; widget'lar bağımsız yüklenir (biri yüklenmese diğerleri görünür)
-- **Empty (kullanıcı özel):** Her widget kendi empty state'ini yönetir
-- **Error (widget bazlı):** Widget içinde `<ErrorBoundary>` feature-level — tek widget hatası tüm dashboard'u düşürmez; "Bu bölüm yüklenemedi" + retry butonu
-
-##### Etkileşimler
-
-- **Widget "Tümünü Gör" linkleri** → ilgili liste sayfası (filter query param'lar ile)
-- **Widget içi task/süreç kartına tıklama** → ilgili detay sayfası
-- **Hızlı aksiyon butonları** → ilgili route
-- **Hoşgeldin başlığındaki "firstName"** — update olmadan statik render (useCurrentUser hook'u)
-
-##### Edge Cases ve Kısıtlar
-
-- Permission'a göre widget gösterimi (`<PermissionGate>` wrapper)
-- W5 ve W6 sadece belirli rollere görünür; yoksa grid otomatik yeniden dizilir (missing widget yerini diğer widget'lar alır)
-- Widget layout'u responsive: mobile tek kolon, tablet 2 kolon, desktop 3 kolon
-- Real-time güncelleme yok — kullanıcı sayfaya geri dönünce stale-while-revalidate
-
-##### Form Alanları
-
-Yok.
+- Loading: widget skeleton'ları bağımsız
+- Empty: bildirim yoksa sessiz empty state
+- Error: widget bazlı `<ErrorBoundary>`
 
 ---
 
@@ -1028,8 +919,6 @@ Yok — filtreler sayfa içi URL state, form değil.
      - Başarısız giriş sayaç (0'dan büyükse göster)
      - Hesap kilitli mi (locked_until doluysa banner)
 5. **"Süreçler" tab içeriği:**
-   - "Başlattığı son 10 süreç" tablosu (displayId, tip, durum, tarih) → link
-   - "Tümünü Gör" → `/processes?scope=admin&startedByUserId=:id` linki
 
 ##### Veri Kaynağı
 
@@ -1039,7 +928,6 @@ Yok — filtreler sayfa içi URL state, form değil.
 - **Invalidation:**
   - `useUpdateUserMutation(id)` → `queryKeys.users.detail(id)` + `queryKeys.users.lists()`
   - `useDeactivateUser` / `useReactivateUser`
-- **Süreçler tab:** ayrı query `queryKeys.processes.list({ startedByUserId: id, limit: 10 })`
 
 ##### State Yönetimi
 
@@ -1721,541 +1609,7 @@ Bilinmeyen `type` → `/404` redirect.
 
 ---
 
-### Grup 6 — Süreç Yöneticisi ve KTİ
-
-#### S-PROC-LIST-ADMIN — Süreç Yöneticisi
-
-> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırıldı.
-
-**Route:** `/processadministration`
-**Erişim:** `PROCESS_VIEW_ALL`
-**Layout:** AppLayout
-**Seviye:** Kritik
-
-Yetkili kullanıcıların (Süreç Yöneticisi / Superadmin) sistemdeki **tüm süreçleri** izleyip yönettiği merkezi ekran. Kişisel "Başlattığım Süreçler" sekmesi **yoktur**; bu sayfa yalnızca kurum geneli görünüm sunar.
-
-##### Görsel Yapı
-
-1. **Breadcrumb:** Süreç Yöneticisi
-2. **Sayfa başlığı satırı:**
-   - Sol: "Süreç Yöneticisi" + aktif süreç sayacı (IN_PROGRESS + INITIATED)
-3. **Filtre paneli:**
-   - displayId arama (KTI-000042 tam eşleşme)
-   - Süreç tipi select (MVP: BEFORE_AFTER_KAIZEN)
-   - Durum select: INITIATED / IN_PROGRESS / COMPLETED / REJECTED / CANCELLED / Tümü
-   - Tarih aralığı (başlangıç tarihi)
-   - **Başlatan kullanıcı** (UserSelect)
-   - **Şirket** (MasterDataSelect)
-   - **CANCELLED süreçleri göster** toggle
-4. **DataTable:**
-   - Kolonlar: displayId (link stili, monospace), Tip (KTİ rozeti), Durum (renk kodlu rozet), Aktif Adım (activeTaskLabel — IN_PROGRESS için), Başlatan Kullanıcı (link → user detay), Şirket, Başlangıç Tarihi, Tamamlanma Tarihi
-   - Satır tıklama → `/processes/:displayId`
-   - (İptal sebebi tooltip'i — yalnız CANCELLED satırlar için, sağ info ikonu)
-   - **Sağ kolon aksiyon menüsü:**
-     - "Detay" → `/processes/:displayId`
-     - "Tarihçe" → `/processes/:displayId/history`
-     - `<PermissionGate PROCESS_CANCEL>` "İptal Et" (yalnız aktif statüler için) → S-PROC-CANCEL modal
-     - `<PermissionGate PROCESS_ROLLBACK>` "Geri Al" (yalnız IN_PROGRESS için) → S-PROC-ROLLBACK modal
-
-##### Veri Kaynağı
-
-- **API:** `GET /api/v1/processes?scope=admin&...`
-- **Query key:** `queryKeys.processes.list({ scope: 'admin', ...filters })`
-- **Stale time:** 15 sn
-- **Invalidation:**
-  - Cancel / Rollback → bu query + detail
-  - Task completion mutations → bu query
-
-##### State Yönetimi
-
-- **Server state:** List query
-- **URL state:** Geniş filter set
-- **Form state:** Yok (modal'ların kendi form state'i var)
-
-##### Durum Ekranları
-
-- **Loading:** Table skeleton
-- **Empty (filtre yok):** EmptyState — "Henüz süreç kaydı bulunmuyor"
-- **Empty (filtre aktif):** "Filtreye uyan süreç yok" + temizle
-- **Error:** Inline retry
-- **Cancel / Rollback success:** Toast + liste refetch
-
-##### Etkileşimler
-
-- **Satır tıklama** → detay
-- **Başlatan kullanıcı linki** → `/users/:id`
-- **"İptal Et" aksiyonu** → modal (S-PROC-CANCEL) → onay → `POST /processes/:displayId/cancel`
-- **"Geri Al" aksiyonu** → modal (S-PROC-ROLLBACK) → onay → `POST /processes/:displayId/rollback`
-- **"Tarihçe"** → `/processes/:displayId/history`
-
-##### Edge Cases ve Kısıtlar
-
-- Terminal durumdaki süreçler (COMPLETED, REJECTED, CANCELLED) için "İptal Et" ve "Geri Al" butonları gizli (`<PermissionGate>` + statusa göre local disable)
-- "CANCELLED süreçleri göster" toggle default kapalı — liste temiz kalır
-- Bu ekrandan cross-company süreçler görünür; kullanıcının şirket izolasyonu backend tarafında zaten yok (admin scope)
-- Durum rozeti renk kodu: INITIATED=mavi, IN_PROGRESS=sarı, COMPLETED=yeşil, REJECTED=kırmızı, CANCELLED=gri
-- Pagination: cursor-based "Daha Fazla Yükle"
-- Mobile: Kolon sayısı ciddi azalır; horizontal scroll veya kart görünümü
-
-##### Form Alanları
-
-Yok.
-
----
-
-#### S-PROC-DETAIL — Süreç Detayı
-
-> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırıldı.
-
-**Route:** `/processes/:displayId`
-**Erişim:** Süreç başlatıcısı **veya** task atanmış kullanıcı **veya** `PROCESS_VIEW_ALL`
-**Layout:** AppLayout
-**Seviye:** Kritik
-
-Platformun en karmaşık ekranlarından biri. Süreç durumu, tüm task'ların zinciri, form data'lar, dokümanlar, aktif task için inline action paneli.
-
-##### Görsel Yapı
-
-1. **Breadcrumb:** Süreç Yöneticisi › {displayId}
-2. **Üst başlık bandı:**
-   - Sol: displayId (monospace, büyük) + tip rozeti (KTİ) + durum rozeti (renkli)
-   - Sağ: aksiyon butonları
-     - `<PermissionGate PROCESS_CANCEL>` "İptal Et" (aktif süreçler için, destructive)
-     - `<PermissionGate PROCESS_ROLLBACK>` "Geri Al" (IN_PROGRESS için, destructive)
-     - `<PermissionGate PROCESS_VIEW_ALL>` "Tarihçe" (outline) → `/processes/:displayId/history`
-3. **Meta bilgi kartı:**
-   - Başlatan: Avatar + Ad Soyad + sicil (link → user detay)
-   - Şirket: ad
-   - Başlangıç tarihi
-   - Tamamlanma / İptal tarihi (varsa)
-   - **İptal sebebi kutusu** (yalnız CANCELLED için, sarı arkaplan; kullanıcıya gösterilir ama task'ta completed kişiler için backend zaten göstermiyor — süreç bazlı cancel sebebi admin'e görünür)
-4. **Aktif Task kartı (yalnız IN_PROGRESS ve kullanıcı assignee ise):**
-   - Başlık: "Size Atanmış Görev"
-   - Task özeti: stepLabel, SLA badge, claim butonu (CLAIM mode ise)
-   - Süreç detayında task form'u **inline değil** — kullanıcı task zinciri kartındaki **"Göreve Git"** butonuyla ayrı görev sayfasına yönlendirilir; bu kart yalnızca hatırlatma amaçlı bağlam bilgisi sunar
-5. **Task zinciri (timeline görünümü):**
-   - Her task bir kart (dikey liste):
-     - Step ikonu + step label — `KTI_INITIATION` adımı kullanıcıya **"KTİ Başlatma Adımı"** olarak gösterilir (teknik enum adı arayüzde gizlenir)
-     - Durum rozeti (COMPLETED / PENDING / IN_PROGRESS / SKIPPED_BY_ROLLBACK / SKIPPED_BY_PEER)
-     - Tamamlayan kişi + tarih (varsa)
-     - Completion action rozeti (KTİ: APPROVE yeşil, REJECT kırmızı, REQUEST_REVISION turuncu)
-     - **"Form Detayını Görüntüle" butonu** — yalnız `form_data` içeren adımlarda görünür (örn. KTİ Başlatma Adımı). Saf aksiyon adımlarında (örn. KTI_MANAGER_APPROVAL — input gerektirmez, yalnız onay/red aksiyonu) bu buton **gösterilmez**. Tıklanınca modal açılır:
-       - Modal başlığı: "{stepLabel} — Form Detayı"
-       - Modal içeriği: o adımdaki form alanları **salt okunur** olarak, ilgili adım sorumlusunun gördüğü orijinal form düzeniyle render edilir
-       - KTİ Başlatma Adımı için: Şirket, Açıklama (textarea), Kazanç Tutarı, Öncesi Fotoğraflar (thumbnail grid + indirilebilir), Sonrası Fotoğraflar (thumbnail grid + indirilebilir)
-       - Fotoğraflar: `GET /documents/:id/download-url` ile imzalı URL alınarak thumbnail gösterilir; tıklanınca yeni sekmede açılır
-       - Tüm alanlar disabled/readonly stilinde — düzenleme mümkün değil
-     - **"Göreve Git" butonu** (sağ bölüm) — **yalnızca** o adımın görevi mevcut kullanıcıya atanmış ve görev aktif (PENDING / IN_PROGRESS) durumdaysa görünür; başka kullanıcılara ve tamamlanmış/atlanmış görevlerde gösterilmez. Tıklanınca → `/tasks/:taskId`
-     - Görünürlük kısıtı: kullanıcı başlatıcı veya admin değilse, yalnız kendi atandığı task'ın full detayını görür; diğer task'ların yalnız "step label + durum + completedAt" özet bilgileri gösterilir; "Form Detayını Görüntüle" butonu da bu kurala tabidir
-   - Task'lar arası bağlantı çizgisi (vertical line connector)
-6. **Dokümanlar bölümü** (alt):
-   - Başlık: "Dokümanlar (N)"
-   - Grid: Doküman kartları (ikon + filename + boyut + scan status)
-   - Scan status:
-     - CLEAN (yeşil) → tıklanınca download
-     - PENDING_SCAN (sarı, spinner) → tıklanamaz
-     - INFECTED (kırmızı) → "Güvenlik taramasında zararlı tespit edildi"
-   - Görselse thumbnail göster; PDF/doc için ikon
-
-##### Veri Kaynağı
-
-- **API (detail):** `GET /api/v1/processes/:displayId`
-- **API (documents):** `GET /api/v1/processes/:displayId/documents`
-- **Query key:**
-  - `queryKeys.processes.detail(displayId)`
-  - `queryKeys.processes.documents(displayId)`
-- **Stale time:** Detail 10 sn, documents 1 dakika (değişmez)
-- **Invalidation:**
-  - Task completion → detail + tasks list
-  - Cancel → detail + list
-  - Rollback → detail + list + documents
-
-##### State Yönetimi
-
-- **Server state:** Detail + documents query
-- **Local state:** Task zincirinde her kartın expand/collapse durumu (useState array)
-- **URL state:** `:displayId` path
-- **Form state:** Yok (aksiyon modal'ları ayrı state)
-
-##### Durum Ekranları
-
-- **Loading:** Page skeleton (başlık + kart + task'lar)
-- **Not found:** `/404`
-- **Access denied:** `/403`
-- **Error:** Retry
-
-##### Etkileşimler
-
-- **Başlatan linki** → user detay
-- **"Göreve Git" butonu** (task zinciri kartında, sağ bölüm) → `/tasks/:taskId`; yalnız görev mevcut kullanıcıya atanmış ve aktif ise görünür
-- **"Form Detayını Görüntüle" butonu** → modal açılır; adım form verisini readonly render eder; dokümanlar indirilebilir thumbnail olarak gösterilir; yalnız `form_data` olan adımlarda görünür; KTİ_INITIATION adımı "KTİ Başlatma Adımı" olarak etiketlenir
-- **Doküman tıklama (CLEAN)** → `GET /documents/:id/download-url` → yeni tab'da açılır
-- **Doküman tıklama (PENDING)** → "Hâlâ taranıyor, lütfen bekleyin" toast
-- **Doküman tıklama (INFECTED)** → toast + kart zaten kırmızı işaretli
-- **"İptal Et"** → S-PROC-CANCEL modal → `POST /cancel` → toast + refetch
-- **"Geri Al"** → S-PROC-ROLLBACK modal → `POST /rollback` → toast + refetch
-- **"Tarihçe"** → `/processes/:displayId/history`
-
-##### Edge Cases ve Kısıtlar
-
-- **Görünürlük kısıtları:**
-  - Başlatıcı: tüm task'ların full detayı + dokümanlar
-  - Task atanmış (başlatıcı değil): kendi task'ının full detayı + önceki task'ların **özet** (form_data görmez, dokümanlar kısıtlı — kendi task'ına yüklenenler)
-  - `PROCESS_VIEW_ALL`: tümü
-- **Rollback sonrası:** `SKIPPED_BY_ROLLBACK` task'lar açık renkli + çapraz çizgi ile işaretli
-- **Claim pending task** (CLAIM mode): aktif task kartında "Üstlen" butonu görünür; tıklanınca claim mutation → sayfa refetch → artık "Görevi Aç" butonu
-- **Concurrent task completion:** başka kullanıcı aynı anda task'ı tamamlarsa ve sayfa stale ise → task completion mutation 409 → refetch + kullanıcıya güncel durum
-- **Mobile:** Task zinciri tek kolon; her kart genişler
-
-##### Form Alanları
-
-Yok — detay sayfası. Aksiyon modal'larının form alanları ilgili ekran şablonlarında.
-
----
-
-#### S-KTI-START — KTİ Başlatma Formu
-
-> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırıldı.
-
-**Route:** `/processes/kti/start`
-**Erişim:** `PROCESS_KTI_START`
-**Layout:** AppLayout
-**Seviye:** Kritik
-
-KTİ (Before & After Kaizen) sürecini başlatan zengin form. Doküman upload + CloudFront Signed URL + scan polling ile.
-
-##### Görsel Yapı
-
-1. **Breadcrumb:** Süreçler › Yeni KTİ
-2. **Sayfa başlığı:** "Yeni KTİ (Before & After Kaizen) Başlat"
-3. **Bilgilendirme kartı (üst):**
-   - Info: "Bu form ile Kaizen Tamamlama İyileştirme süreci başlatılır. Başlatma sonrası süreç yöneticinize onaya düşer."
-   - SLA notu: "Yöneticinizin onaylaması için 72 saat SLA vardır."
-4. **`<FormLayout>` (maxWidth 2xl):**
-   - **Şirket seçimi:**
-     - MasterDataSelect (companies) — kullanıcının kendi şirketi default (yine de seçilebilir, bazı kullanıcılar çapraz şirket başlatma hakkı olabilir)
-   - **Öncesi Fotoğraflar (multi-file upload):**
-     - Başlık: "Öncesi Fotoğraflar \*"
-     - Açıklama: "En az 1 adet; en fazla 10 adet; sadece JPEG/PNG/WebP; dosya başına 10 MB"
-     - `<DocumentUploader contextType="PROCESS_START" contextData={{ processType: 'BEFORE_AFTER_KAIZEN' }} multiple maxFileSizeMB={10}>`
-     - Upload edilen dosyalar grid'de: thumbnail + filename + scan durumu
-   - **Sonrası Fotoğraflar (multi-file upload):**
-     - Aynı şablon, "Sonrası Fotoğraflar \*" başlığıyla
-   - **Kazanç Tutarı:**
-     - Number input (TL, integer); suffix "TL"
-     - Validation: ≥ 0
-   - **Açıklama:**
-     - Textarea, 10-5000 karakter
-     - Karakter sayacı altında
-     - Placeholder: "Yapılan iyileştirmeyi ve elde edilen faydayı açıklayın..."
-5. **Alt bar:**
-   - **"İptal"** → dirty warning → `/dashboard`
-   - **"Süreci Başlat"** (primary) — tüm doküman upload'ları CLEAN olana kadar disabled
-
-##### Veri Kaynağı
-
-- **API (master data):** `GET /api/v1/master-data/companies`
-- **API (upload initiate):** `POST /api/v1/documents/upload-initiate`
-- **API (upload complete):** `POST /api/v1/documents`
-- **API (scan poll):** `GET /api/v1/documents/:id/scan-status`
-- **API (submit):** `POST /api/v1/processes/kti/start`
-- **Query key:** Mutation (start)
-- **Invalidation:** Success → `queryKeys.processes.list({ scope: 'my-started' })` + `queryKeys.tasks.list('started')`
-
-##### State Yönetimi
-
-- **Server state:** Master data query (companies)
-- **Local state:**
-  - `beforeDocuments: { id, filename, scanStatus }[]`
-  - `afterDocuments: { id, filename, scanStatus }[]`
-  - DocumentUploader kendi iç state'lerini yönetir
-- **URL state:** Yok
-- **Form state:** RHF + Zod — `KtiStartFormSchema` (`packages/shared-schemas/src/processes/kaizen.ts`)
-
-##### Durum Ekranları
-
-- **Loading (initial):** Master data yüklenirken skeleton
-- **Upload in progress:** Upload kartlarında progress bar
-- **Scanning:** Upload kartlarında "Taranıyor..." + spinner; submit button disabled
-- **Scan failed (INFECTED):** Kart kırmızı işaret + "Zararlı tespit edildi. Dosyayı kaldırın" mesajı; dosyayı kaldırma butonu aktif
-- **Submit loading:** Button spinner
-- **Success:** Toast "KTİ süreci başlatıldı — KTI-000043" + `/processes/KTI-000043` redirect
-- **Error:**
-  - `PROCESS_START_FORBIDDEN` → toast + dashboard
-  - `DOCUMENT_SCAN_PENDING` → toast "Dokümanlar hâlâ taramada, lütfen bekleyin"
-  - `DOCUMENT_INFECTED` → toast "Enfekte doküman var, kaldırın ve tekrar deneyin"
-  - `USER_NOT_FOUND` (manager yok) → banner "Profilinizde yönetici atanmamış. KTİ başlatmak için sistem yöneticinize başvurun."
-  - `VALIDATION_FAILED` → inline errors
-
-##### Etkileşimler
-
-- **Şirket select değişimi** → form field update
-- **Doküman drop/select** → DocumentUploader ele alır (bkz. `06_SCREEN_CATALOG` Bölüm 7.8)
-- **Doküman kaldırma** → local state'ten çıkar; backend'de kayıt yetim olur (retention ile temizlenir)
-- **Submit butonu:**
-  - Doküman sayısı min 1 before + min 1 after olmadığında disabled
-  - Hiçbir doküman PENDING_SCAN olmayana kadar disabled
-  - Tüm validation geçtiğinde enabled
-- **Form submit** → `POST /processes/kti/start`
-
-##### Edge Cases ve Kısıtlar
-
-- Kullanıcının `managerUserId` yoksa KTİ başlatılamaz — sayfa mount olabilir ama submit 422 döner; frontend proaktif kontrol `useCurrentUser().manager` ile banner gösterir, form disabled
-- Scan polling max 60 sn — aşılırsa kart "Tarama zaman aşımına uğradı, yeniden yükleyin"
-- Dirty warning: form değişikliği varsa (doküman yüklü dahil) route change unsaved warning
-- Maksimum 10 adet öncesi + 10 adet sonrası = 20 doküman total; üzerine ekleme engellenir
-- CloudFront Signed URL 5 dk TTL; upload 5 dk aşarsa URL expired → retry akışı
-- Mobile: grid tek kolon; touch-friendly buttons
-
-##### Form Alanları
-
-| Alan                   | Tip              | Zorunlu | Validation       | Default               | Not                   |
-| ---------------------- | ---------------- | ------- | ---------------- | --------------------- | --------------------- |
-| companyId              | MasterDataSelect | Evet    | Aktif company    | currentUser.companyId | Çoğunlukla pre-filled |
-| beforePhotoDocumentIds | Document array   | Evet    | 1-10 adet, CLEAN | []                    | DocumentUploader      |
-| afterPhotoDocumentIds  | Document array   | Evet    | 1-10 adet, CLEAN | []                    | DocumentUploader      |
-| savingAmount           | number input     | Evet    | integer ≥ 0      | 0                     | TL, suffix göster     |
-| description            | textarea         | Evet    | 10-5000 char     | ''                    | char counter          |
-
----
-
-### Grup 7 — Görevler
-
-#### S-TASK-LIST — Görev Listesi
-
-> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırıldı.
-
-**Route:** `/tasks?tab=pending` (default) / `/tasks?tab=started` / `/tasks?tab=completed`
-**Erişim:** Auth (her kullanıcı kendi görevlerini görür)
-**Layout:** AppLayout
-**Seviye:** Kritik
-
-##### Görsel Yapı
-
-1. **Breadcrumb:** Görevlerim
-2. **Sayfa başlığı:** "Görevlerim" + sayaç (aktif tab'a göre)
-3. **Tab bar (sticky):**
-   - **Onayda Bekleyen (default)** — kullanıcıya atanmış PENDING/CLAIMED/IN_PROGRESS task'lar; rozet sayaç
-   - **Başlattığım Süreçler** — kullanıcının başlattığı süreçlerin aktif task'ları (kullanıcı için read-only bilgi)
-   - **Tamamlanan Görevler** — kullanıcının tamamladığı COMPLETED task'lar
-4. **Filtre paneli:**
-   - Süreç tipi select (MVP: KTİ)
-   - Tarih aralığı (süreç başlangıcı)
-   - displayId search
-5. **DataTable:**
-   - Kolonlar:
-     - Aktif tab "Onayda Bekleyen" için: displayId (link), stepLabel, Başlatan kullanıcı, Başlangıç tarihi, SLA rozeti (kalan süre)
-     - "Başlattığım Süreçler" için: displayId, Aktif Adım (activeTaskLabel), Durum, Başlangıç
-     - "Tamamlanan" için: displayId, stepLabel, Completion Action rozeti, Tamamlanma tarihi
-   - Satır tıklama → `/tasks/:taskId` (pending için) veya `/processes/:displayId` (diğer tab'lar)
-6. **Pagination:** "Daha Fazla Yükle"
-
-##### Veri Kaynağı
-
-- **API:** `GET /api/v1/tasks?tab=...&...`
-- **Query key:** `queryKeys.tasks.list(tab, filters)`
-- **Stale time:** 15 sn
-- **Invalidation:**
-  - Task completion → bu query (her üç tab için)
-  - KTİ start → "Başlattığım Süreçler" tab'ı
-  - Claim → "Onayda Bekleyen" tab'ı + diğer adayların listeleri (peer eviction)
-
-##### State Yönetimi
-
-- **Server state:** List query
-- **URL state:** `tab` param + filtreler + cursor
-- **Form state:** Yok
-
-##### Durum Ekranları
-
-- **Loading:** Table skeleton
-- **Empty (pending):** EmptyState — CheckSquare ikonu + "Size atanmış bekleyen görev yok" + "Görevlerim sayfasına geri dön" yok (zaten buradayız) — sadece açıklama
-- **Empty (started):** "Başlattığınız aktif süreç yok" — Yeni süreç başlatmak için sol paneldeki "Süreçler" menüsünü kullanın (buton yok)
-- **Empty (completed):** "Henüz tamamladığınız görev yok"
-- **Empty (filter):** "Filtreye uyan görev yok" + temizle
-- **Error:** Retry
-
-##### Etkileşimler
-
-- **Tab değişimi** → URL update (`?tab=...`) → query key değişir → otomatik fetch
-- **Satır tıklama:**
-  - Pending tab: `/tasks/:taskId` (görevi aç, aksiyon alma)
-  - Started/Completed tab: `/processes/:displayId` (süreç bilgi, task üzerinde işlem yapılamaz)
-- **displayId link** → `/processes/:displayId` (her tab'da)
-- **Filtre** → URL + refetch
-
-##### Edge Cases ve Kısıtlar
-
-- **Onayda Bekleyen tab'ında SLA badge:**
-  - > %80 kaldı: yeşil
-  - %20-80: sarı
-  - < %20: turuncu
-  - Aşıldı: kırmızı "X saat gecikti"
-- **Claim mode task'lar:** aynı task birden fazla kullanıcının listesinde görünür (her aday için); biri claim edince diğer adayların listesinden çıkar (backend push eventuality — frontend 30 sn refetch ile yakalar)
-- **Pagination:** Each tab ayrı cursor; tab değişince cursor sıfırlanır
-- **Mobile:** Kolon azalır; SLA rozeti sağa sabitlenir
-
-##### Form Alanları
-
-Yok.
-
----
-
-#### S-TASK-DETAIL — Görev Detayı ve Aksiyon
-
-> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırıldı.
-
-**Route:** `/tasks/:id`
-**Erişim:** Task'a atanmış kullanıcı **veya** sürecin başlatıcısı **veya** `PROCESS_VIEW_ALL`
-**Layout:** AppLayout
-**Seviye:** Kritik
-
-Platformun en yoğun iş ekranı. Görev tarihçesi (salt okunur bağlam), karar / aksiyon paneli. Süreç özeti kartı bu ekranda **yer almaz** — kullanıcı isterse sağ üstteki "Süreç Detayı" linkiyle tam bağlamı görebilir.
-
-##### Görsel Yapı — KTİ Yönetici Onay Görevi (KTI_MANAGER_APPROVAL)
-
-1. **Breadcrumb:** Görevlerim › {displayId} — Yönetici Onayı
-2. **Üst başlık bandı:**
-   - Sol: "Yönetici Onayı" (stepLabel, büyük) + task durum rozeti + SLA badge
-   - Sağ: "Süreç Detayı" linki → `/processes/:displayId`
-3. **Görev Tarihçesi** (kart görünümü — salt okunur, süreç detay sayfasındaki task zinciri kartlarıyla aynı stil):
-   - Her tamamlanmış adım için bir kart (dikey liste, bağlantı çizgisi):
-     - Adım ikonu + adım etiketi ("KTİ Başlatma Adımı" vb.)
-     - Durum rozeti + tamamlayan kullanıcı + tarih
-     - **"Form Detayını Görüntüle"** butonu — `form_data` içeren adımlarda (KTİ Başlatma Adımı); tıklanınca modal açılır, tüm doldurulmuş alanlar + fotoğraflar salt okunur gösterilir (bkz. S-PROC-DETAIL modal spec)
-   - Bu tablodaki kartlar tıklanamaz (yalnız gösterim); "Göreve Git" butonu **bu ekranda olmaz**
-4. **Karar Paneli:**
-   - Başlık: "Kararınız"
-   - 3 ayrı buton (yan yana veya dikey grup):
-     - **"Onayla"** — yeşil/success varyant
-     - **"Reddet"** — kırmızı/destructive varyant
-     - **"Revize İste"** — turuncu/warning varyant
-   - Seçilen buton aktif/seçili görünümüne geçer; diğerleri pasif olur
-   - Seçilen butona göre altında dinamik alan grubu açılır (slide-down animasyonu):
-     - **Onayla seçildi:** opsiyonel yorum textarea (max 1000 char)
-     - **Reddet seçildi:** zorunlu gerekçe textarea (min 10, max 1000 char) + opsiyonel yorum textarea
-     - **Revize İste seçildi:** zorunlu gerekçe textarea (başlatıcıya iletilir; min 10, max 1000 char) + opsiyonel yorum textarea
-   - **Claim bekleyen (CLAIM mode, status=PENDING):** Karar paneli yerine "Bu görev üstlenebilir. Üstlendiğinizde diğer adaylar için görev kapanır." + **"Üstlen"** butonu (primary); claim sonrası sayfa refetch → karar paneli görünür
-   - **COMPLETED veya SKIPPED (read-only):** Karar paneli yok; "Bu görev daha önce tamamlanmış" mesajı + tamamlayan + tarih + completion action rozeti + "Süreç Detayı" linki
-5. **Alt bar (sticky):**
-   - **"Kaydet ve Tamamla"** butonu (primary) — karar seçili ve zorunlu alanlar geçerli olduğunda enabled; aksi hâlde disabled
-
----
-
-##### Görsel Yapı — KTİ Revize Görevi (KTI_REVISION)
-
-1. **Breadcrumb:** Görevlerim › {displayId} — Revize
-2. **Üst başlık bandı:**
-   - Sol: "Revize" (stepLabel, büyük) + task durum rozeti + SLA badge
-   - Sağ: "Süreç Detayı" linki → `/processes/:displayId`
-3. **Yönetici Gerekçesi Bandı** (turuncu/uyarı arka plan, sayfanın en üstünde dikkat çekici):
-   - Başlık: "Yöneticiniz revize istedi"
-   - Gerekçe satırı: **{prev_task_reason}** (zorunlu — boş olamaz; bkz. form alanı)
-   - Varsa yorum satırı: {prev_task_comment} (opsiyonel, gösterilir sadece doluysa)
-4. **Görev Tarihçesi** (kart görünümü — salt okunur, süreç detay sayfasındaki task zinciri kartlarıyla aynı stil):
-   - Tüm önceki tamamlanmış adımlar (KTİ Başlatma Adımı dahil) listede görünür
-   - "Form Detayını Görüntüle" butonu — KTİ Başlatma Adımı kartında mevcut (önceki doldurulmuş form salt okunur modal'da görüntülenebilir)
-   - Bu tablodaki kartlar tıklanamaz (yalnız gösterim)
-5. **Revize Formu** (KTİ başlatma alanları, önceki değerler ile pre-filled):
-   - Şirket seçimi (pre-filled, değiştirilebilir)
-   - Öncesi Fotoğraflar (DocumentUploader — önceki dosyalar gösterilir, silinebilir/eklenebilir)
-   - Sonrası Fotoğraflar (DocumentUploader — aynı şablon)
-   - Kazanç Tutarı (önceki değer ile pre-filled)
-   - Açıklama (önceki değer ile pre-filled, düzenlenebilir)
-   - Revizyon Notu (opsiyonel textarea — yöneticiye iletilecek ek açıklama; max 1000 char)
-6. **Alt bar (sticky):**
-   - **"İptal"** → dirty warning → `/tasks?tab=pending`
-   - **"Yeniden Gönder"** butonu (primary) — tüm validation geçtiğinde ve dokümanlar CLEAN olduğunda enabled
-
-##### Veri Kaynağı
-
-- **API (task detail):** `GET /api/v1/tasks/:id` — yanıt içinde `previousTasks[]` (tarihçe için), `managerReason`, `managerComment` (revision için) döner
-- **API (claim):** `POST /api/v1/tasks/:id/claim`
-- **API (complete):** `POST /api/v1/tasks/:id/complete`
-- **Query key:** `queryKeys.tasks.detail(id)`
-- **Stale time:** 10 sn
-- **Invalidation:**
-  - Claim success → bu query + `queryKeys.tasks.list('pending')` + peer adayların task list'leri
-  - Complete success → bu query + `queryKeys.tasks.list(*)` + `queryKeys.processes.detail(displayId)`
-
-##### State Yönetimi
-
-- **Server state:** Task detail query
-- **Local state:**
-  - Action selector (`selectedAction: 'APPROVE' | 'REJECT' | 'REQUEST_REVISION' | null`)
-  - Form (action-specific) — RHF
-- **URL state:** `:id` path
-- **Form state:** RHF + Zod — action'a göre dinamik schema (`KtiManagerApprovalFormSchema`, `KtiRevisionFormSchema`)
-
-##### Durum Ekranları
-
-- **Loading:** Full-page skeleton
-- **Not found:** `/404`
-- **Access denied:** `/403`
-- **Loading (claim):** Button spinner
-- **Loading (complete):** Button spinner + form disable
-- **Success (claim):** Toast "Görevi üstlendiniz" + sayfa refetch (artık action panel görünür)
-- **Success (complete):**
-  - Approve → Toast "Süreç onaylandı" + `/processes/:displayId` redirect
-  - Reject → Toast "Süreç reddedildi" + `/processes/:displayId` redirect
-  - Request revision → Toast "Revize için başlatıcıya gönderildi" + `/tasks?tab=completed` (kendi göreviniz artık tamamlandı)
-  - Revision resubmit → Toast + `/processes/:displayId`
-- **Error:**
-  - `TASK_CLAIM_LOST` → banner "Bu görev başka biri tarafından üstlenildi" + "Görevlerim'e Dön" butonu
-  - `TASK_ALREADY_COMPLETED` → banner "Bu görev zaten tamamlanmış" + detay refetch
-  - `TASK_COMPLETION_ACTION_INVALID` / `TASK_REASON_REQUIRED` → form inline
-  - `VALIDATION_FAILED` → form inline
-  - `DOCUMENT_SCAN_PENDING` / `DOCUMENT_INFECTED` → inline error (revize akışında)
-
-##### Etkileşimler
-
-- **"Üstlen" (claim)** → `POST /tasks/:id/claim` → sayfa refetch → karar paneli görünür
-- **Karar butonu seçimi** (Onayla / Reddet / Revize İste) → seçili buton aktif görünüm; altında dinamik alan grubu slide-down açılır
-- **Karar seçimi değişimi** → önceki alan grubu kapanır, yeni açılır; textarea değerleri sıfırlanır
-- **"Form Detayını Görüntüle"** (tarihçe kartında) → salt okunur modal açılır
-- **"Kaydet ve Tamamla"** → `POST /tasks/:id/complete` with `{ action, reason, comment, formData }` payload
-- **"Yeniden Gönder" (revize)** → `POST /tasks/:id/complete` with `{ formData, revisionNote, action: null }`
-- **"Süreç Detayı" linki** → `/processes/:displayId`
-
-##### Edge Cases ve Kısıtlar
-
-- **Claim race condition:** İki kullanıcı eşzamanlı claim → biri 200, diğeri 409 `TASK_CLAIM_LOST`; kaybeden "Başka kullanıcı üstlendi" banner görür
-- **Task assignees == multiple (ALL_REQUIRED mode):** MVP KTİ'de yok; generic pattern için: tüm assignee'ler kendi completion'ını yapar, task global olarak COMPLETED olur ancak son tamamlayan
-- **SLA aşılmış task:** Hâlâ tamamlanabilir; SLA rozeti kırmızı "X saat gecikti"; backend breach event'i tetiklemiştir (başka kanal)
-- **Süreç CANCELLED sonrası task detayı açma:** Read-only görünür, karar/aksiyon paneli yok (task `SKIPPED_BY_ROLLBACK` veya `SKIPPED_BY_PEER`)
-- **Görev Tarihçesi görünürlük kısıtı (başlatıcı olmayan, yalnız atanmış):** KTİ Başlatma Adımı kartında "Form Detayını Görüntüle" butonu gizlenir → placeholder "Bu adımın form detayı sizinle paylaşılmamıştır"
-- **Unsaved changes warning:** Form dirty (karar seçili veya textarea doluysa) + route değişimi = uyarı
-- **Rollback ile geri dönen task:** Yeni instance (yeni task.id) — eski task `SKIPPED_BY_ROLLBACK`; kullanıcı yeni task için fresh form görür
-- **Karar seçimi değişimi:** textarea değerleri temizlenir; dirty warning tetiklenmez (henüz form commit olmamış)
-- **Revize gerekçesi boşsa (backend anomali):** Yönetici Gerekçesi Bandı yine de gösterilir; gerekçe alanı "Gerekçe belirtilmemiş" placeholder'ı ile
-- **Mobile:** Görev Tarihçesi kartları tek kolon; karar butonları dikey yığılır; alt sticky bar sabit kalır
-
-##### Form Alanları
-
-**KTİ_INITIATION (revize değilse — start ekranında açılır, task detayında görünmez; fallback)**
-— bkz. S-KTI-START
-
-**KTİ_MANAGER_APPROVAL (karar paneli — buton seçimine göre dinamik):**
-
-| Alan    | Tip                    | Zorunlu                                         | Validation                               | Default | Not                                             |
-| ------- | ---------------------- | ----------------------------------------------- | ---------------------------------------- | ------- | ----------------------------------------------- |
-| action  | button group (3 buton) | Evet                                            | enum APPROVE / REJECT / REQUEST_REVISION | null    | Onayla / Reddet / Revize İste                   |
-| reason  | textarea               | Koşullu (REJECT, REQUEST_REVISION için zorunlu) | min 10 char, max 1000                    | ''      | Seçilen aksiyona göre dinamik olarak gösterilir |
-| comment | textarea               | Hayır                                           | max 1000                                 | ''      | Opsiyonel not; her aksiyon seçeneğinde mevcut   |
-
-**KTİ_REVISION (başlatıcıya döndüğünde):**
-
-| Alan                   | Tip            | Zorunlu | Validation      | Default         | Not                                                     |
-| ---------------------- | -------------- | ------- | --------------- | --------------- | ------------------------------------------------------- |
-| beforePhotoDocumentIds | Document array | Evet    | 1-10 adet CLEAN | önceki task'tan | Önceki docları yeniden kullanabilir veya değiştirebilir |
-| afterPhotoDocumentIds  | Document array | Evet    | 1-10 adet CLEAN | önceki task'tan |                                                         |
-| savingAmount           | number         | Evet    | ≥ 0             | önceki değer    |                                                         |
-| description            | textarea       | Evet    | 10-5000         | önceki değer    |                                                         |
-| revisionNote           | textarea       | Hayır   | max 1000        | ''              | Opsiyonel revize notu; yöneticiye iletilir              |
-
----
-
-### Grup 8 — Bildirimler ve Profil
+### Grup 6 — Bildirimler ve Profil (devam)
 
 #### S-NOTIF-LIST — Bildirim Merkezi
 
@@ -2274,17 +1628,11 @@ Kullanıcının tüm in-app bildirimlerinin listelendiği tam sayfa görünümü
    - Sağ: "Tümünü Okundu İşaretle" butonu (outline, okunmamış varsa enabled)
 3. **Filtre paneli:**
    - Okunma durumu: **Okunmamış (default)** / Tümü — tab bar görünümünde
-   - Event tipi select: Tümü / TASK_ASSIGNED / TASK_CLAIMED_BY_PEER / PROCESS_COMPLETED / PROCESS_REJECTED / SLA_WARNING / SLA_BREACH / PASSWORD_EXPIRY_WARNING / CONSENT_VERSION_PUBLISHED
+   - Event tipi select: platformda tanımlı `NotificationEventType` değerleri (ör. PASSWORD_EXPIRY_WARNING, CONSENT_VERSION_PUBLISHED)
 4. **Bildirim listesi** (DataTable değil — özel satır görünümü):
    - Her satır bir bildirim:
      - Sol: okunma durumu noktası (mavi dolu / gri boş)
      - Event ikonu (lucide — event_type'a göre):
-       - TASK_ASSIGNED: `CheckSquare`
-       - TASK_CLAIMED_BY_PEER: `UserX`
-       - PROCESS_COMPLETED: `CheckCircle2`
-       - PROCESS_REJECTED: `XCircle`
-       - SLA_WARNING: `AlarmClock`
-       - SLA_BREACH: `AlertTriangle` (kırmızı)
        - PASSWORD_EXPIRY_WARNING: `KeyRound`
        - CONSENT_VERSION_PUBLISHED: `FileText`
      - İçerik: title (bold) + body (single-line, truncate) + "2 saat önce" relative time
@@ -2328,7 +1676,7 @@ Kullanıcının tüm in-app bildirimlerinin listelendiği tam sayfa görünümü
 
 - **Satır tıklama:**
   1. Optimistic mark-read (`useMarkNotificationReadMutation`) — `05_FRONTEND_SPEC` Bölüm 5.5 pattern
-  2. `linkUrl` varsa (örn. `/tasks/:id` veya `/processes/:displayId`) → ilgili sayfaya navigate
+  2. `linkUrl` varsa → ilgili sayfaya navigate
   3. `linkUrl` yoksa (örn. bilgilendirme bildirimi) → modal veya inline expand? — MVP'de `linkUrl` null bildirimler yok; her bildirim bir hedefe bağlı
 - **"Okundu İşaretle" (hover butonu)** → mark-read mutation (navigate etmez)
 - **"Tümünü Okundu İşaretle"** → ConfirmDialog "Tüm okunmamış bildirimleri okundu olarak işaretlensin mi?" → mutation
@@ -2367,7 +1715,7 @@ Yetkili kullanıcının (genellikle Superadmin veya Sistem Yöneticisi rolü) **
 2. **Sayfa başlığı:** "Bildirim Ayarları"
 3. **Bilgilendirme banner'ı (mavi):** "Bu sayfada yapılan değişiklikler tüm sistem kullanıcıları için geçerlidir."
 4. **Bildirim tercihleri tablosu:**
-   - Her satır bir `eventType` (ör. TASK_ASSIGNED, TASK_COMPLETED, PROCESS_CANCELLED, SLA_BREACHED)
+   - Her satır bir `eventType` (ör. PASSWORD_EXPIRY_WARNING, USER_CREATED)
    - Kolonlar: Olay Adı, Uygulama İçi Bildirim (toggle), E-posta Bildirimi (toggle)
    - Toggle değişimi → `dirtyState` flag — kaydet butonu aktif olur
 5. **Alt bar:**
@@ -2464,13 +1812,11 @@ Kullanıcının sistemdeki kendine ait veri özetini görüntüler. Görüntüle
 - Aktif süreçlerim: {N}
 - Tamamlanan süreçlerim: {N}
 - Reddedilen süreçlerim: {N}
-- `<PermissionGate PROCESS_VIEW_ALL>` "Tümünü Gör" linki → `/processadministration` (yalnız yetkili kullanıcıda görünür)
-
-**Kart 3 — Görev geçmişim özeti:**
+- `
+  **Kart 3 — Görev geçmişim özeti:**
 
 - Tamamladığım toplam görev: {N}
 - Ortalama tamamlama süresi: {X saat}
-- "Tümünü Gör" linki → `/tasks?tab=completed`
 
 **Kart 4 — Oturum geçmişim (son 10 oturum):**
 
@@ -2592,8 +1938,8 @@ Sistemdeki tüm append-only audit log'larının görüntülendiği ve filtrelend
 4. **Gelişmiş filtre paneli** (collapsible, default açık):
    - **Zaman aralığı** (required): "Son 24 saat" (default) / "Son 7 gün" / "Son 30 gün" / Özel (date range picker)
    - **Kullanıcı** (UserSelect — optional; başlatan kullanıcıyı filtrelemek için)
-   - **Aksiyon** multi-select: LOGIN_SUCCESS / LOGIN_FAILURE / LOGIN_LOCKED / LOGOUT / IMPERSONATION_STARTED / IMPERSONATION_STOPPED / IMPERSONATION_SWITCHED / USER_CREATED / USER_UPDATED / USER_DEACTIVATED / ROLE_ASSIGNED / ROLE_PERMISSIONS_UPDATED / PROCESS_STARTED / PROCESS_COMPLETED / PROCESS_CANCELLED / PROCESS_ROLLED_BACK / TASK_CLAIMED / TASK_COMPLETED / DOCUMENT_UPLOADED / ... (full enum)
-   - **Entity tipi** select: USER / ROLE / PROCESS / TASK / DOCUMENT / SESSION / CONSENT_VERSION / SYSTEM_SETTING / EMAIL_TEMPLATE / MASTER_DATA
+   - **Aksiyon** multi-select: LOGIN*SUCCESS / LOGIN_FAILURE / LOGIN_LOCKED / LOGOUT / IMPERSONATION_STARTED / IMPERSONATION_STOPPED / IMPERSONATION_SWITCHED / USER_CREATED / USER_UPDATED / USER_DEACTIVATED / ROLE_ASSIGNED / ROLE_PERMISSIONS_UPDATED - **Aksiyon** multi-select: LOGIN*_ / USER\__ / ROLE*\* / DOCUMENT_UPLOADED / IMPERSONATION*\* / … (audit enum)
+   - **Entity tipi** select: USER / ROLE / DOCUMENT / SESSION / CONSENT_VERSION / SYSTEM_SETTING / EMAIL_TEMPLATE / MASTER_DATA
    - **Entity ID** text input (spesifik kayıt için)
    - **IP adresi** text input (partial match)
    - **Arama** (serialized JSON detay içinde text search — slow, büyük aralıklarda önerilmez)
@@ -2715,7 +2061,6 @@ Sistemin runtime-configurable parametrelerinin yönetildiği ekran. Settings `sy
 | SESSION      | `SESSION_INACTIVITY_TIMEOUT_MINUTES` | number | 30                  | Inaktivite timeout                         |
 | PASSWORD     | `PASSWORD_EXPIRY_DAYS`               | number | 90                  | Şifre süresi                               |
 | PASSWORD     | `PASSWORD_HISTORY_COUNT`             | number | 5                   | Son kaç şifre reddedilir                   |
-| SLA          | `KTI_MANAGER_APPROVAL_SLA_HOURS`     | number | 72                  | KTİ yönetici onay SLA                      |
 | SLA          | `SLA_WARNING_THRESHOLD_PERCENT`      | number | 80                  | SLA uyarı eşiği                            |
 | EMAIL        | `EMAIL_FROM_ADDRESS`                 | string | noreply@holding.com | From adresi                                |
 | EMAIL        | `EMAIL_FROM_NAME`                    | string | Lean Management     | From görünen ad                            |
@@ -2794,7 +2139,7 @@ Her event tipi için email template'inin (subject + body) düzenlendiği editor.
 2. **Sayfa başlığı:** "Email Şablonu: {Event Türkçe Adı}"
 3. **Açıklama bandı:**
    - Event tipi, tetikleyici koşul, örnek senaryo
-   - "Kullanılabilir değişkenler" expand — liste: `{{userFirstName}}`, `{{processDisplayId}}`, `{{taskStepLabel}}`, ... (event'a özel)
+   - "Kullanılabilir değişkenler" expand — event tipine göre (`{{userFirstName}}`, `{{daysRemaining}}`, …)
 4. **İki kolonlu layout (lg:grid-cols-2):**
    - **Sol: Editor**
      - **Subject input** (single line, max 200 char)
@@ -3062,42 +2407,6 @@ Bir master data kaydına bağlı kullanıcıların listesi — örn. "Istanbul L
 
 ---
 
-### S-PROC-HISTORY — Süreç Tarihçesi
-
-> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırıldı.
-
-**Route:** `/processes/:displayId/history` | **Erişim:** `PROCESS_VIEW_ALL` | **Layout:** AppLayout
-
-Bir sürece ait tüm audit log kayıtlarının kronolojik görünümü. S-PROC-DETAIL sayfasının "Tarihçe" butonundan erişilir. Zaman sıralı timeline: her entry tarih + aksiyon rozeti + kullanıcı + detay (expand). S-ADMIN-AUDIT'in bu süreç için filtrelenmiş alt görünümü. Rollback zincirleri, cancel, her task completion, doküman upload'ları görünür. Non-audit "task zinciri" S-PROC-DETAIL'de zaten görünüyor; bu sayfa daha granüler denetim amaçlı (who-did-what-when).
-
-**Ana etkileşim:** Süreç tarih çizgisini incele; şüpheli durumda audit paneline git.
-
----
-
-### S-PROC-CANCEL — Süreç İptal Onay Modal'ı
-
-> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırıldı.
-
-**Route:** (modal on detail) | **Erişim:** `PROCESS_CANCEL` | **Layout:** Modal
-
-S-PROC-DETAIL ve S-PROC-LIST-ADMIN'den tetiklenen destructive confirmation modal. Başlık "Süreci İptal Et"; açıklama "Bu süreç iptal edilecek, tüm aktif task'lar SKIPPED olarak işaretlenecek. Bu aksiyon geri alınamaz." Zorunlu reason textarea (min 10 karakter). "ONAYLIYORUM" yazma gereksinimi (destructive extended pattern). Submit → `POST /api/v1/processes/:displayId/cancel` body: `{ reason }`. Success → toast + modal kapanır + S-PROC-DETAIL refetch (durum CANCELLED olur).
-
-**Ana etkileşim:** Gerekçe gir + onay yazımı + iptal et.
-
----
-
-### S-PROC-ROLLBACK — Süreç Geri Alma Modal'ı
-
-> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırıldı.
-
-**Route:** (modal on detail) | **Erişim:** `PROCESS_ROLLBACK` | **Layout:** Modal
-
-Süreci bir önceki task adımına geri almak için modal. Yalnız IN_PROGRESS süreçlerde kullanılabilir. Başlık "Süreci Geri Al"; açıklama "Bu süreç bir önceki adımına geri alınacak ({prevStepLabel}). Mevcut aktif task (`{currentStepLabel}`) SKIPPED_BY_ROLLBACK olarak işaretlenecek ve önceki adım için yeni bir task instance oluşturulacak." Zorunlu reason textarea + "ONAYLIYORUM" yazımı. Submit → `POST /api/v1/processes/:displayId/rollback` body: `{ reason }`. Success → toast + detay refetch. `05_FRONTEND_SPEC` destructive pattern.
-
-**Ana etkileşim:** Rollback hedefini anla + gerekçe gir + onay yaz + geri al.
-
----
-
 ### S-ADMIN-AUDIT-CHAIN — Audit Zinciri Bütünlüğü
 
 **Route:** `/admin/audit-logs/chain-integrity` | **Erişim:** `AUDIT_LOG_VIEW` | **Layout:** AdminLayout
@@ -3112,7 +2421,7 @@ Audit log zincirinin sağlık kontrolü sayfası. Zincir başı + son hash + "so
 
 **Route:** `/admin/email-templates` | **Erişim:** `EMAIL_TEMPLATE_VIEW` | **Layout:** AdminLayout
 
-Tüm email event template'lerinin özet listesi. DataTable: Event Tipi (Türkçe adla) + Event Code (monospace) + Subject preview (truncate 60 char) + Son güncelleme tarihi + Güncelleyen kullanıcı. Satır tıklama → S-ADMIN-EMAIL-EDIT (ilgili event için). Filter: event kategori (Auth / Task / Process / System). Sistem her event için bir template garanti eder — "ekle" butonu yok. Sadece "düzenle" akışı mevcut.
+Tüm email event template'lerinin özet listesi. DataTable: Event Tipi (Türkçe adla) + Event Code (monospace) + Subject preview (truncate 60 char) + Son güncelleme tarihi + Güncelleyen kullanıcı. Satır tıklama → S-ADMIN-EMAIL-EDIT (ilgili event için). Filter: event kategori (Auth / System). Sistem her event için bir template garanti eder — "ekle" butonu yok. Sadece "düzenle" akışı mevcut.
 
 **Ana etkileşim:** Event listesini gör → düzenlenecek şablonu seç.
 
@@ -3236,7 +2545,7 @@ interface FormLayoutProps {
 - `variant="default"` — mavi primary buton (neutral onay, örn. "Durumu değiştir")
 - `variant="destructive"` — kırmızı buton (geri alınamayan yıkıcı aksiyon)
 
-**Destructive için ek pattern:** `S-PROC-CANCEL` ve `S-PROC-ROLLBACK` gibi yüksek sorumluluk gerektiren aksiyonlarda "ONAYLIYORUM" yazmayı gerektiren extended variant (`<DestructiveConfirmDialog>`).
+**Destructive için ek pattern:** `yüksek riskli destructive aksiyonlar gibi yüksek sorumluluk gerektiren aksiyonlarda "ONAYLIYORUM" yazmayı gerektiren extended variant (`<DestructiveConfirmDialog>`).
 
 ### 7.4 `<EmptyState>`
 
@@ -3282,7 +2591,7 @@ interface MasterDataSelectProps {
 - TanStack Query ile 5 dakika stale time
 - Loading sırasında spinner, sonucu yoksa "Kayıt bulunamadı"
 
-**Kullanıldığı yerler:** S-USER-NEW, S-USER-EDIT, S-KTI-START, filtreler.
+**Kullanıldığı yerler:** S-USER-NEW, S-USER-EDIT, filtreler.
 
 ### 7.6 `<UserSelect>`
 
@@ -3323,8 +2632,8 @@ interface UserSelectProps {
 
 ```typescript
 interface DocumentUploaderProps {
-  contextType: 'PROCESS_START' | 'TASK_ATTACHMENT';
-  contextData: Record<string, unknown>; // processType veya taskId
+  contextType: string; // örn. kullanıcı profil eki — domain’e göre genişletilir
+  contextData: Record<string, unknown>;
   onUploadComplete: (documentId: string) => void;
   onUploadFailed?: (error: Error) => void;
   maxFileSizeMB?: number; // default 10
@@ -3347,7 +2656,7 @@ interface DocumentUploaderProps {
 
 **State:** `idle` | `uploading` | `scanning` | `clean` | `infected` | `failed`
 
-**Kullanıldığı ekranlar:** S-KTI-START (before/after fotoğraflar), S-TASK-DETAIL (revize akışında).
+**Kullanıldığı ekranlar:**
 
 ### 7.9 `<SlaBadge>`
 

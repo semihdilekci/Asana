@@ -27,17 +27,17 @@ Rakamlar **zorunluluk değil, ideal dağılım**. Proje ilerledikçe e2e oranı 
 
 **20% integration** — Orta hız (saniye), bileşenler arası entegrasyonu doğrular. Real PostgreSQL + Redis (testcontainers Docker image'ları). HTTP request level test (supertest ile controller + service + DB zinciri).
 
-**10% E2E** — Yavaş (onlarca saniye), full browser flow. Sadece "login → KTİ başlat → task complete → süreç biter" gibi kritik journey'lerde kullanılır. Her ekran için e2e yazılmaz.
+**10% E2E** — Yavaş (onlarca saniye), full browser flow. Sadece kritik journey'lerde kullanılır (ör. login → dashboard → admin → logout). Her ekran için e2e yazılmaz.
 
 ### 1.2 Risk-Bazlı Yaklaşım
 
 Her modülün test önceliği eşit değil. Bu projede iş riskine göre üç seviye:
 
-| Seviye     | Modüller                                                                                                                                                           | Coverage hedefi | Test türü                |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------- | ------------------------ |
-| **Yüksek** | Auth (login/refresh/logout/password), Encryption (email/phone encrypt/decrypt), Permission resolver (RBAC+ABAC), Process state machine (KTİ workflow), Audit chain | %85-95+         | Unit + integration + e2e |
-| **Orta**   | User CRUD, Role CRUD, Master data, Document upload, Notification dispatch, Rate limit                                                                              | %75-85          | Unit + integration       |
-| **Düşük**  | UI styling, Static content render, Navigation links, Layout responsive                                                                                             | %50-70          | Unit + manual QA         |
+| Seviye     | Modüller                                                                                                                     | Coverage hedefi | Test türü                |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------- | --------------- | ------------------------ |
+| **Yüksek** | Auth (login/refresh/logout/password), Encryption (email/phone encrypt/decrypt), Permission resolver (RBAC+ABAC), Audit chain | %85-95+         | Unit + integration + e2e |
+| **Orta**   | User CRUD, Role CRUD, Master data, Document upload, Notification dispatch, Rate limit                                        | %75-85          | Unit + integration       |
+| **Düşük**  | UI styling, Static content render, Navigation links, Layout responsive                                                       | %50-70          | Unit + manual QA         |
 
 Yüksek seviye modüllerde **hem happy path hem edge case** test yazılır — saldırgan olsa ne yapar, concurrent istek ne olur, invalid state geldiğinde ne olur. Orta seviyede happy + en olası edge case'ler. Düşük seviyede smoke testler (bileşen render oluyor mu, crash yok mu).
 
@@ -92,14 +92,12 @@ export const baseConfig = defineConfig({
 
 ### 2.2 Nerede Unit Test Yazılır
 
-| Katman                 | Örnek dosya                                       | Test dosyası                                   |
-| ---------------------- | ------------------------------------------------- | ---------------------------------------------- |
-| Backend service        | `apps/api/src/users/users.service.ts`             | `users.service.test.ts` (yan yana)             |
-| Backend util           | `apps/api/src/common/utils/encryption.ts`         | `encryption.test.ts`                           |
-| Zod schema             | `packages/shared-schemas/src/users.ts`            | `users.schema.test.ts`                         |
-| React hook             | `apps/web/src/hooks/usePermissions.ts`            | `usePermissions.test.ts`                       |
-| React component (pure) | `apps/web/src/components/shared/SlaBadge.tsx`     | `SlaBadge.test.tsx` (Faz 14 ile kaldırıldı)    |
-| Workflow state machine | `apps/api/src/processes/workflow/kti.workflow.ts` | `kti.workflow.test.ts` (Faz 14 ile kaldırıldı) |
+| Katman          | Örnek dosya                               | Test dosyası                       |
+| --------------- | ----------------------------------------- | ---------------------------------- |
+| Backend service | `apps/api/src/users/users.service.ts`     | `users.service.test.ts` (yan yana) |
+| Backend util    | `apps/api/src/common/utils/encryption.ts` | `encryption.test.ts`               |
+| Zod schema      | `packages/shared-schemas/src/users.ts`    | `users.schema.test.ts`             |
+| React hook      | `apps/web/src/hooks/usePermissions.ts`    | `usePermissions.test.ts`           |
 
 Test dosyaları **source dosyasının yanında** durur (co-location). `__tests__/` alt dizini kullanılmaz — refactor sırasında dosya taşıma + test taşıma aynı anda yapılır.
 
@@ -353,150 +351,12 @@ pnpm test:integration  # Docker up gerekli
 pnpm test:all      # İkisi birlikte (CI)
 ```
 
-### 3.3 Integration Test Örneği — KTİ Full Flow (Faz 14 ile kaldırıldı)
-
-```typescript
-// apps/api/test/kti.integration.test.ts
-import { describe, it, expect, beforeEach } from 'vitest';
-import { Test } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
-import { PrismaService } from '../src/prisma/prisma.service';
-import type { INestApplication } from '@nestjs/common';
-import request from 'supertest';
-import { userFactory } from '../test/factories/user.factory';
-import { authHelper } from '../test/helpers/auth.helper';
-
-describe('KTİ Workflow Integration', () => {
-  let app: INestApplication;
-  let prisma: PrismaService;
-
-  beforeAll(async () => {
-    const module = await Test.createTestingModule({ imports: [AppModule] }).compile();
-    app = module.createNestApplication();
-    await app.init();
-    prisma = module.get(PrismaService);
-  });
-
-  beforeEach(async () => {
-    // Her test'te temiz DB state
-    await prisma.$executeRaw`TRUNCATE TABLE users, roles, processes, tasks, documents CASCADE`;
-  });
-
-  afterAll(async () => {
-    await app.close();
-  });
-
-  it('should complete KTİ happy path: start → approve → complete', async () => {
-    // Arrange — kullanıcılar + roller + şirket hazırla
-    const initiator = await userFactory.create(prisma, { employeeType: 'WHITE_COLLAR' });
-    const manager = await userFactory.create(prisma);
-    await prisma.users.update({
-      where: { id: initiator.id },
-      data: { manager_user_id: manager.id },
-    });
-
-    // Dokümanları hazırla (pre-scan CLEAN)
-    const beforeDoc = await prisma.documents.create({
-      data: { scan_status: 'CLEAN' /* ... */ },
-    });
-    const afterDoc = await prisma.documents.create({
-      data: { scan_status: 'CLEAN' /* ... */ },
-    });
-
-    const initiatorToken = await authHelper.loginAs(app, initiator);
-    const managerToken = await authHelper.loginAs(app, manager);
-
-    // Act 1 — KTİ başlat
-    const startRes = await request(app.getHttpServer())
-      .post('/api/v1/processes/kti/start')
-      .set('Authorization', `Bearer ${initiatorToken.accessToken}`)
-      .set('X-CSRF-Token', initiatorToken.csrfToken)
-      .send({
-        companyId: initiator.company_id,
-        beforePhotoDocumentIds: [beforeDoc.id],
-        afterPhotoDocumentIds: [afterDoc.id],
-        savingAmount: 50000,
-        description: 'Hatları değiştirip zamandan tasarruf sağlandı...',
-      });
-
-    expect(startRes.status).toBe(201);
-    expect(startRes.body.data.displayId).toMatch(/^KTI-\d{6}$/);
-    expect(startRes.body.data.status).toBe('IN_PROGRESS');
-
-    const processId = startRes.body.data.id;
-
-    // Assert — manager için task oluştu mu?
-    const managerTasks = await prisma.tasks.findMany({
-      where: { process_id: processId, status: { in: ['PENDING', 'CLAIMED'] } },
-      include: { assignees: true },
-    });
-    expect(managerTasks).toHaveLength(1);
-    expect(managerTasks[0].assignees[0].user_id).toBe(manager.id);
-    expect(managerTasks[0].step_label).toBe('Yönetici Onay');
-
-    // Act 2 — Manager onay
-    const approveRes = await request(app.getHttpServer())
-      .post(`/api/v1/tasks/${managerTasks[0].id}/complete`)
-      .set('Authorization', `Bearer ${managerToken.accessToken}`)
-      .set('X-CSRF-Token', managerToken.csrfToken)
-      .send({
-        action: 'APPROVE',
-        comment: 'İyi çalışma',
-      });
-
-    expect(approveRes.status).toBe(200);
-
-    // Assert — süreç COMPLETED mi?
-    const finalProcess = await prisma.processes.findUnique({ where: { id: processId } });
-    expect(finalProcess?.status).toBe('COMPLETED');
-    expect(finalProcess?.completed_at).not.toBeNull();
-
-    // Assert — audit log kayıtları var mı?
-    const auditLogs = await prisma.audit_logs.findMany({
-      where: { entity_type: 'PROCESS', entity_id: processId },
-      orderBy: { sequence_number: 'asc' },
-    });
-    expect(auditLogs.map((l) => l.action)).toContain('PROCESS_STARTED');
-    expect(auditLogs.map((l) => l.action)).toContain('PROCESS_COMPLETED');
-
-    // Assert — audit chain integrity
-    expect(auditLogs[0].prev_hash).toMatch(/^0{64}$/); // ilk kayıt 0 prev
-    for (let i = 1; i < auditLogs.length; i++) {
-      expect(auditLogs[i].prev_hash).toBe(auditLogs[i - 1].current_hash);
-    }
-  });
-
-  it('should handle revision loop: start → request-revision → resubmit → approve', async () => {
-    // Happy path benzeri ama manager REQUEST_REVISION seçer
-    // → başlatıcıya yeni task oluşur (KTİ_REVISION)
-    // → başlatıcı yeni data ile resubmit
-    // → manager tekrar onay task'ı
-    // → APPROVE
-    // Assert: process COMPLETED; 2 KTİ_INITIATION + 1 KTİ_REVISION + 2 KTİ_MANAGER_APPROVAL audit logs
-    // ...
-  });
-
-  it('should cascade SKIPPED_BY_ROLLBACK when process rolled back', async () => {
-    // Setup — manager approval task'ında
-    // PROCESS_ROLLBACK triggered
-    // Current task SKIPPED_BY_ROLLBACK, new task oluştu KTİ_INITIATION için başlatıcıya
-    // ...
-  });
-
-  it('should prevent cancel on terminal process', async () => {
-    // COMPLETED process için PROCESS_CANCEL → 409 PROCESS_NOT_CANCELLABLE
-  });
-});
-```
-
 ### 3.4 Integration Test Scope
 
 Integration test için uygun senaryolar:
 
-- Full flow (başlatma → task completion → süreç bitirme)
 - Transaction davranışı (rollback edildiğinde DB state temiz kalmalı)
 - Trigger davranışı (audit log append-only, chain hash otomatik compute)
-- Concurrent operation (iki user eşzamanlı claim)
 - Cache invalidation (rol permission değişimi → user permission cache invalid)
 - Rate limit (10 başarısız login → 11. 429 döner)
 
@@ -514,7 +374,7 @@ Her test'in başında DB reset. İki yaklaşım:
 
 ```typescript
 beforeEach(async () => {
-  await prisma.$executeRaw`TRUNCATE TABLE users, processes, tasks, documents, audit_logs RESTART IDENTITY CASCADE`;
+  await prisma.$executeRaw`TRUNCATE TABLE users, documents, audit_logs, roles, companies RESTART IDENTITY CASCADE`;
 });
 ```
 
@@ -617,100 +477,12 @@ export default defineConfig({
 E2E her ekran için değil, **platform'un çalıştığını kanıtlayan** akışlarda:
 
 1. **Auth full cycle** — Login → consent onay (ilk girişte) → dashboard → logout
-2. **KTİ happy path** — Login → KTİ başlat → task atanması e-mail (mock) → manager login → task approve → process COMPLETED **(Faz 14 ile kaldırıldı)**
-3. **KTİ revision loop** — Manager REQUEST_REVISION → başlatıcı resubmit → manager APPROVE **(Faz 14 ile kaldırıldı)**
-4. **Role management** — Superadmin login → rol oluştur → permission ata → user'a assign → user bu permission ile endpoint'e erişebiliyor mu
-5. **Admin audit search + export** — Superadmin login → audit-logs sayfası → filter uygula → CSV export → dosya indiriliyor mu
-6. **Password reset flow** — Forgot password → email link (mock intercept) → reset page → new password → login yeni şifre ile
-7. **User impersonation** — Yetkili kullanıcı login → header isim → hedef seç → effective user menüsü/bildirimleri → mutating aksiyon → admin audit'te Impersonation badge + actor format → switch ikonu ile kendi hesaba dön
+2. **Role management** — Superadmin login → rol oluştur → permission ata → user'a assign → user bu permission ile endpoint'e erişebiliyor mu
+3. **Admin audit search + export** — Superadmin login → audit-logs sayfası → filter uygula → CSV export → dosya indiriliyor mu
+4. **Password reset flow** — Forgot password → email link (mock intercept) → reset page → new password → login yeni şifre ile
+5. **User impersonation** — Yetkili kullanıcı login → header isim → hedef seç → effective user menüsü/bildirimleri → mutating aksiyon → admin audit'te Impersonation badge + actor format → switch ikonu ile kendi hesaba dön
 
 Her journey 1-3 test case ile temsil edilir — 14-20 e2e test total MVP için yeterli (impersonation +1 journey).
-
-### 4.3 E2E Test Örneği — KTİ Happy Path (Faz 14 ile kaldırıldı)
-
-```typescript
-// apps/web/e2e/kti-happy-path.spec.ts
-import { test, expect } from '@playwright/test';
-import { setupTestUsers, generateTestDocument } from './helpers';
-
-test.describe('KTİ Happy Path', () => {
-  test.beforeAll(async () => {
-    await setupTestUsers(); // Initiator + Manager users seed
-  });
-
-  test('initiator starts KTİ, manager approves, process completes', async ({ page, context }) => {
-    // ADIM 1: Initiator login
-    await page.goto('/login');
-    await page.fill('input[name="email"]', 'initiator@test.com');
-    await page.fill('input[name="password"]', 'Test1234!@#$');
-    await page.click('button[type="submit"]');
-    await expect(page).toHaveURL('/dashboard');
-
-    // ADIM 2: KTİ başlatma sayfasına git
-    await page.click('text=Yeni KTİ Başlat');
-    await expect(page).toHaveURL('/processes/kti/start');
-
-    // ADIM 3: Formu doldur
-    await page.fill('input[name="savingAmount"]', '50000');
-    await page.fill(
-      'textarea[name="description"]',
-      'Üretim hattında iyileştirme yapıldı. 50K TL yıllık tasarruf sağlandı.',
-    );
-
-    // ADIM 4: Dokümanları yükle (before/after)
-    const beforeFile = await generateTestDocument('before.jpg');
-    const afterFile = await generateTestDocument('after.jpg');
-    await page.setInputFiles('input[name="before-photos"]', beforeFile);
-    await page.setInputFiles('input[name="after-photos"]', afterFile);
-
-    // Scan tamamlanmasını bekle (CLEAN)
-    await expect(page.locator('[data-testid="scan-status"]').first()).toHaveText('Temiz', {
-      timeout: 30000,
-    });
-
-    // ADIM 5: Başlat
-    await page.click('button:has-text("Süreci Başlat")');
-
-    // Yeni süreç detay sayfasına redirect
-    await expect(page).toHaveURL(/\/processes\/KTI-\d{6}/);
-    const displayId = page.url().split('/').pop();
-    expect(displayId).toMatch(/^KTI-\d{6}$/);
-
-    // ADIM 6: Manager login (yeni tab)
-    const managerPage = await context.newPage();
-    await managerPage.goto('/login');
-    await managerPage.fill('input[name="email"]', 'manager@test.com');
-    await managerPage.fill('input[name="password"]', 'Test1234!@#$');
-    await managerPage.click('button[type="submit"]');
-    await expect(managerPage).toHaveURL('/dashboard');
-
-    // ADIM 7: Manager bekleyen görevlere git
-    await managerPage.click('text=Görevlerim');
-    await expect(managerPage).toHaveURL('/tasks');
-
-    // Yeni task görünür olmalı
-    await expect(managerPage.locator(`text=${displayId}`)).toBeVisible({ timeout: 10000 });
-
-    // ADIM 8: Task detayı aç
-    await managerPage.click(`tr:has-text("${displayId}")`);
-    await expect(managerPage.locator('h1')).toContainText('Yönetici Onay');
-
-    // ADIM 9: Onayla
-    await managerPage.click('label:has-text("Onayla")');
-    await managerPage.fill('textarea[name="comment"]', 'İyi iş, onaylandı.');
-    await managerPage.click('button:has-text("Kaydet ve Tamamla")');
-
-    // Süreç detay sayfasına redirect
-    await expect(managerPage).toHaveURL(new RegExp(`/processes/${displayId}`));
-    await expect(managerPage.locator('[data-testid="process-status"]')).toHaveText('Tamamlandı');
-
-    // ADIM 10: Initiator notification görmeli
-    await page.reload();
-    await page.click('[data-testid="notification-bell"]');
-    await expect(page.locator('text=onaylandı')).toBeVisible();
-  });
-});
-```
 
 ### 4.4 E2E Best Practices
 
@@ -792,28 +564,27 @@ services:
 
 ### 5.1 Modül-Bazlı Coverage Hedefleri
 
-| Modül                                          | Line  | Branch | Function | Gerekçe                                       |
-| ---------------------------------------------- | ----- | ------ | -------- | --------------------------------------------- |
-| `auth/*`                                       | 95%   | 90%    | 100%     | Giriş kapısı — güvenlik kritik                |
-| `common/encryption/*`                          | 95%   | 90%    | 100%     | PII encrypt/decrypt — data loss riski         |
-| `processes/workflow/*`                         | 90%   | 85%    | 100%     | State machine — yanlış transition süreç bozar |
-| `roles/permission-resolver/*`                  | 90%   | 85%    | 100%     | RBAC+ABAC — yetki eskalasyon riski            |
-| `audit/*`                                      | 90%   | 85%    | 100%     | Chain integrity + append-only doğruluk        |
-| `users/*`                                      | 85%   | 75%    | 90%      | CRUD + manager cycle check                    |
-| `tasks/*`                                      | 85%   | 75%    | 90%      | Claim + complete + SLA                        |
-| `documents/*`                                  | 80%   | 70%    | 85%      | Upload + scan polling                         |
-| `notifications/*`                              | 75%   | 65%    | 85%      | Dispatch + read state                         |
-| `master-data/*`                                | 75%   | 65%    | 80%      | CRUD + cascade                                |
-| `admin/settings/*`                             | 75%   | 65%    | 80%      | Bulk update + atomic                          |
-| `admin/email-templates/*`                      | 75%   | 65%    | 80%      | Handlebars render + preview                   |
-| `admin/consent-versions/*`                     | 80%   | 70%    | 85%      | Publish flow atomic                           |
-| **Frontend — hooks**                           | 85%   | 75%    | 90%      | Custom logic                                  |
-| **Frontend — stores (Zustand)**                | 90%   | 80%    | 95%      | Auth state kritik                             |
-| **Frontend — UI components (shadcn + shared)** | 65%   | 55%    | 75%      | Smoke + edge case                             |
-| **Frontend — page components**                 | 60%   | 50%    | 70%      | E2E kapsamı tamamlar                          |
-| **Overall backend**                            | ≥ 80% | ≥ 70%  | ≥ 85%    | —                                             |
-| **Overall frontend**                           | ≥ 75% | ≥ 65%  | ≥ 80%    | —                                             |
-| **Proje toplam**                               | ≥ 75% | ≥ 65%  | ≥ 80%    | CI gate                                       |
+| Modül                                          | Line  | Branch | Function | Gerekçe                                |
+| ---------------------------------------------- | ----- | ------ | -------- | -------------------------------------- |
+| `auth/*`                                       | 95%   | 90%    | 100%     | Giriş kapısı — güvenlik kritik         |
+| `common/encryption/*`                          | 95%   | 90%    | 100%     | PII encrypt/decrypt — data loss riski  |
+| `roles/permission-resolver/*`                  | 90%   | 85%    | 100%     | RBAC+ABAC — yetki eskalasyon riski     |
+| `audit/*`                                      | 90%   | 85%    | 100%     | Chain integrity + append-only doğruluk |
+| `users/*`                                      | 85%   | 75%    | 90%      | CRUD + manager cycle check             |
+| `tasks/*`                                      | 85%   | 75%    | 90%      | Claim + complete + SLA                 |
+| `documents/*`                                  | 80%   | 70%    | 85%      | Upload + scan polling                  |
+| `notifications/*`                              | 75%   | 65%    | 85%      | Dispatch + read state                  |
+| `master-data/*`                                | 75%   | 65%    | 80%      | CRUD + cascade                         |
+| `admin/settings/*`                             | 75%   | 65%    | 80%      | Bulk update + atomic                   |
+| `admin/email-templates/*`                      | 75%   | 65%    | 80%      | Handlebars render + preview            |
+| `admin/consent-versions/*`                     | 80%   | 70%    | 85%      | Publish flow atomic                    |
+| **Frontend — hooks**                           | 85%   | 75%    | 90%      | Custom logic                           |
+| **Frontend — stores (Zustand)**                | 90%   | 80%    | 95%      | Auth state kritik                      |
+| **Frontend — UI components (shadcn + shared)** | 65%   | 55%    | 75%      | Smoke + edge case                      |
+| **Frontend — page components**                 | 60%   | 50%    | 70%      | E2E kapsamı tamamlar                   |
+| **Overall backend**                            | ≥ 80% | ≥ 70%  | ≥ 85%    | —                                      |
+| **Overall frontend**                           | ≥ 75% | ≥ 65%  | ≥ 80%    | —                                      |
+| **Proje toplam**                               | ≥ 75% | ≥ 65%  | ≥ 80%    | CI gate                                |
 
 ### 5.2 Coverage Raporu
 
@@ -843,7 +614,6 @@ Her domain entity için factory (`test/factories/`):
 
 - `user.factory.ts`
 - `role.factory.ts`
-- `process.factory.ts`
 - `task.factory.ts`
 - `document.factory.ts`
 - `notification.factory.ts`
@@ -943,7 +713,7 @@ async function main() {
   });
 
   // 6. Email template'ler — her event için minimal Handlebars
-  const emailEvents = ['TASK_ASSIGNED', 'PROCESS_COMPLETED' /* ... */];
+  const emailEvents = ['PASSWORD_EXPIRY_WARNING', 'CONSENT_VERSION_PUBLISHED' /* ... */];
   for (const eventType of emailEvents) {
     await prisma.email_templates.upsert({
       where: { event_type: eventType },
@@ -1064,43 +834,6 @@ Bu playbook `docs/runbooks/prod-subset-to-staging.md`'de; MVP'de nadir kullanıl
 - Password in history → 400 PASSWORD_REUSED
 - Success → sessions revoked, password_history appended
 
-### 7.2 KTİ Workflow (Faz 14 ile kaldırıldı)
-
-**Başlatma:**
-
-- Happy — tüm zorunlu field valid, docs CLEAN → 201 + task creation
-- Manager yok → 422 USER_NOT_FOUND (uygun error code)
-- Doc PENDING_SCAN → 409 DOCUMENT_SCAN_PENDING
-- Doc INFECTED → 409 DOCUMENT_INFECTED
-- Rate limit user → 429
-- Permission yok → 403 PROCESS_START_FORBIDDEN
-
-**Manager approval:**
-
-- APPROVE → process COMPLETED, task COMPLETED, notification sent
-- REJECT + reason → process REJECTED, process COMPLETED timestamp, notification
-- REJECT without reason → 400 TASK_REASON_REQUIRED
-- REQUEST_REVISION + reason → başlatıcıya yeni task, process IN_PROGRESS devam
-- Invalid action → 400 TASK_COMPLETION_ACTION_INVALID
-
-**Revision:**
-
-- Happy → yeniden manager'a task
-- Third revision cycle → backend kısıtı yok (unlimited — opsiyonel limit ADR ile)
-
-**Cancel:**
-
-- Active süreç → CANCELLED, active task SKIPPED_BY_ROLLBACK
-- Terminal süreç → 409 PROCESS_NOT_CANCELLABLE
-- Reason missing → 400
-
-**Rollback:**
-
-- Happy (IN_PROGRESS, önceki task var) → new task for previous step
-- INITIATED state (henüz task yok) → 409 PROCESS_NOT_ROLLBACKABLE
-- Terminal → 409
-- Birden fazla rollback (nested) → her biri yeni task_id, eski SKIPPED_BY_ROLLBACK
-
 ### 7.3 Permission
 
 **Resolver:**
@@ -1115,7 +848,7 @@ Bu playbook `docs/runbooks/prod-subset-to-staging.md`'de; MVP'de nadir kullanıl
 
 - Auth guard: valid JWT → pass; expired → 401
 - Permission decorator: `@RequirePermission(X)` ile X yok → 403 + details.missing
-- Resource ownership: process other user's → 403 PROCESS_ACCESS_DENIED
+- Resource ownership: başka kullanıcının kaydı → 403 PERMISSION_DENIED
 - Field-level: non-owner sees limited fields
 
 **Cache invalidation:**
@@ -1434,18 +1167,13 @@ Staging seed'in platform test'leme kapsamı:
 
 **Ekran × scenario test matrix:**
 
-| Ekran                       | Test senaryosu                        | Beklenen data                            |
-| --------------------------- | ------------------------------------- | ---------------------------------------- |
-| S-USER-LIST                 | Filtre: companyId=ACME, isActive=true | ~15 kullanıcı                            |
-| S-USER-LIST                 | Arama: "ali"                          | 3-5 sonuç                                |
-| S-PROC-LIST-MY              | Happy — aktif user için               | 2-5 süreç (Faz 14 ile kaldırıldı)        |
-| S-PROC-LIST-ADMIN           | CANCELLED toggle on                   | +5 süreç (Faz 14 ile kaldırıldı)         |
-| S-TASK-LIST (pending tab)   | Manager user için                     | 1-3 bekleyen (Faz 14 ile kaldırıldı)     |
-| S-TASK-LIST (completed tab) | Çeşitli completion action'lar         | 10+ (Faz 14 ile kaldırıldı)              |
-| S-PROC-DETAIL               | Full chain — 4 adım complete          | Her task görünür (Faz 14 ile kaldırıldı) |
-| S-ROLE-USERS                | Direct + rule mix                     | 20+ user                                 |
-| S-ADMIN-AUDIT               | Son 24 saat filter                    | 200+ kayıt                               |
-| S-NOTIF-LIST                | Mix read/unread                       | 15+ bildirim                             |
+| Ekran         | Test senaryosu                        | Beklenen data |
+| ------------- | ------------------------------------- | ------------- |
+| S-USER-LIST   | Filtre: companyId=ACME, isActive=true | ~15 kullanıcı |
+| S-USER-LIST   | Arama: "ali"                          | 3-5 sonuç     |
+| S-ROLE-USERS  | Direct + rule mix                     | 20+ user      |
+| S-ADMIN-AUDIT | Son 24 saat filter                    | 200+ kayıt    |
+| S-NOTIF-LIST  | Mix read/unread                       | 15+ bildirim  |
 
 Seed sonrası manuel QA checklist oluşturulur (QA team + Notion/Confluence doc).
 
@@ -1550,13 +1278,10 @@ API_URL=https://staging.lean-mgmt.holding.com k6 run --out cloudwatch loadtest/l
 
 ### 11.4 Senaryolar
 
-| Script                       | Target                                                                                 | Sıklık |
-| ---------------------------- | -------------------------------------------------------------------------------------- | ------ |
-| `login-storm.js`             | Login endpoint 500 VU                                                                  | Aylık  |
-| `process-list-pagination.js` | Büyük liste pagination (Faz 14 ile kaldırıldı)                                         | Aylık  |
-| `kti-start-burst.js`         | 50 eşzamanlı KTİ başlatma (Faz 14 ile kaldırıldı)                                      | Aylık  |
-| `dashboard-mixed.js`         | Tipik kullanıcı akışı — dashboard + task + process carousel (Faz 14 ile güncellenecek) | Çeyrek |
-| `sustained-2h.js`            | 2 saat steady 100 req/sec — memory leak tespiti                                        | Çeyrek |
+| Script            | Target                                          | Sıklık |
+| ----------------- | ----------------------------------------------- | ------ |
+| `login-storm.js`  | Login endpoint 500 VU                           | Aylık  |
+| `sustained-2h.js` | 2 saat steady 100 req/sec — memory leak tespiti | Çeyrek |
 
 ### 11.5 Capacity Planning
 
@@ -1577,7 +1302,6 @@ Her PR'da kritik 3 sayfa için Lighthouse:
 
 - `/login` (unauthenticated)
 - `/dashboard` (authenticated)
-- `/processes` (liste — büyük data)
 
 ```yaml
 # .github/workflows/lighthouse.yml
@@ -1793,27 +1517,7 @@ describe('UserService', () => {
 Her test 3 bölümde:
 
 ```typescript
-it('should create process when all validations pass', async () => {
-  // Arrange
-  const initiator = await userFactory.create(prisma);
-  const manager = await userFactory.create(prisma);
-  await linkManager(prisma, initiator.id, manager.id);
-  const docs = await documentFactory.createBatch(prisma, 2);
-  const input = {
-    /* ... */
-  };
 
-  // Act
-  const result = await service.startKti(input, initiator);
-
-  // Assert
-  expect(result.status).toBe('IN_PROGRESS');
-  expect(result.displayId).toMatch(/^KTI-\d{6}$/);
-
-  const tasks = await prisma.tasks.findMany({ where: { process_id: result.id } });
-  expect(tasks).toHaveLength(1);
-  expect(tasks[0].step_label).toBe('Yönetici Onay');
-});
 ```
 
 Küçük testlerde AAA yorumu gereksiz — 2-3 satırlık testlerde mental model yeterli.
@@ -1834,7 +1538,7 @@ expect(result.someProperty).toBeTruthy();
 expect(result.status).toBe('COMPLETED');
 expect(result.tasks).toHaveLength(3);
 expect(result.tasks.map((t) => t.status)).toEqual(['COMPLETED', 'COMPLETED', 'COMPLETED']);
-expect(result.auditLogs).toContainEqual(expect.objectContaining({ action: 'PROCESS_STARTED' }));
+expect(result.auditLogs).toContainEqual(expect.objectContaining({ action: 'CREATE_USER' }));
 ```
 
 Specific assertion → test kırıldığında ne yanlış olduğu net.
@@ -2140,22 +1844,6 @@ export default function (data) {
   });
 
   sleep(2);
-
-  group('Process list browse', () => {
-    const listRes = http.get(`${__ENV.API_URL}/api/v1/processes?scope=my-started&limit=20`, {
-      headers,
-    });
-    check(listRes, { 'processes list 200': (r) => r.status === 200 });
-
-    const processes = listRes.json('data.items');
-    if (processes && processes.length > 0) {
-      const randomProc = processes[Math.floor(Math.random() * processes.length)];
-      const detailRes = http.get(`${__ENV.API_URL}/api/v1/processes/${randomProc.displayId}`, {
-        headers,
-      });
-      check(detailRes, { 'process detail 200': (r) => r.status === 200 });
-    }
-  });
 
   sleep(3);
 }

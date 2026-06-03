@@ -198,29 +198,6 @@ apps/api/
 │   │   │   ├── permissions.controller.ts          # GET /api/v1/permissions (metadata)
 │   │   │   └── __tests__/
 │   │   │
-│   │   ├── processes/                 # Per-process submodule pattern (10. bölüm)
-│   │   │   ├── processes.module.ts
-│   │   │   ├── processes.controller.ts            # Generic endpoint'ler
-│   │   │   ├── processes.service.ts
-│   │   │   ├── processes.repository.ts
-│   │   │   ├── process-type.registry.ts           # Type → definition map
-│   │   │   ├── types/
-│   │   │   │   └── before-after-kaizen/
-│   │   │   │       ├── kaizen.module.ts
-│   │   │   │       ├── kaizen.controller.ts       # POST /api/v1/processes/kti/start
-│   │   │   │       ├── kaizen.service.ts
-│   │   │   │       ├── kaizen.form-schema.ts      # Zod per-step form schema
-│   │   │   │       ├── kaizen.step-definitions.ts # step_key → label + allowedActions + assignment resolver
-│   │   │   │       └── __tests__/
-│   │   │   └── __tests__/
-│   │   │
-│   │   ├── tasks/
-│   │   │   ├── tasks.module.ts
-│   │   │   ├── tasks.controller.ts
-│   │   │   ├── tasks.service.ts
-│   │   │   ├── tasks.repository.ts
-│   │   │   ├── sla-monitor.service.ts             # BullMQ cron consumer
-│   │   │   └── __tests__/
 │   │   │
 │   │   ├── documents/
 │   │   │   ├── documents.module.ts
@@ -529,11 +506,6 @@ export enum Permission {
   ROLE_RULE_MANAGE = 'ROLE_RULE_MANAGE',
   // MASTER_DATA
   MASTER_DATA_MANAGE = 'MASTER_DATA_MANAGE',
-  // PROCESS
-  PROCESS_KTI_START = 'PROCESS_KTI_START',
-  PROCESS_VIEW_ALL = 'PROCESS_VIEW_ALL',
-  PROCESS_CANCEL = 'PROCESS_CANCEL',
-  PROCESS_ROLLBACK = 'PROCESS_ROLLBACK',
   // DOCUMENT
   DOCUMENT_UPLOAD = 'DOCUMENT_UPLOAD',
   // ADMIN
@@ -764,86 +736,6 @@ Audit write başarısız ise (örn. DB bağlantısı koptu) interceptor exceptio
 
 ---
 
-## 10. Per-Process Module Pattern
-
-> **⛔ Kaldırıldı (Faz 14):** Bu bölüm ASANA pivot sonrası kaldırıldı. ProcessTypeRegistry ve BPM workflow altyapısı Faz 14 ile tamamen decommission edildi.
-
-### 10.1 Motivasyon
-
-MVP'de yalnız bir süreç tipi vardır: KTİ (Before & After Kaizen). Ancak platform ileride yeni süreç tipleri ekleyebilmelidir (Ramak Kala Bildirimi, 5S Denetim, vb.). Genel endpoint'ler (`GET /api/v1/processes/:displayId`, `POST /api/v1/tasks/:id/complete`) süreç tipini bilmemelidir. Bunun yerine her süreç kendi submodule'ünde:
-
-- Form schema'sı (Zod)
-- Adım tanımları (step_key → label + allowed actions + assignment resolver)
-- Start endpoint'i (`POST /api/v1/processes/<type>/start`)
-
-tanımlanır ve runtime'da bir **registry**'e kayıt olur.
-
-### 10.2 Process Type Registry
-
-```typescript
-// modules/processes/process-type.registry.ts
-export interface ProcessTypeDefinition {
-  type: string; // 'BEFORE_AFTER_KAIZEN'
-  displayIdPrefix: string; // 'KTI'
-  steps: StepDefinition[];
-  startFormSchema: z.ZodSchema;
-  onStart: (input: unknown, context: StartContext) => Promise<StartResult>;
-}
-
-export interface StepDefinition {
-  key: string; // 'KTI_MANAGER_APPROVAL'
-  label: string; // 'Yönetici Onay'
-  order: number;
-  assignmentMode: 'SINGLE' | 'CLAIM' | 'ALL_REQUIRED';
-  assignmentResolver: (process: Process, prevTask?: Task) => AssignmentTarget;
-  allowedActions: string[]; // ['APPROVE', 'REJECT', 'REQUEST_REVISION']
-  reasonRequiredFor: string[]; // ['REJECT', 'REQUEST_REVISION']
-  completionHandler: (
-    task: Task,
-    action: string | null,
-    formData: unknown,
-  ) => Promise<CompletionResult>;
-  slaHours: number | null;
-}
-
-@Injectable()
-export class ProcessTypeRegistry {
-  private readonly definitions = new Map<string, ProcessTypeDefinition>();
-
-  register(def: ProcessTypeDefinition) {
-    if (this.definitions.has(def.type)) {
-      throw new Error(`Process type already registered: ${def.type}`);
-    }
-    this.definitions.set(def.type, def);
-  }
-
-  get(type: string): ProcessTypeDefinition {
-    const def = this.definitions.get(type);
-    if (!def) throw new ValidationException({ code: 'PROCESS_TYPE_UNKNOWN' });
-    return def;
-  }
-
-  getStep(type: string, stepKey: string): StepDefinition {
-    const def = this.get(type);
-    const step = def.steps.find((s) => s.key === stepKey);
-    if (!step) throw new Error(`Step not found: ${type}/${stepKey}`);
-    return step;
-  }
-}
-```
-
-### 10.3 KTİ Submodule (15. bölümde detaylı örnek)
-
-KTİ süreç modülü `onModuleInit` hook'unda registry'e kayıt olur. Böylece generic `ProcessesService` ve `TasksService` süreç tipini bilmeden:
-
-- `/processes/:displayId` detay endpoint'i → registry'den step label'larını çeker
-- `/tasks/:id` detay endpoint'i → registry'den `allowedActions`'ı çeker
-- `/tasks/:id/complete` → registry'den `completionHandler`'ı çağırır
-
-Yeni süreç tipi eklemek = yeni submodule + registry kaydı + yeni start controller. Generic katman dokunulmaz.
-
----
-
 ## 11. Background Jobs — BullMQ ve Worker Ayrılığı
 
 ### 11.1 Worker Ayrı Deploy Unit
@@ -860,9 +752,8 @@ Worker pod'u `packages/shared-types`, `packages/shared-schemas`, infrastructure 
 
 | Queue                | Worker job tipleri                                                                            | Tetikleyici                                                               |
 | -------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| `notifications`      | `send-in-app`, `send-email`                                                                   | Domain event'ler (user.created, task.assigned, sla.breached vb.)          |
+| `notifications`      | `send-in-app`, `send-email`                                                                   | Domain event'ler (user.created, notification.\* vb.)                      |
 | `documents-scan`     | `scan-invoke`, `scan-callback-handle`                                                         | Document create → ClamAV Lambda tetikle + S3 → EventBridge → API callback |
-| `sla-monitor`        | `check-task-sla`                                                                              | Cron — 5 dakikada bir (Faz 14 ile kaldırıldı)                             |
 | `retention`          | `cleanup-notifications`, `cleanup-login-attempts`, `cleanup-reset-tokens`, `archive-sessions` | Cron — gecelik 02:00 TRT                                                  |
 | `audit-chain-check`  | `verify-chain-integrity`                                                                      | Cron — gecelik 03:00 TRT                                                  |
 | `role-recomputation` | `recompute-attribute-roles`                                                                   | Role rule create/update/delete events                                     |
@@ -1126,11 +1017,10 @@ Hot reload yok — env/secret değişikliği = deploy. Runtime-editable ayarlar 
 5. **Redis client init** — ping
 6. **S3 client init** — bucket exists check
 7. **Boot seed** — SYSTEM master data + sistem rolleri + Superadmin create-if-missing
-8. **Process type registry** — KTİ (ve gelecek tipler) register
-9. **NestJS app bootstrap** — modules, guards, interceptors
-10. **BullMQ queue'lar connect** (worker pod'unda; API pod'u yalnız producer)
-11. **Pino logger boot banner** — `info` seviyede version, env, ready status
-12. **HTTP server listen** — `/health` endpoint'i trafiğe açılır
+8. **NestJS app bootstrap** — modules, guards, interceptors
+9. **BullMQ queue'lar connect** (worker pod'unda; API pod'u yalnız producer)
+10. **Pino logger boot banner** — `info` seviyede version, env, ready status
+11. **HTTP server listen** — `/health` endpoint'i trafiğe açılır
 
 `/health/ready` endpoint'i boot-order tamamlanana kadar 503 döner. Load balancer trafiği ready olmadan yönlendirmez.
 
@@ -1138,10 +1028,7 @@ Hot reload yok — env/secret değişikliği = deploy. Runtime-editable ayarlar 
 
 ## 15. Referans Patterns
 
-Agent yeni bir feature yazarken iki örnek pattern'i template olarak kullanır:
-
-1. **Standart CRUD pattern** — User modülü (günlük üretilen kodun %80'i)
-2. **Per-process pattern** — KTİ başlatma (yeni süreç tipi eklendiğinde takip edilen kalıp)
+Agent yeni bir feature yazarken **standart CRUD pattern**'i template olarak kullanır — User modülü (günlük üretilen kodun çoğu).
 
 ### 15.1 Standart CRUD Pattern — User Modülü
 
@@ -1547,315 +1434,6 @@ export class UsersModule {}
 - Cache invalidation (permission resolver)
 - Encryption middleware şeffaflığı (service `user.email` üzerinden çalışır)
 - Exception fırlatma pattern'i (`ConflictException`, `NotFoundException`, `UnprocessableException`)
-
-### 15.2 Per-Process Pattern — KTİ Başlatma
-
-> **⛔ Kaldırıldı (Faz 14):** Bu bölüm ASANA pivot sonrası kaldırıldı. KTİ workflow ve ProcessTypeRegistry Faz 14 ile tamamen decommission edildi.
-
-Yeni bir süreç tipi eklemek isteyen agent bu pattern'i template olarak kullanır.
-
-**Form schema — `apps/api/src/modules/processes/types/before-after-kaizen/kaizen.form-schema.ts`:**
-
-```typescript
-import { z } from 'zod';
-
-export const KtiStartFormSchema = z.object({
-  companyId: z.string().cuid(),
-  beforePhotoDocumentIds: z.array(z.string().cuid()).min(1).max(10),
-  afterPhotoDocumentIds: z.array(z.string().cuid()).min(1).max(10),
-  savingAmount: z.number().int().nonnegative(),
-  description: z.string().min(10).max(5000),
-});
-
-export const KtiManagerApprovalFormSchema = z.object({
-  comment: z.string().max(1000).optional(),
-});
-
-export const KtiRevisionFormSchema = z.object({
-  beforePhotoDocumentIds: z.array(z.string().cuid()).min(1).max(10),
-  afterPhotoDocumentIds: z.array(z.string().cuid()).min(1).max(10),
-  savingAmount: z.number().int().nonnegative(),
-  description: z.string().min(10).max(5000),
-  revisionNote: z.string().max(1000).optional(),
-});
-
-export type KtiStartFormInput = z.infer<typeof KtiStartFormSchema>;
-export type KtiManagerApprovalFormInput = z.infer<typeof KtiManagerApprovalFormSchema>;
-```
-
-**Step definitions — `apps/api/src/modules/processes/types/before-after-kaizen/kaizen.step-definitions.ts`:**
-
-```typescript
-import { StepDefinition } from '../../process-type.registry';
-
-export const KTI_STEPS: StepDefinition[] = [
-  {
-    key: 'KTI_INITIATION',
-    label: 'Başlatma',
-    order: 1,
-    assignmentMode: 'SINGLE',
-    assignmentResolver: (_process, _prev) => ({ type: 'STARTED_BY_SELF' }),
-    allowedActions: [], // Başlatma submit-only, action yok
-    reasonRequiredFor: [],
-    slaHours: null, // Başlatma SLA'sız
-    completionHandler: async (_task, _action, _form) => ({
-      nextStepKey: 'KTI_MANAGER_APPROVAL',
-      processStatus: 'IN_PROGRESS',
-    }),
-  },
-  {
-    key: 'KTI_MANAGER_APPROVAL',
-    label: 'Yönetici Onay',
-    order: 2,
-    assignmentMode: 'SINGLE',
-    assignmentResolver: (process, _prev) => ({
-      type: 'MANAGER_OF_STARTER',
-      userId: process.startedBy.managerUserId,
-    }),
-    allowedActions: ['APPROVE', 'REJECT', 'REQUEST_REVISION'],
-    reasonRequiredFor: ['REJECT', 'REQUEST_REVISION'],
-    slaHours: 72,
-    completionHandler: async (_task, action, _form) => {
-      if (action === 'APPROVE') return { nextStepKey: null, processStatus: 'COMPLETED' };
-      if (action === 'REJECT') return { nextStepKey: null, processStatus: 'REJECTED' };
-      if (action === 'REQUEST_REVISION')
-        return { nextStepKey: 'KTI_REVISION', processStatus: 'IN_PROGRESS' };
-      throw new Error(`Unknown action: ${action}`);
-    },
-  },
-  {
-    key: 'KTI_REVISION',
-    label: 'Revize (Başlatıcıda)',
-    order: 3,
-    assignmentMode: 'SINGLE',
-    assignmentResolver: (process, _prev) => ({
-      type: 'STARTED_BY_SELF',
-      userId: process.startedByUserId,
-    }),
-    allowedActions: [],
-    reasonRequiredFor: [],
-    slaHours: 48,
-    completionHandler: async (_task, _action, _form) => ({
-      nextStepKey: 'KTI_MANAGER_APPROVAL',
-      processStatus: 'IN_PROGRESS',
-    }),
-  },
-];
-```
-
-**Service — `apps/api/src/modules/processes/types/before-after-kaizen/kaizen.service.ts`:**
-
-```typescript
-import { Injectable } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
-import { PrismaService } from '@/infrastructure/prisma/prisma.service';
-import { ProcessesRepository } from '../../processes.repository';
-import { TasksRepository } from '@/modules/tasks/tasks.repository';
-import { DocumentsService } from '@/modules/documents/documents.service';
-import { UsersRepository } from '@/modules/users/users.repository';
-import { UnprocessableException } from '@/common/exceptions';
-import { KtiStartFormInput } from './kaizen.form-schema';
-import { KTI_STEPS } from './kaizen.step-definitions';
-
-@Injectable()
-export class KaizenService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly processesRepository: ProcessesRepository,
-    private readonly tasksRepository: TasksRepository,
-    private readonly usersRepository: UsersRepository,
-    private readonly documentsService: DocumentsService,
-    private readonly eventEmitter: EventEmitter2,
-  ) {}
-
-  async start(input: KtiStartFormInput, starter: AuthenticatedUser, request: Request) {
-    // 1. Kullanıcının manager'ı var mı? KTİ manager şart.
-    const fullStarter = await this.usersRepository.findByIdWithRelations(starter.id);
-    if (!fullStarter?.managerUserId) {
-      throw new UnprocessableException({
-        code: 'USER_NOT_FOUND',
-        details: { field: 'starter.managerUserId' },
-      });
-    }
-
-    // 2. Tüm dokümanlar CLEAN ve currentUser'a ait mi?
-    const allDocIds = [...input.beforePhotoDocumentIds, ...input.afterPhotoDocumentIds];
-    await this.documentsService.assertAllCleanAndOwnedBy(allDocIds, starter.id);
-
-    // 3. Transaction
-    return this.prisma.$transaction(async (tx) => {
-      // 3a. Process insert
-      const processNumber = await this.processesRepository.nextProcessNumber(
-        tx,
-        'BEFORE_AFTER_KAIZEN',
-      );
-      const displayId = `KTI-${String(processNumber).padStart(6, '0')}`;
-
-      const process = await this.processesRepository.create(tx, {
-        processNumber,
-        processType: 'BEFORE_AFTER_KAIZEN',
-        displayId,
-        startedByUserId: starter.id,
-        companyId: input.companyId,
-        status: 'IN_PROGRESS',
-      });
-
-      // 3b. Initiation task (form_data'lı, already-completed)
-      const initStep = KTI_STEPS.find((s) => s.key === 'KTI_INITIATION')!;
-      await this.tasksRepository.create(tx, {
-        processId: process.id,
-        stepKey: initStep.key,
-        stepOrder: initStep.order,
-        assignmentMode: initStep.assignmentMode,
-        status: 'COMPLETED',
-        completedByUserId: starter.id,
-        completedAt: new Date(),
-        formData: {
-          beforePhotoDocumentIds: input.beforePhotoDocumentIds,
-          afterPhotoDocumentIds: input.afterPhotoDocumentIds,
-          savingAmount: input.savingAmount,
-          description: input.description,
-        },
-      });
-
-      // 3c. Manager approval task (PENDING)
-      const approvalStep = KTI_STEPS.find((s) => s.key === 'KTI_MANAGER_APPROVAL')!;
-      const approvalTask = await this.tasksRepository.create(tx, {
-        processId: process.id,
-        stepKey: approvalStep.key,
-        stepOrder: approvalStep.order,
-        assignmentMode: approvalStep.assignmentMode,
-        status: 'PENDING',
-        slaDueAt: new Date(Date.now() + approvalStep.slaHours! * 3600 * 1000),
-      });
-      await this.tasksRepository.createAssignment(tx, {
-        taskId: approvalTask.id,
-        userId: fullStarter.managerUserId,
-        resolvedByRule: true,
-      });
-
-      // 3d. Document'leri bu process'e bağla
-      await this.documentsService.attachToProcessAndTask(
-        tx,
-        allDocIds,
-        process.id,
-        approvalTask.id,
-      );
-
-      // 3e. Audit payload
-      request.auditPayload = {
-        newValue: {
-          displayId,
-          processType: 'BEFORE_AFTER_KAIZEN',
-          companyId: input.companyId,
-          savingAmount: input.savingAmount,
-          documentCount: allDocIds.length,
-        },
-      };
-
-      // 3f. Bildirim event
-      this.eventEmitter.emit('task.assigned', {
-        taskId: approvalTask.id,
-        userId: fullStarter.managerUserId,
-        processDisplayId: displayId,
-      });
-
-      return {
-        id: process.id,
-        displayId,
-        firstTaskId: approvalTask.id,
-        startedAt: process.startedAt,
-      };
-    });
-  }
-}
-```
-
-**Controller — `apps/api/src/modules/processes/types/before-after-kaizen/kaizen.controller.ts`:**
-
-```typescript
-import { Controller, Post, Body, Req, HttpCode } from '@nestjs/common';
-import { Permission } from '@leanmgmt/shared-types';
-import { KtiStartFormSchema, KtiStartFormInput } from './kaizen.form-schema';
-import { KaizenService } from './kaizen.service';
-import { RequirePermission, AuditAction, CurrentUser, ZodBody } from '@/common/decorators';
-
-@Controller('api/v1/processes/kti')
-export class KaizenController {
-  constructor(private readonly kaizenService: KaizenService) {}
-
-  @Post('start')
-  @HttpCode(201)
-  @RequirePermission(Permission.PROCESS_KTI_START)
-  @AuditAction('START_PROCESS', { entity: 'process' })
-  async start(
-    @ZodBody(KtiStartFormSchema) input: KtiStartFormInput,
-    @CurrentUser() currentUser: AuthenticatedUser,
-    @Req() request: Request,
-  ) {
-    return this.kaizenService.start(input, currentUser, request);
-  }
-}
-```
-
-**Module — `apps/api/src/modules/processes/types/before-after-kaizen/kaizen.module.ts`:**
-
-```typescript
-import { Module, OnModuleInit } from '@nestjs/common';
-import { z } from 'zod';
-import { ProcessTypeRegistry } from '../../process-type.registry';
-import { KaizenController } from './kaizen.controller';
-import { KaizenService } from './kaizen.service';
-import { KtiStartFormSchema } from './kaizen.form-schema';
-import { KTI_STEPS } from './kaizen.step-definitions';
-import { ProcessesModule } from '../../processes.module';
-import { TasksModule } from '@/modules/tasks/tasks.module';
-import { DocumentsModule } from '@/modules/documents/documents.module';
-import { UsersModule } from '@/modules/users/users.module';
-
-@Module({
-  imports: [ProcessesModule, TasksModule, DocumentsModule, UsersModule],
-  controllers: [KaizenController],
-  providers: [KaizenService],
-})
-export class KaizenModule implements OnModuleInit {
-  constructor(private readonly registry: ProcessTypeRegistry) {}
-
-  onModuleInit() {
-    this.registry.register({
-      type: 'BEFORE_AFTER_KAIZEN',
-      displayIdPrefix: 'KTI',
-      steps: KTI_STEPS,
-      startFormSchema: KtiStartFormSchema as z.ZodSchema,
-      onStart: async () => {
-        throw new Error('use KaizenController directly');
-      },
-    });
-  }
-}
-```
-
-**Bu pattern neleri gösterir:**
-
-- Per-process submodule organizasyonu — her süreç kendi klasöründe
-- Zod form schema'ları step bazında ayrı tanımlı
-- `StepDefinition` array'i ile state machine decouple
-- Generic `ProcessesService` ve `TasksService` bu süreçten habersiz — registry üzerinden resolve eder
-- `onModuleInit` hook ile otomatik kayıt
-- Controller + Service disiplini standart CRUD pattern ile aynı
-- Transaction içinde 6 ayrı işlem (process + 2 task + assignment + documents + audit) atomik
-
-**Yeni süreç eklemek için agent:**
-
-1. `modules/processes/types/<new-type>/` klasörü oluştur
-2. Form schema (Zod), step definitions, service, controller, module yaz
-3. Root `ProcessesModule`'a import et
-4. `Permission` enum'una `PROCESS_<TYPE>_START` ekle
-5. Migration: `process_seq_<new_type>` sequence oluştur
-6. Integration test yaz
-7. `06_SCREEN_CATALOG`'u güncelle (yeni süreç başlatma formu ekranı)
-
----
 
 ## 16. Test Yapılanması — Özet
 

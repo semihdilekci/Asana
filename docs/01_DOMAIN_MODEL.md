@@ -30,8 +30,7 @@ Platformu kullanan fiziksel kişi. Tek bir şirkete, tek bir lokasyona ve tek bi
 
 - Kimliğini 8 haneli `sicil` ile taşır; sistem genelinde unique.
 - Organizasyonel konumunu (şirket, lokasyon, departman, pozisyon, kademe, ekip, çalışma alanı) foreign key referanslarıyla taşır.
-- Yönetici referansını (başka bir User) taşır — attribute-based rol kuralları ve dinamik görev ataması (örn. "başlatanın yöneticisi") bu referansa dayanır.
-- Aktif/pasif durumda olabilir; silinmez.
+- Yönetici referansını (başka bir User) taşır — attribute-based rol kuralları ve - Aktif/pasif durumda olabilir; silinmez.
 
 **Ana attribute'lar (iş açısından):**
 
@@ -160,13 +159,13 @@ Sistemde gerçekleştirilebilecek bir aksiyon veya erişim hakkının kod enum d
 **Naming convention:**
 
 - Format: `SCOPE_RESOURCE_ACTION` (UPPER_SNAKE_CASE).
-- Örnekler: `USER_CREATE`, `USER_UPDATE_ATTRIBUTE`, `USER_IMPERSONATION`, `ROLE_ASSIGN`, `PROCESS_KTI_START`, `PROCESS_CANCEL`, `PROCESS_ROLLBACK`, `MASTER_DATA_MANAGE`, `AUDIT_LOG_VIEW`, `SYSTEM_SETTINGS_EDIT`, `DOCUMENT_UPLOAD`.
+- Örnekler: `USER_CREATE`, `USER_UPDATE_ATTRIBUTE`, `USER_IMPERSONATION`, `ROLE_ASSIGN`, `MASTER_DATA_MANAGE`, `AUDIT_LOG_VIEW`, `SYSTEM_SETTINGS_EDIT`, `DOCUMENT_UPLOAD`, `NOTIFICATION_EDIT`.
 - Somut tam liste API endpoint katalogundan türetilir; domain açısından burada naming kuralı ve kategori şablonu tanımlıdır.
 
 **Dört kategori (yetki katmanı):**
 
 - **Menu / page** — kullanıcı ekranı görebilir mi (örn. `AUDIT_LOG_VIEW`).
-- **Action** — kullanıcı bu işlemi yapabilir mi (örn. `PROCESS_KTI_START`, `PROCESS_CANCEL`, `USER_IMPERSONATION` — hassas).
+- **Action** — kullanıcı bu işlemi yapabilir mi (örn. `USER_IMPERSONATION`, `USER_DEACTIVATE` — hassas).
 - **Data** — kullanıcı bu kaydı görebilir mi (genelde attribute bazlı filtreleme; doğrudan permission olarak değil, service layer'da şirket/lokasyon filtresi olarak enforce edilir).
 - **Field** — kullanıcı bu alanı görebilir/düzenleyebilir mi (ileri iterasyon; MVP'de aktif kullanım yok).
 

@@ -29,9 +29,7 @@ Aşağıdaki rolleri seed veya manuel atama ile **ayrı kullanıcı hesapları**
 | **P0** | Ürün admini / Superadmin | Sistem geneli; audit, sistem ayarları, rıza, e-posta şablonları | Faz 8 admin, güvenlik görünürlüğü      |
 | **P1** | Kullanıcı yöneticisi     | Kullanıcı CRUD, master data yönetimi                            | Kullanıcı yaşam döngüsü, attribute’lar |
 | **P2** | Rol ve yetki yöneticisi  | Rol görüntüleme, yetki matrisi, ABAC kuralları                  | Yetki değişiminin etkisi               |
-| **P3** | Süreç yöneticisi         | Tüm süreçler, iptal / rollback                                  | Operasyonel süreç müdahalesi           |
-| **P4** | Standart çalışan         | KTİ başlatma (varsa), kendi görevleri, bildirimler              | Günlük iş akışı                        |
-| **P5** | Yönetici (onaylayan)     | Başlatanın yöneticisi; onay/red görevleri                       | KTİ onay hattı                         |
+| **P4** | Standart çalışan         | Dashboard, bildirimler, profil                                  | Günlük iş akışı                        |
 | **P6** | Yetkisiz / minimal rol   | Dashboard + kendi profili seviyesi                              | Negatif test (403, menü gizleme)       |
 
 **Oturum kuralı:** Her persona için ayrı tarayıcı profili veya gizli pencere kullanın; token/çerez karışmasını önleyin.
@@ -227,7 +225,7 @@ Aşağıdaki tabloda yalnızca **ID + durum + kısa not** tutabilirsiniz; detay 
 
 ---
 
-## 6. Operasyonel kullanıcı (P4, P5)
+## 6. Operasyonel kullanıcı (P4)
 
 ### TC-APP-001 — Dashboard
 
@@ -251,7 +249,7 @@ Aşağıdaki tabloda yalnızca **ID + durum + kısa not** tutabilirsiniz; detay 
 1. Bildirim çanı / `/notifications` sayfasını açın.
 2. Okunmamış sayacının (varsa) tutarlı güncellendiğini gözlemleyin.
 
-**Beklenen:** Liste yüklenir; tıklanınca ilgili görev veya sürece gidebilir (katalog akışına uygun).
+**Beklenen:** Liste yüklenir; `linkUrl` varsa ilgili sayfaya yönlendirir.
 
 | Takip  |     |
 | ------ | --- |
@@ -276,101 +274,7 @@ Aşağıdaki tabloda yalnızca **ID + durum + kısa not** tutabilirsiniz; detay 
 
 ---
 
-### TC-APP-004 — Görev listesi ve sekmeler
-
-**Persona:** P4
-
-1. `/tasks` üzerinde bekleyen / başlatılan / tamamlanan sekmelerini gezin.
-2. Kendinize atanmış bir göreve tıklayın.
-
-**Beklenen:** Yetkisiz görev görünmez; detay sayfası açılır.
-
-| Takip  |     |
-| ------ | --- |
-| Durum  |     |
-| Notlar |     |
-
----
-
-### TC-APP-005 — Görev tamamlama / onay / red (KTİ bağlamında)
-
-**Persona:** P5 (yönetici onayı gerektiğinde)
-
-1. Size atanan onay görevini açın.
-2. İş kuralına uygun aksiyonlardan birini (onay / red / revize talebi — hangisi tanımlıysa) uygulayın.
-
-**Beklenen:** Durum makinesi ihlali yok; süreç detayı güncellenir; bildirim tetiklenmesi beklenir.
-
-| Takip  |     |
-| ------ | --- |
-| Durum  |     |
-| Notlar |     |
-
----
-
-### TC-APP-006 — Claim modu (varsa)
-
-**Persona:** P4 (çoklu aday atanan görevle)
-
-1. Claim gerektiren görevde “üstlen” benzeri aksiyonu deneyin.
-
-**Beklenen:** İlk claim sonrası sorumluluk netleşir; diğer adaylar için kural katalogla uyumlu.
-
-| Takip  |     |
-| ------ | --- |
-| Durum  |     |
-| Notlar |     |
-
----
-
-### TC-APP-007 — KTİ süreci başlatma
-
-**Persona:** P4 (`PROCESS_KTI_START` yetkisi varsa)
-
-1. `/processes/kti/start` akışını doldurun; zorunlu alan ve dosya yüklemelerini tamamlayın.
-2. Süreci gönderin.
-
-**Beklenen:** Süreç detayına yönlendirme; `displayId` formatı (örn. KTI-…) okunabilir.
-
-| Takip  |     |
-| ------ | --- |
-| Durum  |     |
-| Notlar |     |
-
----
-
-### TC-APP-008 — Süreçlerim listesi
-
-**Persona:** P4
-
-1. `/processes?scope=my-started` (veya menüdeki “Süreçlerim”) ile kendi süreçlerinizi listeleyin.
-
-**Beklenen:** Yalnız ilgili süreçler; filtre/pagination kullanılabilir.
-
-| Takip  |     |
-| ------ | --- |
-| Durum  |     |
-| Notlar |     |
-
----
-
-### TC-APP-009 — Süreç detayı ve doküman
-
-**Persona:** P4 veya P5 (sürece erişimi olan)
-
-1. Bir süreç detayına girin.
-2. İzinli dokümanı önizleyin veya indirin (politikaya göre).
-
-**Beklenen:** Yetkisiz dokümana erişim yok; virüs taraması bekleyen dosya durumu anlaşılır.
-
-| Takip  |     |
-| ------ | --- |
-| Durum  |     |
-| Notlar |     |
-
----
-
-### TC-APP-010 — Profil ve “Verilerim”
+### TC-APP-004 — Profil ve “Verilerim”
 
 **Persona:** P4
 
@@ -386,7 +290,7 @@ Aşağıdaki tabloda yalnızca **ID + durum + kısa not** tutabilirsiniz; detay 
 
 ---
 
-## 7. Yönetim rolleri (P1, P2, P3)
+## 7. Yönetim rolleri (P1, P2)
 
 ### TC-MGT-001 — Kullanıcı listesi ve detay
 
@@ -480,29 +384,13 @@ Aşağıdaki tabloda yalnızca **ID + durum + kısa not** tutabilirsiniz; detay 
 
 ---
 
-### TC-MGT-007 — Tüm süreçler ve müdahale
-
-**Persona:** P3
-
-1. `/processes?scope=admin` ile tüm süreçleri görüntüleyin.
-2. Uygun test sürecinde iptal veya rollback (tanımlıysa) akışını **staging** üzerinde deneyin.
-
-**Beklenen:** Onay modalları; state geçişleri tutarlı; yetkisiz işlem 403.
-
-| Takip  |     |
-| ------ | --- |
-| Durum  |     |
-| Notlar |     |
-
----
-
 ## 8. Negatif ve sınır testleri (P6)
 
 ### TC-NEG-001 — Doğrudan URL ile yetkisiz erişim
 
 **Persona:** P6
 
-1. `/users`, `/roles`, `/admin/audit-logs`, `/processes/kti/start` gibi URL’leri sırayla deneyin.
+1. `/users`, `/roles`, `/admin/audit-logs`, `/master-data/companies` gibi URL’leri sırayla deneyin.
 
 **Beklenen:** 403 sayfası veya login yönlendirmesi; menüde ilgisi görünmez.
 
@@ -536,7 +424,7 @@ Aşağıdaki tabloda yalnızca **ID + durum + kısa not** tutabilirsiniz; detay 
 
 **Persona:** P0
 
-1. `/admin` (veya admin ana sayfa route’u) üzerinde özet KPI’ları görüntüleyin: aktif kullanıcı, açık süreç, gecikmiş görev sayıları.
+1. `/admin` (veya admin ana sayfa route’u) üzerinde özet KPI’ları görüntüleyin (aktif kullanıcı vb. — mevcut admin summary alanları).
 
 **Beklenen:** Sayılar makul; yüklenme hatası yok (`GET /api/v1/admin/summary` ile uyumlu izin modeli).
 
@@ -682,7 +570,7 @@ Aşağıdaki tabloda yalnızca **ID + durum + kısa not** tutabilirsiniz; detay 
 
 ### TC-CLOSE-001 — Kabul kriterleri özeti
 
-Tüm **kritik** senaryolar (Auth, KTİ mutasyon, Admin audit/consent, negatif yetki) için durumları gözden geçirin.
+Tüm **kritik** senaryolar (Auth, Admin audit/consent, negatif yetki) için durumları gözden geçirin.
 
 | Karar                   | ☐ Kabul (go) ☐ Koşullu kabul ☐ Ret (no-go) |
 | ----------------------- | ------------------------------------------ |
@@ -691,28 +579,11 @@ Tüm **kritik** senaryolar (Auth, KTİ mutasyon, Admin audit/consent, negatif ye
 
 ---
 
-## Ek A: Senaryo — uçtan uca “KTİ + onay + bildirim”
-
-**Katılımcılar:** P4 (başlatan), P5 (onaylayan), P0 (isteğe bağlı audit kontrolü)
-
-| Adım | Kim | Aksiyon                                             |
-| ---- | --- | --------------------------------------------------- |
-| 1    | P4  | KTİ başlat, dosya yükle, gönder                     |
-| 2    | P5  | Bildirimden veya görev listesinden onay görevini aç |
-| 3    | P5  | Onayla veya reddet                                  |
-| 4    | P4  | Süreç durumunu ve bildirimleri kontrol et           |
-| 5    | P0  | İlgili audit kayıtlarını filtreleyerek doğrula      |
-
-**UAT notları (serbest metin):**
-
----
-
 ## Ek B: Ortam ve veri hazırlığı kontrol listesi
 
 - PostgreSQL + Redis + worker süreçleri çalışıyor
 - Mailpit / SMTP test alıcıları tanımlı
-- Seed’de en az: P0, P1, P2, P3, P4, P5, P6 kullanıcıları
-- KTİ için örnek süreç veya sıfırdan oluşturma yolu biliniyor
+- Seed’de en az: P0, P1, P2, P4, P6 kullanıcıları
 - Yedek / geri alma: staging’de yıkıcı admin testleri için reset planı
 
 ---
