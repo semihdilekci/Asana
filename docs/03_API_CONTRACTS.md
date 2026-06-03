@@ -2,6 +2,8 @@
 
 > Bu doküman frontend ile backend arasındaki tam kontratı tanımlar. Frontend agent'ı bu dokümanla her UI etkileşimini kurar; backend agent'ı her endpoint'i bu şartnameye göre implement eder.
 
+> **Faz 14 (2026-06):** `/api/v1/processes` ve `/api/v1/tasks` endpoint'leri koddan kaldırıldı. Dokümanda kalan §9.5–§9.6 içerikleri yalnızca geçmiş referans (arşiv) içindir; yeni geliştirmede kullanılmaz.
+
 ---
 
 ## 1. Genel Prensipler
@@ -200,7 +202,7 @@ Tüm JSON response'lar üç formattan birindedir:
 | Status                       | Anlamı                                 | Ne zaman                                                        |
 | ---------------------------- | -------------------------------------- | --------------------------------------------------------------- |
 | `200 OK`                     | Başarılı okuma veya idempotent aksiyon | GET, mark-read, re-publish                                      |
-| `201 Created`                | Yeni kayıt oluşturuldu                 | POST /users, POST /processes/kti/start                          |
+| `201 Created`                | Yeni kayıt oluşturuldu                 | POST /users                                                     |
 | `204 No Content`             | Başarılı, dönecek içerik yok           | DELETE rol, logout                                              |
 | `400 Bad Request`            | Validation veya format hatası          | VALIDATION_FAILED, eksik zorunlu alan                           |
 | `401 Unauthorized`           | Auth başarısız                         | AUTH\_\* kodları                                                |
@@ -1925,7 +1927,7 @@ Kaynak: `packages/shared-types/src/permissions.ts` içindeki `PERMISSION_METADAT
 
 ### 9.5 Processes Modülü
 
-> **⛔ Kaldırıldı (Faz 14):** Bu endpoint'ler ASANA pivot ile kaldırılacak.
+> **⛔ Kaldırıldı (Faz 14):** Bu endpoint'ler ASANA pivot ile kaldırıldı.
 
 #### `GET /api/v1/processes`
 
@@ -2273,7 +2275,7 @@ Backend yan etkileri:
 
 ### 9.6 Tasks Modülü
 
-> **⛔ Kaldırıldı (Faz 14):** Bu endpoint'ler ASANA pivot ile kaldırılacak.
+> **⛔ Kaldırıldı (Faz 14):** Bu endpoint'ler ASANA pivot ile kaldırıldı.
 
 #### `GET /api/v1/tasks`
 
@@ -2489,7 +2491,7 @@ Backend yan etkileri (transaction):
 
 ### 9.7 Documents Modülü
 
-> **⚠️ Güncelleme (Faz 14):** Document modülü korunuyor ancak process_id/task_id bağlantıları kaldırılacak; generic attachment olarak çalışacak.
+> **Güncelleme (Faz 14):** Document modülü korunuyor; `process_id` / `task_id` bağlantıları kaldırıldı — generic attachment (`uploaded_by_user_id`) modeli geçerlidir.
 
 #### `POST /api/v1/documents/upload-initiate`
 

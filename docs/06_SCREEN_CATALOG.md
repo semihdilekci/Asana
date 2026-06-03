@@ -709,7 +709,7 @@ Detay: `docs/adr/0010-user-impersonation-jwt-audit-model.md`, `@63-phase-13-user
 
 #### S-DASH-HOME — Ana Sayfa
 
-> **⚠️ Güncelleme (Faz 14):** Dashboard widget'ları (görev/süreç/SLA) kaldırılacak; anasayfa olarak sadeleştirilecek.
+> **⚠️ Güncelleme (Faz 14):** Dashboard widget'ları (görev/süreç/SLA) kaldırıldı; anasayfa olarak sadeleştirilecek.
 
 **Route:** `/dashboard`
 **Erişim:** Auth (tüm authenticated kullanıcılar)
@@ -1725,7 +1725,7 @@ Bilinmeyen `type` → `/404` redirect.
 
 #### S-PROC-LIST-ADMIN — Süreç Yöneticisi
 
-> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırılacak.
+> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırıldı.
 
 **Route:** `/processadministration`
 **Erişim:** `PROCESS_VIEW_ALL`
@@ -1805,7 +1805,7 @@ Yok.
 
 #### S-PROC-DETAIL — Süreç Detayı
 
-> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırılacak.
+> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırıldı.
 
 **Route:** `/processes/:displayId`
 **Erişim:** Süreç başlatıcısı **veya** task atanmış kullanıcı **veya** `PROCESS_VIEW_ALL`
@@ -1915,7 +1915,7 @@ Yok — detay sayfası. Aksiyon modal'larının form alanları ilgili ekran şab
 
 #### S-KTI-START — KTİ Başlatma Formu
 
-> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırılacak.
+> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırıldı.
 
 **Route:** `/processes/kti/start`
 **Erişim:** `PROCESS_KTI_START`
@@ -2023,7 +2023,7 @@ KTİ (Before & After Kaizen) sürecini başlatan zengin form. Doküman upload + 
 
 #### S-TASK-LIST — Görev Listesi
 
-> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırılacak.
+> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırıldı.
 
 **Route:** `/tasks?tab=pending` (default) / `/tasks?tab=started` / `/tasks?tab=completed`
 **Erişim:** Auth (her kullanıcı kendi görevlerini görür)
@@ -2103,7 +2103,7 @@ Yok.
 
 #### S-TASK-DETAIL — Görev Detayı ve Aksiyon
 
-> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırılacak.
+> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırıldı.
 
 **Route:** `/tasks/:id`
 **Erişim:** Task'a atanmış kullanıcı **veya** sürecin başlatıcısı **veya** `PROCESS_VIEW_ALL`
@@ -3064,7 +3064,7 @@ Bir master data kaydına bağlı kullanıcıların listesi — örn. "Istanbul L
 
 ### S-PROC-HISTORY — Süreç Tarihçesi
 
-> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırılacak.
+> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırıldı.
 
 **Route:** `/processes/:displayId/history` | **Erişim:** `PROCESS_VIEW_ALL` | **Layout:** AppLayout
 
@@ -3076,7 +3076,7 @@ Bir sürece ait tüm audit log kayıtlarının kronolojik görünümü. S-PROC-D
 
 ### S-PROC-CANCEL — Süreç İptal Onay Modal'ı
 
-> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırılacak.
+> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırıldı.
 
 **Route:** (modal on detail) | **Erişim:** `PROCESS_CANCEL` | **Layout:** Modal
 
@@ -3088,7 +3088,7 @@ S-PROC-DETAIL ve S-PROC-LIST-ADMIN'den tetiklenen destructive confirmation modal
 
 ### S-PROC-ROLLBACK — Süreç Geri Alma Modal'ı
 
-> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırılacak.
+> **⛔ Kaldırıldı (Faz 14):** Bu ekran ASANA pivot ile kaldırıldı.
 
 **Route:** (modal on detail) | **Erişim:** `PROCESS_ROLLBACK` | **Layout:** Modal
 

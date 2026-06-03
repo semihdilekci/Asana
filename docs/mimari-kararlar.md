@@ -2277,7 +2277,7 @@ Bu doküman **canlı bir dokümandır** — kararlar netleştikçe güncellenece
 
 ## 19. ASANA Pivot — BPM Decommission Kararı
 
-**Karar [A-011]:** Proje Lean Management platformundan ASANA benzeri kurumsal proje/görev yönetim platformuna dönüştürülüyor. Aşağıdaki yapılar Faz 14 ile tamamen kaldırılacak:
+**Karar [A-011]:** Proje Lean Management platformundan ASANA benzeri kurumsal proje/görev yönetim platformuna dönüştürülüyor. Aşağıdaki yapılar Faz 14 ile tamamen kaldırıldı:
 
 - Before & After Kaizen (KTİ) süreci ve ilgili tüm kod/UI
 - ProcessTypeRegistry + merkezi BPM workflow engine

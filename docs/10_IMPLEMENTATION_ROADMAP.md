@@ -543,7 +543,7 @@ Session'lar:
 
 ### Faz 5 — Process Engine + KTİ Workflow
 
-> **⛔ Kaldırıldı (Faz 14):** Bu faz ASANA pivot sonrası decommission edildi. BPM/KTİ/süreç/görev altyapısı Faz 14 ile tamamen kaldırılacak.
+> **⛔ Kaldırıldı (Faz 14):** Bu faz ASANA pivot sonrası decommission edildi. BPM/KTİ/süreç/görev altyapısı Faz 14 ile tamamen kaldırıldı.
 
 > **Durum (Faz 14 sonrası):** BPM/KTİ runtime kodu ve DB tabloları kaldırıldı. Aşağıdaki kapsam maddeleri yalnızca tarihsel referanstır.
 
@@ -622,7 +622,7 @@ Session'lar:
 
 ### Faz 6 — Task Management + Document Upload Integration
 
-> **⛔ Kaldırıldı (Faz 14):** Bu faz ASANA pivot sonrası decommission edildi. BPM/KTİ/süreç/görev altyapısı Faz 14 ile tamamen kaldırılacak.
+> **⛔ Kaldırıldı (Faz 14):** Bu faz ASANA pivot sonrası decommission edildi. BPM/KTİ/süreç/görev altyapısı Faz 14 ile tamamen kaldırıldı.
 
 #### Kapsam
 

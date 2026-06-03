@@ -714,10 +714,10 @@ Sistem rolleri (seed data):
 - `ROLE_RULE_MANAGE` (hassas — attribute rule builder)
 - `ROLE_SELF_EDIT_FORBIDDEN`: Kendi rolünün permission'ını düşüremez
 
-**PROCESS_ADMIN** — Tüm süreçleri yönetir (Faz 14 ile kaldırılacak):
+**PROCESS_ADMIN** — Tüm süreçleri yönetir (Faz 14 ile kaldırıldı):
 
-- `PROCESS_VIEW_ALL`, `PROCESS_CANCEL`, `PROCESS_ROLLBACK` (Faz 14 ile kaldırılacak)
-- KTİ başlatabilir (`PROCESS_KTI_START`) (Faz 14 ile kaldırılacak)
+- `PROCESS_VIEW_ALL`, `PROCESS_CANCEL`, `PROCESS_ROLLBACK` (Faz 14 ile kaldırıldı)
+- KTİ başlatabilir (`PROCESS_KTI_START`) (Faz 14 ile kaldırıldı)
 
 **BASIC_USER** — Her authenticated user default davranışı (role atanmasa bile):
 
@@ -728,16 +728,16 @@ Sistem rolleri (seed data):
 MVP’de `Permission` enum’undaki tüm değerleri × 4 tablo satırı burada listemek yerine yalnız **hassas** veya **kritik karar noktası** permission'ları aşağıda verilir. Tam liste `packages/shared-types/src/permission.ts` metadata'sından ve database seed’inden (`prisma/seed.ts`) türetilir — tek doğruluk kaynağı kod.
 
 | Permission             | `isSensitive` | Superadmin | User Mgr | Role Mgr | Process Admin |
-| ---------------------- | ------------- | ---------- | -------- | -------- | ------------- | ------------------------- |
+| ---------------------- | ------------- | ---------- | -------- | -------- | ------------- | ----------------------- |
 | USER_CREATE            | ✓             | ✓          | ✓        | ✗        | ✗             |
 | USER_DEACTIVATE        | ✓             | ✓          | ✓        | ✗        | ✗             |
 | USER_SESSION_VIEW      | ✓             | ✓          | ✗        | ✗        | ✗             |
 | USER_IMPERSONATION     | ✓             | ○\*        | ✗        | ✗        | ✗             |
 | ROLE_PERMISSION_MANAGE | ✓             | ✓          | ✗        | ✓        | ✗             |
 | ROLE_RULE_MANAGE       | ✓             | ✓          | ✗        | ✓        | ✗             |
-| PROCESS_VIEW_ALL       | ✓             | ✓          | ✗        | ✗        | ✓             | (Faz 14 ile kaldırılacak) |
-| PROCESS_CANCEL         | ✓             | ✓          | ✗        | ✗        | ✓             | (Faz 14 ile kaldırılacak) |
-| PROCESS_ROLLBACK       | ✓             | ✓          | ✗        | ✗        | ✓             | (Faz 14 ile kaldırılacak) |
+| PROCESS_VIEW_ALL       | ✓             | ✓          | ✗        | ✗        | ✓             | (Faz 14 ile kaldırıldı) |
+| PROCESS_CANCEL         | ✓             | ✓          | ✗        | ✗        | ✓             | (Faz 14 ile kaldırıldı) |
+| PROCESS_ROLLBACK       | ✓             | ✓          | ✗        | ✗        | ✓             | (Faz 14 ile kaldırıldı) |
 | AUDIT_LOG_VIEW         | ✓             | ✓          | ✗        | ✗        | ✗             |
 | SYSTEM_SETTINGS_EDIT   | ✓             | ✓          | ✗        | ✗        | ✗             |
 | EMAIL_TEMPLATE_EDIT    | ✓             | ✓          | ✗        | ✗        | ✗             |

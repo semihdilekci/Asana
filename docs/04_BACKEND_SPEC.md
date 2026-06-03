@@ -766,7 +766,7 @@ Audit write başarısız ise (örn. DB bağlantısı koptu) interceptor exceptio
 
 ## 10. Per-Process Module Pattern
 
-> **⛔ Kaldırıldı (Faz 14):** Bu bölüm ASANA pivot sonrası kaldırılacak. ProcessTypeRegistry ve BPM workflow altyapısı Faz 14 ile tamamen decommission edilecek.
+> **⛔ Kaldırıldı (Faz 14):** Bu bölüm ASANA pivot sonrası kaldırıldı. ProcessTypeRegistry ve BPM workflow altyapısı Faz 14 ile tamamen decommission edildi.
 
 ### 10.1 Motivasyon
 
@@ -862,7 +862,7 @@ Worker pod'u `packages/shared-types`, `packages/shared-schemas`, infrastructure 
 | -------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
 | `notifications`      | `send-in-app`, `send-email`                                                                   | Domain event'ler (user.created, task.assigned, sla.breached vb.)          |
 | `documents-scan`     | `scan-invoke`, `scan-callback-handle`                                                         | Document create → ClamAV Lambda tetikle + S3 → EventBridge → API callback |
-| `sla-monitor`        | `check-task-sla`                                                                              | Cron — 5 dakikada bir (Faz 14 ile kaldırılacak)                           |
+| `sla-monitor`        | `check-task-sla`                                                                              | Cron — 5 dakikada bir (Faz 14 ile kaldırıldı)                             |
 | `retention`          | `cleanup-notifications`, `cleanup-login-attempts`, `cleanup-reset-tokens`, `archive-sessions` | Cron — gecelik 02:00 TRT                                                  |
 | `audit-chain-check`  | `verify-chain-integrity`                                                                      | Cron — gecelik 03:00 TRT                                                  |
 | `role-recomputation` | `recompute-attribute-roles`                                                                   | Role rule create/update/delete events                                     |
@@ -1550,7 +1550,7 @@ export class UsersModule {}
 
 ### 15.2 Per-Process Pattern — KTİ Başlatma
 
-> **⛔ Kaldırıldı (Faz 14):** Bu bölüm ASANA pivot sonrası kaldırılacak. KTİ workflow ve ProcessTypeRegistry Faz 14 ile tamamen decommission edilecek.
+> **⛔ Kaldırıldı (Faz 14):** Bu bölüm ASANA pivot sonrası kaldırıldı. KTİ workflow ve ProcessTypeRegistry Faz 14 ile tamamen decommission edildi.
 
 Yeni bir süreç tipi eklemek isteyen agent bu pattern'i template olarak kullanır.
 
